@@ -17,20 +17,22 @@ module Kubernetes {
     namespace:string;
   }
 
-  export var mbean = Fabric.jmxDomain + ":type=Kubernetes";
-  export var managerMBean = Fabric.jmxDomain + ":type=KubernetesManager";
-  export var appViewMBean = Fabric.jmxDomain + ":type=AppView";
+  //var fabricDomain = Fabric.jmxDomain;
+  var fabricDomain = "io.fabric8";
+  export var mbean = fabricDomain + ":type=Kubernetes";
+  export var managerMBean = fabricDomain + ":type=KubernetesManager";
+  export var appViewMBean = fabricDomain + ":type=AppView";
 
   export function isKubernetes(workspace) {
-    return workspace.treeContainsDomainAndProperties(Fabric.jmxDomain, {type: "Kubernetes"});
+    return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "Kubernetes"});
   }
 
   export function isKubernetesTemplateManager(workspace) {
-    return workspace.treeContainsDomainAndProperties(Fabric.jmxDomain, {type: "KubernetesTemplateManager"});
+    return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "KubernetesTemplateManager"});
   }
 
   export function isAppView(workspace) {
-    return workspace.treeContainsDomainAndProperties(Fabric.jmxDomain, {type: "AppView"});
+    return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "AppView"});
   }
 
   /**

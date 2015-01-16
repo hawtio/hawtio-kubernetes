@@ -524,19 +524,21 @@ var Kubernetes;
     Kubernetes.log = Logger.get(Kubernetes.pluginName);
     Kubernetes.defaultApiVersion = "v1beta2";
     Kubernetes.appSuffix = ".app";
-    Kubernetes.mbean = Fabric.jmxDomain + ":type=Kubernetes";
-    Kubernetes.managerMBean = Fabric.jmxDomain + ":type=KubernetesManager";
-    Kubernetes.appViewMBean = Fabric.jmxDomain + ":type=AppView";
+    //var fabricDomain = Fabric.jmxDomain;
+    var fabricDomain = "io.fabric8";
+    Kubernetes.mbean = fabricDomain + ":type=Kubernetes";
+    Kubernetes.managerMBean = fabricDomain + ":type=KubernetesManager";
+    Kubernetes.appViewMBean = fabricDomain + ":type=AppView";
     function isKubernetes(workspace) {
-        return workspace.treeContainsDomainAndProperties(Fabric.jmxDomain, { type: "Kubernetes" });
+        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "Kubernetes" });
     }
     Kubernetes.isKubernetes = isKubernetes;
     function isKubernetesTemplateManager(workspace) {
-        return workspace.treeContainsDomainAndProperties(Fabric.jmxDomain, { type: "KubernetesTemplateManager" });
+        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "KubernetesTemplateManager" });
     }
     Kubernetes.isKubernetesTemplateManager = isKubernetesTemplateManager;
     function isAppView(workspace) {
-        return workspace.treeContainsDomainAndProperties(Fabric.jmxDomain, { type: "AppView" });
+        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "AppView" });
     }
     Kubernetes.isAppView = isAppView;
     /**
@@ -1464,7 +1466,7 @@ var Kubernetes;
         $scope.value = parts.join('=');
     }]);
     // main controller for the page
-    Kubernetes.Pods = Kubernetes.controller("Pods", ["$scope", "KubernetesPods", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "jolokia", "$location", "localStorage", function ($scope, KubernetesPods, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, jolokia, $location, localStorage) {
+    Kubernetes.Pods = Kubernetes.controller("Pods", ["$scope", "KubernetesPods", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", function ($scope, KubernetesPods, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location, localStorage) {
         $scope.namespace = $routeParams.namespace;
         $scope.pods = undefined;
         var pods = [];
@@ -1556,28 +1558,32 @@ var Kubernetes;
         $scope.$on('$routeUpdate', function ($event) {
             Kubernetes.setJson($scope, $location.search()['_id'], $scope.pods);
         });
-        jolokia.getAttribute(Kubernetes.mbean, 'DockerIp', undefined, onSuccess(function (results) {
-            Kubernetes.log.info("got Docker IP: " + results);
-            if (results) {
-                $scope.dockerIp = results;
-            }
-            Core.$apply($scope);
-        }, {
-            error: function (response) {
-                Kubernetes.log.debug("error fetching API URL: ", response);
-            }
-        }));
-        jolokia.getAttribute(Kubernetes.mbean, 'HostName', undefined, onSuccess(function (results) {
-            Kubernetes.log.info("got hostname: " + results);
-            if (results) {
-                $scope.hostName = results;
-            }
-            Core.$apply($scope);
-        }, {
-            error: function (response) {
-                Kubernetes.log.debug("error fetching API URL: ", response);
-            }
-        }));
+        /*
+            jolokia.getAttribute(Kubernetes.mbean, 'DockerIp', undefined,
+              <Jolokia.IParams> onSuccess((results) => {
+                log.info("got Docker IP: " + results);
+                if (results) {
+                  $scope.dockerIp = results;
+                }
+                Core.$apply($scope);
+              }, {
+                error: (response) => {
+                  log.debug("error fetching API URL: ", response);
+                }
+              }));
+            jolokia.getAttribute(Kubernetes.mbean, 'HostName', undefined,
+              <Jolokia.IParams> onSuccess((results) => {
+                log.info("got hostname: " + results);
+                if (results) {
+                  $scope.hostName = results;
+                }
+                Core.$apply($scope);
+              }, {
+                error: (response) => {
+                  log.debug("error fetching API URL: ", response);
+                }
+              }));
+        */
         Kubernetes.initShared($scope, $location);
         $scope.connect = {
             dialog: new UI.Dialog(),
@@ -2149,7 +2155,7 @@ var Kubernetes;
             mbean: Kubernetes.mbean,
             operation: "iconPath(java.lang.String,java.lang.String)",
             arguments: ['master', $scope.entity.id]
-        }, onSuccess(function (response) {
+        }, Core.onSuccess(function (response) {
             if (response.value) {
                 $scope.iconUrl = Wiki.gitRelativeURL('master', response.value);
                 Core.$apply($scope);

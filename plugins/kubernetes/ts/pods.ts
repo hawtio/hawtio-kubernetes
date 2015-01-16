@@ -9,8 +9,8 @@ module Kubernetes {
   }]);
 
   // main controller for the page
-  export var Pods = controller("Pods", ["$scope", "KubernetesPods", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "jolokia", "$location", "localStorage",
-    ($scope, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, jolokia:Jolokia.IJolokia, $location:ng.ILocationService, localStorage) => {
+  export var Pods = controller("Pods", ["$scope", "KubernetesPods", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage",
+    ($scope, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage) => {
 
     $scope.namespace = $routeParams.namespace;
     $scope.pods = undefined;
@@ -117,6 +117,7 @@ module Kubernetes {
       Kubernetes.setJson($scope, $location.search()['_id'], $scope.pods);
     });
 
+/*
     jolokia.getAttribute(Kubernetes.mbean, 'DockerIp', undefined,
       <Jolokia.IParams> onSuccess((results) => {
         log.info("got Docker IP: " + results);
@@ -141,6 +142,7 @@ module Kubernetes {
           log.debug("error fetching API URL: ", response);
         }
       }));
+*/
 
     Kubernetes.initShared($scope, $location);
 
@@ -219,7 +221,8 @@ module Kubernetes {
             if (result) {
               function deleteSelected(selected:Array<KubePod>, next:KubePod) {
                 if (!next) {
-                  if (!jolokia.isRunning()) {
+                  // TODO if (!jolokia.isRunning()) {
+                  if (angular.isFunction($scope.fetch)) {
                     $scope.fetch();
                   }
                 } else {
