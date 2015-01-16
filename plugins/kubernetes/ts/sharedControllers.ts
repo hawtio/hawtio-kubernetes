@@ -11,7 +11,7 @@ module Kubernetes {
       mbean: Kubernetes.mbean,
       operation: "iconPath(java.lang.String,java.lang.String)",
       arguments: ['master', $scope.entity.id]
-    }, onSuccess((response) => {
+    }, Core.onSuccess((response) => {
       if (response.value) {
         $scope.iconUrl = Wiki.gitRelativeURL('master', response.value);
         Core.$apply($scope);

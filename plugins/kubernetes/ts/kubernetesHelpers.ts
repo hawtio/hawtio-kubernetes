@@ -162,7 +162,7 @@ module Kubernetes {
       var postfix = namespace ? " in namespace " + namespace : "";
       Core.notification('info', "Running " + name + postfix);
 
-      var callback = onSuccess((response) => {
+      var callback = Core.onSuccess((response) => {
         log.debug("Got response: ", response);
         if (angular.isFunction(onSuccessFn)) {
           onSuccessFn();

@@ -82,10 +82,10 @@ module Kubernetes {
     });
 
     if (isKubernetes(workspace)) {
-      Core.register(jolokia, $scope, {type: 'exec', mbean: Kubernetes.mbean, operation: "findApps", arguments: [branch]}, onSuccess(onAppData));
+      Core.register(jolokia, $scope, {type: 'exec', mbean: Kubernetes.mbean, operation: "findApps", arguments: [branch]}, Core.onSuccess(onAppData));
     }
     if (isAppView(workspace)) {
-      Core.register(jolokia, $scope, {type: 'exec', mbean: Kubernetes.appViewMBean, operation: "findAppSummariesJson"}, onSuccess(onAppViewData));
+      Core.register(jolokia, $scope, {type: 'exec', mbean: Kubernetes.appViewMBean, operation: "findAppSummariesJson"}, Core.onSuccess(onAppViewData));
     }
 
     function deleteApp(app, onCompleteFn) {
