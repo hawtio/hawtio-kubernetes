@@ -39,9 +39,9 @@ module Kubernetes {
   }]);
 
   function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string) {
-    var $rootScope = <ng.IRootScopeService> Core.injector.get("$rootScope");
-    var $resource = <ng.resource.IResourceService> Core.injector.get("$resource");
-    var KubernetesApiURL = <ng.IPromise<string>> Core.injector.get("KubernetesApiURL");
+    var $rootScope = <ng.IRootScopeService> HawtioCore.injector.get("$rootScope");
+    var $resource = <ng.resource.IResourceService> HawtioCore.injector.get("$resource");
+    var KubernetesApiURL = <ng.IPromise<string>> HawtioCore.injector.get("KubernetesApiURL");
 
     KubernetesApiURL.then((KubernetesApiURL) => {
       var url = UrlHelpers.escapeColons(KubernetesApiURL);

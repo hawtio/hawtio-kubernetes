@@ -8,6 +8,7 @@
     "dist/hawtio-kubernetes.js"
   ],
   "ignore": [
+    ".*",
     "**/.*",
     "node_modules",
     "bower_components",

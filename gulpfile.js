@@ -101,7 +101,7 @@ gulp.task('watch', ['build'], function() {
     gulp.start('reload');
   });
   plugins.watch(['libs/**/*.d.ts', config.ts, config.templates], function() {
-    gulp.start('build');
+    gulp.start(['tsc', 'template', 'concat', 'clean']);
   });
 });
 

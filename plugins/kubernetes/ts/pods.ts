@@ -158,7 +158,7 @@ module Kubernetes {
       onOK: () => {
         var userName = $scope.connect.userName;
         var password = $scope.connect.password;
-        var userDetails = <Core.UserDetails> Core.injector.get('userDetails');
+        var userDetails = <Core.UserDetails> HawtioCore.injector.get('userDetails');
         if (!userDetails.password) {
           // this can get unset if the user happens to refresh and hasn't checked rememberMe
           userDetails.password = password;
@@ -189,7 +189,7 @@ module Kubernetes {
       },
 
       doConnect: (entity) => {
-        var userDetails = <Core.UserDetails> Core.injector.get('userDetails');
+        var userDetails = <Core.UserDetails> HawtioCore.injector.get('userDetails');
         if (userDetails) {
           $scope.connect.userName = userDetails.username;
           $scope.connect.password = userDetails.password;

@@ -942,9 +942,9 @@ var Kubernetes;
         return answer.promise;
     }]);
     function createResource(deferred, thing, urlTemplate) {
-        var $rootScope = Core.injector.get("$rootScope");
-        var $resource = Core.injector.get("$resource");
-        var KubernetesApiURL = Core.injector.get("KubernetesApiURL");
+        var $rootScope = HawtioCore.injector.get("$rootScope");
+        var $resource = HawtioCore.injector.get("$resource");
+        var KubernetesApiURL = HawtioCore.injector.get("KubernetesApiURL");
         KubernetesApiURL.then(function (KubernetesApiURL) {
             var url = UrlHelpers.escapeColons(KubernetesApiURL);
             Kubernetes.log.debug("Url for ", thing, ": ", url);
@@ -1596,7 +1596,7 @@ var Kubernetes;
             onOK: function () {
                 var userName = $scope.connect.userName;
                 var password = $scope.connect.password;
-                var userDetails = Core.injector.get('userDetails');
+                var userDetails = HawtioCore.injector.get('userDetails');
                 if (!userDetails.password) {
                     // this can get unset if the user happens to refresh and hasn't checked rememberMe
                     userDetails.password = password;
@@ -1626,7 +1626,7 @@ var Kubernetes;
                 }, 100);
             },
             doConnect: function (entity) {
-                var userDetails = Core.injector.get('userDetails');
+                var userDetails = HawtioCore.injector.get('userDetails');
                 if (userDetails) {
                     $scope.connect.userName = userDetails.username;
                     $scope.connect.password = userDetails.password;
@@ -1657,7 +1657,8 @@ var Kubernetes;
                         if (result) {
                             function deleteSelected(selected, next) {
                                 if (!next) {
-                                    if (!jolokia.isRunning()) {
+                                    // TODO if (!jolokia.isRunning()) {
+                                    if (angular.isFunction($scope.fetch)) {
                                         $scope.fetch();
                                     }
                                 }
