@@ -337,8 +337,7 @@ module Kubernetes {
       });
     });
     function selectPods(pods, namespace, labels) {
-      var matchFunc = _.matches(labels);
-      return pods.filter((pod) => { return pod.namespace === namespace && matchFunc(pod.labels, undefined, undefined); });
+      return pods.filter((pod) => { return pod.namespace === namespace && selectorMatches(labels, pod.labels); });
     }
     function maybeInit() {
       if (services && replicationControllers && pods) {

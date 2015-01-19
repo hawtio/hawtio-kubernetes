@@ -1388,9 +1388,8 @@ var Kubernetes;
             });
         });
         function selectPods(pods, namespace, labels) {
-            var matchFunc = _.matches(labels);
             return pods.filter(function (pod) {
-                return pod.namespace === namespace && matchFunc(pod.labels, undefined, undefined);
+                return pod.namespace === namespace && Kubernetes.selectorMatches(labels, pod.labels);
             });
         }
         function maybeInit() {
