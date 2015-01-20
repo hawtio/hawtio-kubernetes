@@ -23,7 +23,7 @@
     "hawtio-forms": "~2.0.0",
     "hawtio-ui": "~2.0.0",
     "hawtio-utilities": "~2.0.0",
-    "hawtio-wiki": "~2.0.0"
+    "hawtio-wiki": "~2.0.1"
   },
   "devDependencies": {
     "bootstrap": "~3.3.1",

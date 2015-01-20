@@ -3,6 +3,421 @@
 /// <reference path="../../includes.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
+    Kubernetes.context = '/kubernetes';
+    Kubernetes.hash = '#' + Kubernetes.context;
+    Kubernetes.defaultRoute = Kubernetes.hash + '/apps';
+    Kubernetes.pluginName = 'Kubernetes';
+    Kubernetes.templatePath = 'app/kubernetes/html/';
+    Kubernetes.log = Logger.get(Kubernetes.pluginName);
+    Kubernetes.defaultApiVersion = "v1beta2";
+    Kubernetes.appSuffix = ".app";
+    //var fabricDomain = Fabric.jmxDomain;
+    var fabricDomain = "io.fabric8";
+    Kubernetes.mbean = fabricDomain + ":type=Kubernetes";
+    Kubernetes.managerMBean = fabricDomain + ":type=KubernetesManager";
+    Kubernetes.appViewMBean = fabricDomain + ":type=AppView";
+    function isKubernetes(workspace) {
+        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "Kubernetes" });
+    }
+    Kubernetes.isKubernetes = isKubernetes;
+    function isKubernetesTemplateManager(workspace) {
+        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "KubernetesTemplateManager" });
+    }
+    Kubernetes.isKubernetesTemplateManager = isKubernetesTemplateManager;
+    function isAppView(workspace) {
+        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "AppView" });
+    }
+    Kubernetes.isAppView = isAppView;
+    /**
+     * Updates the namespaces value in the kubernetes object from the namespace values in the pods, controllers, services
+     */
+    function updateNamespaces(kubernetes, pods, replicationControllers, services) {
+        if (pods === void 0) { pods = []; }
+        if (replicationControllers === void 0) { replicationControllers = []; }
+        if (services === void 0) { services = []; }
+        var byNamespace = function (thing) {
+            return thing.namespace;
+        };
+        function pushIfNotExists(array, items) {
+            angular.forEach(items, function (value) {
+                if ($.inArray(value, array) < 0) {
+                    array.push(value);
+                }
+            });
+        }
+        var namespaces = [];
+        pushIfNotExists(namespaces, pods.map(byNamespace));
+        pushIfNotExists(namespaces, services.map(byNamespace));
+        pushIfNotExists(namespaces, replicationControllers.map(byNamespace));
+        namespaces = namespaces.sort();
+        kubernetes.namespaces = namespaces;
+        kubernetes.selectedNamespace = kubernetes.selectedNamespace || namespaces[0];
+    }
+    Kubernetes.updateNamespaces = updateNamespaces;
+    function setJson($scope, id, collection) {
+        $scope.id = id;
+        if (!$scope.fetched) {
+            return;
+        }
+        if (!id) {
+            $scope.json = '';
+            return;
+        }
+        if (!collection) {
+            return;
+        }
+        var item = collection.find(function (item) {
+            return item.id === id;
+        });
+        if (item) {
+            $scope.json = angular.toJson(item, true);
+            $scope.item = item;
+        }
+        else {
+            $scope.id = undefined;
+            $scope.json = '';
+            $scope.item = undefined;
+        }
+    }
+    Kubernetes.setJson = setJson;
+    /**
+     * Returns the labels text string using the <code>key1=value1,key2=value2,....</code> format
+     */
+    function labelsToString(labels, seperatorText) {
+        if (seperatorText === void 0) { seperatorText = ","; }
+        var answer = "";
+        angular.forEach(labels, function (value, key) {
+            var separator = answer ? seperatorText : "";
+            answer += separator + key + "=" + value;
+        });
+        return answer;
+    }
+    Kubernetes.labelsToString = labelsToString;
+    function initShared($scope, $location) {
+        // update the URL if the filter is changed
+        $scope.$watch("tableConfig.filterOptions.filterText", function (text) {
+            $location.search("q", text);
+        });
+        $scope.$on("labelFilterUpdate", function ($event, text) {
+            var currentFilter = $scope.tableConfig.filterOptions.filterText;
+            if (Core.isBlank(currentFilter)) {
+                $scope.tableConfig.filterOptions.filterText = text;
+            }
+            else {
+                var expressions = currentFilter.split(/\s+/);
+                if (expressions.any(text)) {
+                    // lets exclude this filter expression
+                    expressions = expressions.remove(text);
+                    $scope.tableConfig.filterOptions.filterText = expressions.join(" ");
+                }
+                else {
+                    $scope.tableConfig.filterOptions.filterText = currentFilter + " " + text;
+                }
+            }
+            $scope.id = undefined;
+        });
+    }
+    Kubernetes.initShared = initShared;
+    /**
+     * Given the list of pods lets iterate through them and find all pods matching the selector
+     * and return counters based on the status of the pod
+     */
+    function createPodCounters(selector, pods) {
+        var answer = {
+            podsLink: "",
+            valid: 0,
+            waiting: 0,
+            error: 0
+        };
+        if (selector) {
+            answer.podsLink = Core.url("/kubernetes/pods?q=" + encodeURIComponent(Kubernetes.labelsToString(selector, " ")));
+            angular.forEach(pods, function (pod) {
+                if (selectorMatches(selector, pod.labels)) {
+                    var status = (pod.currentState || {}).status;
+                    if (status) {
+                        var lower = status.toLowerCase();
+                        if (lower.startsWith("run")) {
+                            answer.valid += 1;
+                        }
+                        else if (lower.startsWith("wait")) {
+                            answer.waiting += 1;
+                        }
+                        else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
+                            answer.error += 1;
+                        }
+                    }
+                    else {
+                        answer.error += 1;
+                    }
+                }
+            });
+        }
+        return answer;
+    }
+    Kubernetes.createPodCounters = createPodCounters;
+    /**
+     * Runs the given application JSON
+     */
+    function runApp($location, jolokia, $scope, json, name, onSuccessFn, namespace) {
+        if (name === void 0) { name = "App"; }
+        if (onSuccessFn === void 0) { onSuccessFn = null; }
+        if (namespace === void 0) { namespace = null; }
+        if (json) {
+            name = name || "App";
+            var postfix = namespace ? " in namespace " + namespace : "";
+            Core.notification('info', "Running " + name + postfix);
+            var callback = Core.onSuccess(function (response) {
+                Kubernetes.log.debug("Got response: ", response);
+                if (angular.isFunction(onSuccessFn)) {
+                    onSuccessFn();
+                }
+                Core.$apply($scope);
+            });
+            if (namespace) {
+                jolokia.execute(Kubernetes.managerMBean, "applyInNamespace", json, namespace, callback);
+            }
+            else {
+                jolokia.execute(Kubernetes.managerMBean, "apply", json, callback);
+            }
+        }
+    }
+    Kubernetes.runApp = runApp;
+    /**
+     * Returns true if the current status of the pod is running
+     */
+    function isRunning(podCurrentState) {
+        var status = (podCurrentState || {}).status;
+        if (status) {
+            var lower = status.toLowerCase();
+            return lower.startsWith("run");
+        }
+        else {
+            return false;
+        }
+    }
+    Kubernetes.isRunning = isRunning;
+    /**
+     * Returns true if the labels object has all of the key/value pairs from the selector
+     */
+    function selectorMatches(selector, labels) {
+        if (angular.isObject(labels)) {
+            var answer = true;
+            angular.forEach(selector, function (value, key) {
+                if (answer && labels[key] !== value) {
+                    answer = false;
+                }
+            });
+            return answer;
+        }
+        else {
+            return false;
+        }
+    }
+    Kubernetes.selectorMatches = selectorMatches;
+    /**
+     * Returns a link to the kibana logs web application
+     */
+    function kibanaLogsLink(ServiceRegistry) {
+        var link = Service.serviceLink(ServiceRegistry, "kibana-service");
+        if (link) {
+            if (!link.endsWith("/")) {
+                link += "/";
+            }
+            return link + "#/discover/Fabric8";
+        }
+        else {
+            return null;
+        }
+    }
+    Kubernetes.kibanaLogsLink = kibanaLogsLink;
+    function openLogsForPods(ServiceRegistry, $window, pods) {
+        function encodePodIdInSearch(id) {
+            // TODO until we figure out the best encoding lets just split at the "-"
+            if (id) {
+                var idx = id.indexOf("-");
+                if (idx > 0) {
+                    id = id.substring(0, idx);
+                }
+            }
+            //var quoteText = "%27";
+            var quoteText = "";
+            return quoteText + id + quoteText;
+        }
+        var link = kibanaLogsLink(ServiceRegistry);
+        if (link) {
+            var query = "";
+            var count = 0;
+            angular.forEach(pods, function (item) {
+                var id = item.id;
+                if (id) {
+                    var space = query ? " || " : "";
+                    count++;
+                    query += space + encodePodIdInSearch(id);
+                }
+            });
+            if (query) {
+                if (count > 1) {
+                    query = "(" + query + ")";
+                }
+                link += "?_a=(query:'k8s_pod:" + query + "')";
+            }
+            var newWindow = $window.open(link, "viewLogs");
+        }
+    }
+    Kubernetes.openLogsForPods = openLogsForPods;
+    function resizeController($http, KubernetesApiURL, id, newReplicas, onCompleteFn) {
+        if (onCompleteFn === void 0) { onCompleteFn = null; }
+        KubernetesApiURL.then(function (KubernetesApiURL) {
+            var url = UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/replicationControllers/" + id);
+            $http.get(url).success(function (data, status, headers, config) {
+                if (data) {
+                    var desiredState = data.desiredState;
+                    if (!desiredState) {
+                        desiredState = {};
+                        data.desiredState = desiredState;
+                    }
+                    desiredState.replicas = newReplicas;
+                    $http.put(url, data).success(function (data, status, headers, config) {
+                        Kubernetes.log.debug("updated controller " + url);
+                        if (angular.isFunction(onCompleteFn)) {
+                            onCompleteFn();
+                        }
+                    }).error(function (data, status, headers, config) {
+                        Kubernetes.log.warn("Failed to save " + url + " " + data + " " + status);
+                    });
+                }
+            }).error(function (data, status, headers, config) {
+                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
+            });
+        }, function (response) {
+            Kubernetes.log.debug("Failed to get rest API URL, can't resize controller " + id + " resource: ", response);
+        });
+    }
+    Kubernetes.resizeController = resizeController;
+    function statusTextToCssClass(text) {
+        if (text) {
+            var lower = text.toLowerCase();
+            if (lower.startsWith("run") || lower.startsWith("ok")) {
+                return 'icon-play-circle green';
+            }
+            else if (lower.startsWith("wait")) {
+                return 'icon-download';
+            }
+            else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
+                return 'icon-off orange';
+            }
+        }
+        return 'icon-question red';
+    }
+    Kubernetes.statusTextToCssClass = statusTextToCssClass;
+})(Kubernetes || (Kubernetes = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesHelpers.ts"/>
+var Kubernetes;
+(function (Kubernetes) {
+    Kubernetes._module = angular.module(Kubernetes.pluginName, ['hawtio-core', 'hawtio-ui', 'wiki']);
+    Kubernetes.controller = PluginHelpers.createControllerFunction(Kubernetes._module, Kubernetes.pluginName);
+    Kubernetes.route = PluginHelpers.createRoutingFunction(Kubernetes.templatePath);
+    Kubernetes._module.config(['$routeProvider', function ($routeProvider) {
+        $routeProvider.when(UrlHelpers.join(Kubernetes.context, '/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, 'replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, 'services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps/:namespace'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'overview'), Kubernetes.route('overview.html', false));
+    }]);
+    // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
+    Kubernetes._module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
+        var answer = $q.defer();
+        jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined, Core.onSuccess(function (response) {
+            var proxified = UrlHelpers.maybeProxy(jolokiaUrl, response);
+            Kubernetes.log.debug("discovered API URL:", proxified);
+            answer.resolve(proxified);
+            Core.$apply($rootScope);
+        }, {
+            error: function (response) {
+                Kubernetes.log.debug("error fetching API URL: ", response);
+                answer.reject(response);
+                Core.$apply($rootScope);
+            }
+        }));
+        return answer.promise;
+    }]);
+    function createResource(deferred, thing, urlTemplate) {
+        var $rootScope = HawtioCore.injector.get("$rootScope");
+        var $resource = HawtioCore.injector.get("$resource");
+        var KubernetesApiURL = HawtioCore.injector.get("KubernetesApiURL");
+        KubernetesApiURL.then(function (KubernetesApiURL) {
+            var url = UrlHelpers.escapeColons(KubernetesApiURL);
+            Kubernetes.log.debug("Url for ", thing, ": ", url);
+            var resource = $resource(UrlHelpers.join(url, urlTemplate), null, {
+                query: { method: 'GET', isArray: false },
+                save: { method: 'PUT', params: { id: '@id' } }
+            });
+            deferred.resolve(resource);
+            Core.$apply($rootScope);
+        }, function (response) {
+            Kubernetes.log.debug("Failed to get rest API URL, can't create " + thing + " resource: ", response);
+            deferred.reject(response);
+            Core.$apply($rootScope);
+        });
+    }
+    Kubernetes._module.factory('KubernetesVersion', ['$q', function ($q) {
+        var answer = $q.defer();
+        createResource(answer, 'pods', '/version');
+        return answer.promise;
+    }]);
+    Kubernetes._module.factory('KubernetesPods', ['$q', function ($q) {
+        var answer = $q.defer();
+        createResource(answer, 'pods', '/api/v1beta1/pods/:id');
+        return answer.promise;
+    }]);
+    Kubernetes._module.factory('KubernetesReplicationControllers', ['$q', function ($q) {
+        var answer = $q.defer();
+        createResource(answer, 'replication controllers', '/api/v1beta1/replicationControllers/:id');
+        return answer.promise;
+    }]);
+    Kubernetes._module.factory('KubernetesServices', ['$q', function ($q) {
+        var answer = $q.defer();
+        createResource(answer, 'services', '/api/v1beta1/services/:id');
+        return answer.promise;
+    }]);
+    Kubernetes._module.factory('KubernetesState', [function () {
+        return {
+            namespaces: [],
+            selectedNamespace: null
+        };
+    }]);
+    Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', function (viewRegistry, workspace, ServiceRegistry) {
+        Kubernetes.log.debug("Running");
+        viewRegistry['kubernetes'] = Kubernetes.templatePath + 'layoutKubernetes.html';
+        workspace.topLevelTabs.push({
+            id: 'kubernetes',
+            content: 'Kubernetes',
+            isValid: function (workspace) { return Kubernetes.isKubernetes(workspace); },
+            isActive: function (workspace) { return workspace.isLinkActive('kubernetes'); },
+            href: function () { return Kubernetes.defaultRoute; }
+        });
+        workspace.topLevelTabs.push({
+            id: 'kibana',
+            content: 'Logs',
+            title: 'View and search all logs across all containers using Kibana and ElasticSearch',
+            isValid: function (workspace) { return Service.hasService(ServiceRegistry, "kibana-service"); },
+            href: function () { return Kubernetes.kibanaLogsLink(ServiceRegistry); },
+            isActive: function (workspace) { return false; }
+        });
+        workspace.topLevelTabs.push({
+            id: 'grafana',
+            content: 'Metrics',
+            title: 'Views metrics across all containers using Grafana and InfluxDB',
+            isValid: function (workspace) { return Service.hasService(ServiceRegistry, "grafana-service"); },
+            href: function () { return Service.serviceLink(ServiceRegistry, "grafana-service"); },
+            isActive: function (workspace) { return false; }
+        });
+    }]);
+    hawtioPluginLoader.addModule(Kubernetes.pluginName);
+})(Kubernetes || (Kubernetes = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
+var Kubernetes;
+(function (Kubernetes) {
     Kubernetes.Apps = Kubernetes.controller("Apps", ["$scope", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia", function ($scope, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, KubernetesState, KubernetesApiURL, $templateCache, $location, $routeParams, $http, $dialog, $timeout, workspace, jolokia) {
         $scope.namespace = $routeParams.namespace;
         $scope.apps = [];
@@ -480,319 +895,8 @@ var Kubernetes;
 })(Kubernetes || (Kubernetes = {}));
 
 /// <reference path="../../includes.ts"/>
-var Kubernetes;
-(function (Kubernetes) {
-    Kubernetes.context = '/kubernetes';
-    Kubernetes.hash = '#' + Kubernetes.context;
-    Kubernetes.defaultRoute = Kubernetes.hash + '/apps';
-    Kubernetes.pluginName = 'Kubernetes';
-    Kubernetes.templatePath = 'app/kubernetes/html/';
-    Kubernetes.log = Logger.get(Kubernetes.pluginName);
-    Kubernetes.defaultApiVersion = "v1beta2";
-    Kubernetes.appSuffix = ".app";
-    //var fabricDomain = Fabric.jmxDomain;
-    var fabricDomain = "io.fabric8";
-    Kubernetes.mbean = fabricDomain + ":type=Kubernetes";
-    Kubernetes.managerMBean = fabricDomain + ":type=KubernetesManager";
-    Kubernetes.appViewMBean = fabricDomain + ":type=AppView";
-    function isKubernetes(workspace) {
-        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "Kubernetes" });
-    }
-    Kubernetes.isKubernetes = isKubernetes;
-    function isKubernetesTemplateManager(workspace) {
-        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "KubernetesTemplateManager" });
-    }
-    Kubernetes.isKubernetesTemplateManager = isKubernetesTemplateManager;
-    function isAppView(workspace) {
-        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "AppView" });
-    }
-    Kubernetes.isAppView = isAppView;
-    /**
-     * Updates the namespaces value in the kubernetes object from the namespace values in the pods, controllers, services
-     */
-    function updateNamespaces(kubernetes, pods, replicationControllers, services) {
-        if (pods === void 0) { pods = []; }
-        if (replicationControllers === void 0) { replicationControllers = []; }
-        if (services === void 0) { services = []; }
-        var byNamespace = function (thing) {
-            return thing.namespace;
-        };
-        function pushIfNotExists(array, items) {
-            angular.forEach(items, function (value) {
-                if ($.inArray(value, array) < 0) {
-                    array.push(value);
-                }
-            });
-        }
-        var namespaces = [];
-        pushIfNotExists(namespaces, pods.map(byNamespace));
-        pushIfNotExists(namespaces, services.map(byNamespace));
-        pushIfNotExists(namespaces, replicationControllers.map(byNamespace));
-        namespaces = namespaces.sort();
-        kubernetes.namespaces = namespaces;
-        kubernetes.selectedNamespace = kubernetes.selectedNamespace || namespaces[0];
-    }
-    Kubernetes.updateNamespaces = updateNamespaces;
-    function setJson($scope, id, collection) {
-        $scope.id = id;
-        if (!$scope.fetched) {
-            return;
-        }
-        if (!id) {
-            $scope.json = '';
-            return;
-        }
-        if (!collection) {
-            return;
-        }
-        var item = collection.find(function (item) {
-            return item.id === id;
-        });
-        if (item) {
-            $scope.json = angular.toJson(item, true);
-            $scope.item = item;
-        }
-        else {
-            $scope.id = undefined;
-            $scope.json = '';
-            $scope.item = undefined;
-        }
-    }
-    Kubernetes.setJson = setJson;
-    /**
-     * Returns the labels text string using the <code>key1=value1,key2=value2,....</code> format
-     */
-    function labelsToString(labels, seperatorText) {
-        if (seperatorText === void 0) { seperatorText = ","; }
-        var answer = "";
-        angular.forEach(labels, function (value, key) {
-            var separator = answer ? seperatorText : "";
-            answer += separator + key + "=" + value;
-        });
-        return answer;
-    }
-    Kubernetes.labelsToString = labelsToString;
-    function initShared($scope, $location) {
-        // update the URL if the filter is changed
-        $scope.$watch("tableConfig.filterOptions.filterText", function (text) {
-            $location.search("q", text);
-        });
-        $scope.$on("labelFilterUpdate", function ($event, text) {
-            var currentFilter = $scope.tableConfig.filterOptions.filterText;
-            if (Core.isBlank(currentFilter)) {
-                $scope.tableConfig.filterOptions.filterText = text;
-            }
-            else {
-                var expressions = currentFilter.split(/\s+/);
-                if (expressions.any(text)) {
-                    // lets exclude this filter expression
-                    expressions = expressions.remove(text);
-                    $scope.tableConfig.filterOptions.filterText = expressions.join(" ");
-                }
-                else {
-                    $scope.tableConfig.filterOptions.filterText = currentFilter + " " + text;
-                }
-            }
-            $scope.id = undefined;
-        });
-    }
-    Kubernetes.initShared = initShared;
-    /**
-     * Given the list of pods lets iterate through them and find all pods matching the selector
-     * and return counters based on the status of the pod
-     */
-    function createPodCounters(selector, pods) {
-        var answer = {
-            podsLink: "",
-            valid: 0,
-            waiting: 0,
-            error: 0
-        };
-        if (selector) {
-            answer.podsLink = Core.url("/kubernetes/pods?q=" + encodeURIComponent(Kubernetes.labelsToString(selector, " ")));
-            angular.forEach(pods, function (pod) {
-                if (selectorMatches(selector, pod.labels)) {
-                    var status = (pod.currentState || {}).status;
-                    if (status) {
-                        var lower = status.toLowerCase();
-                        if (lower.startsWith("run")) {
-                            answer.valid += 1;
-                        }
-                        else if (lower.startsWith("wait")) {
-                            answer.waiting += 1;
-                        }
-                        else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
-                            answer.error += 1;
-                        }
-                    }
-                    else {
-                        answer.error += 1;
-                    }
-                }
-            });
-        }
-        return answer;
-    }
-    Kubernetes.createPodCounters = createPodCounters;
-    /**
-     * Runs the given application JSON
-     */
-    function runApp($location, jolokia, $scope, json, name, onSuccessFn, namespace) {
-        if (name === void 0) { name = "App"; }
-        if (onSuccessFn === void 0) { onSuccessFn = null; }
-        if (namespace === void 0) { namespace = null; }
-        if (json) {
-            name = name || "App";
-            var postfix = namespace ? " in namespace " + namespace : "";
-            Core.notification('info', "Running " + name + postfix);
-            var callback = Core.onSuccess(function (response) {
-                Kubernetes.log.debug("Got response: ", response);
-                if (angular.isFunction(onSuccessFn)) {
-                    onSuccessFn();
-                }
-                Core.$apply($scope);
-            });
-            if (namespace) {
-                jolokia.execute(Kubernetes.managerMBean, "applyInNamespace", json, namespace, callback);
-            }
-            else {
-                jolokia.execute(Kubernetes.managerMBean, "apply", json, callback);
-            }
-        }
-    }
-    Kubernetes.runApp = runApp;
-    /**
-     * Returns true if the current status of the pod is running
-     */
-    function isRunning(podCurrentState) {
-        var status = (podCurrentState || {}).status;
-        if (status) {
-            var lower = status.toLowerCase();
-            return lower.startsWith("run");
-        }
-        else {
-            return false;
-        }
-    }
-    Kubernetes.isRunning = isRunning;
-    /**
-     * Returns true if the labels object has all of the key/value pairs from the selector
-     */
-    function selectorMatches(selector, labels) {
-        if (angular.isObject(labels)) {
-            var answer = true;
-            angular.forEach(selector, function (value, key) {
-                if (answer && labels[key] !== value) {
-                    answer = false;
-                }
-            });
-            return answer;
-        }
-        else {
-            return false;
-        }
-    }
-    Kubernetes.selectorMatches = selectorMatches;
-    /**
-     * Returns a link to the kibana logs web application
-     */
-    function kibanaLogsLink(ServiceRegistry) {
-        var link = Service.serviceLink(ServiceRegistry, "kibana-service");
-        if (link) {
-            if (!link.endsWith("/")) {
-                link += "/";
-            }
-            return link + "#/discover/Fabric8";
-        }
-        else {
-            return null;
-        }
-    }
-    Kubernetes.kibanaLogsLink = kibanaLogsLink;
-    function openLogsForPods(ServiceRegistry, $window, pods) {
-        function encodePodIdInSearch(id) {
-            // TODO until we figure out the best encoding lets just split at the "-"
-            if (id) {
-                var idx = id.indexOf("-");
-                if (idx > 0) {
-                    id = id.substring(0, idx);
-                }
-            }
-            //var quoteText = "%27";
-            var quoteText = "";
-            return quoteText + id + quoteText;
-        }
-        var link = kibanaLogsLink(ServiceRegistry);
-        if (link) {
-            var query = "";
-            var count = 0;
-            angular.forEach(pods, function (item) {
-                var id = item.id;
-                if (id) {
-                    var space = query ? " || " : "";
-                    count++;
-                    query += space + encodePodIdInSearch(id);
-                }
-            });
-            if (query) {
-                if (count > 1) {
-                    query = "(" + query + ")";
-                }
-                link += "?_a=(query:'k8s_pod:" + query + "')";
-            }
-            var newWindow = $window.open(link, "viewLogs");
-        }
-    }
-    Kubernetes.openLogsForPods = openLogsForPods;
-    function resizeController($http, KubernetesApiURL, id, newReplicas, onCompleteFn) {
-        if (onCompleteFn === void 0) { onCompleteFn = null; }
-        KubernetesApiURL.then(function (KubernetesApiURL) {
-            var url = UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/replicationControllers/" + id);
-            $http.get(url).success(function (data, status, headers, config) {
-                if (data) {
-                    var desiredState = data.desiredState;
-                    if (!desiredState) {
-                        desiredState = {};
-                        data.desiredState = desiredState;
-                    }
-                    desiredState.replicas = newReplicas;
-                    $http.put(url, data).success(function (data, status, headers, config) {
-                        Kubernetes.log.debug("updated controller " + url);
-                        if (angular.isFunction(onCompleteFn)) {
-                            onCompleteFn();
-                        }
-                    }).error(function (data, status, headers, config) {
-                        Kubernetes.log.warn("Failed to save " + url + " " + data + " " + status);
-                    });
-                }
-            }).error(function (data, status, headers, config) {
-                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
-            });
-        }, function (response) {
-            Kubernetes.log.debug("Failed to get rest API URL, can't resize controller " + id + " resource: ", response);
-        });
-    }
-    Kubernetes.resizeController = resizeController;
-    function statusTextToCssClass(text) {
-        if (text) {
-            var lower = text.toLowerCase();
-            if (lower.startsWith("run") || lower.startsWith("ok")) {
-                return 'icon-play-circle green';
-            }
-            else if (lower.startsWith("wait")) {
-                return 'icon-download';
-            }
-            else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
-                return 'icon-off orange';
-            }
-        }
-        return 'icon-question red';
-    }
-    Kubernetes.statusTextToCssClass = statusTextToCssClass;
-})(Kubernetes || (Kubernetes = {}));
-
-/// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.KubernetesJsonDirective = Kubernetes._module.directive("kubernetesJson", [function () {
@@ -882,108 +986,7 @@ var Kubernetes;
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
-var Kubernetes;
-(function (Kubernetes) {
-    Kubernetes._module = angular.module(Kubernetes.pluginName, ['hawtioCore', 'ngResource']);
-    Kubernetes.controller = PluginHelpers.createControllerFunction(Kubernetes._module, Kubernetes.pluginName);
-    Kubernetes.route = PluginHelpers.createRoutingFunction(Kubernetes.templatePath);
-    Kubernetes._module.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when(UrlHelpers.join(Kubernetes.context, '/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, 'replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, 'services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps/:namespace'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'overview'), Kubernetes.route('overview.html', false));
-    }]);
-    // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
-    Kubernetes._module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
-        var answer = $q.defer();
-        jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined, Core.onSuccess(function (response) {
-            var proxified = UrlHelpers.maybeProxy(jolokiaUrl, response);
-            Kubernetes.log.debug("discovered API URL:", proxified);
-            answer.resolve(proxified);
-            Core.$apply($rootScope);
-        }, {
-            error: function (response) {
-                Kubernetes.log.debug("error fetching API URL: ", response);
-                answer.reject(response);
-                Core.$apply($rootScope);
-            }
-        }));
-        return answer.promise;
-    }]);
-    function createResource(deferred, thing, urlTemplate) {
-        var $rootScope = HawtioCore.injector.get("$rootScope");
-        var $resource = HawtioCore.injector.get("$resource");
-        var KubernetesApiURL = HawtioCore.injector.get("KubernetesApiURL");
-        KubernetesApiURL.then(function (KubernetesApiURL) {
-            var url = UrlHelpers.escapeColons(KubernetesApiURL);
-            Kubernetes.log.debug("Url for ", thing, ": ", url);
-            var resource = $resource(UrlHelpers.join(url, urlTemplate), null, {
-                query: { method: 'GET', isArray: false },
-                save: { method: 'PUT', params: { id: '@id' } }
-            });
-            deferred.resolve(resource);
-            Core.$apply($rootScope);
-        }, function (response) {
-            Kubernetes.log.debug("Failed to get rest API URL, can't create " + thing + " resource: ", response);
-            deferred.reject(response);
-            Core.$apply($rootScope);
-        });
-    }
-    Kubernetes._module.factory('KubernetesVersion', ['$q', function ($q) {
-        var answer = $q.defer();
-        createResource(answer, 'pods', '/version');
-        return answer.promise;
-    }]);
-    Kubernetes._module.factory('KubernetesPods', ['$q', function ($q) {
-        var answer = $q.defer();
-        createResource(answer, 'pods', '/api/v1beta1/pods/:id');
-        return answer.promise;
-    }]);
-    Kubernetes._module.factory('KubernetesReplicationControllers', ['$q', function ($q) {
-        var answer = $q.defer();
-        createResource(answer, 'replication controllers', '/api/v1beta1/replicationControllers/:id');
-        return answer.promise;
-    }]);
-    Kubernetes._module.factory('KubernetesServices', ['$q', function ($q) {
-        var answer = $q.defer();
-        createResource(answer, 'services', '/api/v1beta1/services/:id');
-        return answer.promise;
-    }]);
-    Kubernetes._module.factory('KubernetesState', [function () {
-        return {
-            namespaces: [],
-            selectedNamespace: null
-        };
-    }]);
-    Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', function (viewRegistry, workspace, ServiceRegistry) {
-        Kubernetes.log.debug("Running");
-        viewRegistry['kubernetes'] = Kubernetes.templatePath + 'layoutKubernetes.html';
-        workspace.topLevelTabs.push({
-            id: 'kubernetes',
-            content: 'Kubernetes',
-            isValid: function (workspace) { return Kubernetes.isKubernetes(workspace); },
-            isActive: function (workspace) { return workspace.isLinkActive('kubernetes'); },
-            href: function () { return Kubernetes.defaultRoute; }
-        });
-        workspace.topLevelTabs.push({
-            id: 'kibana',
-            content: 'Logs',
-            title: 'View and search all logs across all containers using Kibana and ElasticSearch',
-            isValid: function (workspace) { return Service.hasService(ServiceRegistry, "kibana-service"); },
-            href: function () { return Kubernetes.kibanaLogsLink(ServiceRegistry); },
-            isActive: function (workspace) { return false; }
-        });
-        workspace.topLevelTabs.push({
-            id: 'grafana',
-            content: 'Metrics',
-            title: 'Views metrics across all containers using Grafana and InfluxDB',
-            isValid: function (workspace) { return Service.hasService(ServiceRegistry, "grafana-service"); },
-            href: function () { return Service.serviceLink(ServiceRegistry, "grafana-service"); },
-            isActive: function (workspace) { return false; }
-        });
-    }]);
-    hawtioPluginLoader.addModule(Kubernetes.pluginName);
-})(Kubernetes || (Kubernetes = {}));
-
-/// <reference path="../../includes.ts"/>
-/// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.FileDropController = Kubernetes.controller("FileDropController", ["$scope", "jolokiaUrl", "jolokia", "FileUploader", function ($scope, jolokiaUrl, jolokia, FileUploader) {
@@ -1028,6 +1031,7 @@ var Kubernetes;
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     var OverviewDirective = Kubernetes._module.directive("kubernetesOverview", ["$templateCache", "$compile", "$interpolate", "$timeout", "$window", "KubernetesState", function ($templateCache, $compile, $interpolate, $timeout, $window, KubernetesState) {
@@ -1423,6 +1427,7 @@ var Kubernetes;
 })(Kubernetes || (Kubernetes = {}));
 
 /// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.EnvItem = Kubernetes.controller("EnvItem", ["$scope", function ($scope) {
@@ -1755,6 +1760,7 @@ var Kubernetes;
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.DesiredReplicas = Kubernetes.controller("DesiredReplicas", ["$scope", function ($scope) {
@@ -1978,6 +1984,7 @@ var Kubernetes;
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.Services = Kubernetes.controller("Services", ["$scope", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia", function ($scope, KubernetesServices, KubernetesPods, KubernetesState, $templateCache, $location, $routeParams, jolokia) {
@@ -2111,6 +2118,7 @@ var Kubernetes;
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     // controller that maps a docker image to an icon path in the if possible
@@ -2301,7 +2309,7 @@ var Service;
 /// <reference path="../../includes.ts"/>
 var Service;
 (function (Service) {
-    Service._module = angular.module(Service.pluginName, ['hawtioCore']);
+    Service._module = angular.module(Service.pluginName, ['hawtio-core']);
     Service._module.factory("ServiceRegistry", ['$http', '$rootScope', 'workspace', function ($http, $rootScope, workspace) {
         var self = {
             name: 'ServiceRegistry',

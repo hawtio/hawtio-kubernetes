@@ -1,6 +1,7 @@
 /// <reference path="../../includes.ts"/>
-module Kubernetes {
+/// <reference path="kubernetesPlugin.ts"/>
 
+module Kubernetes {
 
   export var EnvItem = controller("EnvItem", ["$scope", ($scope) => {
     var parts = $scope.data.split('=');

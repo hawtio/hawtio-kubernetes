@@ -3,7 +3,7 @@
 
 module Kubernetes {
 
-  export var _module = angular.module(pluginName, ['hawtioCore', 'ngResource']);
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'wiki']);
   export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 

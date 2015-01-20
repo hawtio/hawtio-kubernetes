@@ -16,7 +16,9 @@ module Service {
   export interface ServiceResponse {
     items: Array<Service>;
   }
-  export var _module = angular.module(pluginName, ['hawtioCore']);
+
+  export var _module = angular.module(pluginName, ['hawtio-core']);
+
   _module.factory("ServiceRegistry", ['$http', '$rootScope', 'workspace', ($http:ng.IHttpService, $rootScope:ng.IRootScopeService, workspace) => {
     var self:any = {
       name: 'ServiceRegistry',

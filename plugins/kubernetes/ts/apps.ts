@@ -1,4 +1,6 @@
 /// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
+
 module Kubernetes {
 
   export var Apps = controller("Apps",

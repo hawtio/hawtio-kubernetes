@@ -1,8 +1,8 @@
 /// <reference path="d.ts/includes.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesHelpers.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/kubernetesJsonDirective.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesPlugin.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/kubernetesJsonDirective.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesTopLevel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/overview.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/pods.d.ts"/>
