@@ -23,7 +23,7 @@ module Kubernetes {
   _module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
     var answer = <ng.IDeferred<string>>$q.defer();
     jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined,
-      <Jolokia.IParams> onSuccess((response) => {
+      <Jolokia.IParams> Core.onSuccess((response) => {
         var proxified = UrlHelpers.maybeProxy(jolokiaUrl, response);
         log.debug("discovered API URL:", proxified);
         answer.resolve(proxified);
