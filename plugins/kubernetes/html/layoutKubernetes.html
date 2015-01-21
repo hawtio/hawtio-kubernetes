@@ -68,25 +68,25 @@
 <div class="row-fluid" ng-controller="Kubernetes.TopLevel">
   <div class="span12">
     <ul class="nav nav-tabs connected">
-      <li ng-class='{active : isActive("#/kubernetes/apps")}' ng-show="showAppView"
+      <li ng-class='{active : isActive("/kubernetes/apps")}' ng-show="showAppView"
           title="View all of the Apps running right now">
-        <a ng-href="#/kubernetes/apps">Apps</a>
+        <a ng-href="/kubernetes/apps">Apps</a>
       </li>
-      <li ng-class='{active : isActive("#/kubernetes/services")}'
+      <li ng-class='{active : isActive("/kubernetes/services")}'
           title="View kubernetes services and their status">
-        <a ng-href="#/kubernetes/services">Services</a>
+        <a ng-href="/kubernetes/services">Services</a>
       </li>
-      <li ng-class='{active : isActive("#/kubernetes/replicationControllers")}'
+      <li ng-class='{active : isActive("/kubernetes/replicationControllers")}'
           title="View kubernetes replication controllers and their status">
-        <a ng-href="#/kubernetes/replicationControllers">Controllers</a>
+        <a ng-href="/kubernetes/replicationControllers">Controllers</a>
       </li>
-      <li ng-class='{active : isActive("#/kubernetes/pods")}'
+      <li ng-class='{active : isActive("/kubernetes/pods")}'
           title="View kubernetes pods and their status">
-        <a ng-href="#/kubernetes/pods">Pods</a>
+        <a ng-href="/kubernetes/pods">Pods</a>
       </li>
-      <li ng-class='{active : isActive("#/kubernetes/overview")}'
+      <li ng-class='{active : isActive("/kubernetes/overview")}'
           title="View an overview diagram of the system. Version: {{version.major}}.{{version.minor}}">
-        <a ng-href="#/kubernetes/overview">Diagram</a>
+        <a ng-href="/kubernetes/overview">Diagram</a>
       </li>
       <li class=pull-right>
         namespace: <select ng-model="kubernetes.selectedNamespace" ng-options="namespace for namespace in kubernetes.namespaces" title="choose the namespace - which is a selection of resources in kubernetes">
