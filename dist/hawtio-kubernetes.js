@@ -17,15 +17,18 @@ var Kubernetes;
     Kubernetes.managerMBean = fabricDomain + ":type=KubernetesManager";
     Kubernetes.appViewMBean = fabricDomain + ":type=AppView";
     function isKubernetes(workspace) {
-        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "Kubernetes" });
+        // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "Kubernetes"});
+        return true;
     }
     Kubernetes.isKubernetes = isKubernetes;
     function isKubernetesTemplateManager(workspace) {
-        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "KubernetesTemplateManager" });
+        // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "KubernetesTemplateManager"});
+        return true;
     }
     Kubernetes.isKubernetesTemplateManager = isKubernetesTemplateManager;
     function isAppView(workspace) {
-        return workspace.treeContainsDomainAndProperties(fabricDomain, { type: "AppView" });
+        // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "AppView"});
+        return true;
     }
     Kubernetes.isAppView = isAppView;
     /**
@@ -322,9 +325,16 @@ var Kubernetes;
     Kubernetes._module.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when(UrlHelpers.join(Kubernetes.context, '/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, 'replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, 'services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps/:namespace'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'overview'), Kubernetes.route('overview.html', false));
     }]);
+    // TODO add a dummy dialog service for now!
+    Kubernetes._module.factory("$dialog", function () {
+        return {};
+    });
     // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
     Kubernetes._module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
-        return "/services/kubernetes/";
+        var url = "/services/kubernetes/";
+        var answer = $q.defer();
+        answer.resolve(url);
+        return answer.promise;
         /*
             var answer = <ng.IDeferred<string>>$q.defer();
             jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined,
@@ -340,13 +350,9 @@ var Kubernetes;
                   Core.$apply($rootScope);
                 }
               }));
-            return answer.promise;
         */
     }]);
-    function createResource(deferred, thing, urlTemplate) {
-        var $rootScope = HawtioCore.injector.get("$rootScope");
-        var $resource = HawtioCore.injector.get("$resource");
-        var KubernetesApiURL = HawtioCore.injector.get("KubernetesApiURL");
+    function createResource(deferred, thing, urlTemplate, $rootScope, $resource, KubernetesApiURL) {
         KubernetesApiURL.then(function (KubernetesApiURL) {
             var url = UrlHelpers.escapeColons(KubernetesApiURL);
             Kubernetes.log.debug("Url for ", thing, ": ", url);
@@ -362,24 +368,24 @@ var Kubernetes;
             Core.$apply($rootScope);
         });
     }
-    Kubernetes._module.factory('KubernetesVersion', ['$q', function ($q) {
+    Kubernetes._module.factory('KubernetesVersion', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', function ($q, $rootScope, $resource, KubernetesApiURL) {
         var answer = $q.defer();
-        createResource(answer, 'pods', '/version');
+        createResource(answer, 'pods', '/version', $rootScope, $resource, KubernetesApiURL);
         return answer.promise;
     }]);
-    Kubernetes._module.factory('KubernetesPods', ['$q', function ($q) {
+    Kubernetes._module.factory('KubernetesPods', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', function ($q, $rootScope, $resource, KubernetesApiURL) {
         var answer = $q.defer();
-        createResource(answer, 'pods', '/api/v1beta1/pods/:id');
+        createResource(answer, 'pods', '/api/v1beta1/pods/:id', $rootScope, $resource, KubernetesApiURL);
         return answer.promise;
     }]);
-    Kubernetes._module.factory('KubernetesReplicationControllers', ['$q', function ($q) {
+    Kubernetes._module.factory('KubernetesReplicationControllers', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', function ($q, $rootScope, $resource, KubernetesApiURL) {
         var answer = $q.defer();
-        createResource(answer, 'replication controllers', '/api/v1beta1/replicationControllers/:id');
+        createResource(answer, 'replication controllers', '/api/v1beta1/replicationControllers/:id', $rootScope, $resource, KubernetesApiURL);
         return answer.promise;
     }]);
-    Kubernetes._module.factory('KubernetesServices', ['$q', function ($q) {
+    Kubernetes._module.factory('KubernetesServices', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', function ($q, $rootScope, $resource, KubernetesApiURL) {
         var answer = $q.defer();
-        createResource(answer, 'services', '/api/v1beta1/services/:id');
+        createResource(answer, 'services', '/api/v1beta1/services/:id', $rootScope, $resource, KubernetesApiURL);
         return answer.promise;
     }]);
     Kubernetes._module.factory('KubernetesState', [function () {

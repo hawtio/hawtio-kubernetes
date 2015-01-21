@@ -19,9 +19,18 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', false));
   }]);
 
+  // TODO add a dummy dialog service for now!
+  _module.factory("$dialog", () => {
+    return {};
+  });
+
   // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
   _module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
-    return "/services/kubernetes/";
+    var url = "/services/kubernetes/";
+    var answer = <ng.IDeferred<string>>$q.defer();
+    answer.resolve(url);
+    return answer.promise;
+
 /*
     var answer = <ng.IDeferred<string>>$q.defer();
     jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined,
@@ -37,15 +46,11 @@ module Kubernetes {
           Core.$apply($rootScope);
         }
       }));
-    return answer.promise;
 */
   }]);
 
-  function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string) {
-    var $rootScope = <ng.IRootScopeService> HawtioCore.injector.get("$rootScope");
-    var $resource = <ng.resource.IResourceService> HawtioCore.injector.get("$resource");
-    var KubernetesApiURL = <ng.IPromise<string>> HawtioCore.injector.get("KubernetesApiURL");
-
+  function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string,
+                          $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) {
     KubernetesApiURL.then((KubernetesApiURL) => {
       var url = UrlHelpers.escapeColons(KubernetesApiURL);
       log.debug("Url for ", thing, ": ", url);
@@ -62,27 +67,27 @@ module Kubernetes {
     });
   }
 
-  _module.factory('KubernetesVersion', ['$q', ($q:ng.IQService) => {
+  _module.factory('KubernetesVersion', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
     var answer = <ng.IDeferred<ng.resource.IResourceClass>> $q.defer();
-    createResource(answer, 'pods', '/version');
+    createResource(answer, 'pods', '/version', $rootScope, $resource, KubernetesApiURL);
     return answer.promise;
   }]);
 
-  _module.factory('KubernetesPods', ['$q', ($q:ng.IQService) => {
+  _module.factory('KubernetesPods', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
     var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'pods', '/api/v1beta1/pods/:id');
+    createResource(answer, 'pods', '/api/v1beta1/pods/:id', $rootScope, $resource, KubernetesApiURL);
     return answer.promise;
   }]);
 
-  _module.factory('KubernetesReplicationControllers', ['$q', ($q:ng.IQService) => {
+  _module.factory('KubernetesReplicationControllers', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
     var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'replication controllers', '/api/v1beta1/replicationControllers/:id');
+    createResource(answer, 'replication controllers', '/api/v1beta1/replicationControllers/:id', $rootScope, $resource, KubernetesApiURL);
     return answer.promise;
   }]);
 
-  _module.factory('KubernetesServices', ['$q', ($q:ng.IQService) => {
+  _module.factory('KubernetesServices', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
     var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'services', '/api/v1beta1/services/:id');
+    createResource(answer, 'services', '/api/v1beta1/services/:id', $rootScope, $resource, KubernetesApiURL);
     return answer.promise;
   }]);
 

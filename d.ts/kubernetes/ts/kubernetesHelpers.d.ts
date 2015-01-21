@@ -15,9 +15,9 @@ declare module Kubernetes {
     var mbean: string;
     var managerMBean: string;
     var appViewMBean: string;
-    function isKubernetes(workspace: any): any;
-    function isKubernetesTemplateManager(workspace: any): any;
-    function isAppView(workspace: any): any;
+    function isKubernetes(workspace: any): boolean;
+    function isKubernetesTemplateManager(workspace: any): boolean;
+    function isAppView(workspace: any): boolean;
     /**
      * Updates the namespaces value in the kubernetes object from the namespace values in the pods, controllers, services
      */

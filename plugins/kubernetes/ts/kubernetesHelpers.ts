@@ -24,15 +24,18 @@ module Kubernetes {
   export var appViewMBean = fabricDomain + ":type=AppView";
 
   export function isKubernetes(workspace) {
-    return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "Kubernetes"});
+    // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "Kubernetes"});
+    return true;
   }
 
   export function isKubernetesTemplateManager(workspace) {
-    return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "KubernetesTemplateManager"});
+    // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "KubernetesTemplateManager"});
+    return true;
   }
 
   export function isAppView(workspace) {
-    return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "AppView"});
+    // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "AppView"});
+    return true;
   }
 
   /**
