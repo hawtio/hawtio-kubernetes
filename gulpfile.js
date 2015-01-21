@@ -5,6 +5,8 @@ var gulp = require('gulp'),
     map = require('vinyl-map'),
     fs = require('fs'),
     path = require('path'),
+    url = require('url'),
+    proxy = require('proxy-middleware'),
     s = require('underscore.string');
 
 var plugins = gulpLoadPlugins({});
@@ -106,12 +108,23 @@ gulp.task('watch', ['build'], function() {
 });
 
 gulp.task('connect', ['watch'], function() {
+  var kubeRestURL = process.env.KUBERNETES_MASTER || 'http://localhost:8080';
+  console.log("Connecting to Kubernetes on: " + kubeRestURL);
+
   plugins.connect.server({
     root: '.',
     livereload: true,
     port: 2772,
-    fallback: 'index.html'
-  });
+    fallback: 'index.html',
+    middleware: function(connect, options) {
+      return [
+          (function() {
+              var proxyOptions = url.parse(kubeRestURL);
+              proxyOptions.route = '/services/kubernetes';
+              return proxy(proxyOptions);
+          })() ];
+    }
+});
 });
 
 gulp.task('reload', function() {

@@ -21,6 +21,8 @@ module Kubernetes {
 
   // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
   _module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
+    return "/services/kubernetes/";
+/*
     var answer = <ng.IDeferred<string>>$q.defer();
     jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined,
       <Jolokia.IParams> Core.onSuccess((response) => {
@@ -36,6 +38,7 @@ module Kubernetes {
         }
       }));
     return answer.promise;
+*/
   }]);
 
   function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string) {

@@ -7,7 +7,7 @@ var Kubernetes;
     Kubernetes.hash = '#' + Kubernetes.context;
     Kubernetes.defaultRoute = Kubernetes.hash + '/apps';
     Kubernetes.pluginName = 'Kubernetes';
-    Kubernetes.templatePath = 'app/kubernetes/html/';
+    Kubernetes.templatePath = 'plugins/kubernetes/html/';
     Kubernetes.log = Logger.get(Kubernetes.pluginName);
     Kubernetes.defaultApiVersion = "v1beta2";
     Kubernetes.appSuffix = ".app";
@@ -324,20 +324,24 @@ var Kubernetes;
     }]);
     // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
     Kubernetes._module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
-        var answer = $q.defer();
-        jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined, Core.onSuccess(function (response) {
-            var proxified = UrlHelpers.maybeProxy(jolokiaUrl, response);
-            Kubernetes.log.debug("discovered API URL:", proxified);
-            answer.resolve(proxified);
-            Core.$apply($rootScope);
-        }, {
-            error: function (response) {
-                Kubernetes.log.debug("error fetching API URL: ", response);
-                answer.reject(response);
+        return "/services/kubernetes/";
+        /*
+            var answer = <ng.IDeferred<string>>$q.defer();
+            jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined,
+              <Jolokia.IParams> Core.onSuccess((response) => {
+                var proxified = UrlHelpers.maybeProxy(jolokiaUrl, response);
+                log.debug("discovered API URL:", proxified);
+                answer.resolve(proxified);
                 Core.$apply($rootScope);
-            }
-        }));
-        return answer.promise;
+              }, {
+                error: (response) => {
+                  log.debug("error fetching API URL: ", response);
+                  answer.reject(response);
+                  Core.$apply($rootScope);
+                }
+              }));
+            return answer.promise;
+        */
     }]);
     function createResource(deferred, thing, urlTemplate) {
         var $rootScope = HawtioCore.injector.get("$rootScope");

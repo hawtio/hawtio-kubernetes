@@ -13,6 +13,7 @@
     "gulp-notify": "^2.1.0",
     "gulp-typescript": "^2.3.0",
     "gulp-watch": "^3.0.0",
+    "proxy-middleware": "^0.9.0",
     "through2": "^0.6.3",
     "underscore.string": "^2.4.0",
     "vinyl-map": "^1.0.1",
