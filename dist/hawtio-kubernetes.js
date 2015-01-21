@@ -1005,7 +1005,7 @@ var Kubernetes;
             removeAfterUpload: true,
             url: jolokiaUrl
         });
-        FileUpload.useJolokiaTransport($scope.uploader, jolokia, function (json) {
+        FileUpload.useJolokiaTransport($scope, $scope.uploader, jolokia, function (json) {
             Kubernetes.log.debug("Json: ", json);
             return {
                 'type': 'exec',
@@ -1014,7 +1014,7 @@ var Kubernetes;
                 arguments: [json]
             };
         });
-        $scope.uploader.onBeforeUploadItem = function (item) {
+        $scope.uploader.onBeforeItem = function (item) {
             Core.notification('info', 'Uploading ' + item);
         };
         $scope.uploader.onSuccessItem = function (item) {

@@ -12,7 +12,7 @@ module Kubernetes {
         url: jolokiaUrl
       });
 
-      FileUpload.useJolokiaTransport($scope.uploader, jolokia, (json) => {
+      FileUpload.useJolokiaTransport($scope, $scope.uploader, jolokia, (json) => {
         log.debug("Json: ", json);
         return {
           'type': 'exec',
@@ -22,7 +22,7 @@ module Kubernetes {
         };
       });
 
-      $scope.uploader.onBeforeUploadItem = (item) => {
+      $scope.uploader.onBeforeItem = (item) => {
         Core.notification('info', 'Uploading ' + item);
       };
 
