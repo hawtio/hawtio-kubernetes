@@ -131,13 +131,42 @@ module Kubernetes {
       var appViews = [];
 
       this.replicationControllers.forEach((replicationController) => {
+        var name = replicationController.name || replicationController.id;
         appViews.push({
-          appPath: "/dummyPath",
+          appPath: "/dummyPath/" + name,
+          $name: name,
           replicationControllers: [replicationController],
           pods: replicationController.$pods || [],
           services: []
         });
       });
+
+      this.services.forEach((service) => {
+        // now lets see if we can find an app with an RC of the same selector
+        var matchesApp = null;
+        appViews.forEach((appView) => {
+          appView.replicationControllers.forEach((replicationController) => {
+            var repSelector = Core.pathGet(replicationController, ["desiredState", "replicaSelector"]);
+            if (repSelector && selectorMatches(repSelector, service.selector) && service.namespace == replicationController.namespace) {
+              matchesApp = appView;
+            }
+          });
+        });
+
+        if (matchesApp) {
+          matchesApp.services.push(service);
+        } else {
+          var name = service.name || service.id;
+          appViews.push({
+            appPath: "/dummyPath/" + name,
+            $name: name,
+            replicationControllers: [],
+            pods: service.$pods || [],
+            services: [service]
+          });
+        }
+      });
+
 
       this.appViews = appViews;
       if (this.appViews.length) {
@@ -184,8 +213,7 @@ module Kubernetes {
 
         var apps = [];
         var defaultInfo = {
-          $iconUrl: this.defaultIconUrl,
-          name: ""
+          $iconUrl: this.defaultIconUrl
         };
 
         angular.forEach(this.appViews, (appView) => {
@@ -199,13 +227,13 @@ module Kubernetes {
            };
            */
 
-          var appInfo = defaultInfo;
+          var appInfo = angular.copy(defaultInfo);
           if (appPath) {
-            appInfo = appMap[appPath] || defaultInfo;
+            appInfo = appMap[appPath] || appInfo;
           }
           appView.$info = appInfo;
           appView.id = appPath;
-          appView.$name = appInfo.name;
+          appView.$name = appInfo.name || appView.$name;
           appView.$iconUrl = appInfo.$iconUrl;
 
           /*
@@ -230,7 +258,8 @@ module Kubernetes {
           appView.$podCounters = createAppViewPodCounters(appView);
           appView.$serviceViews = createAppViewServiceViews(appView);
         });
-        this.apps = apps;
+        //this.apps = apps;
+        this.apps = this.appViews;
       }
 
     }
