@@ -185,7 +185,7 @@
           <span>{{controller.id}}</span>
         </a>
         &nbsp;
-        <span class="btn btn-small" ng-click="row.entity.$openResizeControllerDialog(controller)" title="Edit the number of replicas of this controller">{{controller.replicas}}</span>
+        <span class="btn btn-sm" ng-click="row.entity.$openResizeControllerDialog(controller)" title="Edit the number of replicas of this controller">{{controller.replicas}}</span>
       </span>
     </div>
   </script>
@@ -212,20 +212,20 @@
 
       <div class="service-view-detail-rectangle">
         <div class="service-view-detail-header">
-          <div class="span4">
+          <div class="col-md-4">
             <div class="service-view-detail-deployed" ng-show="view.createdDate"
                  title="deployed at: {{view.createdDate | date:'yyyy-MMM-dd HH:mm:ss Z'}}">
               deployed:
               <span class="value">{{view.createdDate.relative()}}</span>
             </div>
           </div>
-          <div class="span4">
+          <div class="col-md-4">
             <div class="service-view-detail-pod-template" ng-show="view.controllerId">
               pod template:
               <span class="value">{{view.controllerId}}</span>
             </div>
           </div>
-          <div class="span4 service-view-detail-pod-counts">
+          <div class="col-md-4 service-view-detail-pod-counts">
             <a ng-show="view.replicationController" class="value pull-right"
                ng-click="item.$openResizeControllerDialog(view.replicationController)"
                title="Edit the number of pods">
@@ -303,8 +303,8 @@
 
 
   <div ng-hide="appSelectorShow">
-    <div class="row-fluid filter-header">
-      <div class="span12">
+    <div class="row filter-header">
+      <div class="col-md-12">
         <span ng-show="apps.length && !id">
           <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                          css-class="input-xxlarge"
@@ -314,7 +314,7 @@
                 class="btn btn-danger pull-right"
                 ng-disabled="!id && tableConfig.selectedItems.length == 0"
                 ng-click="deletePrompt(id || tableConfig.selectedItems)">
-          <i class="icon-remove"></i> Delete
+          <i class="glyphicon glyphicon-remove"></i> Delete
         </button>
         <span class="pull-right">&nbsp;</span>
         <button ng-show="appSelector.folders.length"
@@ -326,24 +326,24 @@
         <span class="pull-right">&nbsp;</span>
         <button ng-show="id"
                 class="btn btn-primary pull-right"
-                ng-click="id = undefined"><i class="icon-list"></i></button>
+                ng-click="id = undefined"><i class="glyphicon glyphicon-list"></i></button>
 
         <span class="pull-right">&nbsp;</span>
         <span ng-hide="id" class="pull-right">
           <div class="btn-group">
-            <a class="btn btn-small" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
-              <i class="icon-list"></i></a>
-            <a class="btn btn-small" ng-disabled="mode == 'detail'" href="" ng-click="mode = 'detail'">
-              <i class="icon-table"></i></a>
+            <a class="btn btn-sm" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
+              <i class="glyphicon glyphicon-list"></i></a>
+            <a class="btn btn-sm" ng-disabled="mode == 'detail'" href="" ng-click="mode = 'detail'">
+              <i class="glyphicon glyphicon-table"></i></a>
           </div>
         </span>
       </div>
     </div>
-    <div class="row-fluid">
-      <div class="span12">
+    <div class="row">
+      <div class="col-md-12">
         <div ng-hide="fetched">
           <div class="align-center">
-            <i class="icon-spinner icon-spin"></i>
+            <i class="glyphicon glyphicon-spinner icon-spin"></i>
           </div>
         </div>
         <div ng-show="fetched && !id">
@@ -371,13 +371,13 @@
 
   </div>
   <div ng-show="appSelectorShow">
-    <div class="span7">
-      <div class="row-fluid">
+    <div class="col-md-7">
+      <div class="row">
         <hawtio-filter ng-model="appSelector.filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter apps..."></hawtio-filter>
       </div>
-      <div class="row-fluid">
+      <div class="row">
         <ul>
           <li class="no-list profile-selector-folder" ng-repeat="folder in appSelector.folders"
               ng-show="appSelector.showFolder(folder)">
@@ -413,8 +413,8 @@
         </ul>
       </div>
     </div>
-    <div class="span5">
-      <div class="row-fluid">
+    <div class="col-md-5">
+      <div class="row">
         <button class="btn btn-primary pull-right"
                 ng-click="appSelectorShow = undefined"><i class="icon-circle-arrow-left"></i> Back
         </button>
@@ -437,7 +437,7 @@
 
         </button>
       </div>
-      <div class="row-fluid">
+      <div class="row">
 <!--
         <div ng-hide="appSelector.selectedApps.length">
           <p class="alert pull-right">
@@ -453,7 +453,7 @@
               <img ng-show="app.$iconUrl" class="icon-selected-app" ng-src="{{app.$iconUrl}}">
               <strong class="green selected-app-name">{{app.name}}</strong>
               &nbsp;
-              <i class="red clickable icon-remove"
+              <i class="red clickable glyphicon glyphicon-remove"
                  title="Remove appp"
                  ng-click="appSelector.select(app, false)"></i>
             </li>

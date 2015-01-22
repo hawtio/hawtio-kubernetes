@@ -1,9 +1,9 @@
 <div ng-controller="Kubernetes.OverviewController">
   <link rel="stylesheet" href="app/kubernetes/html/overview.css">
   <script type="text/ng-template" id="serviceBoxTemplate.html">
-    <div class="row-fluid">
-      <div class="span3 align-left node-body">{{entity.port}}</div>
-      <div class="span9 align-right node-header" title="{{entity.id}}">{{entity.id}}</div>
+    <div class="row">
+      <div class="col-md-3 align-left node-body">{{entity.port}}</div>
+      <div class="col-md-9 align-right node-header" title="{{entity.id}}">{{entity.id}}</div>
     </div>
   </script>
   <script type="text/ng-template" id="serviceTemplate.html">
