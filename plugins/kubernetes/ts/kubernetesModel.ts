@@ -75,7 +75,8 @@ module Kubernetes {
           }).join(',');
 
           var selector = service.selector;
-          service.$podCounters = selector ? createPodCounters(selector, this.pods) : null;
+          service.$pods = [];
+          service.$podCounters = selector ? createPodCounters(selector, this.pods, service.$pods) : null;
         });
         this.replicationControllers.forEach((replicationController) => {
           this.replicationControllersByKey[replicationController._key] = replicationController
@@ -83,6 +84,7 @@ module Kubernetes {
           replicationController.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
+          replicationController.$pods = selectedPods;
         });
         var hostsByKey = {};
         this.pods.forEach((pod) => {
@@ -132,7 +134,7 @@ module Kubernetes {
         appViews.push({
           appPath: "/dummyPath",
           replicationControllers: [replicationController],
-          pods: replicationController.pods || [],
+          pods: replicationController.$pods || [],
           services: []
         });
       });

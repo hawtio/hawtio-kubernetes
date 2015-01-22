@@ -305,12 +305,12 @@
   <div ng-hide="appSelectorShow">
     <div class="row filter-header">
       <div class="col-md-12">
-        <span ng-show="apps.length && !id">
+        <span ng-show="model.apps.length && !id">
           <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                          css-class="input-xxlarge"
                          placeholder="Filter apps..."></hawtio-filter>
         </span>
-        <button ng-show="apps.length"
+        <button ng-show="model.apps.length"
                 class="btn btn-danger pull-right"
                 ng-disabled="!id && tableConfig.selectedItems.length == 0"
                 ng-click="deletePrompt(id || tableConfig.selectedItems)">
@@ -355,7 +355,7 @@
               <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
             </div>
             <div ng-show="mode == 'detail'">
-              <div class="app-detail" ng-repeat="item in apps | filter:tableConfig.filterOptions.filterText">
+              <div class="app-detail" ng-repeat="item in model.apps | filter:tableConfig.filterOptions.filterText">
                 <ng-include src="'appDetailTemplate.html'"/>
               </div>
             </div>

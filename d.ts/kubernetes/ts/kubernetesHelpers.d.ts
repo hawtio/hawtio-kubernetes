@@ -32,7 +32,7 @@ declare module Kubernetes {
      * Given the list of pods lets iterate through them and find all pods matching the selector
      * and return counters based on the status of the pod
      */
-    function createPodCounters(selector: any, pods: any): {
+    function createPodCounters(selector: any, pods: any, outputPods?: any[]): {
         podsLink: string;
         valid: number;
         waiting: number;

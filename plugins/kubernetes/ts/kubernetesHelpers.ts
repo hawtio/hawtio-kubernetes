@@ -127,7 +127,7 @@ module Kubernetes {
    * Given the list of pods lets iterate through them and find all pods matching the selector
    * and return counters based on the status of the pod
    */
-  export function createPodCounters(selector, pods) {
+  export function createPodCounters(selector, pods, outputPods = []) {
     var answer = {
       podsLink: "",
       valid: 0,
@@ -138,6 +138,7 @@ module Kubernetes {
       answer.podsLink = Core.url("/kubernetes/pods?q=" + encodeURIComponent(Kubernetes.labelsToString(selector, " ")));
       angular.forEach(pods, pod => {
         if (selectorMatches(selector, pod.labels)) {
+          outputPods.push(pod);
           var status = (pod.currentState || {}).status;
 
           if (status) {
