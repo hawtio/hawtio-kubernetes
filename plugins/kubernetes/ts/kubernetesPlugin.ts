@@ -17,7 +17,8 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, '/namespace/:namespace/services'), route('services.html', false))
                   .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
-                  .when(UrlHelpers.join(context, 'overview'), route('overview.html', false));
+                  .when(UrlHelpers.join(context, 'overview'), route('overview.html', false))
+                  .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
   }]);
 
   // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
@@ -98,9 +99,46 @@ module Kubernetes {
     return createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
   }]);
 
-  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', (viewRegistry, workspace:Core.Workspace, ServiceRegistry) => {
+  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
     log.debug("Running");
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
+    var builder = HawtioNav.builder();
+
+    var apps = builder.id('kube-apps')
+                      .href(() => UrlHelpers.join(context, 'apps'))
+                      .title(() => 'Apps')
+                      .build();
+
+    var services = builder.id('kube-services')
+                      .href(() => UrlHelpers.join(context, 'services'))
+                      .title(() => 'Services')
+                      .build();
+
+    var controllers = builder.id('kube-controllers')
+                      .href(() => UrlHelpers.join(context, 'replicationControllers'))
+                      .title(() => 'Controllers')
+                      .build();
+
+    var pods = builder.id('kube-pods')
+                      .href(() => UrlHelpers.join(context, 'pods'))
+                      .title(() => 'Pods')
+                      .build();
+
+    var overview = builder.id('kube-overview')
+                          .href(() => UrlHelpers.join(context, 'overview'))
+                          .title(() => 'Diagram')
+                          .build();
+
+    var mainTab = builder.id('kubernetes')
+                         .href(() => context)
+                         .title(() => 'Kubernetes')
+                         .isValid(() => isKubernetes(workspace))
+                         .tabs(apps, services, controllers, pods, overview)
+                         .build();
+
+    HawtioNav.add(mainTab);
+
+    /*
     workspace.topLevelTabs.push({
       id: 'kubernetes',
       content: 'Kubernetes',
@@ -108,6 +146,7 @@ module Kubernetes {
       isActive: (workspace:Core.Workspace) => workspace.isLinkActive('kubernetes'),
       href: () => defaultRoute
     });
+    */
 
     workspace.topLevelTabs.push({
       id: 'kibana',

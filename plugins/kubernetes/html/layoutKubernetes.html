@@ -68,6 +68,7 @@
 <div class="row" ng-controller="Kubernetes.TopLevel">
   <div class="col-md-12">
     <ul class="nav nav-tabs connected">
+      <!--
       <li ng-class='{active : isActive("/kubernetes/apps")}' ng-show="showAppView"
           title="View all of the Apps running right now">
         <a ng-href="/kubernetes/apps">Apps</a>
@@ -88,6 +89,7 @@
           title="View an overview diagram of the system. Version: {{version.major}}.{{version.minor}}">
         <a ng-href="/kubernetes/overview">Diagram</a>
       </li>
+      -->
       <li class=pull-right>
         namespace: <select ng-model="kubernetes.selectedNamespace" ng-options="namespace for namespace in kubernetes.namespaces" title="choose the namespace - which is a selection of resources in kubernetes">
             <!--option ng-repeat="namespace in namespaces" value="{{namespace}}">{{namespace}}</option-->
