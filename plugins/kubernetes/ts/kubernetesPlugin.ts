@@ -19,11 +19,6 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', false));
   }]);
 
-  // TODO add a dummy dialog service for now!
-  _module.factory("$dialog", () => {
-    return {};
-  });
-
   // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
   _module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
     var url = "/services/kubernetes/";
