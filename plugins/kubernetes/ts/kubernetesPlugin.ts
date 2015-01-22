@@ -1,5 +1,6 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesModel.ts"/>
 
 module Kubernetes {
 
@@ -93,6 +94,9 @@ module Kubernetes {
     };
   }]);
 
+  _module.factory('KubernetesModel', ['KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', (KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) => {
+    return createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
+  }]);
 
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', (viewRegistry, workspace:Core.Workspace, ServiceRegistry) => {
     log.debug("Running");

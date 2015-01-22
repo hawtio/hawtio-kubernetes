@@ -341,16 +341,16 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        <div ng-hide="fetched">
+        <div ng-hide="model.fetched">
           <div class="align-center">
             <i class="glyphicon glyphicon-spinner icon-spin"></i>
           </div>
         </div>
-        <div ng-show="fetched && !id">
-          <div ng-hide="apps.length" class="align-center">
+        <div ng-show="model.fetched && !id">
+          <div ng-hide="model.apps.length" class="align-center">
             <p class="alert alert-info">There are no apps currently available.</p>
           </div>
-          <div ng-show="apps.length">
+          <div ng-show="model.apps.length">
             <div ng-show="mode == 'list'">
               <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
             </div>
@@ -361,7 +361,7 @@
             </div>
           </div>
         </div>
-        <div ng-show="fetched && id">
+        <div ng-show="model.fetched && id">
           <div class="app-detail">
             <ng-include src="'appDetailTemplate.html'"/>
           </div>

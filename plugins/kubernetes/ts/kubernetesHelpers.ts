@@ -313,4 +313,101 @@ module Kubernetes {
     }
     return 'icon-question red';
   }
+
+  export function createAppViewPodCounters(appView) {
+    var array = [];
+    var map = {};
+    var pods = appView.pods;
+    var lowestDate = null;
+    angular.forEach(pods, pod => {
+      var selector = pod.labels;
+      var selectorText = Kubernetes.labelsToString(selector, " ");
+      var answer = map[selector];
+      if (!answer) {
+        answer = {
+          labelText: selectorText,
+          podsLink: Core.url("/kubernetes/pods?q=" + encodeURIComponent(selectorText)),
+          valid: 0,
+          waiting: 0,
+          error: 0
+        };
+        map[selector] = answer;
+        array.push(answer);
+      }
+      var status = pod.status;
+      if ("OK" === status) {
+        answer.valid += 1;
+      } else if ("WAIT" === status) {
+        answer.waiting += 1;
+      } else {
+        answer.error += 1;
+      }
+      var creationTimestamp = pod.creationTimestamp;
+      if (creationTimestamp) {
+        var d = new Date(creationTimestamp);
+        if (!lowestDate || d < lowestDate) {
+          lowestDate = d;
+        }
+      }
+    });
+    appView.$creationDate = lowestDate;
+    return array;
+  }
+
+  export function createAppViewServiceViews(appView) {
+    var array = [];
+    var pods = appView.pods;
+    angular.forEach(pods, pod => {
+      var id = pod.id;
+      if (id) {
+        var abbrev = id;
+        var idx = id.indexOf("-");
+        if (idx > 1) {
+          abbrev = id.substring(0, idx);
+        }
+        pod.idAbbrev = abbrev;
+      }
+      pod.statusClass = statusTextToCssClass(pod.status);
+    });
+
+    var services = appView.services || [];
+    var replicationControllers = appView.replicationControllers || [];
+    var size = Math.max(services.length, replicationControllers.length, 1);
+    var appName = appView.$info.name;
+    for (var i = 0; i < size; i++) {
+      var service = services[i];
+      var replicationController = replicationControllers[i];
+      var controllerId = (replicationController || {}).id;
+      var name = (service || {}).id || controllerId;
+      var address = (service || {}).portalIP;
+      if (!name && pods.length) {
+        name = pods[0].idAbbrev;
+      }
+      if (!appView.$info.name) {
+        appView.$info.name = name;
+      }
+      if (!appView.id && pods.length) {
+        appView.id = pods[0].id;
+      }
+      if (i > 0) {
+        appName = name;
+      }
+      var podCount = pods.length;
+      var podCountText = podCount + " pod" + (podCount > 1 ? "s" : "");
+      var view = {
+        appName: appName || name,
+        name: name,
+        createdDate: appView.$creationDate,
+        podCountText: podCountText,
+        address: address,
+        controllerId: controllerId,
+        service: service,
+        replicationController: replicationController,
+        pods: pods
+      };
+      array.push(view);
+    }
+    return array;
+  }
+
 }

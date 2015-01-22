@@ -4,10 +4,11 @@
 module Kubernetes {
 
   export var Apps = controller("Apps",
-    ["$scope", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia",
-      ($scope, KubernetesServices:ng.IPromise<ng.resource.IResourceClass>, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, KubernetesApiURL,
+    ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia",
+      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.IPromise<ng.resource.IResourceClass>, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, KubernetesApiURL,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $dialog, $timeout, workspace, jolokia:Jolokia.IJolokia) => {
 
+    $scope.model = KubernetesModel;
     $scope.namespace = $routeParams.namespace;
     $scope.apps = [];
     $scope.allApps = [];
@@ -17,6 +18,7 @@ module Kubernetes {
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'appSelectorShow', 'openApp', undefined);
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
+
     var branch = $scope.branch || "master";
     var namespace = null;
     var defaultIconUrl = Core.url("/img/icons/kubernetes.svg");
@@ -34,11 +36,11 @@ module Kubernetes {
     }
 
     function appRunning(app) {
-      return $scope.apps.any((running) => running.appPath === app.appPath);
+      return $scope.model.apps.any((running) => running.appPath === app.appPath);
     }
 
     $scope.tableConfig = {
-      data: 'apps',
+      data: 'model.apps',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
@@ -80,15 +82,8 @@ module Kubernetes {
     };
 
     $scope.$on('$routeUpdate', ($event) => {
-      Kubernetes.setJson($scope, $location.search()['_id'], $scope.apps);
+      Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.apps);
     });
-
-    if (isKubernetes(workspace)) {
-      Core.register(jolokia, $scope, {type: 'exec', mbean: Kubernetes.mbean, operation: "findApps", arguments: [branch]}, Core.onSuccess(onAppData));
-    }
-    if (isAppView(workspace)) {
-      Core.register(jolokia, $scope, {type: 'exec', mbean: Kubernetes.appViewMBean, operation: "findAppSummariesJson"}, Core.onSuccess(onAppViewData));
-    }
 
     function deleteApp(app, onCompleteFn) {
       function deleteServices(services, service, onCompletedFn) {
@@ -203,7 +198,6 @@ module Kubernetes {
       }).open();
     };
 
-
     $scope.appSelector = {
       filterText: "",
       folders: [],
@@ -297,7 +291,6 @@ module Kubernetes {
       }
     };
 
-
     $scope.resizeDialog = {
       dialog: new UI.Dialog(),
       onOk: () => {
@@ -316,208 +309,6 @@ module Kubernetes {
       }
     };
 
-    function updateData() {
-      if ($scope.appInfos && $scope.appViews) {
-        $scope.fetched = true;
-        var folderMap = {};
-        var folders = [];
-        var appMap = {};
-        angular.forEach($scope.appInfos, (appInfo) => {
-          var appPath = appInfo.appPath;
-          var iconPath = appInfo.iconPath;
-          if (iconPath) {
-            appInfo.$iconUrl = Wiki.gitRelativeURL(branch, iconPath);
-          } else {
-            appInfo.$iconUrl = defaultIconUrl;
-          }
-          if (appPath) {
-            appMap[appPath] = appInfo;
-            var idx = appPath.lastIndexOf("/");
-            var folderPath = "";
-            if (idx >= 0) {
-              folderPath = appPath.substring(0, idx);
-            }
-            folderPath = Core.trimLeading(folderPath, "/");
-            var folder = folderMap[folderPath];
-            if (!folder) {
-              folder = {
-                path: folderPath,
-                expanded: true,
-                apps: []
-              };
-              folders.push(folder);
-              folderMap[folderPath] = folder;
-            }
-            folder.apps.push(appInfo);
-          }
-        });
-        $scope.appSelector.folders = folders.sortBy("path");
-
-        var apps = [];
-        var defaultInfo = {
-          $iconUrl: defaultIconUrl,
-          name: ""
-        };
-
-        angular.forEach($scope.appViews, (appView) => {
-          var appPath = appView.appPath;
-          appView.$info = defaultInfo;
-          appView.$select = () => {
-            Kubernetes.setJson($scope, appView.id, $scope.apps);
-          };
-          var appInfo = defaultInfo;
-          if (appPath) {
-            appInfo = appMap[appPath] || defaultInfo;
-          }
-          appView.$info = appInfo;
-          appView.id = appPath;
-          appView.$name = appInfo.name;
-          appView.$iconUrl = appInfo.$iconUrl;
-          appView.$appUrl = Wiki.viewLink(branch, appPath, $location);
-          appView.$openResizeControllerDialog = (controller) => {
-            $scope.resize = {
-              controller: controller,
-              newReplicas: controller.replicas
-            };
-            $scope.resizeDialog.dialog.open();
-
-            $timeout(() => {
-              $('#replicas').focus();
-            }, 50);
-          };
-          apps.push(appView);
-          appView.$podCounters = createAppViewPodCounters(appView);
-          appView.$serviceViews = createAppViewServiceViews(appView);
-        });
-        $scope.apps = apps;
-        Core.$apply($scope);
-      }
-    }
-
-    function createAppViewPodCounters(appView) {
-      var array = [];
-      var map = {};
-      var pods = appView.pods;
-      var lowestDate = null;
-      angular.forEach(pods, pod => {
-        var selector = pod.labels;
-        var selectorText = Kubernetes.labelsToString(selector, " ");
-        var answer = map[selector];
-        if (!answer) {
-          answer = {
-            labelText: selectorText,
-            podsLink: Core.url("/kubernetes/pods?q=" + encodeURIComponent(selectorText)),
-            valid: 0,
-            waiting: 0,
-            error: 0
-          };
-          map[selector] = answer;
-          array.push(answer);
-        }
-        var status = pod.status;
-        if ("OK" === status) {
-          answer.valid += 1;
-        } else if ("WAIT" === status) {
-          answer.waiting += 1;
-        } else {
-          answer.error += 1;
-        }
-        var creationTimestamp = pod.creationTimestamp;
-        if (creationTimestamp) {
-          var d = new Date(creationTimestamp);
-          if (!lowestDate || d < lowestDate) {
-            lowestDate = d;
-          }
-        }
-      });
-      appView.$creationDate = lowestDate;
-      return array;
-    }
-
-    function createAppViewServiceViews(appView) {
-      var array = [];
-      var pods = appView.pods;
-      angular.forEach(pods, pod => {
-        var id = pod.id;
-        if (id) {
-          var abbrev = id;
-          var idx = id.indexOf("-");
-          if (idx > 1) {
-            abbrev = id.substring(0, idx);
-          }
-          pod.idAbbrev = abbrev;
-        }
-        pod.statusClass = statusTextToCssClass(pod.status);
-      });
-
-      var services = appView.services || [];
-      var replicationControllers = appView.replicationControllers || [];
-      var size = Math.max(services.length, replicationControllers.length, 1);
-      var appName = appView.$info.name;
-      for (var i = 0; i < size; i++) {
-        var service = services[i];
-        var replicationController = replicationControllers[i];
-        var controllerId = (replicationController || {}).id;
-        var name = (service || {}).id || controllerId;
-        var address = (service || {}).portalIP;
-        if (!name && pods.length) {
-          name = pods[0].idAbbrev;
-        }
-        if (!appView.$info.name) {
-          appView.$info.name = name;
-        }
-        if (!appView.id && pods.length) {
-          appView.id = pods[0].id;
-        }
-        if (i > 0) {
-          appName = name;
-        }
-        var podCount = pods.length;
-        var podCountText = podCount + " pod" + (podCount > 1 ? "s" : "");
-        var view = {
-          appName: appName || name,
-          name: name,
-          createdDate: appView.$creationDate,
-          podCountText: podCountText,
-          address: address,
-          controllerId: controllerId,
-          service: service,
-          replicationController: replicationController,
-          pods: pods
-        };
-        array.push(view);
-      }
-      return array;
-    }
-
-    function onAppData(response) {
-      if (response) {
-        var apps = response.value;
-        var responseJson = angular.toJson(apps);
-        if ($scope.responseAppJson === responseJson) {
-          return;
-        }
-        $scope.responseAppJson = responseJson;
-        $scope.appInfos = apps;
-        updateData();
-      }
-    }
-
-    function onAppViewData(response) {
-      if (response) {
-        var responseJson = response.value;
-        if ($scope.responseJson === responseJson) {
-          return;
-        }
-        var apps = [];
-        if (responseJson) {
-          apps = JSON.parse(responseJson);
-        }
-        $scope.responseJson = responseJson;
-        $scope.appViews = apps;
-        updateData();
-      }
-    }
 
   }]);
 }

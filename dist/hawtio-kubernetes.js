@@ -1,7 +1,4 @@
-/// <reference path="../libs/hawtio-forms/defs.d.ts"/>
-/// <reference path="../libs/hawtio-ui/defs.d.ts"/>
-/// <reference path="../libs/hawtio-utilities/defs.d.ts"/>
-/// <reference path="../libs/hawtio-wiki/defs.d.ts"/>
+
 
 /// <reference path="../../includes.ts"/>
 var Kubernetes;
@@ -316,10 +313,376 @@ var Kubernetes;
         return 'icon-question red';
     }
     Kubernetes.statusTextToCssClass = statusTextToCssClass;
+    function createAppViewPodCounters(appView) {
+        var array = [];
+        var map = {};
+        var pods = appView.pods;
+        var lowestDate = null;
+        angular.forEach(pods, function (pod) {
+            var selector = pod.labels;
+            var selectorText = Kubernetes.labelsToString(selector, " ");
+            var answer = map[selector];
+            if (!answer) {
+                answer = {
+                    labelText: selectorText,
+                    podsLink: Core.url("/kubernetes/pods?q=" + encodeURIComponent(selectorText)),
+                    valid: 0,
+                    waiting: 0,
+                    error: 0
+                };
+                map[selector] = answer;
+                array.push(answer);
+            }
+            var status = pod.status;
+            if ("OK" === status) {
+                answer.valid += 1;
+            }
+            else if ("WAIT" === status) {
+                answer.waiting += 1;
+            }
+            else {
+                answer.error += 1;
+            }
+            var creationTimestamp = pod.creationTimestamp;
+            if (creationTimestamp) {
+                var d = new Date(creationTimestamp);
+                if (!lowestDate || d < lowestDate) {
+                    lowestDate = d;
+                }
+            }
+        });
+        appView.$creationDate = lowestDate;
+        return array;
+    }
+    Kubernetes.createAppViewPodCounters = createAppViewPodCounters;
+    function createAppViewServiceViews(appView) {
+        var array = [];
+        var pods = appView.pods;
+        angular.forEach(pods, function (pod) {
+            var id = pod.id;
+            if (id) {
+                var abbrev = id;
+                var idx = id.indexOf("-");
+                if (idx > 1) {
+                    abbrev = id.substring(0, idx);
+                }
+                pod.idAbbrev = abbrev;
+            }
+            pod.statusClass = statusTextToCssClass(pod.status);
+        });
+        var services = appView.services || [];
+        var replicationControllers = appView.replicationControllers || [];
+        var size = Math.max(services.length, replicationControllers.length, 1);
+        var appName = appView.$info.name;
+        for (var i = 0; i < size; i++) {
+            var service = services[i];
+            var replicationController = replicationControllers[i];
+            var controllerId = (replicationController || {}).id;
+            var name = (service || {}).id || controllerId;
+            var address = (service || {}).portalIP;
+            if (!name && pods.length) {
+                name = pods[0].idAbbrev;
+            }
+            if (!appView.$info.name) {
+                appView.$info.name = name;
+            }
+            if (!appView.id && pods.length) {
+                appView.id = pods[0].id;
+            }
+            if (i > 0) {
+                appName = name;
+            }
+            var podCount = pods.length;
+            var podCountText = podCount + " pod" + (podCount > 1 ? "s" : "");
+            var view = {
+                appName: appName || name,
+                name: name,
+                createdDate: appView.$creationDate,
+                podCountText: podCountText,
+                address: address,
+                controllerId: controllerId,
+                service: service,
+                replicationController: replicationController,
+                pods: pods
+            };
+            array.push(view);
+        }
+        return array;
+    }
+    Kubernetes.createAppViewServiceViews = createAppViewServiceViews;
 })(Kubernetes || (Kubernetes = {}));
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
+var Kubernetes;
+(function (Kubernetes) {
+    function byId(thing) {
+        return thing.id;
+    }
+    function populateKey(item) {
+        var result = item;
+        result['_key'] = item.namespace + "-" + item.id;
+        return result;
+    }
+    function populateKeys(items) {
+        var result = [];
+        angular.forEach(items, function (item) {
+            result.push(populateKey(item));
+        });
+        return result;
+    }
+    function selectPods(pods, namespace, labels) {
+        return pods.filter(function (pod) {
+            return pod.namespace === namespace && Kubernetes.selectorMatches(labels, pod.labels);
+        });
+    }
+    /**
+     * The object which keeps track of all the pods, replication controllers, services and their associations
+     */
+    var KubernetesModelService = (function () {
+        function KubernetesModelService() {
+            this.kubernetes = null;
+            this.apps = [];
+            this.services = [];
+            this.replicationControllers = [];
+            this.pods = [];
+            this.hosts = [];
+            this.redraw = false;
+            // various views on the data
+            this.hostsByKey = {};
+            this.servicesByKey = {};
+            this.podsByKey = {};
+            this.replicationControllersByKey = {};
+            this.appInfos = [];
+            this.appViews = [];
+            this.appFolders = [];
+            this.defaultIconUrl = Core.url("/img/icons/kubernetes.svg");
+            this.fetched = false;
+            this.fetch = function () {
+            };
+        }
+        KubernetesModelService.prototype.orRedraw = function (flag) {
+            this.redraw = this.redraw || flag;
+        };
+        KubernetesModelService.prototype.maybeInit = function () {
+            var _this = this;
+            if (this.services && this.replicationControllers && this.pods) {
+                this.servicesByKey = {};
+                this.podsByKey = {};
+                this.replicationControllersByKey = {};
+                this.kubernetes.namespaces = {};
+                this.services.forEach(function (service) {
+                    _this.servicesByKey[service._key] = service;
+                    var selectedPods = selectPods(_this.pods, service.namespace, service.selector);
+                    service.connectTo = selectedPods.map(function (pod) {
+                        return pod._key;
+                    }).join(',');
+                    var selector = service.selector;
+                    service.$podCounters = selector ? Kubernetes.createPodCounters(selector, _this.pods) : null;
+                });
+                this.replicationControllers.forEach(function (replicationController) {
+                    _this.replicationControllersByKey[replicationController._key] = replicationController;
+                    var selectedPods = selectPods(_this.pods, replicationController.namespace, replicationController.desiredState.replicaSelector);
+                    replicationController.connectTo = selectedPods.map(function (pod) {
+                        return pod._key;
+                    }).join(',');
+                });
+                var hostsByKey = {};
+                this.pods.forEach(function (pod) {
+                    _this.podsByKey[pod._key] = pod;
+                    var host = pod.currentState.host;
+                    hostsByKey[host] = hostsByKey[host] || [];
+                    hostsByKey[host].push(pod);
+                });
+                var tmpHosts = [];
+                var oldHostsLength = this.hosts.length;
+                this.hostsByKey = hostsByKey;
+                for (var hostKey in hostsByKey) {
+                    tmpHosts.push({
+                        id: hostKey,
+                        pods: hostsByKey[hostKey]
+                    });
+                }
+                this.orRedraw(ArrayHelpers.removeElements(this.hosts, tmpHosts));
+                tmpHosts.forEach(function (newHost) {
+                    var oldHost = _this.hosts.find(function (h) {
+                        return h.id === newHost.id;
+                    });
+                    if (!oldHost) {
+                        _this.redraw = true;
+                        _this.hosts.push(newHost);
+                    }
+                    else {
+                        _this.orRedraw(ArrayHelpers.sync(oldHost.pods, newHost.pods));
+                    }
+                });
+                this.updateApps();
+                Kubernetes.updateNamespaces(this.kubernetes, this.pods, this.replicationControllers, this.services);
+            }
+        };
+        KubernetesModelService.prototype.updateApps = function () {
+            // lets create the app views by trying to join controllers / services / pods that are related
+            var appViews = [];
+            this.replicationControllers.forEach(function (replicationController) {
+                appViews.push({
+                    appPath: "/dummyPath",
+                    replicationControllers: [replicationController],
+                    pods: replicationController.pods || [],
+                    services: []
+                });
+            });
+            this.appViews = appViews;
+            if (this.appViews.length) {
+                this.fetched = true;
+            }
+            if (this.appInfos && this.appViews) {
+                var folderMap = {};
+                var folders = [];
+                var appMap = {};
+                angular.forEach(this.appInfos, function (appInfo) {
+                    var appPath = appInfo.appPath;
+                    var iconPath = appInfo.iconPath;
+                    /*
+                     TODO
+                     if (iconPath) {
+                     appInfo.$iconUrl = Wiki.gitRelativeURL(branch, iconPath);
+                     } else {
+                     appInfo.$iconUrl = defaultIconUrl;
+                     }
+                     */
+                    if (appPath) {
+                        appMap[appPath] = appInfo;
+                        var idx = appPath.lastIndexOf("/");
+                        var folderPath = "";
+                        if (idx >= 0) {
+                            folderPath = appPath.substring(0, idx);
+                        }
+                        folderPath = Core.trimLeading(folderPath, "/");
+                        var folder = folderMap[folderPath];
+                        if (!folder) {
+                            folder = {
+                                path: folderPath,
+                                expanded: true,
+                                apps: []
+                            };
+                            folders.push(folder);
+                            folderMap[folderPath] = folder;
+                        }
+                        folder.apps.push(appInfo);
+                    }
+                });
+                this.appFolders = folders.sortBy("path");
+                var apps = [];
+                var defaultInfo = {
+                    $iconUrl: this.defaultIconUrl,
+                    name: ""
+                };
+                angular.forEach(this.appViews, function (appView) {
+                    var appPath = appView.appPath;
+                    appView.$info = defaultInfo;
+                    /*
+                     TODO
+                     appView.$select = () => {
+                     Kubernetes.setJson($scope, appView.id, $scope.model.apps);
+                     };
+                     */
+                    var appInfo = defaultInfo;
+                    if (appPath) {
+                        appInfo = appMap[appPath] || defaultInfo;
+                    }
+                    appView.$info = appInfo;
+                    appView.id = appPath;
+                    appView.$name = appInfo.name;
+                    appView.$iconUrl = appInfo.$iconUrl;
+                    /*
+                     TODO
+                     appView.$appUrl = Wiki.viewLink(branch, appPath, $location);
+                     */
+                    /*
+                     TODO
+                     appView.$openResizeControllerDialog = (controller) => {
+                     $scope.resize = {
+                     controller: controller,
+                     newReplicas: controller.replicas
+                     };
+                     $scope.resizeDialog.dialog.open();
+          
+                     $timeout(() => {
+                     $('#replicas').focus();
+                     }, 50);
+                     };
+                     */
+                    apps.push(appView);
+                    appView.$podCounters = Kubernetes.createAppViewPodCounters(appView);
+                    appView.$serviceViews = Kubernetes.createAppViewServiceViews(appView);
+                });
+                this.apps = apps;
+            }
+        };
+        return KubernetesModelService;
+    })();
+    Kubernetes.KubernetesModelService = KubernetesModelService;
+    /**
+     * Creates a model service which keeps track of all the pods, replication controllers and services along
+     * with their associations and status
+     */
+    function createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+        var $scope = new KubernetesModelService();
+        $scope.kubernetes = KubernetesState;
+        KubernetesServices.then(function (KubernetesServices) {
+            KubernetesReplicationControllers.then(function (KubernetesReplicationControllers) {
+                KubernetesPods.then(function (KubernetesPods) {
+                    $scope.fetch = PollHelpers.setupPolling($scope, function (next) {
+                        var ready = 0;
+                        var numServices = 3;
+                        function maybeNext(count) {
+                            ready = count;
+                            // log.debug("Completed: ", ready);
+                            if (ready >= numServices) {
+                                // log.debug("Fetching another round");
+                                $scope.maybeInit();
+                                next();
+                            }
+                        }
+                        KubernetesServices.query(function (response) {
+                            if (response) {
+                                var items = populateKeys((response.items || []).sortBy(byId));
+                                $scope.orRedraw(ArrayHelpers.sync($scope.services, items, "_key"));
+                            }
+                            maybeNext(ready + 1);
+                        });
+                        KubernetesReplicationControllers.query(function (response) {
+                            if (response) {
+                                var items = populateKeys((response.items || []).sortBy(byId));
+                                $scope.orRedraw(ArrayHelpers.sync($scope.replicationControllers, items, "_key"));
+                            }
+                            maybeNext(ready + 1);
+                        });
+                        KubernetesPods.query(function (response) {
+                            if (response) {
+                                var items = populateKeys((response.items || []).sortBy(byId));
+                                $scope.orRedraw(ArrayHelpers.sync($scope.pods, items, "_key"));
+                            }
+                            maybeNext(ready + 1);
+                        });
+                    });
+                    $scope.fetch();
+                });
+            });
+        });
+        function selectPods(pods, namespace, labels) {
+            return pods.filter(function (pod) {
+                return pod.namespace === namespace && Kubernetes.selectorMatches(labels, pod.labels);
+            });
+        }
+        return $scope;
+    }
+    Kubernetes.createKubernetesModel = createKubernetesModel;
+})(Kubernetes || (Kubernetes = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesModel.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes._module = angular.module(Kubernetes.pluginName, ['hawtio-core', 'hawtio-ui', 'wiki']);
@@ -328,10 +691,6 @@ var Kubernetes;
     Kubernetes._module.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when(UrlHelpers.join(Kubernetes.context, '/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, 'replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, 'services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps/:namespace'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'overview'), Kubernetes.route('overview.html', false));
     }]);
-    // TODO add a dummy dialog service for now!
-    Kubernetes._module.factory("$dialog", function () {
-        return {};
-    });
     // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
     Kubernetes._module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
         var url = "/services/kubernetes/";
@@ -397,6 +756,9 @@ var Kubernetes;
             selectedNamespace: null
         };
     }]);
+    Kubernetes._module.factory('KubernetesModel', ['KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', function (KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+        return Kubernetes.createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
+    }]);
     Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', function (viewRegistry, workspace, ServiceRegistry) {
         Kubernetes.log.debug("Running");
         viewRegistry['kubernetes'] = Kubernetes.templatePath + 'layoutKubernetes.html';
@@ -431,7 +793,8 @@ var Kubernetes;
 /// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
-    Kubernetes.Apps = Kubernetes.controller("Apps", ["$scope", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia", function ($scope, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, KubernetesState, KubernetesApiURL, $templateCache, $location, $routeParams, $http, $dialog, $timeout, workspace, jolokia) {
+    Kubernetes.Apps = Kubernetes.controller("Apps", ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia", function ($scope, KubernetesModel, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, KubernetesState, KubernetesApiURL, $templateCache, $location, $routeParams, $http, $dialog, $timeout, workspace, jolokia) {
+        $scope.model = KubernetesModel;
         $scope.namespace = $routeParams.namespace;
         $scope.apps = [];
         $scope.allApps = [];
@@ -454,10 +817,10 @@ var Kubernetes;
             }
         }
         function appRunning(app) {
-            return $scope.apps.any(function (running) { return running.appPath === app.appPath; });
+            return $scope.model.apps.any(function (running) { return running.appPath === app.appPath; });
         }
         $scope.tableConfig = {
-            data: 'apps',
+            data: 'model.apps',
             showSelectionCheckbox: true,
             enableRowClickSelection: false,
             multiSelect: true,
@@ -493,14 +856,8 @@ var Kubernetes;
             }
         };
         $scope.$on('$routeUpdate', function ($event) {
-            Kubernetes.setJson($scope, $location.search()['_id'], $scope.apps);
+            Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.apps);
         });
-        if (Kubernetes.isKubernetes(workspace)) {
-            Core.register(jolokia, $scope, { type: 'exec', mbean: Kubernetes.mbean, operation: "findApps", arguments: [branch] }, Core.onSuccess(onAppData));
-        }
-        if (Kubernetes.isAppView(workspace)) {
-            Core.register(jolokia, $scope, { type: 'exec', mbean: Kubernetes.appViewMBean, operation: "findAppSummariesJson" }, Core.onSuccess(onAppViewData));
-        }
         function deleteApp(app, onCompleteFn) {
             function deleteServices(services, service, onCompletedFn) {
                 if (!service || !services) {
@@ -707,203 +1064,6 @@ var Kubernetes;
                 $scope.resizeDialog.dialog.close();
             }
         };
-        function updateData() {
-            if ($scope.appInfos && $scope.appViews) {
-                $scope.fetched = true;
-                var folderMap = {};
-                var folders = [];
-                var appMap = {};
-                angular.forEach($scope.appInfos, function (appInfo) {
-                    var appPath = appInfo.appPath;
-                    var iconPath = appInfo.iconPath;
-                    if (iconPath) {
-                        appInfo.$iconUrl = Wiki.gitRelativeURL(branch, iconPath);
-                    }
-                    else {
-                        appInfo.$iconUrl = defaultIconUrl;
-                    }
-                    if (appPath) {
-                        appMap[appPath] = appInfo;
-                        var idx = appPath.lastIndexOf("/");
-                        var folderPath = "";
-                        if (idx >= 0) {
-                            folderPath = appPath.substring(0, idx);
-                        }
-                        folderPath = Core.trimLeading(folderPath, "/");
-                        var folder = folderMap[folderPath];
-                        if (!folder) {
-                            folder = {
-                                path: folderPath,
-                                expanded: true,
-                                apps: []
-                            };
-                            folders.push(folder);
-                            folderMap[folderPath] = folder;
-                        }
-                        folder.apps.push(appInfo);
-                    }
-                });
-                $scope.appSelector.folders = folders.sortBy("path");
-                var apps = [];
-                var defaultInfo = {
-                    $iconUrl: defaultIconUrl,
-                    name: ""
-                };
-                angular.forEach($scope.appViews, function (appView) {
-                    var appPath = appView.appPath;
-                    appView.$info = defaultInfo;
-                    appView.$select = function () {
-                        Kubernetes.setJson($scope, appView.id, $scope.apps);
-                    };
-                    var appInfo = defaultInfo;
-                    if (appPath) {
-                        appInfo = appMap[appPath] || defaultInfo;
-                    }
-                    appView.$info = appInfo;
-                    appView.id = appPath;
-                    appView.$name = appInfo.name;
-                    appView.$iconUrl = appInfo.$iconUrl;
-                    appView.$appUrl = Wiki.viewLink(branch, appPath, $location);
-                    appView.$openResizeControllerDialog = function (controller) {
-                        $scope.resize = {
-                            controller: controller,
-                            newReplicas: controller.replicas
-                        };
-                        $scope.resizeDialog.dialog.open();
-                        $timeout(function () {
-                            $('#replicas').focus();
-                        }, 50);
-                    };
-                    apps.push(appView);
-                    appView.$podCounters = createAppViewPodCounters(appView);
-                    appView.$serviceViews = createAppViewServiceViews(appView);
-                });
-                $scope.apps = apps;
-                Core.$apply($scope);
-            }
-        }
-        function createAppViewPodCounters(appView) {
-            var array = [];
-            var map = {};
-            var pods = appView.pods;
-            var lowestDate = null;
-            angular.forEach(pods, function (pod) {
-                var selector = pod.labels;
-                var selectorText = Kubernetes.labelsToString(selector, " ");
-                var answer = map[selector];
-                if (!answer) {
-                    answer = {
-                        labelText: selectorText,
-                        podsLink: Core.url("/kubernetes/pods?q=" + encodeURIComponent(selectorText)),
-                        valid: 0,
-                        waiting: 0,
-                        error: 0
-                    };
-                    map[selector] = answer;
-                    array.push(answer);
-                }
-                var status = pod.status;
-                if ("OK" === status) {
-                    answer.valid += 1;
-                }
-                else if ("WAIT" === status) {
-                    answer.waiting += 1;
-                }
-                else {
-                    answer.error += 1;
-                }
-                var creationTimestamp = pod.creationTimestamp;
-                if (creationTimestamp) {
-                    var d = new Date(creationTimestamp);
-                    if (!lowestDate || d < lowestDate) {
-                        lowestDate = d;
-                    }
-                }
-            });
-            appView.$creationDate = lowestDate;
-            return array;
-        }
-        function createAppViewServiceViews(appView) {
-            var array = [];
-            var pods = appView.pods;
-            angular.forEach(pods, function (pod) {
-                var id = pod.id;
-                if (id) {
-                    var abbrev = id;
-                    var idx = id.indexOf("-");
-                    if (idx > 1) {
-                        abbrev = id.substring(0, idx);
-                    }
-                    pod.idAbbrev = abbrev;
-                }
-                pod.statusClass = Kubernetes.statusTextToCssClass(pod.status);
-            });
-            var services = appView.services || [];
-            var replicationControllers = appView.replicationControllers || [];
-            var size = Math.max(services.length, replicationControllers.length, 1);
-            var appName = appView.$info.name;
-            for (var i = 0; i < size; i++) {
-                var service = services[i];
-                var replicationController = replicationControllers[i];
-                var controllerId = (replicationController || {}).id;
-                var name = (service || {}).id || controllerId;
-                var address = (service || {}).portalIP;
-                if (!name && pods.length) {
-                    name = pods[0].idAbbrev;
-                }
-                if (!appView.$info.name) {
-                    appView.$info.name = name;
-                }
-                if (!appView.id && pods.length) {
-                    appView.id = pods[0].id;
-                }
-                if (i > 0) {
-                    appName = name;
-                }
-                var podCount = pods.length;
-                var podCountText = podCount + " pod" + (podCount > 1 ? "s" : "");
-                var view = {
-                    appName: appName || name,
-                    name: name,
-                    createdDate: appView.$creationDate,
-                    podCountText: podCountText,
-                    address: address,
-                    controllerId: controllerId,
-                    service: service,
-                    replicationController: replicationController,
-                    pods: pods
-                };
-                array.push(view);
-            }
-            return array;
-        }
-        function onAppData(response) {
-            if (response) {
-                var apps = response.value;
-                var responseJson = angular.toJson(apps);
-                if ($scope.responseAppJson === responseJson) {
-                    return;
-                }
-                $scope.responseAppJson = responseJson;
-                $scope.appInfos = apps;
-                updateData();
-            }
-        }
-        function onAppViewData(response) {
-            if (response) {
-                var responseJson = response.value;
-                if ($scope.responseJson === responseJson) {
-                    return;
-                }
-                var apps = [];
-                if (responseJson) {
-                    apps = JSON.parse(responseJson);
-                }
-                $scope.responseJson = responseJson;
-                $scope.appViews = apps;
-                updateData();
-            }
-        }
     }]);
 })(Kubernetes || (Kubernetes = {}));
 
@@ -2364,7 +2524,7 @@ var Service;
     hawtioPluginLoader.addModule(Service.pluginName);
 })(Service || (Service = {}));
 
-angular.module("hawtio-kubernetes-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/kubernetes/html/apps.html","<style type=\"text/css\">\n  .filter-header {\n    padding-bottom: 10px;\n  }\n\n  .app-name {\n    padding-left: 10px;\n  }\n\n  .profile-selector-name .app-name {\n    padding-left: 4px;\n  }\n\n  .ngCellText .icon-replication-controller {\n    vertical-align: middle;\n  }\n\n  img.icon-small-app {\n    width: 24px;\n    height: 24px;\n    vertical-align: text-bottom;\n  }\n\n  .profile-selector-name {\n    line-height: 24px;\n  }\n\n  img.icon-selected-app {\n    width: 64px;\n    height: 64px;\n    vertical-align: middle;\n  }\n\n  .selected-app-name {\n    line-height: 36px;\n    padding-left: 5px;\n  }\n\n  .service-view-rectangle {\n    position: relative;\n    margin-left: 0;\n    margin-right: 0px;\n    margin-bottom: 15px;\n    margin-top: 0;\n    background-color: #fafafa;\n\n    border-width:  1px;\n    border-style: solid;\n    border-color: #eeeeee;\n  }\n\n  .service-view-header {\n    padding-left: 20px;\n    padding-right: 20px;\n    padding-top: 8px;\n    padding-bottom: 5px;\n  }\n\n  .service-view-icon img {\n    width: 24px;\n    height: 24px;\n    padding-right: 6px;\n  }\n\n  .service-view-name {\n    font-size: larger;\n    font-weight: bold;\n  }\n\n  .service-view-address {\n    padding-left: 30px;\n  }\n\n  .service-view-detail-header {\n    padding-left: 0px;\n    padding-right: 0px;\n    padding-top: 5px;\n    padding-bottom: 0px;\n    height: 20px;\n    min-height: 20px;\n    max-height: 20px;\n  }\n\n  .service-view-detail-header .span4,\n  .service-view-detail-header .value {\n    height: 20px;\n    min-height: 20px;\n    max-height: 20px;\n  }\n\n  .service-view-detail-header a {\n    color: black;\n  }\n\n  .service-view-detail-rectangle {\n    background-color: #eeeeee;\n\n    padding-left: 20px;\n    padding-right: 20px;\n  }\n\n  .service-view-detail-rectangle .value {\n    font-weight: 600;\n  }\n\n  .service-view-detail-pod-box {\n    background-color: #eeeeee;\n    display: inline-block;\n    font-size: smaller;\n  }\n\n  .service-view-detail-pod-summary,\n  .service-view-detail-pod-summary-expand {\n    display: inline-block;\n\n    padding-top: 2px;\n    padding-bottom: 2px;\n    padding-left: 20px;\n    padding-right: 20px;\n\n    margin-right: 8px;\n    margin-bottom: 8px;\n\n    background-color: #ffffff;\n  }\n\n  .service-view-detail-pod-template {\n  }\n\n  .service-view-detail-pod-counts {\n  }\n\n  .service-view-detail-pod-status {\n    line-height: 36px;\n    padding-right: 20px;\n  }\n\n  .service-view-detail-pod-status i {\n    font-size: 36px;\n    display: inline-block;\n    vertical-align: middle;\n  }\n\n  .service-view-detail-pod-expand {\n    color: #a0a0a0;\n    font-size: 18px;\n    padding-right: 0px;\n  }\n\n  .service-view-detail-pod-id {\n  }\n\n</style>\n<div ng-controller=\"Kubernetes.Apps\">\n  <script type=\"text/ng-template\" id=\"appIconTemplate.html\">\n    <div class=\"ngCellText\" title=\"{{row.entity.$info.description}}\">\n      <a ng-href=\"row.entity.$appUrl\">\n        <img ng-show=\"row.entity.$iconUrl\" class=\"icon-replication-controller\" ng-src=\"{{row.entity.$iconUrl}}\">\n      </a>\n      <span class=\"app-name\">\n        <a ng-click=\"row.entity.$select()\">\n          {{row.entity.$info.name}}\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appServicesTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"service in row.entity.services\">\n        <a href=\"#/kubernetes/services?_id={{service.id}}\">\n          <span>{{service.name || service.id}}</span>\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDeployedTemplate.html\">\n    <div class=\"ngCellText\" title=\"deployed at: {{row.entity.$creationDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n      {{row.entity.$creationDate.relative()}}\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appReplicationControllerTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"controller in row.entity.replicationControllers\">\n        <a href=\"#/kubernetes/replicationControllers?_id={{controller.id}}\">\n          <span>{{controller.id}}</span>\n        </a>\n        &nbsp;\n        <span class=\"btn btn-sm\" ng-click=\"row.entity.$openResizeControllerDialog(controller)\" title=\"Edit the number of replicas of this controller\">{{controller.replicas}}</span>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appPodCountsAndLinkTemplate.html\">\n    <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n      <div ng-repeat=\"podCounters in row.entity.$podCounters track by $index\">\n        <a ng-show=\"podCounters.podsLink\" href=\"{{podCounters.podsLink}}\" title=\"{{podCounters.labelText}}\">\n          <span ng-show=\"podCounters.valid\" class=\"badge badge-success\">{{podCounters.valid}}</span>\n          <span ng-show=\"podCounters.waiting\" class=\"badge\">{{podCounters.waiting}}</span>\n          <span ng-show=\"podCounters.error\" class=\"badge badge-warning\">{{podCounters.error}}</span>\n        </a>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDetailTemplate.html\">\n    <div class=\"service-view-rectangle\" ng-repeat=\"view in item.$serviceViews\">\n      <div class=\"service-view-header\">\n        <span class=\"service-view-icon\">\n          <img ng-show=\"item.$iconUrl\" ng-src=\"{{item.$iconUrl}}\">\n        </span>\n        <span class=\"service-view-name\" title=\"{{view.name}}\">{{view.appName}}</span>\n        <span class=\"service-view-address\">{{view.address}}</span>\n      </div>\n\n      <div class=\"service-view-detail-rectangle\">\n        <div class=\"service-view-detail-header\">\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-deployed\" ng-show=\"view.createdDate\"\n                 title=\"deployed at: {{view.createdDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n              deployed:\n              <span class=\"value\">{{view.createdDate.relative()}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-pod-template\" ng-show=\"view.controllerId\">\n              pod template:\n              <span class=\"value\">{{view.controllerId}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4 service-view-detail-pod-counts\">\n            <a ng-show=\"view.replicationController\" class=\"value pull-right\"\n               ng-click=\"item.$openResizeControllerDialog(view.replicationController)\"\n               title=\"Edit the number of pods\">\n              {{view.podCountText}}\n            </a>\n            <span ng-hide=\"view.replicationController\" class=\"value pull-right\">\n              {{view.podCountText}}\n            </span>\n          </div>\n        </div>\n\n        <div class=\"service-view-detail-pod-box\" ng-repeat=\"pod in item.pods\">\n          <div ng-show=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary-expand\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod {{pod.idAbbrev}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.podIP}}</span>\n                  </div>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-ports\">\n                    ports: <span class=\"value\">{{pod.containerPorts.join(\", \")}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-minion\">\n                    minion:\n                    <span class=\"value\">{{pod.host}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"collapsePod(pod)\">\n                  <i class=\"icon-chevron-left\"></i>\n                </td>\n              </tr>\n            </table>\n            <!--\n                                      <div class=\"service-view-detail-pod-status\">\n                                        status:\n                                        <span class=\"value\">{{pod.status}}</span>\n                                      </div>\n            -->\n          </div>\n\n          <div ng-hide=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod {{pod.idAbbrev}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.podIP}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"expandPod(pod)\">\n                  <i class=\"icon-chevron-right\"></i>\n                </td>\n              </tr>\n            </table>\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n\n\n  <div ng-hide=\"appSelectorShow\">\n    <div class=\"row filter-header\">\n      <div class=\"col-md-12\">\n        <span ng-show=\"apps.length && !id\">\n          <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                         css-class=\"input-xxlarge\"\n                         placeholder=\"Filter apps...\"></hawtio-filter>\n        </span>\n        <button ng-show=\"apps.length\"\n                class=\"btn btn-danger pull-right\"\n                ng-disabled=\"!id && tableConfig.selectedItems.length == 0\"\n                ng-click=\"deletePrompt(id || tableConfig.selectedItems)\">\n          <i class=\"glyphicon glyphicon-remove\"></i> Delete\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"appSelector.folders.length\"\n                class=\"btn btn-success pull-right\"\n                ng-click=\"appSelectorShow = true\"\n                title=\"Run an application\">\n          <i class=\"icon-play-circle\"></i> Run ...\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"id\"\n                class=\"btn btn-primary pull-right\"\n                ng-click=\"id = undefined\"><i class=\"glyphicon glyphicon-list\"></i></button>\n\n        <span class=\"pull-right\">&nbsp;</span>\n        <span ng-hide=\"id\" class=\"pull-right\">\n          <div class=\"btn-group\">\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'list\'\" href=\"\" ng-click=\"mode = \'list\'\">\n              <i class=\"glyphicon glyphicon-list\"></i></a>\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'detail\'\" href=\"\" ng-click=\"mode = \'detail\'\">\n              <i class=\"glyphicon glyphicon-table\"></i></a>\n          </div>\n        </span>\n      </div>\n    </div>\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div ng-hide=\"fetched\">\n          <div class=\"align-center\">\n            <i class=\"glyphicon glyphicon-spinner icon-spin\"></i>\n          </div>\n        </div>\n        <div ng-show=\"fetched && !id\">\n          <div ng-hide=\"apps.length\" class=\"align-center\">\n            <p class=\"alert alert-info\">There are no apps currently available.</p>\n          </div>\n          <div ng-show=\"apps.length\">\n            <div ng-show=\"mode == \'list\'\">\n              <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n            </div>\n            <div ng-show=\"mode == \'detail\'\">\n              <div class=\"app-detail\" ng-repeat=\"item in apps | filter:tableConfig.filterOptions.filterText\">\n                <ng-include src=\"\'appDetailTemplate.html\'\"/>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div ng-show=\"fetched && id\">\n          <div class=\"app-detail\">\n            <ng-include src=\"\'appDetailTemplate.html\'\"/>\n          </div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n  <div ng-show=\"appSelectorShow\">\n    <div class=\"col-md-7\">\n      <div class=\"row\">\n        <hawtio-filter ng-model=\"appSelector.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter apps...\"></hawtio-filter>\n      </div>\n      <div class=\"row\">\n        <ul>\n          <li class=\"no-list profile-selector-folder\" ng-repeat=\"folder in appSelector.folders\"\n              ng-show=\"appSelector.showFolder(folder)\">\n            <div class=\"expandable\" ng-class=\"appSelector.isOpen(folder)\">\n              <div title=\"{{folder.path}}\" class=\"title\">\n                <i class=\"expandable-indicator folder\"></i> <span class=\"folder-title\" ng-show=\"folder.path\">{{folder.path.capitalize(true)}}</span><span\n                      class=\"folder-title\" ng-hide=\"folder.path\">Uncategorized</span>\n              </div>\n              <div class=\"expandable-body\">\n                <ul>\n                  <li class=\"no-list profile\" ng-repeat=\"profile in folder.apps\" ng-show=\"appSelector.showApp(profile)\">\n                    <div class=\"profile-selector-item\">\n                      <div class=\"inline-block profile-selector-checkbox\">\n                        <input type=\"checkbox\" ng-model=\"profile.selected\"\n                               ng-change=\"appSelector.updateSelected()\">\n                      </div>\n                      <div class=\"inline-block profile-selector-name\" ng-class=\"appSelector.getSelectedClass(profile)\">\n                        <span class=\"contained c-max\">\n                          <a href=\"\" ng-click=\"appSelector.select(profile, !profile.selected)\"\n                             title=\"Details for {{profile.id}}\">\n                              <img ng-show=\"profile.$iconUrl\" class=\"icon-small-app\" ng-src=\"{{profile.$iconUrl}}\">\n                              <span class=\"app-name\">{{profile.name}}</span>\n                          </a>\n                        </span>\n                      </div>\n                    </div>\n\n                  </li>\n                </ul>\n              </div>\n            </div>\n          </li>\n        </ul>\n      </div>\n    </div>\n    <div class=\"col-md-5\">\n      <div class=\"row\">\n        <button class=\"btn btn-primary pull-right\"\n                ng-click=\"appSelectorShow = undefined\"><i class=\"icon-circle-arrow-left\"></i> Back\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                title=\"Clears the selected Apps\"\n                ng-click=\"appSelector.clearSelected()\"><i class=\"icon-check-empty\"></i> Clear\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn btn-success pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                ng-click=\"appSelector.runSelectedApps()\"\n                title=\"Run the selected apps\">\n          <i class=\"icon-play-circle\"></i>\n          <ng-pluralize count=\"appSelector.selectedApps.length\"\n                        when=\"{\'0\': \'No App Selected\',\n                                       \'1\': \'Run App\',\n                                       \'other\': \'Run {} Apps\'}\"></ng-pluralize>\n\n        </button>\n      </div>\n      <div class=\"row\">\n<!--\n        <div ng-hide=\"appSelector.selectedApps.length\">\n          <p class=\"alert pull-right\">\n            Please select an App\n          </p>\n        </div>\n-->\n\n        <div ng-show=\"appSelector.selectedApps.length\">\n\n          <ul class=\"zebra-list pull-right\">\n            <li ng-repeat=\"app in appSelector.selectedApps\">\n              <img ng-show=\"app.$iconUrl\" class=\"icon-selected-app\" ng-src=\"{{app.$iconUrl}}\">\n              <strong class=\"green selected-app-name\">{{app.name}}</strong>\n              &nbsp;\n              <i class=\"red clickable glyphicon glyphicon-remove\"\n                 title=\"Remove appp\"\n                 ng-click=\"appSelector.select(app, false)\"></i>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div modal=\"resizeDialog.dialog.show\">\n    <form class=\"form-horizontal\" ng-submit=\"resizeDialog.onOk()\">\n        <div class=\"modal-header\"><h4>Resize {{resize.controller.id}}</h4></div>\n        <div class=\"modal-body\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"replicas\">Replica count</label>\n\n            <div class=\"controls\">\n              <input type=\"number\" min=\"0\" id=\"replicas\" ng-model=\"resize.newReplicas\">\n            </div>\n          </div>\n\n        </div>\n        <div class=\"modal-footer\">\n          <input class=\"btn btn-primary\" type=\"submit\"\n                 ng-disabled=\"resize.newReplicas === resize.controller.replicas\"\n                 value=\"Resize\">\n          <button class=\"btn btn-warning cancel\" type=\"button\" ng-click=\"resizeDialog.close()\">Cancel</button>\n        </div>\n      </form>\n  </div>\n</div>\n");
+angular.module("hawtio-kubernetes-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/kubernetes/html/apps.html","<style type=\"text/css\">\n  .filter-header {\n    padding-bottom: 10px;\n  }\n\n  .app-name {\n    padding-left: 10px;\n  }\n\n  .profile-selector-name .app-name {\n    padding-left: 4px;\n  }\n\n  .ngCellText .icon-replication-controller {\n    vertical-align: middle;\n  }\n\n  img.icon-small-app {\n    width: 24px;\n    height: 24px;\n    vertical-align: text-bottom;\n  }\n\n  .profile-selector-name {\n    line-height: 24px;\n  }\n\n  img.icon-selected-app {\n    width: 64px;\n    height: 64px;\n    vertical-align: middle;\n  }\n\n  .selected-app-name {\n    line-height: 36px;\n    padding-left: 5px;\n  }\n\n  .service-view-rectangle {\n    position: relative;\n    margin-left: 0;\n    margin-right: 0px;\n    margin-bottom: 15px;\n    margin-top: 0;\n    background-color: #fafafa;\n\n    border-width:  1px;\n    border-style: solid;\n    border-color: #eeeeee;\n  }\n\n  .service-view-header {\n    padding-left: 20px;\n    padding-right: 20px;\n    padding-top: 8px;\n    padding-bottom: 5px;\n  }\n\n  .service-view-icon img {\n    width: 24px;\n    height: 24px;\n    padding-right: 6px;\n  }\n\n  .service-view-name {\n    font-size: larger;\n    font-weight: bold;\n  }\n\n  .service-view-address {\n    padding-left: 30px;\n  }\n\n  .service-view-detail-header {\n    padding-left: 0px;\n    padding-right: 0px;\n    padding-top: 5px;\n    padding-bottom: 0px;\n    height: 20px;\n    min-height: 20px;\n    max-height: 20px;\n  }\n\n  .service-view-detail-header .span4,\n  .service-view-detail-header .value {\n    height: 20px;\n    min-height: 20px;\n    max-height: 20px;\n  }\n\n  .service-view-detail-header a {\n    color: black;\n  }\n\n  .service-view-detail-rectangle {\n    background-color: #eeeeee;\n\n    padding-left: 20px;\n    padding-right: 20px;\n  }\n\n  .service-view-detail-rectangle .value {\n    font-weight: 600;\n  }\n\n  .service-view-detail-pod-box {\n    background-color: #eeeeee;\n    display: inline-block;\n    font-size: smaller;\n  }\n\n  .service-view-detail-pod-summary,\n  .service-view-detail-pod-summary-expand {\n    display: inline-block;\n\n    padding-top: 2px;\n    padding-bottom: 2px;\n    padding-left: 20px;\n    padding-right: 20px;\n\n    margin-right: 8px;\n    margin-bottom: 8px;\n\n    background-color: #ffffff;\n  }\n\n  .service-view-detail-pod-template {\n  }\n\n  .service-view-detail-pod-counts {\n  }\n\n  .service-view-detail-pod-status {\n    line-height: 36px;\n    padding-right: 20px;\n  }\n\n  .service-view-detail-pod-status i {\n    font-size: 36px;\n    display: inline-block;\n    vertical-align: middle;\n  }\n\n  .service-view-detail-pod-expand {\n    color: #a0a0a0;\n    font-size: 18px;\n    padding-right: 0px;\n  }\n\n  .service-view-detail-pod-id {\n  }\n\n</style>\n<div ng-controller=\"Kubernetes.Apps\">\n  <script type=\"text/ng-template\" id=\"appIconTemplate.html\">\n    <div class=\"ngCellText\" title=\"{{row.entity.$info.description}}\">\n      <a ng-href=\"row.entity.$appUrl\">\n        <img ng-show=\"row.entity.$iconUrl\" class=\"icon-replication-controller\" ng-src=\"{{row.entity.$iconUrl}}\">\n      </a>\n      <span class=\"app-name\">\n        <a ng-click=\"row.entity.$select()\">\n          {{row.entity.$info.name}}\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appServicesTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"service in row.entity.services\">\n        <a href=\"#/kubernetes/services?_id={{service.id}}\">\n          <span>{{service.name || service.id}}</span>\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDeployedTemplate.html\">\n    <div class=\"ngCellText\" title=\"deployed at: {{row.entity.$creationDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n      {{row.entity.$creationDate.relative()}}\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appReplicationControllerTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"controller in row.entity.replicationControllers\">\n        <a href=\"#/kubernetes/replicationControllers?_id={{controller.id}}\">\n          <span>{{controller.id}}</span>\n        </a>\n        &nbsp;\n        <span class=\"btn btn-sm\" ng-click=\"row.entity.$openResizeControllerDialog(controller)\" title=\"Edit the number of replicas of this controller\">{{controller.replicas}}</span>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appPodCountsAndLinkTemplate.html\">\n    <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n      <div ng-repeat=\"podCounters in row.entity.$podCounters track by $index\">\n        <a ng-show=\"podCounters.podsLink\" href=\"{{podCounters.podsLink}}\" title=\"{{podCounters.labelText}}\">\n          <span ng-show=\"podCounters.valid\" class=\"badge badge-success\">{{podCounters.valid}}</span>\n          <span ng-show=\"podCounters.waiting\" class=\"badge\">{{podCounters.waiting}}</span>\n          <span ng-show=\"podCounters.error\" class=\"badge badge-warning\">{{podCounters.error}}</span>\n        </a>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDetailTemplate.html\">\n    <div class=\"service-view-rectangle\" ng-repeat=\"view in item.$serviceViews\">\n      <div class=\"service-view-header\">\n        <span class=\"service-view-icon\">\n          <img ng-show=\"item.$iconUrl\" ng-src=\"{{item.$iconUrl}}\">\n        </span>\n        <span class=\"service-view-name\" title=\"{{view.name}}\">{{view.appName}}</span>\n        <span class=\"service-view-address\">{{view.address}}</span>\n      </div>\n\n      <div class=\"service-view-detail-rectangle\">\n        <div class=\"service-view-detail-header\">\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-deployed\" ng-show=\"view.createdDate\"\n                 title=\"deployed at: {{view.createdDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n              deployed:\n              <span class=\"value\">{{view.createdDate.relative()}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-pod-template\" ng-show=\"view.controllerId\">\n              pod template:\n              <span class=\"value\">{{view.controllerId}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4 service-view-detail-pod-counts\">\n            <a ng-show=\"view.replicationController\" class=\"value pull-right\"\n               ng-click=\"item.$openResizeControllerDialog(view.replicationController)\"\n               title=\"Edit the number of pods\">\n              {{view.podCountText}}\n            </a>\n            <span ng-hide=\"view.replicationController\" class=\"value pull-right\">\n              {{view.podCountText}}\n            </span>\n          </div>\n        </div>\n\n        <div class=\"service-view-detail-pod-box\" ng-repeat=\"pod in item.pods\">\n          <div ng-show=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary-expand\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod {{pod.idAbbrev}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.podIP}}</span>\n                  </div>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-ports\">\n                    ports: <span class=\"value\">{{pod.containerPorts.join(\", \")}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-minion\">\n                    minion:\n                    <span class=\"value\">{{pod.host}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"collapsePod(pod)\">\n                  <i class=\"icon-chevron-left\"></i>\n                </td>\n              </tr>\n            </table>\n            <!--\n                                      <div class=\"service-view-detail-pod-status\">\n                                        status:\n                                        <span class=\"value\">{{pod.status}}</span>\n                                      </div>\n            -->\n          </div>\n\n          <div ng-hide=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod {{pod.idAbbrev}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.podIP}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"expandPod(pod)\">\n                  <i class=\"icon-chevron-right\"></i>\n                </td>\n              </tr>\n            </table>\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n\n\n  <div ng-hide=\"appSelectorShow\">\n    <div class=\"row filter-header\">\n      <div class=\"col-md-12\">\n        <span ng-show=\"apps.length && !id\">\n          <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                         css-class=\"input-xxlarge\"\n                         placeholder=\"Filter apps...\"></hawtio-filter>\n        </span>\n        <button ng-show=\"apps.length\"\n                class=\"btn btn-danger pull-right\"\n                ng-disabled=\"!id && tableConfig.selectedItems.length == 0\"\n                ng-click=\"deletePrompt(id || tableConfig.selectedItems)\">\n          <i class=\"glyphicon glyphicon-remove\"></i> Delete\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"appSelector.folders.length\"\n                class=\"btn btn-success pull-right\"\n                ng-click=\"appSelectorShow = true\"\n                title=\"Run an application\">\n          <i class=\"icon-play-circle\"></i> Run ...\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"id\"\n                class=\"btn btn-primary pull-right\"\n                ng-click=\"id = undefined\"><i class=\"glyphicon glyphicon-list\"></i></button>\n\n        <span class=\"pull-right\">&nbsp;</span>\n        <span ng-hide=\"id\" class=\"pull-right\">\n          <div class=\"btn-group\">\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'list\'\" href=\"\" ng-click=\"mode = \'list\'\">\n              <i class=\"glyphicon glyphicon-list\"></i></a>\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'detail\'\" href=\"\" ng-click=\"mode = \'detail\'\">\n              <i class=\"glyphicon glyphicon-table\"></i></a>\n          </div>\n        </span>\n      </div>\n    </div>\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div ng-hide=\"model.fetched\">\n          <div class=\"align-center\">\n            <i class=\"glyphicon glyphicon-spinner icon-spin\"></i>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && !id\">\n          <div ng-hide=\"model.apps.length\" class=\"align-center\">\n            <p class=\"alert alert-info\">There are no apps currently available.</p>\n          </div>\n          <div ng-show=\"model.apps.length\">\n            <div ng-show=\"mode == \'list\'\">\n              <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n            </div>\n            <div ng-show=\"mode == \'detail\'\">\n              <div class=\"app-detail\" ng-repeat=\"item in apps | filter:tableConfig.filterOptions.filterText\">\n                <ng-include src=\"\'appDetailTemplate.html\'\"/>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && id\">\n          <div class=\"app-detail\">\n            <ng-include src=\"\'appDetailTemplate.html\'\"/>\n          </div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n  <div ng-show=\"appSelectorShow\">\n    <div class=\"col-md-7\">\n      <div class=\"row\">\n        <hawtio-filter ng-model=\"appSelector.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter apps...\"></hawtio-filter>\n      </div>\n      <div class=\"row\">\n        <ul>\n          <li class=\"no-list profile-selector-folder\" ng-repeat=\"folder in appSelector.folders\"\n              ng-show=\"appSelector.showFolder(folder)\">\n            <div class=\"expandable\" ng-class=\"appSelector.isOpen(folder)\">\n              <div title=\"{{folder.path}}\" class=\"title\">\n                <i class=\"expandable-indicator folder\"></i> <span class=\"folder-title\" ng-show=\"folder.path\">{{folder.path.capitalize(true)}}</span><span\n                      class=\"folder-title\" ng-hide=\"folder.path\">Uncategorized</span>\n              </div>\n              <div class=\"expandable-body\">\n                <ul>\n                  <li class=\"no-list profile\" ng-repeat=\"profile in folder.apps\" ng-show=\"appSelector.showApp(profile)\">\n                    <div class=\"profile-selector-item\">\n                      <div class=\"inline-block profile-selector-checkbox\">\n                        <input type=\"checkbox\" ng-model=\"profile.selected\"\n                               ng-change=\"appSelector.updateSelected()\">\n                      </div>\n                      <div class=\"inline-block profile-selector-name\" ng-class=\"appSelector.getSelectedClass(profile)\">\n                        <span class=\"contained c-max\">\n                          <a href=\"\" ng-click=\"appSelector.select(profile, !profile.selected)\"\n                             title=\"Details for {{profile.id}}\">\n                              <img ng-show=\"profile.$iconUrl\" class=\"icon-small-app\" ng-src=\"{{profile.$iconUrl}}\">\n                              <span class=\"app-name\">{{profile.name}}</span>\n                          </a>\n                        </span>\n                      </div>\n                    </div>\n\n                  </li>\n                </ul>\n              </div>\n            </div>\n          </li>\n        </ul>\n      </div>\n    </div>\n    <div class=\"col-md-5\">\n      <div class=\"row\">\n        <button class=\"btn btn-primary pull-right\"\n                ng-click=\"appSelectorShow = undefined\"><i class=\"icon-circle-arrow-left\"></i> Back\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                title=\"Clears the selected Apps\"\n                ng-click=\"appSelector.clearSelected()\"><i class=\"icon-check-empty\"></i> Clear\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn btn-success pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                ng-click=\"appSelector.runSelectedApps()\"\n                title=\"Run the selected apps\">\n          <i class=\"icon-play-circle\"></i>\n          <ng-pluralize count=\"appSelector.selectedApps.length\"\n                        when=\"{\'0\': \'No App Selected\',\n                                       \'1\': \'Run App\',\n                                       \'other\': \'Run {} Apps\'}\"></ng-pluralize>\n\n        </button>\n      </div>\n      <div class=\"row\">\n<!--\n        <div ng-hide=\"appSelector.selectedApps.length\">\n          <p class=\"alert pull-right\">\n            Please select an App\n          </p>\n        </div>\n-->\n\n        <div ng-show=\"appSelector.selectedApps.length\">\n\n          <ul class=\"zebra-list pull-right\">\n            <li ng-repeat=\"app in appSelector.selectedApps\">\n              <img ng-show=\"app.$iconUrl\" class=\"icon-selected-app\" ng-src=\"{{app.$iconUrl}}\">\n              <strong class=\"green selected-app-name\">{{app.name}}</strong>\n              &nbsp;\n              <i class=\"red clickable glyphicon glyphicon-remove\"\n                 title=\"Remove appp\"\n                 ng-click=\"appSelector.select(app, false)\"></i>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div modal=\"resizeDialog.dialog.show\">\n    <form class=\"form-horizontal\" ng-submit=\"resizeDialog.onOk()\">\n        <div class=\"modal-header\"><h4>Resize {{resize.controller.id}}</h4></div>\n        <div class=\"modal-body\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"replicas\">Replica count</label>\n\n            <div class=\"controls\">\n              <input type=\"number\" min=\"0\" id=\"replicas\" ng-model=\"resize.newReplicas\">\n            </div>\n          </div>\n\n        </div>\n        <div class=\"modal-footer\">\n          <input class=\"btn btn-primary\" type=\"submit\"\n                 ng-disabled=\"resize.newReplicas === resize.controller.replicas\"\n                 value=\"Resize\">\n          <button class=\"btn btn-warning cancel\" type=\"button\" ng-click=\"resizeDialog.close()\">Cancel</button>\n        </div>\n      </form>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/kubernetesJsonDirective.html","<div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div class=\"fabric-page-header row\">\n\n        <div class=\"pull-left\" ng-show=\"iconURL\">\n          <div class=\"app-logo\">\n            <img ng-src=\"{{iconURL}}\">&nbsp;\n          </div>\n        </div>\n        <div class=\"pull-left\">\n            <h2 class=\"list-inline\"><span class=\"contained c-wide3\">&nbsp;{{displayName || appTitle}}</span></h2>\n        </div>\n        <div class=\"pull-right\">\n          <button class=\"btn btn-success pull-right\"\n                  title=\"Run this application\"\n                  ng-disabled=\"!config || config.error\"\n                  ng-click=\"apply()\">\n            <i class=\"icon-play-circle\"></i> Run\n          </button>\n        </div>\n        <div class=\"pull-left col-md-10 profile-summary-wide\">\n          <div\n               ng-show=\"summaryHtml\"\n               ng-bind-html-unsafe=\"summaryHtml\"></div>\n        </div>\n      </div>\n\n    </div>\n  </div>\n\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/layoutKubernetes.html","<script type=\"text/ng-template\" id=\"idTemplate.html\">\n  <div class=\"ngCellText\" ng-controller=\"Kubernetes.IDSelector\">\n    <a href=\"\" \n       title=\"View details for {{row.entity.id}}\"\n       ng-click=\"select(row.entity.id)\">{{row.entity.id}}</a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"selectorTemplate.html\">\n  <div class=\"ngCellText\">\n    <span ng-repeat=\"(name, value) in row.entity.selector track by $index\">\n      <strong>{{name}}</strong>: {{value}}\n    </span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"podCountsAndLinkTemplate.html\">\n  <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n    <a ng-show=\"row.entity.$podCounters.podsLink\" href=\"{{row.entity.$podCounters.podsLink}}\" title=\"View pods\">\n      <span ng-show=\"row.entity.$podCounters.valid\" class=\"badge badge-success\">{{row.entity.$podCounters.valid}}</span>\n      <span ng-show=\"row.entity.$podCounters.waiting\" class=\"badge\">{{row.entity.$podCounters.waiting}}</span>\n      <span ng-show=\"row.entity.$podCounters.error\" class=\"badge badge-warning\">{{row.entity.$podCounters.error}}</span>\n    </a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"labelTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"entity=row.entity\" ng-controller=\"Kubernetes.Labels\">\n    <p ng-show=\"data\"><strong>Labels</strong></p>\n    <span ng-repeat=\"label in labels track by $index\"\n          class=\"pod-label badge\"\n          ng-class=\"labelClass(label.key)\"\n          ng-click=\"handleClick(entity, label.key, label)\"\n          title=\"{{label.key}}\">{{label.title}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"portalAddress.html\">\n  <div class=\"ngCellText\">\n    <a target=\"openService\" href=\"http://{{row.entity.portalIP}}:{{row.entity.port}}/\"\n       ng-show=\"row.entity.portalIP && row.entity.$podCounters.valid\" title=\"Protocol {{row.entity.protocol}}\">\n      {{row.entity.portalIP}}:{{row.entity.port}}\n    </a>\n    <span ng-hide=\"row.entity.portalIP && row.entity.$podCounters.valid\">{{row.entity.portalIP}}:{{row.entity.port}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"iconCellTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"entity=row.entity\" ng-include=\"\'replicationControllerIconTemplate.html\'\">unknown</div>\n</script>\n<script type=\"text/ng-template\" id=\"replicationControllerIconTemplate.html\">\n  <div ng-init=\"entity = entity\" ng-controller=\"Kubernetes.ReplicationControllerIcon\">\n    <img class=\"icon-replication-controller\" ng-src=\"{{iconUrl}}\">\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"statusTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"entity=row.entity\" ng-controller=\"Kubernetes.PodStatus\" title=\"Pod {{entity.id}} is {{entity.currentState.status}}\">\n    <!-- in detail view -->\n    <p ng-show=\"data\"><strong>Status: </strong></p>\n    <i ng-class=\"statusMapping(entity.currentState.status)\"></i>\n    <span ng-show=\"data\">{{data}}</span>\n    <!-- in table -->\n    <span ng-show=\"entity.$jolokiaUrl\">\n      <a class=\"clickable\"\n         href=\"\"\n         ng-click=\"entity.$connect.doConnect(row.entity)\"\n         title=\"Open a new window and connect to this container\">\n        <i class=\"glyphicon glyphicon-signin\"></i>\n      </a>\n    </span>\n  </div>\n</script>\n<div class=\"row\" ng-controller=\"Kubernetes.TopLevel\">\n  <div class=\"col-md-12\">\n    <ul class=\"nav nav-tabs connected\">\n      <li ng-class=\'{active : isActive(\"/kubernetes/apps\")}\' ng-show=\"showAppView\"\n          title=\"View all of the Apps running right now\">\n        <a ng-href=\"/kubernetes/apps\">Apps</a>\n      </li>\n      <li ng-class=\'{active : isActive(\"/kubernetes/services\")}\'\n          title=\"View kubernetes services and their status\">\n        <a ng-href=\"/kubernetes/services\">Services</a>\n      </li>\n      <li ng-class=\'{active : isActive(\"/kubernetes/replicationControllers\")}\'\n          title=\"View kubernetes replication controllers and their status\">\n        <a ng-href=\"/kubernetes/replicationControllers\">Controllers</a>\n      </li>\n      <li ng-class=\'{active : isActive(\"/kubernetes/pods\")}\'\n          title=\"View kubernetes pods and their status\">\n        <a ng-href=\"/kubernetes/pods\">Pods</a>\n      </li>\n      <li ng-class=\'{active : isActive(\"/kubernetes/overview\")}\'\n          title=\"View an overview diagram of the system. Version: {{version.major}}.{{version.minor}}\">\n        <a ng-href=\"/kubernetes/overview\">Diagram</a>\n      </li>\n      <li class=pull-right>\n        namespace: <select ng-model=\"kubernetes.selectedNamespace\" ng-options=\"namespace for namespace in kubernetes.namespaces\" title=\"choose the namespace - which is a selection of resources in kubernetes\">\n            <!--option ng-repeat=\"namespace in namespaces\" value=\"{{namespace}}\">{{namespace}}</option-->\n        </select>\n      <li>\n    </ul>\n    <div class=\"wiki-icon-view\" ng-controller=\"Kubernetes.FileDropController\" nv-file-drop nv-file-over uploader=\"uploader\" over-class=\"ready-drop\">\n      <div class=\"row\" ng-view>\n      </div>\n    </div>\n  </div>\n</div>\n\n");
 $templateCache.put("plugins/kubernetes/html/overview.html","<div ng-controller=\"Kubernetes.OverviewController\">\n  <link rel=\"stylesheet\" href=\"app/kubernetes/html/overview.css\">\n  <script type=\"text/ng-template\" id=\"serviceBoxTemplate.html\">\n    <div class=\"row\">\n      <div class=\"col-md-3 align-left node-body\">{{entity.port}}</div>\n      <div class=\"col-md-9 align-right node-header\" title=\"{{entity.id}}\">{{entity.id}}</div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"serviceTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div id=\"{{service._key}}\"\n             namespace=\"{{service.namespace}}\"\n             connect-to=\"{{service.connectTo}}\"\n             data-type=\"service\"\n             class=\"jsplumb-node kubernetes-node kubernetes-service-node\"\n             ng-controller=\"Kubernetes.OverviewBoxController\"\n             ng-init=\"entity=getEntity(\'service\', \'{{service._key}}\')\"\n             ng-mouseenter=\"mouseEnter($event)\"\n             ng-mouseleave=\"mouseLeave($event)\"\n             ng-click=\"viewDetails(\'services\')\">\n          <div ng-init=\"entity=entity\" ng-include=\"\'serviceBoxTemplate.html\'\"></div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"hostTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div id=\"{{host.id}}\"\n             data-type=\"host\"\n             class=\"kubernetes-host-container\">\n          <h5>{{host.id}}</h5>\n          <div class=\"pod-container\"></div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"podTemplate.html\">\n    <div id=\"{{pod._key}}\"\n         data-type=\"pod\"\n         title=\"Pod ID: {{pod.id}}\"\n         class=\"jsplumb-node kubernetes-node kubernetes-pod-node\" \n         ng-mouseenter=\"mouseEnter($event)\"\n         ng-mouseleave=\"mouseLeave($event)\"\n         ng-controller=\"Kubernetes.OverviewBoxController\"\n         ng-init=\"entity=getEntity(\'pod\', \'{{pod._key}}\')\"\n         ng-click=\"viewDetails(\'pods\')\">\n    <div class=\"css-table\">\n      <div class=\"css-table-row\">\n        <div class=\"pod-status-cell css-table-cell\">\n          <span ng-init=\"row={ entity: entity }\" ng-include=\"\'statusTemplate.html\'\"></span>\n        </div>\n        <div class=\"pod-label-cell css-table-cell\">\n          <span ng-init=\"row={ entity: entity }\" ng-include=\"\'labelTemplate.html\'\"></span>\n        </div>\n    </div>\n  </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"replicationControllerTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div\n            id=\"{{replicationController._key}}\"\n            title=\"{{replicationController.id}}\"\n            data-type=\"replicationController\"\n            data-placement=\"top\"\n            connect-to=\"{{replicationController.connectTo}}\"\n            ng-mouseenter=\"mouseEnter($event)\"\n            ng-mouseleave=\"mouseLeave($event)\"\n            class=\"jsplumb-node kubernetes-replicationController-node kubernetes-node\"\n            ng-controller=\"Kubernetes.OverviewBoxController\"\n            ng-init=\"entity=getEntity(\'replicationController\', \'{{replicationController._key}}\')\"\n            ng-click=\"viewDetails(\'replicationControllers\')\">\n          <div ng-init=\"entity = entity\" ng-include=\"\'replicationControllerIconTemplate.html\'\">\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"overviewTemplate.html\">\n    <div class=\"kubernetes-overview\"\n         hawtio-jsplumb\n         draggable=\"false\"\n         layout=\"false\"\n         node-sep=\"50\"\n         rank-sep=\"300\">\n      <div class=\"kubernetes-overview-row\">\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview services\">\n            <h6>Services</h6>\n          </div>\n        </div>\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview hosts\">\n            <h6>Hosts and Pods</h6>\n          </div>\n        </div>\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview replicationControllers\">\n            <h6>Replication controllers</h6>\n          </div>\n        </div>\n      </div>\n   </div>\n  </script>\n  <kubernetes-overview ui-if=\"kubernetes.selectedNamespace\"></kubernetes-overview>\n</div>\n");

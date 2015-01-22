@@ -13,7 +13,7 @@ declare module Service {
         containerPort: number;
     }
     interface ServiceResponse {
-        items: Array<Service>;
+        items: Service[];
     }
     var _module: ng.IModule;
 }
