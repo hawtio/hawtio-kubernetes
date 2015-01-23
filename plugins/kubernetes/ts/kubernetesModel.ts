@@ -57,7 +57,7 @@ module Kubernetes {
     };
 
     public $keepPolling() {
-      return true;
+      return keepPollingModel;
     }
 
     public orRedraw(flag) {

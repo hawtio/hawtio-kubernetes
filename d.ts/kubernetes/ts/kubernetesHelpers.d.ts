@@ -7,6 +7,7 @@ declare module Kubernetes {
     var pluginPath: string;
     var templatePath: string;
     var log: Logging.Logger;
+    var keepPollingModel: boolean;
     var defaultIconUrl: string;
     var defaultApiVersion: string;
     var appSuffix: string;

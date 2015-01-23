@@ -111,7 +111,7 @@
                   </div>
                 </td>
                 <td class="service-view-detail-pod-expand" ng-click="collapsePod(pod)">
-                  <i class="icon-chevron-left"></i>
+                  <i class="fa fa-chevron-left"></i>
                 </td>
               </tr>
             </table>
@@ -139,7 +139,7 @@
                   </div>
                 </td>
                 <td class="service-view-detail-pod-expand" ng-click="expandPod(pod)">
-                  <i class="icon-chevron-right"></i>
+                  <i class="fa fa-chevron-right"></i>
                 </td>
               </tr>
             </table>
@@ -162,27 +162,27 @@
                 class="btn btn-danger pull-right"
                 ng-disabled="!id && tableConfig.selectedItems.length == 0"
                 ng-click="deletePrompt(id || tableConfig.selectedItems)">
-          <i class="glyphicon glyphicon-remove"></i> Delete
+          <i class="fa fa-remove"></i> Delete
         </button>
         <span class="pull-right">&nbsp;</span>
         <button ng-show="appSelector.folders.length"
                 class="btn btn-success pull-right"
                 ng-click="appSelectorShow = true"
                 title="Run an application">
-          <i class="icon-play-circle"></i> Run ...
+          <i class="fa fa-play-circle"></i> Run ...
         </button>
         <span class="pull-right">&nbsp;</span>
         <button ng-show="id"
                 class="btn btn-primary pull-right"
-                ng-click="id = undefined"><i class="glyphicon glyphicon-list"></i></button>
+                ng-click="id = undefined"><i class="fa fa-list"></i></button>
 
         <span class="pull-right">&nbsp;</span>
         <span ng-hide="id" class="pull-right">
           <div class="btn-group">
             <a class="btn btn-sm" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
-              <i class="glyphicon glyphicon-list"></i></a>
+              <i class="fa fa-list"></i></a>
             <a class="btn btn-sm" ng-disabled="mode == 'detail'" href="" ng-click="mode = 'detail'">
-              <i class="glyphicon glyphicon-table"></i></a>
+              <i class="fa fa-table"></i></a>
           </div>
         </span>
       </div>
@@ -191,7 +191,7 @@
       <div class="col-md-12">
         <div ng-hide="model.fetched">
           <div class="align-center">
-            <i class="glyphicon glyphicon-spinner icon-spin"></i>
+            <i class="fa fa-spinner fa-spin"></i>
           </div>
         </div>
         <div ng-show="model.fetched && !id">
@@ -264,20 +264,20 @@
     <div class="col-md-5">
       <div class="row">
         <button class="btn btn-primary pull-right"
-                ng-click="appSelectorShow = undefined"><i class="icon-circle-arrow-left"></i> Back
+                ng-click="appSelectorShow = undefined"><i class="fa fa-circle-arrow-left"></i> Back
         </button>
         <span class="pull-right">&nbsp;</span>
         <button class="btn pull-right"
                 ng-disabled="!appSelector.selectedApps.length"
                 title="Clears the selected Apps"
-                ng-click="appSelector.clearSelected()"><i class="icon-check-empty"></i> Clear
+                ng-click="appSelector.clearSelected()"><i class="fa fa-check-empty"></i> Clear
         </button>
         <span class="pull-right">&nbsp;</span>
         <button class="btn btn-success pull-right"
                 ng-disabled="!appSelector.selectedApps.length"
                 ng-click="appSelector.runSelectedApps()"
                 title="Run the selected apps">
-          <i class="icon-play-circle"></i>
+          <i class="fa fa-play-circle"></i>
           <ng-pluralize count="appSelector.selectedApps.length"
                         when="{'0': 'No App Selected',
                                        '1': 'Run App',
@@ -301,7 +301,7 @@
               <img ng-show="app.$iconUrl" class="icon-selected-app" ng-src="{{app.$iconUrl}}">
               <strong class="green selected-app-name">{{app.name}}</strong>
               &nbsp;
-              <i class="red clickable glyphicon glyphicon-remove"
+              <i class="red clickable fa fa-remove"
                  title="Remove appp"
                  ng-click="appSelector.select(app, false)"></i>
             </li>

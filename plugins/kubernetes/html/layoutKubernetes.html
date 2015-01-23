@@ -53,7 +53,7 @@
   <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.id}} is {{entity.currentState.status}}">
     <!-- in detail view -->
     <p ng-show="data"><strong>Status: </strong></p>
-    <i ng-class="statusMapping(entity.currentState.status)"></i>
+    <i class="fa" ng-class="statusMapping(entity.currentState.status)"></i>
     <span ng-show="data">{{data}}</span>
     <!-- in table -->
     <span ng-show="entity.$jolokiaUrl">
@@ -61,7 +61,7 @@
          href=""
          ng-click="entity.$connect.doConnect(row.entity)"
          title="Open a new window and connect to this container">
-        <i class="glyphicon glyphicon-signin"></i>
+        <i class="fa fa-signin"></i>
       </a>
     </span>
   </div>

@@ -9,6 +9,7 @@ module Kubernetes {
   export var templatePath = pluginPath + 'html/';
   export var log:Logging.Logger = Logger.get(pluginName);
 
+  export var keepPollingModel = true;
 
   export var defaultIconUrl = Core.url("/" + pluginPath + "img/kubernetes.svg");
 
@@ -309,14 +310,14 @@ module Kubernetes {
     if (text) {
       var lower = text.toLowerCase();
       if (lower.startsWith("run") || lower.startsWith("ok")) {
-        return 'icon-play-circle green';
+        return 'fa fa-play-circle green';
       } else if (lower.startsWith("wait")) {
-        return 'icon-download';
+        return 'fa fa-download';
       } else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
-        return 'icon-off orange';
+        return 'fa fa-off orange';
       }
     }
-    return 'icon-question red';
+    return 'fa fa-question red';
   }
 
   export function createAppViewPodCounters(appView) {
