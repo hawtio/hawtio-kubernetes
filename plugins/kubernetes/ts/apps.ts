@@ -59,6 +59,11 @@ module Kubernetes {
 
     Kubernetes.initShared($scope, $location);
 
+    $scope.$on('kubernetesModelUpdated', function () {
+      Core.$apply($scope);
+    });
+
+
     $scope.expandedPods = [];
 
     $scope.podExpanded = (pod) => {

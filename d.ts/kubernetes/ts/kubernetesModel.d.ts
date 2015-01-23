@@ -21,6 +21,7 @@ declare module Kubernetes {
         appFolders: any[];
         fetched: boolean;
         fetch: () => void;
+        $keepPolling(): boolean;
         orRedraw(flag: any): void;
         maybeInit(): void;
         protected updateApps(): void;
@@ -29,5 +30,5 @@ declare module Kubernetes {
      * Creates a model service which keeps track of all the pods, replication controllers and services along
      * with their associations and status
      */
-    function createKubernetesModel(KubernetesState: any, KubernetesServices: any, KubernetesReplicationControllers: any, KubernetesPods: any): KubernetesModelService;
+    function createKubernetesModel($rootScope: any, KubernetesState: any, KubernetesServices: any, KubernetesReplicationControllers: any, KubernetesPods: any): KubernetesModelService;
 }

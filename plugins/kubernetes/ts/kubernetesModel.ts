@@ -56,6 +56,10 @@ module Kubernetes {
     public fetch = () => {
     };
 
+    public $keepPolling() {
+      return true;
+    }
+
     public orRedraw(flag) {
       this.redraw = this.redraw || flag;
     }
@@ -269,7 +273,7 @@ module Kubernetes {
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
    */
-  export function createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+  export function createKubernetesModel($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
 
@@ -287,6 +291,7 @@ module Kubernetes {
               if (ready >= numServices) {
                 // log.debug("Fetching another round");
                 $scope.maybeInit();
+                $rootScope.$broadcast('kubernetesModelUpdated');
                 next();
               }
             }

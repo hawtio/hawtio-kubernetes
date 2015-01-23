@@ -95,8 +95,8 @@ module Kubernetes {
     };
   }]);
 
-  _module.factory('KubernetesModel', ['KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', (KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) => {
-    return createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
+  _module.factory('KubernetesModel', ['$rootScope', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', ($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) => {
+    return createKubernetesModel($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
   }]);
 
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {

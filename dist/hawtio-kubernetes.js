@@ -467,6 +467,9 @@ var Kubernetes;
             this.fetch = function () {
             };
         }
+        KubernetesModelService.prototype.$keepPolling = function () {
+            return true;
+        };
         KubernetesModelService.prototype.orRedraw = function (flag) {
             this.redraw = this.redraw || flag;
         };
@@ -661,7 +664,7 @@ var Kubernetes;
      * Creates a model service which keeps track of all the pods, replication controllers and services along
      * with their associations and status
      */
-    function createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+    function createKubernetesModel($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
         var $scope = new KubernetesModelService();
         $scope.kubernetes = KubernetesState;
         KubernetesServices.then(function (KubernetesServices) {
@@ -676,6 +679,7 @@ var Kubernetes;
                             if (ready >= numServices) {
                                 // log.debug("Fetching another round");
                                 $scope.maybeInit();
+                                $rootScope.$broadcast('kubernetesModelUpdated');
                                 next();
                             }
                         }
@@ -791,8 +795,8 @@ var Kubernetes;
             selectedNamespace: null
         };
     }]);
-    Kubernetes._module.factory('KubernetesModel', ['KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', function (KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
-        return Kubernetes.createKubernetesModel(KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
+    Kubernetes._module.factory('KubernetesModel', ['$rootScope', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', function ($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+        return Kubernetes.createKubernetesModel($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
     }]);
     Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', function (viewRegistry, workspace, ServiceRegistry, HawtioNav) {
         Kubernetes.log.debug("Running");
@@ -882,6 +886,9 @@ var Kubernetes;
             ]
         };
         Kubernetes.initShared($scope, $location);
+        $scope.$on('kubernetesModelUpdated', function () {
+            Core.$apply($scope);
+        });
         $scope.expandedPods = [];
         $scope.podExpanded = function (pod) {
             var id = (pod || {}).id;
