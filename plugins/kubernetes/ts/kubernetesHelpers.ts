@@ -320,6 +320,11 @@ module Kubernetes {
     return 'fa fa-question red';
   }
 
+  export function podStatus(pod) {
+    var currentStatus = (pod || {}).currentState || {};
+    return currentStatus.status;
+  }
+
   export function createAppViewPodCounters(appView) {
     var array = [];
     var map = {};
@@ -340,10 +345,10 @@ module Kubernetes {
         map[selector] = answer;
         array.push(answer);
       }
-      var status = pod.status;
-      if ("OK" === status) {
+      var status = (podStatus(pod) || "Error").toLowerCase();
+      if (status.startsWith("run") || status.startsWith("ok")) {
         answer.valid += 1;
-      } else if ("WAIT" === status) {
+      } else if (status.startsWith("wait")) {
         answer.waiting += 1;
       } else {
         answer.error += 1;
@@ -373,7 +378,7 @@ module Kubernetes {
         }
         pod.idAbbrev = abbrev;
       }
-      pod.statusClass = statusTextToCssClass(pod.status);
+      pod.statusClass = statusTextToCssClass(podStatus(pod));
     });
 
     var services = appView.services || [];

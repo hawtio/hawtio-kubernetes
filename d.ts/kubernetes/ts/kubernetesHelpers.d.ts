@@ -60,6 +60,7 @@ declare module Kubernetes {
     function openLogsForPods(ServiceRegistry: any, $window: any, pods: any): void;
     function resizeController($http: any, KubernetesApiURL: any, id: any, newReplicas: any, onCompleteFn?: any): void;
     function statusTextToCssClass(text: any): string;
+    function podStatus(pod: any): any;
     function createAppViewPodCounters(appView: any): any[];
     function createAppViewServiceViews(appView: any): any[];
 }
