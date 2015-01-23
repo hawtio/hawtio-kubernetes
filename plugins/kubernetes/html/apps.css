@@ -129,12 +129,12 @@ img.icon-selected-app {
 .service-view-detail-pod-counts {
 }
 
-.service-view-detail-pod-status {
+.service-view-detail-pod-status, .service-view-detail-pod-connect {
     line-height: 36px;
     padding-right: 20px;
 }
 
-.service-view-detail-pod-status i {
+.service-view-detail-pod-status i, .service-view-detail-pod-connect i {
     font-size: 36px;
     display: inline-block;
     vertical-align: middle;
