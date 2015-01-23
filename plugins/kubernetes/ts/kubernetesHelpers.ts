@@ -5,8 +5,12 @@ module Kubernetes {
   export var hash = '#' + context;
   export var defaultRoute = hash + '/apps';
   export var pluginName = 'Kubernetes';
-  export var templatePath = 'plugins/kubernetes/html/';
+  export var pluginPath = 'plugins/kubernetes/';
+  export var templatePath = pluginPath + 'html/';
   export var log:Logging.Logger = Logger.get(pluginName);
+
+
+  export var defaultIconUrl = Core.url("/" + pluginPath + "img/kubernetes.svg");
 
   export var defaultApiVersion = "v1beta2";
 

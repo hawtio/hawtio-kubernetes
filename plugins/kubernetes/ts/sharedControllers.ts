@@ -6,7 +6,7 @@ module Kubernetes {
 
   // controller that maps a docker image to an icon path in the if possible
   var ReplicationControllerIcon = controller("ReplicationControllerIcon", ["$scope", "jolokia", ($scope, jolokia:Jolokia.IJolokia) => {
-    $scope.iconUrl = 'img/icons/kubernetes.svg';
+    $scope.iconUrl = defaultIconUrl;
     jolokia.request({
       type: 'exec',
       mbean: Kubernetes.mbean,

@@ -50,7 +50,6 @@ module Kubernetes {
     public appViews = [];
     public appFolders = [];
 
-    public defaultIconUrl = Core.url("/img/icons/kubernetes.svg");
 
     public fetched = false;
 
@@ -213,7 +212,7 @@ module Kubernetes {
 
         var apps = [];
         var defaultInfo = {
-          $iconUrl: this.defaultIconUrl
+          $iconUrl: defaultIconUrl
         };
 
         angular.forEach(this.appViews, (appView) => {

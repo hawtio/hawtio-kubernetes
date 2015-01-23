@@ -21,7 +21,6 @@ module Kubernetes {
 
     var branch = $scope.branch || "master";
     var namespace = null;
-    var defaultIconUrl = Core.url("/img/icons/kubernetes.svg");
 
     function appMatches(app) {
       var filterText = $scope.appSelector.filterText;

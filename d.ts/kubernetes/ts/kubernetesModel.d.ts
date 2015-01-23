@@ -19,7 +19,6 @@ declare module Kubernetes {
         appInfos: any[];
         appViews: any[];
         appFolders: any[];
-        defaultIconUrl: string;
         fetched: boolean;
         fetch: () => void;
         orRedraw(flag: any): void;
