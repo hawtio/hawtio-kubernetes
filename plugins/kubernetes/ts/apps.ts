@@ -17,7 +17,7 @@ module Kubernetes {
     $scope.json = '';
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'appSelectorShow', 'openApp', undefined);
-    ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
+    ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'detail');
 
     var branch = $scope.branch || "master";
     var namespace = null;
