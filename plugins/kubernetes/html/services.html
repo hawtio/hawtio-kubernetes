@@ -1,13 +1,13 @@
 <div ng-controller="Kubernetes.Services">
   <div class="row">
-    <div class="col-md-12" ng-show="services.length">
+    <div class="col-md-12" ng-show="model.services.length">
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter services..."
                        save-as="kubernetes-services-text-filter"></hawtio-filter>
       </span>
-      <button ng-show="fetched"
+      <button ng-show="model.fetched"
               class="btn btn-danger pull-right"
               ng-disabled="!id && tableConfig.selectedItems.length == 0"
               ng-click="deletePrompt(id || tableConfig.selectedItems)">
@@ -21,21 +21,21 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <div ng-hide="fetched">
+      <div ng-hide="model.fetched">
         <div class="align-center">
           <i class="glyphicon glyphicon-spinner icon-spin"></i>
         </div>
       </div>
-      <div ng-show="fetched && !id">
-        <div ng-hide="services.length" class="align-center">
+      <div ng-show="model.fetched && !id">
+        <div ng-hide="model.services.length" class="align-center">
           <p class="alert alert-info">There are no services currently available.</p>
         </div>
-        <div ng-show="services.length">
+        <div ng-show="model.services.length">
           <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
                  hawtio-simple-table="tableConfig"></table>
         </div>
       </div>
-      <div ng-show="fetched && id">
+      <div ng-show="model.fetched && id">
         <p></p>
         <div hawtio-object="item"></div>
       </div>

@@ -5,21 +5,19 @@
 module Kubernetes {
 
   export var Services = controller("Services",
-    ["$scope", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia",
-      ($scope, KubernetesServices:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState,
+    ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia",
+      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia) => {
 
-    $scope.namespace = $routeParams.namespace;
-    $scope.services = [];
-    $scope.allServices = [];
     $scope.kubernetes = KubernetesState;
-    var pods = [];
-    $scope.fetched = false;
-    $scope.json = '';
+    $scope.model = KubernetesModel;
+    $scope.id = null;
+
+    $scope.namespace = $routeParams.namespace;
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
 
     $scope.tableConfig = {
-      data: 'services',
+      data: 'model.services',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
@@ -40,14 +38,19 @@ module Kubernetes {
 
     Kubernetes.initShared($scope, $location);
 
+    $scope.$on('kubernetesModelUpdated', function () {
+      Core.$apply($scope);
+    });
+
     $scope.$on('kubeSelectedId', ($event, id) => {
-      Kubernetes.setJson($scope, id, $scope.services);
+      Kubernetes.setJson($scope, id, $scope.model.services);
     });
 
     $scope.$on('$routeUpdate', ($event) => {
-      Kubernetes.setJson($scope, $location.search()['_id'], $scope.pods);
+      Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
     });
 
+/*
     function updatePodCounts() {
       // lets iterate through the services and update the counts for the pods
       angular.forEach($scope.services, (service) => {
@@ -57,6 +60,7 @@ module Kubernetes {
 
       updateNamespaces($scope.kubernetes, pods, [], $scope.allServices);
     }
+*/
 
     KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {
       KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
@@ -102,6 +106,7 @@ module Kubernetes {
           }).open();
         };
 
+/*
         $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           var ready = 0;
           var numServices = 2;
@@ -142,10 +147,12 @@ module Kubernetes {
           });
         });
         $scope.fetch();
-      });
-    });
 
     function maybeInit() {
     }
+*/
+      });
+    });
+
   }]);
 }

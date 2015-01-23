@@ -25,6 +25,7 @@ declare module Kubernetes {
         orRedraw(flag: any): void;
         maybeInit(): void;
         protected updateApps(): void;
+        protected discoverPodConnections(entity: any): void;
     }
     /**
      * Creates a model service which keeps track of all the pods, replication controllers and services along

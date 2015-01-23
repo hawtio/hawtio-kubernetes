@@ -36,12 +36,17 @@ module Kubernetes {
   }]);
 
   export var ReplicationControllers = controller("ReplicationControllers",
-    ["$scope", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia",
-      ($scope, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState,
+    ["$scope", "KubernetesModel", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia",
+      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia) => {
 
     $scope.namespace = $routeParams.namespace;
     $scope.kubernetes = KubernetesState;
+    $scope.model = KubernetesModel;
+    $scope.$on('kubernetesModelUpdated', function () {
+      Core.$apply($scope);
+    });
+
     $scope.replicationControllers = [];
     $scope.allReplicationControllers = [];
     var pods = [];
@@ -58,7 +63,7 @@ module Kubernetes {
     };
 
     $scope.tableConfig = {
-      data: 'replicationControllers',
+      data: 'model.replicationControllers',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
@@ -184,7 +189,7 @@ module Kubernetes {
           }).open();
         };
 
-        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
+/*        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           var ready = 0;
           var numServices = 2;
 
@@ -235,6 +240,7 @@ module Kubernetes {
           });
         });
         $scope.fetch();
+        */
       });
     });
 

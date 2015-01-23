@@ -10,22 +10,22 @@ module Kubernetes {
   }]);
 
   // main controller for the page
-  export var Pods = controller("Pods", ["$scope", "KubernetesPods", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage",
-    ($scope, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage) => {
-
-    $scope.namespace = $routeParams.namespace;
-    $scope.pods = undefined;
-    var pods = [];
-    $scope.fetched = false;
-    $scope.json = '';
-    $scope.itemSchema = Forms.createFormConfiguration();
+  export var Pods = controller("Pods", ["$scope", "KubernetesModel", "KubernetesPods", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage",
+    ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage) => {
 
     $scope.kubernetes = KubernetesState;
+    $scope.model = KubernetesModel;
+    $scope.$on('kubernetesModelUpdated', function () {
+      Core.$apply($scope);
+    });
+
+    $scope.namespace = $routeParams.namespace;
+    $scope.itemSchema = Forms.createFormConfiguration();
 
     $scope.hasService = (name) => Service.hasService(ServiceRegistry, name);
 
     $scope.tableConfig = {
-      data: 'pods',
+      data: 'model.pods',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
@@ -111,11 +111,11 @@ module Kubernetes {
     };
 
     $scope.$on('kubeSelectedId', ($event, id) => {
-      Kubernetes.setJson($scope, id, $scope.pods);
+      Kubernetes.setJson($scope, id, $scope.model.pods);
     });
 
     $scope.$on('$routeUpdate', ($event) => {
-      Kubernetes.setJson($scope, $location.search()['_id'], $scope.pods);
+      Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
     });
 
 /*
@@ -252,7 +252,7 @@ module Kubernetes {
       };
 
       // setup polling
-      $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
+/*      $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
         KubernetesPods.query((response) => {
           $scope.fetched = true;
           var redraw = ArrayHelpers.sync(pods, (response['items'] || []).sortBy((pod:KubePod) => { return pod.id }).filter((pod:KubePod) => { return pod.id && (!$scope.namespace || $scope.namespace === pod.namespace)}));
@@ -335,17 +335,18 @@ module Kubernetes {
             }
           });
           Kubernetes.setJson($scope, $scope.id, pods);
-          $scope.pods = pods.filter((item)=> {return item.namespace === $scope.kubernetes.selectedNamespace});
+          $scope.model.pods = pods.filter((item)=> {return item.namespace === $scope.kubernetes.selectedNamespace});
           updateNamespaces($scope.kubernetes, pods);
 
           // technically the above won't trigger hawtio simple table's watch, so let's force it
           $scope.$broadcast("hawtio.datatable.pods");
-          //log.debug("Pods: ", $scope.pods);
+          //log.debug("Pods: ", $scope.model.pods);
           next();
         });
       });
       // kick off polling
       $scope.fetch();
+      */
     });
   }]);
 }

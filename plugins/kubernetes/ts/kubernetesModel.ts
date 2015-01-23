@@ -65,11 +65,13 @@ module Kubernetes {
     }
 
     public maybeInit() {
+      this.fetched = true;
       if (this.services && this.replicationControllers && this.pods) {
         this.servicesByKey = {};
         this.podsByKey = {};
         this.replicationControllersByKey = {};
         this.kubernetes.namespaces = {};
+
         this.services.forEach((service) => {
           this.servicesByKey[service._key] = service;
           var selectedPods = selectPods(this.pods, service.namespace, service.selector);
@@ -78,24 +80,30 @@ module Kubernetes {
           }).join(',');
 
           var selector = service.selector;
+          service.$labelsText = Kubernetes.labelsToString(service.labels);
           service.$pods = [];
           service.$podCounters = selector ? createPodCounters(selector, this.pods, service.$pods) : null;
         });
+
         this.replicationControllers.forEach((replicationController) => {
           this.replicationControllersByKey[replicationController._key] = replicationController
           var selectedPods = selectPods(this.pods, replicationController.namespace, replicationController.desiredState.replicaSelector);
           replicationController.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
+          replicationController.$labelsText = Kubernetes.labelsToString(replicationController.labels);
           replicationController.$pods = selectedPods;
         });
         var hostsByKey = {};
+
         this.pods.forEach((pod) => {
           this.podsByKey[pod._key] = pod;
           var host = pod.currentState.host;
           hostsByKey[host] = hostsByKey[host] || [];
           hostsByKey[host].push(pod);
+          pod.$labelsText = Kubernetes.labelsToString(pod.labels);
 
+          this.discoverPodConnections(pod);
         });
         var tmpHosts = [];
         var oldHostsLength = this.hosts.length;
@@ -169,12 +177,8 @@ module Kubernetes {
           });
         }
       });
-
-
       this.appViews = appViews;
-      if (this.appViews.length) {
-        this.fetched = true;
-      }
+
       if (this.appInfos && this.appViews) {
         var folderMap = {};
         var folders = [];
@@ -264,7 +268,87 @@ module Kubernetes {
         //this.apps = apps;
         this.apps = this.appViews;
       }
+    }
 
+    protected discoverPodConnections(entity) {
+      var info = Core.pathGet(entity, ["currentState", "info"]);
+      var hostPort = null;
+      var currentState = entity.currentState || {};
+      var desiredState = entity.desiredState || {};
+      var host = currentState["host"];
+      var podIP = currentState["podIP"];
+      var hasDocker = false;
+      var foundContainerPort = null;
+      if (currentState && !podIP) {
+        angular.forEach(info, (containerInfo, containerName) => {
+          if (!hostPort) {
+            var jolokiaHostPort = Core.pathGet(containerInfo, ["detailInfo", "HostConfig", "PortBindings", "8778/tcp"]);
+            if (jolokiaHostPort) {
+              var hostPorts = jolokiaHostPort.map("HostPort");
+              if (hostPorts && hostPorts.length > 0) {
+                hostPort = hostPorts[0];
+                hasDocker = true;
+              }
+            }
+          }
+        });
+      }
+      if (desiredState && !hostPort) {
+        var containers = Core.pathGet(desiredState, ["manifest", "containers"]);
+        angular.forEach(containers, (container) => {
+          if (!hostPort) {
+            var ports = container.ports;
+            angular.forEach(ports, (port) => {
+              if (!hostPort) {
+                var containerPort = port.containerPort;
+                var portName = port.name;
+                var containerHostPort = port.hostPort;
+                if (containerPort === 8778 || "jolokia" === portName) {
+                  if (containerPort) {
+                    if (podIP) {
+                      foundContainerPort = containerPort;
+                    }
+                    if (containerHostPort) {
+                      hostPort = containerHostPort;
+                    }
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
+      if (podIP && foundContainerPort) {
+        host = podIP;
+        hostPort = foundContainerPort;
+        hasDocker = false;
+      }
+      if (hostPort) {
+        if (!host) {
+          host = "localhost";
+        }
+        // if Kubernetes is running locally on a platform which doesn't support docker natively
+        // then docker containers will be on a different IP so lets check for localhost and
+        // switch to the docker IP if its available
+        // TODO
+        var dockerIp = null;
+        var currentHostName = null;
+        if (dockerIp && hasDocker) {
+          if (host === "localhost" || host === "127.0.0.1" || host === currentHostName) {
+            host = dockerIp;
+          }
+        }
+        if (isRunning(currentState)) {
+          entity.$jolokiaUrl = "http://" + host + ":" + hostPort + "/jolokia/";
+
+          // TODO note if we can't access the docker/local host we could try access via
+          // the pod IP; but typically you need to explicitly enable that inside boot2docker
+          // see: https://github.com/fabric8io/fabric8/blob/2.0/docs/getStarted.md#if-you-are-on-a-mac
+
+          // TODO
+          //entity.$connect = $scope.connect;
+        }
+      }
     }
   }
 

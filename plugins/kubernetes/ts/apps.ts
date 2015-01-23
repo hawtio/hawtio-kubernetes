@@ -9,6 +9,10 @@ module Kubernetes {
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $dialog, $timeout, workspace, jolokia:Jolokia.IJolokia) => {
 
     $scope.model = KubernetesModel;
+    $scope.$on('kubernetesModelUpdated', function () {
+      Core.$apply($scope);
+    });
+
     $scope.namespace = $routeParams.namespace;
     $scope.apps = [];
     $scope.allApps = [];
@@ -58,10 +62,6 @@ module Kubernetes {
     };
 
     Kubernetes.initShared($scope, $location);
-
-    $scope.$on('kubernetesModelUpdated', function () {
-      Core.$apply($scope);
-    });
 
 
     $scope.expandedPods = [];
