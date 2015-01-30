@@ -5,6 +5,7 @@
     "hawtio"
   ],
   "main": [
+    "dist/hawtio-kubernetes.css",
     "dist/hawtio-kubernetes.js"
   ],
   "ignore": [

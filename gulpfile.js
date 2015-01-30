@@ -126,6 +126,12 @@ gulp.task('connect', ['watch'], function() {
       port: kube.port(),
       path: '/jolokia',
       targetPath: '/hawtio/jolokia'
+    }, {
+      proto: kube.protocol(),
+      hostname: kube.hostname(),
+      port: kube.port(),
+      path: '/git',
+      targetPath: '/hawtio/git'
     }],
     staticAssets: [{
       path: '/',
