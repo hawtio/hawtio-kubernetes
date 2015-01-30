@@ -165,7 +165,7 @@ gulp.task('connect', ['watch'], function() {
   hawtio.use('/', function(req, res, next) {
           var path = req.originalUrl;
           // avoid returning these files, they should get pulled from js
-          if (s.startsWith(path, '/plugins/')) {
+          if (s.startsWith(path, '/plugins/') && s.endsWith(path, 'html')) {
             console.log("returning 404 for: ", path);
             res.statusCode = 404;
             res.end();
