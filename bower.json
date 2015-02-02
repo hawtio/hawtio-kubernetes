@@ -32,5 +32,8 @@
     "patternfly": "~1.1.2",
     "hawtio-core-dts": "~2.0.0",
     "angular-mocks": "~1.3.7"
+  },
+  "resolutions": {
+    "lodash": "~3.0.0"
   }
 }
