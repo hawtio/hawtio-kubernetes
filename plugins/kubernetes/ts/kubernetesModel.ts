@@ -50,7 +50,6 @@ module Kubernetes {
     public appViews = [];
     public appFolders = [];
 
-
     public fetched = false;
 
     public fetch = () => {
@@ -64,6 +63,25 @@ module Kubernetes {
       this.redraw = this.redraw || flag;
     }
 
+    protected findIconUrl(id: string, nameField: string) {
+      var answer = null;
+      if (id && nameField) {
+        (this.appInfos || []).forEach((appInfo) => {
+          var iconPath = appInfo.iconPath;
+          if (iconPath && !answer) {
+            var iconUrl = (HawtioCore.injector.get('AppLibraryURL') || '') + "/git/master" + iconPath;
+            var ids = Core.pathGet(appInfo, ["names", nameField]);
+            angular.forEach(ids, (appId) => {
+              if (appId === id) {
+                answer = iconUrl;
+              }
+            });
+          }
+        });
+      }
+      return answer || defaultIconUrl;
+    }
+
     public maybeInit() {
       this.fetched = true;
       if (this.services && this.replicationControllers && this.pods) {
@@ -72,16 +90,35 @@ module Kubernetes {
         this.replicationControllersByKey = {};
         this.kubernetes.namespaces = {};
 
+        var hostsByKey = {};
+
+        this.pods.forEach((pod) => {
+          this.podsByKey[pod._key] = pod;
+          var host = pod.currentState.host;
+          hostsByKey[host] = hostsByKey[host] || [];
+          hostsByKey[host].push(pod);
+          pod.$labelsText = Kubernetes.labelsToString(pod.labels);
+          pod.$iconUrl = defaultIconUrl;
+          this.discoverPodConnections(pod);
+        });
+
         this.services.forEach((service) => {
           this.servicesByKey[service._key] = service;
           var selectedPods = selectPods(this.pods, service.namespace, service.selector);
           service.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
-
           var selector = service.selector;
           service.$labelsText = Kubernetes.labelsToString(service.labels);
-          service.$pods = [];
+          var iconUrl = this.findIconUrl(service.id, "serviceNames");
+          service.$iconUrl = iconUrl;
+          if (iconUrl && selectedPods) {
+            selectedPods.forEach((pod) => {
+              pod.$iconUrl = iconUrl;
+            });
+          }
+
+          service.$pods = selectedPods;
           service.$podCounters = selector ? createPodCounters(selector, this.pods, service.$pods) : null;
         });
 
@@ -92,18 +129,14 @@ module Kubernetes {
             return pod._key;
           }).join(',');
           replicationController.$labelsText = Kubernetes.labelsToString(replicationController.labels);
+          var iconUrl = this.findIconUrl(replicationController.id, "replicationControllerNames");
+          replicationController.$iconUrl = iconUrl;
           replicationController.$pods = selectedPods;
-        });
-        var hostsByKey = {};
-
-        this.pods.forEach((pod) => {
-          this.podsByKey[pod._key] = pod;
-          var host = pod.currentState.host;
-          hostsByKey[host] = hostsByKey[host] || [];
-          hostsByKey[host].push(pod);
-          pod.$labelsText = Kubernetes.labelsToString(pod.labels);
-
-          this.discoverPodConnections(pod);
+          if (iconUrl && selectedPods) {
+            selectedPods.forEach((pod) => {
+              pod.$iconUrl = iconUrl;
+            });
+          }
         });
         var tmpHosts = [];
         var oldHostsLength = this.hosts.length;
@@ -185,16 +218,6 @@ module Kubernetes {
         var appMap = {};
         angular.forEach(this.appInfos, (appInfo) => {
           var appPath = appInfo.appPath;
-          var iconPath = appInfo.iconPath;
-
-          /*
-           TODO
-           if (iconPath) {
-           appInfo.$iconUrl = Wiki.gitRelativeURL(branch, iconPath);
-           } else {
-           appInfo.$iconUrl = defaultIconUrl;
-           }
-           */
           if (appPath) {
             appMap[appPath] = appInfo;
             var idx = appPath.lastIndexOf("/");
@@ -357,7 +380,7 @@ module Kubernetes {
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
    */
-  export function createKubernetesModel($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+  export function createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
 
@@ -367,7 +390,7 @@ module Kubernetes {
         KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
           $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
             var ready = 0;
-            var numServices = 3;
+            var numServices = 4;
 
             function maybeNext(count) {
               ready = count;
@@ -401,6 +424,18 @@ module Kubernetes {
               }
               maybeNext(ready + 1);
             });
+
+            var appsUrl = AppLibraryURL + "/apps";
+            $http.get(appsUrl).
+              success(function(data, status, headers, config) {
+                if (data) {
+                  $scope.appInfos = data;
+                }
+                maybeNext(ready + 1);
+              }).
+              error(function(data, status, headers, config) {
+                maybeNext(ready + 1);
+              });
           });
           $scope.fetch();
         });

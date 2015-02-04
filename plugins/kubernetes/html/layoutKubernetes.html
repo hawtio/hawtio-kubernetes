@@ -41,11 +41,8 @@
   </div>
 </script>
 <script type="text/ng-template" id="iconCellTemplate.html">
-  <div class="ngCellText" ng-init="entity=row.entity" ng-include="'replicationControllerIconTemplate.html'">unknown</div>
-</script>
-<script type="text/ng-template" id="replicationControllerIconTemplate.html">
-  <div ng-init="entity = entity" ng-controller="Kubernetes.ReplicationControllerIcon">
-    <img class="app-icon-small" ng-src="{{iconUrl}}">
+  <div class="ngCellText">
+    <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
   </div>
 </script>
 <script type="text/ng-template" id="statusTemplate.html">

@@ -23,6 +23,7 @@ declare module Kubernetes {
         fetch: () => void;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;
+        protected findIconUrl(id: string, nameField: string): any;
         maybeInit(): void;
         protected updateApps(): void;
         protected discoverPodConnections(entity: any): void;
@@ -31,5 +32,5 @@ declare module Kubernetes {
      * Creates a model service which keeps track of all the pods, replication controllers and services along
      * with their associations and status
      */
-    function createKubernetesModel($rootScope: any, KubernetesState: any, KubernetesServices: any, KubernetesReplicationControllers: any, KubernetesPods: any): KubernetesModelService;
+    function createKubernetesModel($rootScope: any, $http: any, AppLibraryURL: any, KubernetesState: any, KubernetesServices: any, KubernetesReplicationControllers: any, KubernetesPods: any): KubernetesModelService;
 }

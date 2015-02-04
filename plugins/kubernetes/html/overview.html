@@ -71,7 +71,7 @@
             ng-controller="Kubernetes.OverviewBoxController"
             ng-init="entity=getEntity('replicationController', '{{replicationController._key}}')"
             ng-click="viewDetails('replicationControllers')">
-          <div ng-init="entity = entity" ng-include="'replicationControllerIconTemplate.html'">
+          <div ng-init="entity = entity" ng-include="'iconCellTemplate.html'">
           </div>
         </div>
       </div>

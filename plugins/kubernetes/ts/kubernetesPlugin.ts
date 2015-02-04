@@ -46,6 +46,10 @@ module Kubernetes {
 */
   }]);
 
+  _module.factory('AppLibraryURL', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
+    return "/services/app-library";
+  }]);
+
   function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string,
                           $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) {
     KubernetesApiURL.then((KubernetesApiURL) => {
@@ -95,8 +99,8 @@ module Kubernetes {
     };
   }]);
 
-  _module.factory('KubernetesModel', ['$rootScope', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', ($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) => {
-    return createKubernetesModel($rootScope, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
+  _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', ($rootScope, $http, AppLibraryURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) => {
+    return createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
   }]);
 
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
