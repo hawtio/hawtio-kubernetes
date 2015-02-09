@@ -24,7 +24,7 @@ declare module Kubernetes {
         fetch: () => void;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;
-        protected findIconUrl(id: string, nameField: string): any;
+        protected updateIconUrlAndAppInfo(entity: any, nameField: string): void;
         maybeInit(): void;
         protected updateApps(): void;
         protected discoverPodConnections(entity: any): void;

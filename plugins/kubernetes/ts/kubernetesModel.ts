@@ -64,8 +64,9 @@ module Kubernetes {
       this.redraw = this.redraw || flag;
     }
 
-    protected findIconUrl(id: string, nameField: string) {
+    protected updateIconUrlAndAppInfo(entity, nameField: string) {
       var answer = null;
+      var id = entity.id;
       if (id && nameField) {
         (this.appInfos || []).forEach((appInfo) => {
           var iconPath = appInfo.iconPath;
@@ -74,13 +75,17 @@ module Kubernetes {
             var ids = Core.pathGet(appInfo, ["names", nameField]);
             angular.forEach(ids, (appId) => {
               if (appId === id) {
-                answer = iconUrl;
+                entity.$iconUrl = iconUrl;
+                entity.appPath = appInfo.appPath;
+                entity.$info = appInfo;
               }
             });
           }
         });
       }
-      return answer || defaultIconUrl;
+      if (!entity.$iconUrl) {
+        entity.$iconUrl = defaultIconUrl;
+      }
     }
 
     public maybeInit() {
@@ -111,8 +116,8 @@ module Kubernetes {
           }).join(',');
           var selector = service.selector;
           service.$labelsText = Kubernetes.labelsToString(service.labels);
-          var iconUrl = this.findIconUrl(service.id, "serviceNames");
-          service.$iconUrl = iconUrl;
+          this.updateIconUrlAndAppInfo(service, "serviceNames");
+          var iconUrl = service.$iconUrl;
           if (iconUrl && selectedPods) {
             selectedPods.forEach((pod) => {
               pod.$iconUrl = iconUrl;
@@ -130,8 +135,8 @@ module Kubernetes {
             return pod._key;
           }).join(',');
           replicationController.$labelsText = Kubernetes.labelsToString(replicationController.labels);
-          var iconUrl = this.findIconUrl(replicationController.id, "replicationControllerNames");
-          replicationController.$iconUrl = iconUrl;
+          this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
+          var iconUrl =  replicationController.$iconUrl;
           replicationController.$pods = selectedPods;
           if (iconUrl && selectedPods) {
             selectedPods.forEach((pod) => {
@@ -177,9 +182,14 @@ module Kubernetes {
 
       this.replicationControllers.forEach((replicationController) => {
         var name = replicationController.name || replicationController.id;
+        var $iconUrl = replicationController.$iconUrl;
         appViews.push({
           appPath: "/dummyPath/" + name,
           $name: name,
+          $info: {
+            $iconUrl: $iconUrl
+          },
+          $iconUrl: $iconUrl,
           replicationControllers: [replicationController],
           pods: replicationController.$pods || [],
           services: []
@@ -202,9 +212,14 @@ module Kubernetes {
           matchesApp.services.push(service);
         } else {
           var name = service.name || service.id;
+          var $iconUrl = service.$iconUrl;
           appViews.push({
             appPath: "/dummyPath/" + name,
             $name: name,
+            $info: {
+              $iconUrl: $iconUrl
+            },
+            $iconUrl: $iconUrl,
             replicationControllers: [],
             pods: service.$pods || [],
             services: [service]
@@ -249,7 +264,6 @@ module Kubernetes {
 
         angular.forEach(this.appViews, (appView) => {
           var appPath = appView.appPath;
-          appView.$info = defaultInfo;
 
           /*
            TODO
@@ -262,10 +276,17 @@ module Kubernetes {
           if (appPath) {
             appInfo = appMap[appPath] || appInfo;
           }
-          appView.$info = appInfo;
+          if (!appView.$info) {
+            appView.$info = defaultInfo;
+            appView.$info = appInfo;
+          }
           appView.id = appPath;
-          appView.$name = appInfo.name || appView.$name;
-          appView.$iconUrl = appInfo.$iconUrl;
+          if (!appView.$name) {
+            appView.$name = appInfo.name || appView.$name;
+          }
+          if (!appView.$iconUrl) {
+            appView.$iconUrl = appInfo.$iconUrl;
+          }
 
           /*
            TODO
