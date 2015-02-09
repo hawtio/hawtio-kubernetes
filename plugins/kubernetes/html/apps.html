@@ -105,16 +105,16 @@
                   </div>
                   <div class="service-view-detail-pod-ip">
                     IP:
-                    <span class="value">{{pod.podIP}}</span>
+                    <span class="value">{{pod.currentState.podIP}}</span>
                   </div>
                 </td>
                 <td>
                   <div class="service-view-detail-pod-ports">
-                    ports: <span class="value">{{pod.containerPorts.join(", ")}}</span>
+                    ports: <span class="value">{{pod.$containerPorts.join(", ")}}</span>
                   </div>
                   <div class="service-view-detail-pod-minion">
                     minion:
-                    <span class="value">{{pod.host}}</span>
+                    <span class="value">{{pod.currentState.host}}</span>
                   </div>
                 </td>
                 <td class="service-view-detail-pod-expand" ng-click="collapsePod(pod)">
@@ -150,7 +150,7 @@
                   </div>
                   <div class="service-view-detail-pod-ip">
                     IP:
-                    <span class="value">{{pod.podIP}}</span>
+                    <span class="value">{{pod.currentState.podIP}}</span>
                   </div>
                 </td>
                 <td class="service-view-detail-pod-expand" ng-click="expandPod(pod)">

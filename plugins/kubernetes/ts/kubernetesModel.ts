@@ -106,6 +106,15 @@ module Kubernetes {
           pod.$labelsText = Kubernetes.labelsToString(pod.labels);
           pod.$iconUrl = defaultIconUrl;
           this.discoverPodConnections(pod);
+          pod.$containerPorts = [];
+          angular.forEach(Core.pathGet(pod, ["desiredState", "manifest", "containers"]), (container) => {
+            angular.forEach(container.ports, (port) => {
+              var containerPort = port.containerPort;
+              if (containerPort) {
+                pod.$containerPorts.push(containerPort);
+              }
+            });
+          });
         });
 
         this.services.forEach((service) => {
