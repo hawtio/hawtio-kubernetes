@@ -71,7 +71,7 @@ module Kubernetes {
         (this.appInfos || []).forEach((appInfo) => {
           var iconPath = appInfo.iconPath;
           if (iconPath && !answer) {
-            var iconUrl = (HawtioCore.injector.get('AppLibraryURL') || '') + "/git/master" + iconPath;
+            var iconUrl = gitPathToUrl(iconPath);
             var ids = Core.pathGet(appInfo, ["names", nameField]);
             angular.forEach(ids, (appId) => {
               if (appId === id) {
@@ -233,6 +233,9 @@ module Kubernetes {
         var folders = [];
         var appMap = {};
         angular.forEach(this.appInfos, (appInfo) => {
+          if (!appInfo.$iconUrl) {
+            appInfo.$iconUrl = gitPathToUrl(appInfo.iconPath);
+          }
           var appPath = appInfo.appPath;
           if (appPath) {
             appMap[appPath] = appInfo;

@@ -63,4 +63,8 @@ declare module Kubernetes {
     function podStatus(pod: any): any;
     function createAppViewPodCounters(appView: any): any[];
     function createAppViewServiceViews(appView: any): any[];
+    /**
+     * converts a git path into an accessible URL for the browser
+     */
+    function gitPathToUrl(iconPath: any, branch?: string): string;
 }

@@ -233,7 +233,7 @@ module Kubernetes {
       },
 
       clearSelected: () => {
-        angular.forEach($scope.appSelector.folders, (folder) => {
+        angular.forEach($scope.model.appFolders, (folder) => {
           angular.forEach(folder.apps, (app) => {
             app.selected = false;
           });
@@ -245,7 +245,7 @@ module Kubernetes {
       updateSelected: () => {
         // lets update the selected apps
         var selectedApps = [];
-        angular.forEach($scope.appSelector.folders, (folder) => {
+        angular.forEach($scope.model.appFolders, (folder) => {
           var apps = folder.apps.filter((app) => app.selected);
           if (apps) {
             selectedApps = selectedApps.concat(apps);
@@ -260,7 +260,7 @@ module Kubernetes {
       },
 
       hasSelection: () => {
-        return $scope.appSelector.folders.any((folder) => folder.apps.any((app) => app.selected));
+        return $scope.model.appFolders.any((folder) => folder.apps.any((app) => app.selected));
       },
 
 
@@ -271,7 +271,8 @@ module Kubernetes {
           var metadataPath = app.metadataPath;
           if (metadataPath) {
             // lets load the json/yaml
-            var url = Wiki.gitRelativeURL(branch, metadataPath);
+            //var url = gitPathToUrl(Wiki.gitRelativeURL(branch, metadataPath));
+            var url = gitPathToUrl(metadataPath, branch);
             if (url) {
               $http.get(url).
                 success(function (data, status, headers, config) {

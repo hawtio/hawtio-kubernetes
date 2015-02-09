@@ -421,4 +421,10 @@ module Kubernetes {
     return array;
   }
 
+  /**
+   * converts a git path into an accessible URL for the browser
+   */
+  export function gitPathToUrl(iconPath, branch = "master") {
+    return (HawtioCore.injector.get('AppLibraryURL') || '') + "/git/" + branch + iconPath;
+  }
 }

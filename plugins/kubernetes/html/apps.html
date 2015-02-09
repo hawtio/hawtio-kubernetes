@@ -180,7 +180,7 @@
           <i class="fa fa-remove"></i> Delete
         </button>
         <span class="pull-right">&nbsp;</span>
-        <button ng-show="appSelector.folders.length"
+        <button ng-show="model.appFolders.length"
                 class="btn btn-success pull-right"
                 ng-click="appSelectorShow = true"
                 title="Run an application">
@@ -242,7 +242,7 @@
       </div>
       <div class="row">
         <ul>
-          <li class="no-list profile-selector-folder" ng-repeat="folder in appSelector.folders"
+          <li class="no-list profile-selector-folder" ng-repeat="folder in model.appFolders"
               ng-show="appSelector.showFolder(folder)">
             <div class="expandable" ng-class="appSelector.isOpen(folder)">
               <div title="{{folder.path}}" class="title">
