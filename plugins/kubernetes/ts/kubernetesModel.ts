@@ -39,6 +39,7 @@ module Kubernetes {
     public pods = [];
     public hosts = [];
     public redraw = false;
+    public resourceVersions = {};
 
     // various views on the data
     public hostsByKey = {};
@@ -391,34 +392,51 @@ module Kubernetes {
           $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
             var ready = 0;
             var numServices = 4;
+            var dataChanged = false;
 
             function maybeNext(count) {
               ready = count;
               // log.debug("Completed: ", ready);
               if (ready >= numServices) {
                 // log.debug("Fetching another round");
-                $scope.maybeInit();
-                $rootScope.$broadcast('kubernetesModelUpdated');
+                if (dataChanged) {
+                  log.info("kube model changed!");
+                  $scope.maybeInit();
+                  $rootScope.$broadcast('kubernetesModelUpdated');
+                }
                 next();
               }
             }
 
+            function hasChanged(response, name) {
+              var resourceVersion = response.resourceVersion;
+              var lastResourceVersion = $scope.resourceVersions[name] || 0;
+              if (!resourceVersion || resourceVersion > lastResourceVersion) {
+                if (resourceVersion) {
+                  $scope.resourceVersions[name] = resourceVersion;
+                }
+                dataChanged = true;
+                return true;
+              }
+              return false;
+            }
+
             KubernetesServices.query((response) => {
-              if (response) {
+              if (response && hasChanged(response, "services")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
                 $scope.orRedraw(ArrayHelpers.sync($scope.services, items, "_key"));
               }
               maybeNext(ready + 1);
             });
             KubernetesReplicationControllers.query((response) => {
-              if (response) {
+              if (response && hasChanged(response, "replicationControllers")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
                 $scope.orRedraw(ArrayHelpers.sync($scope.replicationControllers, items, "_key"));
               }
               maybeNext(ready + 1);
             });
             KubernetesPods.query((response) => {
-              if (response) {
+              if (response && hasChanged(response, "pods")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
                 $scope.orRedraw(ArrayHelpers.sync($scope.pods, items, "_key"));
               }
@@ -426,10 +444,22 @@ module Kubernetes {
             });
 
             var appsUrl = AppLibraryURL + "/apps";
-            $http.get(appsUrl).
+            var etags = $scope.resourceVersions["appLibrary"];
+            $http.get(appsUrl, {
+              headers: {
+                "If-None-Match": etags
+              }
+            }).
               success(function(data, status, headers, config) {
-                if (data) {
-                  $scope.appInfos = data;
+                if (data && status == 200) {
+                  var newETags = headers("etag") || headers("ETag");
+                  if (!newETags || newETags !== etags) {
+                    if (newETags) {
+                      $scope.resourceVersions["appLibrary"] = newETags;
+                    }
+                    $scope.appInfos = data;
+                    dataChanged = true;
+                  }
                 }
                 maybeNext(ready + 1);
               }).
