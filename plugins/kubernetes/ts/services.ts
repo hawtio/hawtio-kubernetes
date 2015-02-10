@@ -5,9 +5,9 @@
 module Kubernetes {
 
   export var Services = controller("Services",
-    ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia",
+    ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia", "$http", "$timeout", "KubernetesApiURL",
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia) => {
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia, $http, $timeout, KubernetesApiURL) => {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
@@ -35,7 +35,7 @@ module Kubernetes {
       ]
     };
 
-    Kubernetes.initShared($scope, $location);
+    Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
 
     $scope.$on('kubernetesModelUpdated', function () {
       Core.$apply($scope);

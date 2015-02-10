@@ -8,12 +8,8 @@
     </div>
   </script>
   <script type="text/ng-template" id="desiredReplicas.html">
-    <div class="ngCellText"
-         ng-controller="Kubernetes.DesiredReplicas">
-      <input type="number"
-             class="no-bottom-margin"
-             min="0"
-             ng-model="row.entity.desiredState.replicas">
+    <div class="ngCellText">
+      <span class="btn btn-sm" ng-click="$parent.$parent.resizeDialog.open(row.entity)" title="Edit the number of replicas of this controller">{{row.entity.desiredState.replicas}}</span>
     </div>
   </script>
   <div class="row">
@@ -29,20 +25,6 @@
               ng-disabled="!id && tableConfig.selectedItems.length == 0"
               ng-click="deletePrompt(id || tableConfig.selectedItems)">
         <i class="fa fa-remove"></i> Delete
-      </button>
-      <span class="pull-right">&nbsp;</span>
-      <button ng-show="model.fetched && !id"
-              class="btn pull-right"
-              ng-disabled="!anyDirty()"
-              ng-click="undo()">
-        <i class="fa fa-undo"></i> Undo</span>
-      </button>
-      <span class="pull-right">&nbsp;</span>
-      <button ng-show="model.fetched && !id"
-              class="btn btn-primary pull-right"
-              ng-disabled="!anyDirty()"
-              ng-click="save()">
-        <i class="fa fa-save"></i> Save</span>
       </button>
       <span class="pull-right">&nbsp;</span>
       <button ng-show="id"
@@ -73,4 +55,5 @@
       <div hawtio-object="item" config="detailConfig"></div>
     </div>
   </div>
+  <ng-include src="'resizeDialog.html'"/>
 </div>

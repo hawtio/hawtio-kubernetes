@@ -325,25 +325,5 @@
       </div>
     </div>
   </div>
-  <div modal="resizeDialog.dialog.show">
-    <form class="form-horizontal" ng-submit="resizeDialog.onOk()">
-        <div class="modal-header"><h4>Resize {{resizeDialog.controller.id}}</h4></div>
-        <div class="modal-body">
-          <div class="control-group">
-            <label class="control-label" for="replicas">Replica count</label>
-
-            <div class="controls">
-              <input type="number" min="0" id="replicas" ng-model="resizeDialog.newReplicas">
-            </div>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <input class="btn btn-primary" type="submit"
-                 ng-disabled="resizeDialog.newReplicas === resizeDialog.controller.currentState.replicas"
-                 value="Resize">
-          <button class="btn btn-warning cancel" type="button" ng-click="resizeDialog.close()">Cancel</button>
-        </div>
-      </form>
-  </div>
+  <ng-include src="'resizeDialog.html'"/>
 </div>

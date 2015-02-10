@@ -61,7 +61,7 @@ module Kubernetes {
       ]
     };
 
-    Kubernetes.initShared($scope, $location);
+    Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
 
 
     $scope.expandedPods = [];
@@ -296,32 +296,6 @@ module Kubernetes {
       }
     };
 
-    $scope.resizeDialog = {
-      controller: null,
-      newReplicas: 0,
-      dialog: new UI.Dialog(),
-      onOk: () => {
-        var resizeDialog = $scope.resizeDialog;
-        resizeDialog.dialog.close();
-        resizeController($http, KubernetesApiURL, resizeDialog.controller, resizeDialog.newReplicas, () => {
-          // lets immediately update the replica count to avoid waiting for the next poll
-          ($scope.resizeDialog.controller.currentState || {}).replicas = $scope.resizeDialog.newReplicas;
-          Core.$apply($scope);
-        })
-      },
-      open: (controller) => {
-        var resizeDialog = $scope.resizeDialog;
-        resizeDialog.controller = controller;
-        resizeDialog.newReplicas = Core.pathGet(controller, ["currentState", "replicas"]);
-        resizeDialog.dialog.open();
-
-        $timeout(() => {
-          $('#replicas').focus();
-        }, 50);
-      },
-      close: () => {
-        $scope.resizeDialog.dialog.close();
-      }
-    };
+;
   }]);
 }

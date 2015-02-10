@@ -4,41 +4,10 @@
 
 module Kubernetes {
 
-  export var DesiredReplicas = controller("DesiredReplicas", ["$scope", ($scope) => {
-    var watch:any = null;
-    var originalValue:number = null;
-    $scope.$watch('row.entity', (entity) => {
-      // log.debug("entity updated: ", entity);
-      if (watch && angular.isFunction(watch)) {
-        originalValue = null;
-        watch();
-      }
-      watch = $scope.$watch('row.entity.desiredState.replicas', (replicas) => {
-        if (originalValue === null && replicas !== undefined) {
-          originalValue = replicas;
-        }
-        if (replicas < 0) {
-          $scope.row.entity.desiredState.replicas = 0;
-        }
-        if (replicas !== originalValue) {
-          $scope.$emit('kubernetes.dirtyController', $scope.row.entity);
-        } else {
-          $scope.$emit('kubernetes.cleanController', $scope.row.entity);
-        }
-        Core.$apply($scope);
-        // log.debug("Replicas: ", replicas, " original value: ", originalValue);
-      });
-    });
-
-    $scope.$on('kubernetes.resetReplicas', ($event) => {
-      $scope.row.entity.desiredState.replicas = originalValue;
-    });
-  }]);
-
   export var ReplicationControllers = controller("ReplicationControllers",
-    ["$scope", "KubernetesModel", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia",
+    ["$scope", "KubernetesModel", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia", "$http", "$timeout", "KubernetesApiURL",
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia) => {
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia, $http, $timeout, KubernetesApiURL) => {
 
     $scope.namespace = $routeParams.namespace;
     $scope.kubernetes = KubernetesState;
@@ -80,39 +49,8 @@ module Kubernetes {
       ]
     };
 
-    Kubernetes.initShared($scope, $location);
+    Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
 
-
-    function updatePodCounts() {
-      // lets iterate through the services and update the counts for the pods
-      angular.forEach($scope.replicationControllers, (replicationController) => {
-        var selector = (replicationController.desiredState || {}).replicaSelector;
-        replicationController.$podCounters = selector ? createPodCounters(selector, pods) : null;
-      });
-
-      updateNamespaces($scope.kubernetes, pods, $scope.allReplicationControllers);
-    }
-
-    $scope.$on('kubernetes.dirtyController', ($event, replicationController) => {
-      replicationController.$dirty = true;
-      //log.debug("Replication controller is dirty: ", replicationController, " all replication controllers: ", $scope.replicationControllers);
-    });
-
-    $scope.$on('kubernetes.cleanController', ($event, replicationController) => {
-      replicationController.$dirty = false;
-    });
-
-    $scope.anyDirty = () => {
-      return $scope.replicationControllers.any((controller) => { return controller.$dirty; });
-    };
-
-    $scope.undo = () => {
-      $scope.$broadcast('kubernetes.resetReplicas');
-    };
-
-    /*$scope.$watch('anyDirty()', (dirty) => {
-      log.debug("Dirty controllers: ", dirty);
-    });*/
 
     $scope.$on('kubeSelectedId', ($event, id) => {
       Kubernetes.setJson($scope, id, $scope.replicationControllers);
@@ -124,28 +62,6 @@ module Kubernetes {
 
     KubernetesReplicationControllers.then((KubernetesReplicationControllers:ng.resource.IResourceClass) => {
       KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
-        $scope.save = () => {
-          var dirtyControllers = $scope.replicationControllers.filter((controller) => {
-            return controller.$dirty
-          });
-          if (dirtyControllers.length) {
-            dirtyControllers.forEach((replicationController) => {
-              var apiVersion = replicationController["apiVersion"];
-              if (!apiVersion) {
-                replicationController["apiVersion"] = Kubernetes.defaultApiVersion;
-              }
-              KubernetesReplicationControllers.save(undefined, replicationController, () => {
-                replicationController.$dirty = false;
-                log.debug("Updated ", replicationController.id);
-              }, (error) => {
-                replicationController.$dirty = false;
-                log.debug("Failed to update ", replicationController.id, " error: ", error);
-              });
-
-            });
-          }
-        };
-
         $scope.deletePrompt = (selected) => {
           if (angular.isString(selected)) {
             selected = [{
@@ -245,11 +161,5 @@ module Kubernetes {
 
     function maybeInit() {
     }
-
-    /*$scope.$watch('replicationControllers', (newValue, oldValue) => {
-      if (newValue !== oldValue) {
-        log.debug("replicationControllers: ", newValue);
-      }
-    });*/
   }]);
 }
