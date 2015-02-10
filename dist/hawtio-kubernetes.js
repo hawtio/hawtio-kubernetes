@@ -590,7 +590,8 @@ var Kubernetes;
                 });
                 this.replicationControllers.forEach(function (replicationController) {
                     _this.replicationControllersByKey[replicationController._key] = replicationController;
-                    var selectedPods = selectPods(_this.pods, replicationController.namespace, replicationController.desiredState.replicaSelector);
+                    var selector = replicationController.desiredState.replicaSelector;
+                    var selectedPods = selectPods(_this.pods, replicationController.namespace, selector);
                     replicationController.connectTo = selectedPods.map(function (pod) {
                         return pod._key;
                     }).join(',');
@@ -598,6 +599,7 @@ var Kubernetes;
                     _this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
                     var iconUrl = replicationController.$iconUrl;
                     replicationController.$pods = selectedPods;
+                    replicationController.$podCounters = selector ? Kubernetes.createPodCounters(selector, _this.pods, replicationController.$pods) : null;
                     if (iconUrl && selectedPods) {
                         selectedPods.forEach(function (pod) {
                             pod.$iconUrl = iconUrl;
@@ -2202,7 +2204,7 @@ var Kubernetes;
             },
             columnDefs: [
                 { field: 'id', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
-                { field: 'currentState.replicas', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
+                { field: '$podsLink', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
                 { field: 'desiredState.replicas', displayName: 'Replicas', cellTemplate: $templateCache.get("desiredReplicas.html") },
                 { field: 'labelsText', displayName: 'Labels', cellTemplate: $templateCache.get("labelTemplate.html") },
                 { field: 'namespace', displayName: 'Namespace' }

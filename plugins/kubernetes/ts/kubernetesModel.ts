@@ -139,7 +139,8 @@ module Kubernetes {
 
         this.replicationControllers.forEach((replicationController) => {
           this.replicationControllersByKey[replicationController._key] = replicationController
-          var selectedPods = selectPods(this.pods, replicationController.namespace, replicationController.desiredState.replicaSelector);
+          var selector = replicationController.desiredState.replicaSelector;
+          var selectedPods = selectPods(this.pods, replicationController.namespace, selector);
           replicationController.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
@@ -147,6 +148,7 @@ module Kubernetes {
           this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
           var iconUrl =  replicationController.$iconUrl;
           replicationController.$pods = selectedPods;
+          replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
           if (iconUrl && selectedPods) {
             selectedPods.forEach((pod) => {
               pod.$iconUrl = iconUrl;
