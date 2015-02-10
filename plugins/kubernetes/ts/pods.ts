@@ -34,11 +34,6 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-/*
-        TODO can't add icons yet as we need to know the service / RC Id for a pod to be able to look up the icon
-
-        { field: 'icon', displayName: '', cellTemplate: $templateCache.get("iconCellTemplate.html") },
-*/
         {
           field: 'id',
           displayName: 'ID',
@@ -118,33 +113,6 @@ module Kubernetes {
       Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
     });
 
-/*
-    jolokia.getAttribute(Kubernetes.mbean, 'DockerIp', undefined,
-      <Jolokia.IParams> onSuccess((results) => {
-        log.info("got Docker IP: " + results);
-        if (results) {
-          $scope.dockerIp = results;
-        }
-        Core.$apply($scope);
-      }, {
-        error: (response) => {
-          log.debug("error fetching API URL: ", response);
-        }
-      }));
-    jolokia.getAttribute(Kubernetes.mbean, 'HostName', undefined,
-      <Jolokia.IParams> onSuccess((results) => {
-        log.info("got hostname: " + results);
-        if (results) {
-          $scope.hostName = results;
-        }
-        Core.$apply($scope);
-      }, {
-        error: (response) => {
-          log.debug("error fetching API URL: ", response);
-        }
-      }));
-*/
-
     Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
 
     $scope.connect = {
@@ -221,12 +189,7 @@ module Kubernetes {
           onClose: (result:boolean) => {
             if (result) {
               function deleteSelected(selected:Array<KubePod>, next:KubePod) {
-                if (!next) {
-                  // TODO if (!jolokia.isRunning()) {
-                  if (angular.isFunction($scope.fetch)) {
-                    $scope.fetch();
-                  }
-                } else {
+                if (next) {
                   log.debug("deleting: ", next.id);
                   KubernetesPods.delete({
                     id: next.id
@@ -250,103 +213,6 @@ module Kubernetes {
           customClass: "alert alert-warning"
         }).open();
       };
-
-      // setup polling
-/*      $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-        KubernetesPods.query((response) => {
-          $scope.fetched = true;
-          var redraw = ArrayHelpers.sync(pods, (response['items'] || []).sortBy((pod:KubePod) => { return pod.id }).filter((pod:KubePod) => { return pod.id && (!$scope.namespace || $scope.namespace === pod.namespace)}));
-          angular.forEach(pods, entity => {
-            entity.$labelsText = Kubernetes.labelsToString(entity.labels);
-
-            // lets try detect a console...
-            var info = Core.pathGet(entity, ["currentState", "info"]);
-            var hostPort = null;
-            var currentState = entity.currentState || {};
-            var desiredState = entity.desiredState || {};
-            var host = currentState["host"];
-            var podIP = currentState["podIP"];
-            var hasDocker = false;
-            var foundContainerPort = null;
-            if (currentState && !podIP) {
-              angular.forEach(info, (containerInfo, containerName) => {
-                if (!hostPort) {
-                  var jolokiaHostPort = Core.pathGet(containerInfo, ["detailInfo", "HostConfig", "PortBindings", "8778/tcp"]);
-                  if (jolokiaHostPort) {
-                    var hostPorts = jolokiaHostPort.map("HostPort");
-                    if (hostPorts && hostPorts.length > 0) {
-                      hostPort = hostPorts[0];
-                      hasDocker = true;
-                    }
-                  }
-                }
-              });
-            }
-            if (desiredState && !hostPort) {
-              var containers = Core.pathGet(desiredState, ["manifest", "containers"]);
-              angular.forEach(containers, (container) => {
-                if (!hostPort) {
-                  var ports = container.ports;
-                  angular.forEach(ports, (port) => {
-                    if (!hostPort) {
-                      var containerPort = port.containerPort;
-                      var portName = port.name;
-                      var containerHostPort = port.hostPort;
-                      if (containerPort === 8778 || "jolokia" === portName) {
-                        if (containerPort) {
-                          if (podIP) {
-                            foundContainerPort = containerPort;
-                          }
-                          if (containerHostPort) {
-                            hostPort = containerHostPort;
-                          }
-                        }
-                      }
-                    }
-                  });
-                }
-              });
-            }
-            if (podIP && foundContainerPort) {
-              host = podIP;
-              hostPort = foundContainerPort;
-              hasDocker = false;
-            }
-            if (hostPort) {
-              if (!host) {
-                host = "localhost";
-              }
-              // if Kubernetes is running locally on a platform which doesn't support docker natively
-              // then docker containers will be on a different IP so lets check for localhost and
-              // switch to the docker IP if its available
-              if ($scope.dockerIp && hasDocker) {
-                if (host === "localhost" || host === "127.0.0.1" || host === $scope.hostName) {
-                  host = $scope.dockerIp;
-                }
-              }
-              if (isRunning(currentState)) {
-                entity.$jolokiaUrl = "http://" + host + ":" + hostPort + "/jolokia/";
-
-                // TODO note if we can't access the docker/local host we could try access via
-                // the pod IP; but typically you need to explicitly enable that inside boot2docker
-                // see: https://github.com/fabric8io/fabric8/blob/2.0/docs/getStarted.md#if-you-are-on-a-mac
-                entity.$connect = $scope.connect;
-              }
-            }
-          });
-          Kubernetes.setJson($scope, $scope.id, pods);
-          $scope.model.pods = pods.filter((item)=> {return item.namespace === $scope.kubernetes.selectedNamespace});
-          updateNamespaces($scope.kubernetes, pods);
-
-          // technically the above won't trigger hawtio simple table's watch, so let's force it
-          $scope.$broadcast("hawtio.datatable.pods");
-          //log.debug("Pods: ", $scope.model.pods);
-          next();
-        });
-      });
-      // kick off polling
-      $scope.fetch();
-      */
     });
   }]);
 }

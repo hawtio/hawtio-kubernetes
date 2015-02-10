@@ -74,11 +74,7 @@ module Kubernetes {
             onClose: (result:boolean) => {
               if (result) {
                 function deleteSelected(selected:Array<KubePod>, next:KubePod) {
-                  if (!next) {
-                    if (!jolokia.isRunning()) {
-                      $scope.fetch();
-                    }
-                  } else {
+                  if (next) {
                     log.debug("deleting: ", next.id);
                     KubernetesReplicationControllers.delete({
                       id: next.id
@@ -91,7 +87,6 @@ module Kubernetes {
                     });
                   }
                 }
-
                 deleteSelected(selected, selected.shift());
               }
             },
@@ -103,59 +98,6 @@ module Kubernetes {
             customClass: "alert alert-warning"
           }).open();
         };
-
-/*        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-          var ready = 0;
-          var numServices = 2;
-
-          function maybeNext(count) {
-            ready = count;
-            // log.debug("Completed: ", ready);
-            if (ready >= numServices) {
-              // log.debug("Fetching another round");
-              maybeInit();
-              next();
-            }
-          }
-
-          KubernetesReplicationControllers.query((response) => {
-            //log.debug("got back response: ", response);
-            $scope.fetched = true;
-            if ($scope.anyDirty()) {
-              log.debug("Table has been changed, not updating local view");
-              next();
-              return;
-            }
-            $scope.allReplicationControllers = (response['items'] || []).sortBy((item) => {
-              return item.id;
-            });
-            $scope.replicationControllers = $scope.allReplicationControllers.filter((item) => {
-              return !$scope.kubernetes.selectedNamespace || $scope.kubernetes.selectedNamespace === item.namespace
-            });
-            angular.forEach($scope.replicationControllers, entity => {
-              entity.$labelsText = Kubernetes.labelsToString(entity.labels);
-              var desiredState = entity.desiredState || {};
-              var replicaSelector = desiredState.replicaSelector;
-              if (replicaSelector) {
-                entity.podsLink = Core.url("/kubernetes/pods?q=" +
-                encodeURIComponent(Kubernetes.labelsToString(replicaSelector, " ")));
-              }
-            });
-            Kubernetes.setJson($scope, $scope.id, $scope.replicationControllers);
-            updatePodCounts();
-            maybeNext(ready + 1);
-          });
-
-          KubernetesPods.query((response) => {
-            ArrayHelpers.sync(pods, (response['items'] || []).filter((pod:KubePod) => {
-              return pod.id && (!$scope.namespace || $scope.namespace === pod.namespace)
-            }));
-            updatePodCounts();
-            maybeNext(ready + 1);
-          });
-        });
-        $scope.fetch();
-        */
       });
     });
 

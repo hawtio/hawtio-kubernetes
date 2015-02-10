@@ -4,6 +4,125 @@
 /// <reference path="../libs/hawtio-wiki/defs.d.ts"/>
 
 /// <reference path="../../includes.ts"/>
+var Service;
+(function (Service) {
+    Service.pluginName = 'Service';
+    Service.log = Logger.get(Service.pluginName);
+    /**
+     * Used to specify whether the "service" URL should be polled for services using kubernetes or kubernetes-like service discover.
+     * For more details see: https://github.com/hawtio/hawtio/blob/master/docs/Services.md
+     */
+    Service.pollServices = false;
+    /**
+     * Returns true if there is a service available for the given ID or false
+     */
+    function hasService(ServiceRegistry, serviceName) {
+        if (!ServiceRegistry || !serviceName) {
+            return false;
+        }
+        var answer = false;
+        angular.forEach(ServiceRegistry.services, function (service) {
+            if (serviceName === service.id) {
+                answer = true;
+            }
+        });
+        return answer;
+    }
+    Service.hasService = hasService;
+    /**
+     * Returns the service for the given service name (ID) or null if it cannot be found
+     *
+     * @param ServiceRegistry
+     * @param serviceName
+     * @return {null}
+     */
+    function findService(ServiceRegistry, serviceName) {
+        var answer = null;
+        if (ServiceRegistry && serviceName) {
+            angular.forEach(ServiceRegistry.services, function (service) {
+                if (serviceName === service.id) {
+                    answer = service;
+                }
+            });
+        }
+        return answer;
+    }
+    Service.findService = findService;
+    /**
+     * Returns the service link for the given service name
+     *
+     * @param ServiceRegistry
+     * @param serviceName
+     * @return {null}
+     */
+    function serviceLink(ServiceRegistry, serviceName) {
+        var service = findService(ServiceRegistry, serviceName);
+        if (service) {
+            var portalIP = service.portalIP;
+            var port = service.port;
+            // TODO use annotations to support other kinds of protocol?
+            var protocol = "http://";
+            if (portalIP) {
+                if (port) {
+                    return protocol + portalIP + ":" + port + "/";
+                }
+                else {
+                    return protocol + portalIP;
+                }
+            }
+        }
+        return "";
+    }
+    Service.serviceLink = serviceLink;
+})(Service || (Service = {}));
+
+/// <reference path="serviceHelpers.ts"/>
+/// <reference path="../../includes.ts"/>
+var Service;
+(function (Service) {
+    Service._module = angular.module(Service.pluginName, ['hawtio-core']);
+    Service._module.factory("ServiceRegistry", ['$http', '$rootScope', 'workspace', function ($http, $rootScope, workspace) {
+        var self = {
+            name: 'ServiceRegistry',
+            services: [],
+            fetch: function (next) {
+                if (Kubernetes.isKubernetesTemplateManager(workspace) || Service.pollServices) {
+                    $http({
+                        method: 'GET',
+                        url: 'service'
+                    }).success(function (data, status, headers, config) {
+                        self.onSuccessfulPoll(next, data, status, headers, config);
+                    }).error(function (data, status, headers, config) {
+                        self.onFailedPoll(next, data, status, headers, config);
+                    });
+                }
+            },
+            onSuccessfulPoll: function (next, data, status, headers, config) {
+                var triggerUpdate = ArrayHelpers.sync(self.services, data.items);
+                if (triggerUpdate) {
+                    Service.log.debug("Services updated: ", self.services);
+                    Core.$apply($rootScope);
+                }
+                next();
+            },
+            onFailedPoll: function (next, data, status, headers, config) {
+                Service.log.debug("Failed poll, data: ", data, " status: ", status);
+                next();
+            }
+        };
+        return self;
+    }]);
+    Service._module.run(['ServiceRegistry', '$timeout', 'jolokia', function (ServiceRegistry, $timeout, jolokia) {
+        ServiceRegistry.go = PollHelpers.setupPolling(ServiceRegistry, function (next) {
+            ServiceRegistry.fetch(next);
+        }, 2000, $timeout, jolokia);
+        ServiceRegistry.go();
+        Service.log.debug("Loaded");
+    }]);
+    hawtioPluginLoader.addModule(Service.pluginName);
+})(Service || (Service = {}));
+
+/// <reference path="../../includes.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.context = '/kubernetes';
@@ -271,7 +390,21 @@ var Kubernetes;
                             }
                             Core.$apply($scope);
                         }).error(function (data, status, headers, config) {
-                            Kubernetes.log.warn("Failed to save " + url + " " + data + " " + status);
+                            var message = null;
+                            if (angular.isObject(data)) {
+                                message = data.message;
+                                var reason = data.reason;
+                                if (reason === "AlreadyExists") {
+                                    // lets ignore duplicates
+                                    Kubernetes.log.debug("entity already exists at " + url);
+                                    return;
+                                }
+                            }
+                            if (!message) {
+                                message = "Failed to POST to " + url + " got status: " + status;
+                            }
+                            Kubernetes.log.warn("Failed to save " + url + " status: " + status + " response: " + angular.toJson(data, true));
+                            Core.notification('error', message);
                         });
                     }
                 });
@@ -632,11 +765,13 @@ var Kubernetes;
                 });
                 this.services.forEach(function (service) {
                     _this.servicesByKey[service._key] = service;
-                    var selectedPods = selectPods(_this.pods, service.namespace, service.selector);
+                    var selector = service.selector;
+                    service.$pods = [];
+                    service.$podCounters = selector ? Kubernetes.createPodCounters(selector, _this.pods, service.$pods) : null;
+                    var selectedPods = service.$pods;
                     service.connectTo = selectedPods.map(function (pod) {
                         return pod._key;
                     }).join(',');
-                    var selector = service.selector;
                     service.$labelsText = Kubernetes.labelsToString(service.labels);
                     _this.updateIconUrlAndAppInfo(service, "serviceNames");
                     var iconUrl = service.$iconUrl;
@@ -645,21 +780,19 @@ var Kubernetes;
                             pod.$iconUrl = iconUrl;
                         });
                     }
-                    service.$pods = selectedPods;
-                    service.$podCounters = selector ? Kubernetes.createPodCounters(selector, _this.pods, service.$pods) : null;
                 });
                 this.replicationControllers.forEach(function (replicationController) {
                     _this.replicationControllersByKey[replicationController._key] = replicationController;
                     var selector = replicationController.desiredState.replicaSelector;
-                    var selectedPods = selectPods(_this.pods, replicationController.namespace, selector);
+                    replicationController.$pods = [];
+                    replicationController.$podCounters = selector ? Kubernetes.createPodCounters(selector, _this.pods, replicationController.$pods) : null;
+                    var selectedPods = replicationController.$pods;
                     replicationController.connectTo = selectedPods.map(function (pod) {
                         return pod._key;
                     }).join(',');
                     replicationController.$labelsText = Kubernetes.labelsToString(replicationController.labels);
                     _this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
                     var iconUrl = replicationController.$iconUrl;
-                    replicationController.$pods = selectedPods;
-                    replicationController.$podCounters = selector ? Kubernetes.createPodCounters(selector, _this.pods, replicationController.$pods) : null;
                     if (iconUrl && selectedPods) {
                         selectedPods.forEach(function (pod) {
                             pod.$iconUrl = iconUrl;
@@ -2000,32 +2133,6 @@ var Kubernetes;
         $scope.$on('$routeUpdate', function ($event) {
             Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
         });
-        /*
-            jolokia.getAttribute(Kubernetes.mbean, 'DockerIp', undefined,
-              <Jolokia.IParams> onSuccess((results) => {
-                log.info("got Docker IP: " + results);
-                if (results) {
-                  $scope.dockerIp = results;
-                }
-                Core.$apply($scope);
-              }, {
-                error: (response) => {
-                  log.debug("error fetching API URL: ", response);
-                }
-              }));
-            jolokia.getAttribute(Kubernetes.mbean, 'HostName', undefined,
-              <Jolokia.IParams> onSuccess((results) => {
-                log.info("got hostname: " + results);
-                if (results) {
-                  $scope.hostName = results;
-                }
-                Core.$apply($scope);
-              }, {
-                error: (response) => {
-                  log.debug("error fetching API URL: ", response);
-                }
-              }));
-        */
         Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
         $scope.connect = {
             dialog: new UI.Dialog(),
@@ -2098,13 +2205,7 @@ var Kubernetes;
                     onClose: function (result) {
                         if (result) {
                             function deleteSelected(selected, next) {
-                                if (!next) {
-                                    // TODO if (!jolokia.isRunning()) {
-                                    if (angular.isFunction($scope.fetch)) {
-                                        $scope.fetch();
-                                    }
-                                }
-                                else {
+                                if (next) {
                                     Kubernetes.log.debug("deleting: ", next.id);
                                     KubernetesPods.delete({
                                         id: next.id
@@ -2128,102 +2229,6 @@ var Kubernetes;
                     customClass: "alert alert-warning"
                 }).open();
             };
-            // setup polling
-            /*      $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-                    KubernetesPods.query((response) => {
-                      $scope.fetched = true;
-                      var redraw = ArrayHelpers.sync(pods, (response['items'] || []).sortBy((pod:KubePod) => { return pod.id }).filter((pod:KubePod) => { return pod.id && (!$scope.namespace || $scope.namespace === pod.namespace)}));
-                      angular.forEach(pods, entity => {
-                        entity.$labelsText = Kubernetes.labelsToString(entity.labels);
-            
-                        // lets try detect a console...
-                        var info = Core.pathGet(entity, ["currentState", "info"]);
-                        var hostPort = null;
-                        var currentState = entity.currentState || {};
-                        var desiredState = entity.desiredState || {};
-                        var host = currentState["host"];
-                        var podIP = currentState["podIP"];
-                        var hasDocker = false;
-                        var foundContainerPort = null;
-                        if (currentState && !podIP) {
-                          angular.forEach(info, (containerInfo, containerName) => {
-                            if (!hostPort) {
-                              var jolokiaHostPort = Core.pathGet(containerInfo, ["detailInfo", "HostConfig", "PortBindings", "8778/tcp"]);
-                              if (jolokiaHostPort) {
-                                var hostPorts = jolokiaHostPort.map("HostPort");
-                                if (hostPorts && hostPorts.length > 0) {
-                                  hostPort = hostPorts[0];
-                                  hasDocker = true;
-                                }
-                              }
-                            }
-                          });
-                        }
-                        if (desiredState && !hostPort) {
-                          var containers = Core.pathGet(desiredState, ["manifest", "containers"]);
-                          angular.forEach(containers, (container) => {
-                            if (!hostPort) {
-                              var ports = container.ports;
-                              angular.forEach(ports, (port) => {
-                                if (!hostPort) {
-                                  var containerPort = port.containerPort;
-                                  var portName = port.name;
-                                  var containerHostPort = port.hostPort;
-                                  if (containerPort === 8778 || "jolokia" === portName) {
-                                    if (containerPort) {
-                                      if (podIP) {
-                                        foundContainerPort = containerPort;
-                                      }
-                                      if (containerHostPort) {
-                                        hostPort = containerHostPort;
-                                      }
-                                    }
-                                  }
-                                }
-                              });
-                            }
-                          });
-                        }
-                        if (podIP && foundContainerPort) {
-                          host = podIP;
-                          hostPort = foundContainerPort;
-                          hasDocker = false;
-                        }
-                        if (hostPort) {
-                          if (!host) {
-                            host = "localhost";
-                          }
-                          // if Kubernetes is running locally on a platform which doesn't support docker natively
-                          // then docker containers will be on a different IP so lets check for localhost and
-                          // switch to the docker IP if its available
-                          if ($scope.dockerIp && hasDocker) {
-                            if (host === "localhost" || host === "127.0.0.1" || host === $scope.hostName) {
-                              host = $scope.dockerIp;
-                            }
-                          }
-                          if (isRunning(currentState)) {
-                            entity.$jolokiaUrl = "http://" + host + ":" + hostPort + "/jolokia/";
-            
-                            // TODO note if we can't access the docker/local host we could try access via
-                            // the pod IP; but typically you need to explicitly enable that inside boot2docker
-                            // see: https://github.com/fabric8io/fabric8/blob/2.0/docs/getStarted.md#if-you-are-on-a-mac
-                            entity.$connect = $scope.connect;
-                          }
-                        }
-                      });
-                      Kubernetes.setJson($scope, $scope.id, pods);
-                      $scope.model.pods = pods.filter((item)=> {return item.namespace === $scope.kubernetes.selectedNamespace});
-                      updateNamespaces($scope.kubernetes, pods);
-            
-                      // technically the above won't trigger hawtio simple table's watch, so let's force it
-                      $scope.$broadcast("hawtio.datatable.pods");
-                      //log.debug("Pods: ", $scope.model.pods);
-                      next();
-                    });
-                  });
-                  // kick off polling
-                  $scope.fetch();
-                  */
         });
     }]);
 })(Kubernetes || (Kubernetes = {}));
@@ -2291,12 +2296,7 @@ var Kubernetes;
                         onClose: function (result) {
                             if (result) {
                                 function deleteSelected(selected, next) {
-                                    if (!next) {
-                                        if (!jolokia.isRunning()) {
-                                            $scope.fetch();
-                                        }
-                                    }
-                                    else {
+                                    if (next) {
                                         Kubernetes.log.debug("deleting: ", next.id);
                                         KubernetesReplicationControllers.delete({
                                             id: next.id
@@ -2320,58 +2320,6 @@ var Kubernetes;
                         customClass: "alert alert-warning"
                     }).open();
                 };
-                /*        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-                          var ready = 0;
-                          var numServices = 2;
-                
-                          function maybeNext(count) {
-                            ready = count;
-                            // log.debug("Completed: ", ready);
-                            if (ready >= numServices) {
-                              // log.debug("Fetching another round");
-                              maybeInit();
-                              next();
-                            }
-                          }
-                
-                          KubernetesReplicationControllers.query((response) => {
-                            //log.debug("got back response: ", response);
-                            $scope.fetched = true;
-                            if ($scope.anyDirty()) {
-                              log.debug("Table has been changed, not updating local view");
-                              next();
-                              return;
-                            }
-                            $scope.allReplicationControllers = (response['items'] || []).sortBy((item) => {
-                              return item.id;
-                            });
-                            $scope.replicationControllers = $scope.allReplicationControllers.filter((item) => {
-                              return !$scope.kubernetes.selectedNamespace || $scope.kubernetes.selectedNamespace === item.namespace
-                            });
-                            angular.forEach($scope.replicationControllers, entity => {
-                              entity.$labelsText = Kubernetes.labelsToString(entity.labels);
-                              var desiredState = entity.desiredState || {};
-                              var replicaSelector = desiredState.replicaSelector;
-                              if (replicaSelector) {
-                                entity.podsLink = Core.url("/kubernetes/pods?q=" +
-                                encodeURIComponent(Kubernetes.labelsToString(replicaSelector, " ")));
-                              }
-                            });
-                            Kubernetes.setJson($scope, $scope.id, $scope.replicationControllers);
-                            updatePodCounts();
-                            maybeNext(ready + 1);
-                          });
-                
-                          KubernetesPods.query((response) => {
-                            ArrayHelpers.sync(pods, (response['items'] || []).filter((pod:KubePod) => {
-                              return pod.id && (!$scope.namespace || $scope.namespace === pod.namespace)
-                            }));
-                            updatePodCounts();
-                            maybeNext(ready + 1);
-                          });
-                        });
-                        $scope.fetch();
-                        */
             });
         });
         function maybeInit() {
@@ -2418,17 +2366,6 @@ var Kubernetes;
         $scope.$on('$routeUpdate', function ($event) {
             Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
         });
-        /*
-            function updatePodCounts() {
-              // lets iterate through the services and update the counts for the pods
-              angular.forEach($scope.services, (service) => {
-                var selector = service.selector;
-                service.$podCounters = selector ? createPodCounters(selector, pods) : null;
-              });
-        
-              updateNamespaces($scope.kubernetes, pods, [], $scope.allServices);
-            }
-        */
         KubernetesServices.then(function (KubernetesServices) {
             KubernetesPods.then(function (KubernetesPods) {
                 $scope.deletePrompt = function (selected) {
@@ -2443,12 +2380,7 @@ var Kubernetes;
                         onClose: function (result) {
                             if (result) {
                                 function deleteSelected(selected, next) {
-                                    if (!next) {
-                                        if (!jolokia.isRunning()) {
-                                            $scope.fetch();
-                                        }
-                                    }
-                                    else {
+                                    if (next) {
                                         Kubernetes.log.debug("deleting: ", next.id);
                                         KubernetesServices.delete({
                                             id: next.id
@@ -2637,125 +2569,6 @@ var Kubernetes;
         };
     }]);
 })(Kubernetes || (Kubernetes = {}));
-
-/// <reference path="../../includes.ts"/>
-var Service;
-(function (Service) {
-    Service.pluginName = 'Service';
-    Service.log = Logger.get(Service.pluginName);
-    /**
-     * Used to specify whether the "service" URL should be polled for services using kubernetes or kubernetes-like service discover.
-     * For more details see: https://github.com/hawtio/hawtio/blob/master/docs/Services.md
-     */
-    Service.pollServices = false;
-    /**
-     * Returns true if there is a service available for the given ID or false
-     */
-    function hasService(ServiceRegistry, serviceName) {
-        if (!ServiceRegistry || !serviceName) {
-            return false;
-        }
-        var answer = false;
-        angular.forEach(ServiceRegistry.services, function (service) {
-            if (serviceName === service.id) {
-                answer = true;
-            }
-        });
-        return answer;
-    }
-    Service.hasService = hasService;
-    /**
-     * Returns the service for the given service name (ID) or null if it cannot be found
-     *
-     * @param ServiceRegistry
-     * @param serviceName
-     * @return {null}
-     */
-    function findService(ServiceRegistry, serviceName) {
-        var answer = null;
-        if (ServiceRegistry && serviceName) {
-            angular.forEach(ServiceRegistry.services, function (service) {
-                if (serviceName === service.id) {
-                    answer = service;
-                }
-            });
-        }
-        return answer;
-    }
-    Service.findService = findService;
-    /**
-     * Returns the service link for the given service name
-     *
-     * @param ServiceRegistry
-     * @param serviceName
-     * @return {null}
-     */
-    function serviceLink(ServiceRegistry, serviceName) {
-        var service = findService(ServiceRegistry, serviceName);
-        if (service) {
-            var portalIP = service.portalIP;
-            var port = service.port;
-            // TODO use annotations to support other kinds of protocol?
-            var protocol = "http://";
-            if (portalIP) {
-                if (port) {
-                    return protocol + portalIP + ":" + port + "/";
-                }
-                else {
-                    return protocol + portalIP;
-                }
-            }
-        }
-        return "";
-    }
-    Service.serviceLink = serviceLink;
-})(Service || (Service = {}));
-
-/// <reference path="serviceHelpers.ts"/>
-/// <reference path="../../includes.ts"/>
-var Service;
-(function (Service) {
-    Service._module = angular.module(Service.pluginName, ['hawtio-core']);
-    Service._module.factory("ServiceRegistry", ['$http', '$rootScope', 'workspace', function ($http, $rootScope, workspace) {
-        var self = {
-            name: 'ServiceRegistry',
-            services: [],
-            fetch: function (next) {
-                if (Kubernetes.isKubernetesTemplateManager(workspace) || Service.pollServices) {
-                    $http({
-                        method: 'GET',
-                        url: 'service'
-                    }).success(function (data, status, headers, config) {
-                        self.onSuccessfulPoll(next, data, status, headers, config);
-                    }).error(function (data, status, headers, config) {
-                        self.onFailedPoll(next, data, status, headers, config);
-                    });
-                }
-            },
-            onSuccessfulPoll: function (next, data, status, headers, config) {
-                var triggerUpdate = ArrayHelpers.sync(self.services, data.items);
-                if (triggerUpdate) {
-                    Service.log.debug("Services updated: ", self.services);
-                    Core.$apply($rootScope);
-                }
-                next();
-            },
-            onFailedPoll: function (next, data, status, headers, config) {
-                Service.log.debug("Failed poll, data: ", data, " status: ", status);
-                next();
-            }
-        };
-        return self;
-    }]);
-    Service._module.run(['ServiceRegistry', '$timeout', 'jolokia', function (ServiceRegistry, $timeout, jolokia) {
-        ServiceRegistry.go = PollHelpers.setupPolling(ServiceRegistry, function (next) {
-            ServiceRegistry.fetch(next);
-        }, 2000, $timeout, jolokia);
-        ServiceRegistry.go();
-        Service.log.debug("Loaded");
-    }]);
-    hawtioPluginLoader.addModule(Service.pluginName);
-})(Service || (Service = {}));
 
 angular.module("hawtio-kubernetes-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/kubernetes/html/apps.html","<div ng-controller=\"Kubernetes.Apps\">\n  <script type=\"text/ng-template\" id=\"appIconTemplate.html\">\n    <div class=\"ngCellText\" title=\"{{row.entity.$info.description}}\">\n      <a ng-href=\"row.entity.$appUrl\">\n        <img ng-show=\"row.entity.$iconUrl\" class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n      </a>\n      <span class=\"app-name\">\n        <a ng-click=\"row.entity.$select()\">\n          {{row.entity.$info.name}}\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appServicesTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"service in row.entity.services\">\n        <a href=\"#/kubernetes/services?_id={{service.id}}\">\n          <span>{{service.name || service.id}}</span>\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDeployedTemplate.html\">\n    <div class=\"ngCellText\" title=\"deployed at: {{row.entity.$creationDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n      {{row.entity.$creationDate.relative()}}\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appReplicationControllerTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"controller in row.entity.replicationControllers\">\n        <a href=\"#/kubernetes/replicationControllers?_id={{controller.id}}\">\n          <span>{{controller.id}}</span>\n        </a>\n        &nbsp;\n        <span class=\"btn btn-sm\" ng-click=\"resizeDialog.open(controller)\" title=\"Edit the number of replicas of this controller\">{{controller.replicas}}</span>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appPodCountsAndLinkTemplate.html\">\n    <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n      <div ng-repeat=\"podCounters in row.entity.$podCounters track by $index\">\n        <a ng-show=\"podCounters.podsLink\" href=\"{{podCounters.podsLink}}\" title=\"{{podCounters.labelText}}\">\n          <span ng-show=\"podCounters.valid\" class=\"badge badge-success\">{{podCounters.valid}}</span>\n          <span ng-show=\"podCounters.waiting\" class=\"badge\">{{podCounters.waiting}}</span>\n          <span ng-show=\"podCounters.error\" class=\"badge badge-warning\">{{podCounters.error}}</span>\n        </a>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDetailTemplate.html\">\n    <div class=\"service-view-rectangle\" ng-repeat=\"view in item.$serviceViews\">\n      <div class=\"service-view-header\">\n        <span class=\"service-view-icon\">\n          <img ng-show=\"item.$iconUrl\" ng-src=\"{{item.$iconUrl}}\">\n        </span>\n        <span class=\"service-view-name\" title=\"{{view.name}}\">{{view.appName}}</span>\n        <span class=\"service-view-address\">{{view.address}}</span>\n      </div>\n\n      <div class=\"service-view-detail-rectangle\">\n        <div class=\"service-view-detail-header\">\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-deployed\" ng-show=\"view.createdDate\"\n                 title=\"deployed at: {{view.createdDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n              deployed:\n              <span class=\"value\">{{view.createdDate.relative()}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-pod-template\" ng-show=\"view.controllerId\">\n              pod template:\n              <span class=\"value\">{{view.controllerId}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4 service-view-detail-pod-counts\">\n            <a ng-show=\"view.replicationController\" class=\"value pull-right\"\n               ng-click=\"resizeDialog.open(view.replicationController)\"\n               title=\"Edit the number of pods\">\n              {{view.podCountText}}\n            </a>\n            <span ng-hide=\"view.replicationController\" class=\"value pull-right\">\n              {{view.podCountText}}\n            </span>\n          </div>\n        </div>\n\n        <div class=\"service-view-detail-pod-box\" ng-repeat=\"pod in item.pods track by $index\">\n          <div ng-show=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary-expand\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td class=\"service-view-detail-pod-connect\" ng-show=\"pod.$jolokiaUrl\">\n                  <a class=\"clickable\"\n                     href=\"\"\n                     ng-click=\"pod.$connect.doConnect(pod)\"\n                     title=\"Open a new window and connect to this container\">\n                    <i class=\"fa fa-sign-in\"></i>\n                  </a>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod {{pod.idAbbrev}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.currentState.podIP}}</span>\n                  </div>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-ports\">\n                    ports: <span class=\"value\">{{pod.$containerPorts.join(\", \")}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-minion\">\n                    minion:\n                    <span class=\"value\">{{pod.currentState.host}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"collapsePod(pod)\">\n                  <i class=\"fa fa-chevron-left\"></i>\n                </td>\n              </tr>\n            </table>\n            <!--\n                                      <div class=\"service-view-detail-pod-status\">\n                                        status:\n                                        <span class=\"value\">{{pod.status}}</span>\n                                      </div>\n            -->\n          </div>\n\n          <div ng-hide=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td class=\"service-view-detail-pod-connect\" ng-show=\"pod.$jolokiaUrl\">\n                  <a class=\"clickable\"\n                     href=\"\"\n                     ng-click=\"pod.$connect.doConnect(pod)\"\n                     title=\"Open a new window and connect to this container\">\n                    <i class=\"fa fa-sign-in\"></i>\n                  </a>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod {{pod.idAbbrev}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.currentState.podIP}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"expandPod(pod)\">\n                  <i class=\"fa fa-chevron-right\"></i>\n                </td>\n              </tr>\n            </table>\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n\n\n  <div ng-hide=\"appSelectorShow\">\n    <div class=\"row filter-header\">\n      <div class=\"col-md-12\">\n        <span ng-show=\"model.apps.length && !id\">\n          <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                         css-class=\"input-xxlarge\"\n                         placeholder=\"Filter apps...\"></hawtio-filter>\n        </span>\n        <button ng-show=\"model.apps.length\"\n                class=\"btn btn-danger pull-right\"\n                ng-disabled=\"!id && tableConfig.selectedItems.length == 0\"\n                ng-click=\"deletePrompt(id || tableConfig.selectedItems)\">\n          <i class=\"fa fa-remove\"></i> Delete\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"model.appFolders.length\"\n                class=\"btn btn-success pull-right\"\n                ng-click=\"appSelectorShow = true\"\n                title=\"Run an application\">\n          <i class=\"fa fa-play-circle\"></i> Run ...\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"id\"\n                class=\"btn btn-primary pull-right\"\n                ng-click=\"id = undefined\"><i class=\"fa fa-list\"></i></button>\n\n        <span class=\"pull-right\">&nbsp;</span>\n        <span ng-hide=\"id\" class=\"pull-right\">\n          <div class=\"btn-group\">\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'list\'\" href=\"\" ng-click=\"mode = \'list\'\">\n              <i class=\"fa fa-list\"></i></a>\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'detail\'\" href=\"\" ng-click=\"mode = \'detail\'\">\n              <i class=\"fa fa-table\"></i></a>\n          </div>\n        </span>\n      </div>\n    </div>\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div ng-hide=\"model.fetched\">\n          <div class=\"align-center\">\n            <i class=\"fa fa-spinner fa-spin\"></i>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && !id\">\n          <div ng-hide=\"model.apps.length\" class=\"align-center\">\n            <p class=\"alert alert-info\">There are no apps currently available.</p>\n          </div>\n          <div ng-show=\"model.apps.length\">\n            <div ng-show=\"mode == \'list\'\">\n              <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n            </div>\n            <div ng-show=\"mode == \'detail\'\">\n              <div class=\"app-detail\" ng-repeat=\"item in model.apps | filter:tableConfig.filterOptions.filterText\">\n                <ng-include src=\"\'appDetailTemplate.html\'\"/>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && id\">\n          <div class=\"app-detail\">\n            <ng-include src=\"\'appDetailTemplate.html\'\"/>\n          </div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n  <div ng-show=\"appSelectorShow\">\n    <div class=\"col-md-7\">\n      <div class=\"row\">\n        <hawtio-filter ng-model=\"appSelector.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter apps...\"></hawtio-filter>\n      </div>\n      <div class=\"row\">\n        <ul>\n          <li class=\"no-list profile-selector-folder\" ng-repeat=\"folder in model.appFolders\"\n              ng-show=\"appSelector.showFolder(folder)\">\n            <div class=\"expandable\" ng-class=\"appSelector.isOpen(folder)\">\n              <div title=\"{{folder.path}}\" class=\"title\">\n                <i class=\"expandable-indicator folder\"></i> <span class=\"folder-title\" ng-show=\"folder.path\">{{folder.path.capitalize(true)}}</span><span\n                      class=\"folder-title\" ng-hide=\"folder.path\">Uncategorized</span>\n              </div>\n              <div class=\"expandable-body\">\n                <ul>\n                  <li class=\"no-list profile\" ng-repeat=\"profile in folder.apps\" ng-show=\"appSelector.showApp(profile)\">\n                    <div class=\"profile-selector-item\">\n                      <div class=\"inline-block profile-selector-checkbox\">\n                        <input type=\"checkbox\" ng-model=\"profile.selected\"\n                               ng-change=\"appSelector.updateSelected()\">\n                      </div>\n                      <div class=\"inline-block profile-selector-name\" ng-class=\"appSelector.getSelectedClass(profile)\">\n                        <span class=\"contained c-max\">\n                          <a href=\"\" ng-click=\"appSelector.select(profile, !profile.selected)\"\n                             title=\"Details for {{profile.id}}\">\n                              <img ng-show=\"profile.$iconUrl\" class=\"icon-small-app\" ng-src=\"{{profile.$iconUrl}}\">\n                              <span class=\"app-name\">{{profile.name}}</span>\n                          </a>\n                        </span>\n                      </div>\n                    </div>\n\n                  </li>\n                </ul>\n              </div>\n            </div>\n          </li>\n        </ul>\n      </div>\n    </div>\n    <div class=\"col-md-5\">\n      <div class=\"row\">\n        <button class=\"btn btn-primary pull-right\"\n                ng-click=\"appSelectorShow = undefined\"><i class=\"fa fa-circle-arrow-left\"></i> Back\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                title=\"Clears the selected Apps\"\n                ng-click=\"appSelector.clearSelected()\"><i class=\"fa fa-check-empty\"></i> Clear\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn btn-success pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                ng-click=\"appSelector.runSelectedApps()\"\n                title=\"Run the selected apps\">\n          <i class=\"fa fa-play-circle\"></i>\n          <ng-pluralize count=\"appSelector.selectedApps.length\"\n                        when=\"{\'0\': \'No App Selected\',\n                                       \'1\': \'Run App\',\n                                       \'other\': \'Run {} Apps\'}\"></ng-pluralize>\n\n        </button>\n      </div>\n      <div class=\"row\">\n<!--\n        <div ng-hide=\"appSelector.selectedApps.length\">\n          <p class=\"alert pull-right\">\n            Please select an App\n          </p>\n        </div>\n-->\n\n        <div ng-show=\"appSelector.selectedApps.length\">\n\n          <ul class=\"zebra-list pull-right\">\n            <li ng-repeat=\"app in appSelector.selectedApps\">\n              <img ng-show=\"app.$iconUrl\" class=\"icon-selected-app\" ng-src=\"{{app.$iconUrl}}\">\n              <strong class=\"green selected-app-name\">{{app.name}}</strong>\n              &nbsp;\n              <i class=\"red clickable fa fa-remove\"\n                 title=\"Remove appp\"\n                 ng-click=\"appSelector.select(app, false)\"></i>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  </div>\n  <ng-include src=\"\'resizeDialog.html\'\"/>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/kubernetesJsonDirective.html","<div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div class=\"fabric-page-header row\">\n\n        <div class=\"pull-left\" ng-show=\"iconURL\">\n          <div class=\"app-logo\">\n            <img ng-src=\"{{iconURL}}\">&nbsp;\n          </div>\n        </div>\n        <div class=\"pull-left\">\n            <h2 class=\"list-inline\"><span class=\"contained c-wide3\">&nbsp;{{displayName || appTitle}}</span></h2>\n        </div>\n        <div class=\"pull-right\">\n          <button class=\"btn btn-success pull-right\"\n                  title=\"Run this application\"\n                  ng-disabled=\"!config || config.error\"\n                  ng-click=\"apply()\">\n            <i class=\"fa fa-play-circle\"></i> Run\n          </button>\n        </div>\n        <div class=\"pull-left col-md-10 profile-summary-wide\">\n          <div\n               ng-show=\"summaryHtml\"\n               ng-bind-html-unsafe=\"summaryHtml\"></div>\n        </div>\n      </div>\n\n    </div>\n  </div>\n\n</div>\n");

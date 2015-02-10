@@ -49,18 +49,6 @@ module Kubernetes {
       Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
     });
 
-/*
-    function updatePodCounts() {
-      // lets iterate through the services and update the counts for the pods
-      angular.forEach($scope.services, (service) => {
-        var selector = service.selector;
-        service.$podCounters = selector ? createPodCounters(selector, pods) : null;
-      });
-
-      updateNamespaces($scope.kubernetes, pods, [], $scope.allServices);
-    }
-*/
-
     KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {
       KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
         $scope.deletePrompt = (selected) => {
@@ -75,11 +63,7 @@ module Kubernetes {
             onClose: (result:boolean) => {
               if (result) {
                 function deleteSelected(selected:Array<KubePod>, next:KubePod) {
-                  if (!next) {
-                    if (!jolokia.isRunning()) {
-                      $scope.fetch();
-                    }
-                  } else {
+                  if (next) {
                     log.debug("deleting: ", next.id);
                     KubernetesServices.delete({
                       id: next.id
@@ -92,7 +76,6 @@ module Kubernetes {
                     });
                   }
                 }
-
                 deleteSelected(selected, selected.shift());
               }
             },
