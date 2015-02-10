@@ -119,11 +119,13 @@ module Kubernetes {
 
         this.services.forEach((service) => {
           this.servicesByKey[service._key] = service;
-          var selectedPods = selectPods(this.pods, service.namespace, service.selector);
+          var selector = service.selector;
+          service.$pods = [];
+          service.$podCounters = selector ? createPodCounters(selector, this.pods, service.$pods) : null;
+          var selectedPods = service.$pods;
           service.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
-          var selector = service.selector;
           service.$labelsText = Kubernetes.labelsToString(service.labels);
           this.updateIconUrlAndAppInfo(service, "serviceNames");
           var iconUrl = service.$iconUrl;
@@ -132,23 +134,20 @@ module Kubernetes {
               pod.$iconUrl = iconUrl;
             });
           }
-
-          service.$pods = selectedPods;
-          service.$podCounters = selector ? createPodCounters(selector, this.pods, service.$pods) : null;
         });
 
         this.replicationControllers.forEach((replicationController) => {
           this.replicationControllersByKey[replicationController._key] = replicationController
           var selector = replicationController.desiredState.replicaSelector;
-          var selectedPods = selectPods(this.pods, replicationController.namespace, selector);
+          replicationController.$pods = [];
+          replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
+          var selectedPods = replicationController.$pods;
           replicationController.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
           replicationController.$labelsText = Kubernetes.labelsToString(replicationController.labels);
           this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
           var iconUrl =  replicationController.$iconUrl;
-          replicationController.$pods = selectedPods;
-          replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
           if (iconUrl && selectedPods) {
             selectedPods.forEach((pod) => {
               pod.$iconUrl = iconUrl;
