@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        <div class="service-view-detail-pod-box" ng-repeat="pod in item.pods">
+        <div class="service-view-detail-pod-box" ng-repeat="pod in item.pods track by $index">
           <div ng-show="podExpanded(pod)" class="service-view-detail-pod-summary-expand">
             <table>
               <tr>
