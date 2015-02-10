@@ -209,12 +209,14 @@ module Kubernetes {
   export function selectorMatches(selector, labels) {
     if (angular.isObject(labels)) {
       var answer = true;
+      var count = 0;
       angular.forEach(selector, (value, key) => {
+        count++;
         if (answer && labels[key] !== value) {
           answer = false;
         }
       });
-      return answer;
+      return answer && count > 0;
     } else {
       return false;
     }
