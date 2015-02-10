@@ -297,21 +297,23 @@ module Kubernetes {
     };
 
     $scope.resizeDialog = {
+      controller: null,
+      newReplicas: 0,
       dialog: new UI.Dialog(),
       onOk: () => {
-        $scope.resizeDialog.dialog.close();
-        resizeController($http, KubernetesApiURL, $scope.resizeDialog.resize.controller.id, $scope.resizeDialog.resize.newReplicas, () => {
+        var resizeDialog = $scope.resizeDialog;
+        resizeDialog.dialog.close();
+        resizeController($http, KubernetesApiURL, resizeDialog.controller, resizeDialog.newReplicas, () => {
           // lets immediately update the replica count to avoid waiting for the next poll
-          $scope.resizeDialog.resize.controller.replicas = $scope.resizeDialog.resize.newReplicas;
+          ($scope.resizeDialog.controller.currentState || {}).replicas = $scope.resizeDialog.newReplicas;
           Core.$apply($scope);
         })
       },
       open: (controller) => {
-        $scope.resizeDialog.resize = {
-          controller: controller,
-          newReplicas: Core.pathGet(controller, ["currentState", "replicas"])
-        };
-        $scope.resizeDialog.dialog.open();
+        var resizeDialog = $scope.resizeDialog;
+        resizeDialog.controller = controller;
+        resizeDialog.newReplicas = Core.pathGet(controller, ["currentState", "replicas"]);
+        resizeDialog.dialog.open();
 
         $timeout(() => {
           $('#replicas').focus();

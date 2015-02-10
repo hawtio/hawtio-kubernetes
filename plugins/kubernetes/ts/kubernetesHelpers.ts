@@ -276,9 +276,13 @@ module Kubernetes {
     }
   }
 
-  export function resizeController($http, KubernetesApiURL, id, newReplicas, onCompleteFn = null) {
+  export function resizeController($http, KubernetesApiURL, replicationController, newReplicas, onCompleteFn = null) {
+    var id = replicationController.id;
+    var namespace = replicationController.namespace || "";
     KubernetesApiURL.then((KubernetesApiURL) => {
-      var url = UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/replicationControllers/" + id);
+      // TODO despite swagger saying this is valid, the following URL gives a 404 on a GET
+      //var url = UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/ns/" + namespace + "/replicationControllers/" + id);
+      var url = UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/replicationControllers/" + id + "?namespace=" + namespace);
       $http.get(url).
         success(function (data, status, headers, config) {
           if (data) {
