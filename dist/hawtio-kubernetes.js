@@ -1024,7 +1024,7 @@ var Kubernetes;
     }]);
     // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
     Kubernetes._module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
-        var url = "/services/kubernetes/";
+        var url = "/kubernetes/";
         var answer = $q.defer();
         answer.resolve(url);
         return answer.promise;
