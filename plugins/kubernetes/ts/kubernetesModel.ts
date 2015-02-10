@@ -467,7 +467,7 @@ module Kubernetes {
               }
             }).
               success(function(data, status, headers, config) {
-                if (data && status == 200) {
+                if (angular.isArray(data) && status === 200) {
                   var newETags = headers("etag") || headers("ETag");
                   if (!newETags || newETags !== etags) {
                     if (newETags) {

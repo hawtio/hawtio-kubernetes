@@ -42,9 +42,18 @@ declare module Kubernetes {
         error: number;
     };
     /**
+     * Converts the given json into an array of items. If the json contains a nested set of items then that is sorted; so that services
+     * are processed first; then turned into an array. Otherwise the json is put into an array so it can be processed polymorphically
+     */
+    function convertKubernetesJsonToItems(json: any): any[];
+    /**
+     * Returns the base URL for the kind of kubernetes resource or null if it cannot be found
+     */
+    function kubernetesUrlForItemKind(KubernetesApiURL: any, json: any): string;
+    /**
      * Runs the given application JSON
      */
-    function runApp($location: any, jolokia: any, $scope: any, json: any, name?: string, onSuccessFn?: any, namespace?: any): void;
+    function runApp($location: any, $scope: any, $http: any, KubernetesApiURL: any, json: any, name?: string, onSuccessFn?: any, namespace?: any, onCompleteFn?: any): void;
     /**
      * Returns true if the current status of the pod is running
      */
