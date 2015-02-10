@@ -95,7 +95,7 @@ gulp.task('concat', ['template'], function() {
 });
 
 gulp.task('clean', ['concat'], function() {
-  return gulp.src(['templates.js', 'compiled.js'], { read: false })
+  return gulp.src(['templates.js', 'compiled.js', 'site'], { read: false })
     .pipe(plugins.clean());
 });
 
@@ -115,31 +115,44 @@ gulp.task('connect', ['watch'], function() {
   var kube = uri(process.env.KUBERNETES_MASTER || 'http://localhost:8080');
   console.log("Connecting to Kubernetes on: " + kube);
 
+  var localProxies = [];
+  if (process.env.LOCAL_APP_LIBRARY === "true") {
+    localProxies.push({
+        proto: "http",
+        port: "8588",
+        hostname: "localhost",
+        path: '/services/app-library',
+        targetPath: "/"
+      });
+  }
+  var defaultProxies = [{
+    proto: kube.protocol(),
+    port: kube.port(),
+    hostname: kube.hostname(),
+    path: '/services/kubernetes',
+    targetPath: kube.path()
+  }, {
+    proto: kube.protocol(),
+    hostname: kube.hostname(),
+    port: kube.port(),
+    path: '/jolokia',
+    targetPath: '/hawtio/jolokia'
+  }, {
+    proto: kube.protocol(),
+    hostname: kube.hostname(),
+    port: kube.port(),
+    path: '/git',
+    targetPath: '/hawtio/git'
+  }];
+
+  var staticProxies = localProxies.concat(defaultProxies);
+
   hawtio.setConfig({
     port: 2772,
-    staticProxies: [{
-      proto: kube.protocol(),
-      port: kube.port(),
-      hostname: kube.hostname(),
-      path: '/services/kubernetes',
-      targetPath: kube.path()
-    }, {
-      proto: kube.protocol(),
-      hostname: kube.hostname(),
-      port: kube.port(),
-      path: '/jolokia',
-      targetPath: '/hawtio/jolokia'
-    }, {
-      proto: kube.protocol(),
-      hostname: kube.hostname(),
-      port: kube.port(),
-      path: '/git',
-      targetPath: '/hawtio/git'
-    }],
+    staticProxies: staticProxies,
     staticAssets: [{
       path: '/',
       dir: '.'
-   
     }],
     fallback: 'index.html',
     liveReload: {
@@ -171,6 +184,10 @@ gulp.task('reload', function() {
 });
 
 gulp.task('build', ['bower', 'path-adjust', 'tsc', 'template', 'concat', 'clean']);
+
+gulp.task('site', ['clean', 'build'], function() {
+  gulp.src(['index.html', 'css/**', 'images/**', 'libs/**', 'dist/**'], {base: '.'}).pipe(gulp.dest('site'));
+});
 
 gulp.task('default', ['connect']);
 
