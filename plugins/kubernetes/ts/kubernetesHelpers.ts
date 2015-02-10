@@ -269,7 +269,21 @@ module Kubernetes {
                 Core.$apply($scope);
               }).
               error(function (data, status, headers, config) {
-                log.warn("Failed to save " + url + " " + data + " " + status);
+                var message = null;
+                if (angular.isObject(data)) {
+                  message = data.message;
+                  var reason = data.reason;
+                  if (reason === "AlreadyExists") {
+                    // lets ignore duplicates
+                    log.debug("entity already exists at " + url);
+                    return;
+                  }
+                }
+                if (!message) {
+                  message = "Failed to POST to " + url + " got status: " + status;
+                }
+                log.warn("Failed to save " + url + " status: " + status + " response: " + angular.toJson(data, true));
+                Core.notification('error', message);
               });
           }
         });
