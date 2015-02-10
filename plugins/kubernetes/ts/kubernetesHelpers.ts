@@ -193,27 +193,87 @@ module Kubernetes {
   }
 
   /**
+   * Converts the given json into an array of items. If the json contains a nested set of items then that is sorted; so that services
+   * are processed first; then turned into an array. Otherwise the json is put into an array so it can be processed polymorphically
+   */
+  export function convertKubernetesJsonToItems(json) {
+    var items = json.items;
+    if (angular.isArray(items)) {
+      // TODO we could check for List or Config types here and warn if not
+
+      // sort the services first
+      var answer = [];
+      items.forEach((item) => {
+        if (item.kind === "Service") {
+          answer.push(item);
+        }
+      });
+      items.forEach((item) => {
+        if (item.kind !== "Service") {
+          answer.push(item);
+        }
+      });
+      return answer;
+    } else {
+      return [json];
+    }
+  }
+
+  /**
+   * Returns the base URL for the kind of kubernetes resource or null if it cannot be found
+   */
+  export function kubernetesUrlForItemKind(KubernetesApiURL, json) {
+    var kind = json.kind;
+    if (kind) {
+      var lowerKind = kind.toLowerCase() + "s";
+      // TODO hack for pre-v1beta3
+      if (lowerKind === "replicationcontrollers") {
+        lowerKind = "replicationControllers";
+      }
+      var postfix = "";
+      var namespace = json.namespace;
+      if (namespace) {
+        postfix = "?namespace=" + namespace;
+      }
+      // TODO the /ns/{namespace} path doesn't seem to work yet
+      return UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/" + lowerKind + postfix);
+    } else {
+      log.warn("Ignoring uknown kind " + kind + " for kubernetes json: " + angular.toJson(json));
+      return null;
+    }
+  }
+
+  /**
    * Runs the given application JSON
    */
-  export function runApp($location, jolokia, $scope, json, name = "App", onSuccessFn = null, namespace = null) {
+  export function runApp($location, $scope, $http, KubernetesApiURL, json, name = "App", onSuccessFn = null, namespace = null, onCompleteFn = null) {
     if (json) {
+      if (angular.isString(json)) {
+        json = angular.fromJson(json);
+      }
       name = name || "App";
       var postfix = namespace ? " in namespace " + namespace : "";
       Core.notification('info', "Running " + name + postfix);
 
-      var callback = Core.onSuccess((response) => {
-        log.debug("Got response: ", response);
-        if (angular.isFunction(onSuccessFn)) {
-          onSuccessFn();
-        }
-        Core.$apply($scope);
+      KubernetesApiURL.then((KubernetesApiURL) => {
+        var items = convertKubernetesJsonToItems(json);
+        angular.forEach(items, (item) => {
+          var url = kubernetesUrlForItemKind(KubernetesApiURL, item);
+          if (url) {
+            $http.post(url, item).
+              success(function (data, status, headers, config) {
+                log.debug("Got status: " + status + " on url: " + url + " data: " + data + " after posting: " + angular.toJson(item));
+                if (angular.isFunction(onCompleteFn)) {
+                  onCompleteFn();
+                }
+                Core.$apply($scope);
+              }).
+              error(function (data, status, headers, config) {
+                log.warn("Failed to save " + url + " " + data + " " + status);
+              });
+          }
+        });
       });
-
-      if (namespace) {
-        jolokia.execute(Kubernetes.managerMBean, "applyInNamespace", json, namespace, callback);
-      } else {
-        jolokia.execute(Kubernetes.managerMBean, "apply", json, callback);
-      }
     }
   }
 

@@ -280,7 +280,7 @@ module Kubernetes {
                     // lets convert the json object structure into a string
                     var json = angular.toJson(data);
                     var fn = () => {};
-                    Kubernetes.runApp($location, jolokia, $scope, json, name, fn, namespace);
+                    Kubernetes.runApp($location, $scope, $http, KubernetesApiURL, json, name, fn, namespace);
                   }
                 }).
                 error(function (data, status, headers, config) {

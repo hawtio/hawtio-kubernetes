@@ -12,7 +12,7 @@ module Kubernetes {
       scope: {
         config: '=kubernetesJson'
       },
-      controller: ["$scope", "$location", "$http", "jolokia", "marked", ($scope, $location, $http, jolokia:Jolokia.IJolokia, marked) => {
+      controller: ["$scope", "$location", "$http", "KubernetesApiURL", "marked", ($scope, $location, $http, KubernetesApiURL, marked) => {
 
         $scope.$watch('config', (config) => {
           if (config) {
@@ -77,7 +77,7 @@ module Kubernetes {
         $scope.apply = () => {
           var json = angular.toJson($scope.config);
           var name = $scope.appTitle || "App";
-          runApp($location, jolokia, $scope, json, name, () => {
+          runApp($location, $scope, $http, KubernetesApiURL, json, name, () => {
             // now lets navigate to the apps page so folks see things happen
             $location.url("/kubernetes/apps");
           });
