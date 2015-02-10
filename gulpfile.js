@@ -159,6 +159,7 @@ gulp.task('connect', ['watch'], function() {
       enabled: true
     }
   });
+  var debugLoggingOfProxy = process.env.DEBUG_PROXY === "true";
   hawtio.use('/', function(req, res, next) {
           var path = req.originalUrl;
           // avoid returning these files, they should get pulled from js
@@ -167,7 +168,9 @@ gulp.task('connect', ['watch'], function() {
             res.statusCode = 404;
             res.end();
           } else {
-            console.log("allowing: ", path);
+            if (debugLoggingOfProxy) {
+              console.log("allowing: ", path);
+            }
             next();
           }
         });
