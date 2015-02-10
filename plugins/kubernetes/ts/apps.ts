@@ -300,20 +300,26 @@ module Kubernetes {
       dialog: new UI.Dialog(),
       onOk: () => {
         $scope.resizeDialog.dialog.close();
-        resizeController($http, KubernetesApiURL, $scope.resize.controller.id, $scope.resize.newReplicas, () => {
+        resizeController($http, KubernetesApiURL, $scope.resizeDialog.resize.controller.id, $scope.resizeDialog.resize.newReplicas, () => {
           // lets immediately update the replica count to avoid waiting for the next poll
-          $scope.resize.controller.replicas = $scope.resize.newReplicas;
+          $scope.resizeDialog.resize.controller.replicas = $scope.resizeDialog.resize.newReplicas;
           Core.$apply($scope);
         })
       },
-      open: () => {
+      open: (controller) => {
+        $scope.resizeDialog.resize = {
+          controller: controller,
+          newReplicas: Core.pathGet(controller, ["currentState", "replicas"])
+        };
         $scope.resizeDialog.dialog.open();
+
+        $timeout(() => {
+          $('#replicas').focus();
+        }, 50);
       },
       close: () => {
         $scope.resizeDialog.dialog.close();
       }
     };
-
-
   }]);
 }

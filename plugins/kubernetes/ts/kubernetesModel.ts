@@ -299,25 +299,6 @@ module Kubernetes {
           if (!appView.$iconUrl) {
             appView.$iconUrl = appInfo.$iconUrl;
           }
-
-          /*
-           TODO
-           appView.$appUrl = Wiki.viewLink(branch, appPath, $location);
-           */
-          /*
-           TODO
-           appView.$openResizeControllerDialog = (controller) => {
-           $scope.resize = {
-           controller: controller,
-           newReplicas: controller.replicas
-           };
-           $scope.resizeDialog.dialog.open();
-
-           $timeout(() => {
-           $('#replicas').focus();
-           }, 50);
-           };
-           */
           apps.push(appView);
           appView.$podCounters = createAppViewPodCounters(appView);
           appView.$serviceViews = createAppViewServiceViews(appView);
