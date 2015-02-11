@@ -408,6 +408,7 @@ module Kubernetes {
             var ready = 0;
             var numServices = 4;
             var dataChanged = false;
+            var changedResourceVersion = null;
 
             function maybeNext(count) {
               ready = count;
@@ -415,7 +416,7 @@ module Kubernetes {
               if (ready >= numServices) {
                 // log.debug("Fetching another round");
                 if (dataChanged) {
-                  log.info("kube model changed!");
+                  log.debug("kube model changed: resourceVersion: " + changedResourceVersion);
                   $scope.maybeInit();
                   $rootScope.$broadcast('kubernetesModelUpdated');
                 }
@@ -429,6 +430,7 @@ module Kubernetes {
               if (!resourceVersion || resourceVersion > lastResourceVersion) {
                 if (resourceVersion) {
                   $scope.resourceVersions[name] = resourceVersion;
+                  changedResourceVersion = resourceVersion;
                 }
                 dataChanged = true;
                 return true;
@@ -439,21 +441,24 @@ module Kubernetes {
             KubernetesServices.query((response) => {
               if (response && hasChanged(response, "services")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
-                $scope.orRedraw(ArrayHelpers.sync($scope.services, items, "_key"));
+                $scope.services = items;
+                //$scope.orRedraw(ArrayHelpers.sync($scope.services, items, "_key"));
               }
               maybeNext(ready + 1);
             });
             KubernetesReplicationControllers.query((response) => {
               if (response && hasChanged(response, "replicationControllers")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
-                $scope.orRedraw(ArrayHelpers.sync($scope.replicationControllers, items, "_key"));
+                $scope.replicationControllers = items;
+                //$scope.orRedraw(ArrayHelpers.sync($scope.replicationControllers, items, "_key"));
               }
               maybeNext(ready + 1);
             });
             KubernetesPods.query((response) => {
               if (response && hasChanged(response, "pods")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
-                $scope.orRedraw(ArrayHelpers.sync($scope.pods, items, "_key"));
+                $scope.pods = items;
+                //$scope.orRedraw(ArrayHelpers.sync($scope.pods, items, "_key"));
               }
               maybeNext(ready + 1);
             });
