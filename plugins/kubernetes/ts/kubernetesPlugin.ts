@@ -47,7 +47,7 @@ module Kubernetes {
   }]);
 
   _module.factory('AppLibraryURL', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
-    return "/services/app-library";
+    return "/kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library";
   }]);
 
   function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string,

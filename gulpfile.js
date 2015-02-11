@@ -121,9 +121,10 @@ gulp.task('connect', ['watch'], function() {
         proto: "http",
         port: "8588",
         hostname: "localhost",
-        path: '/services/app-library',
+        path: '/kubernetes/api/v1beta2/proxy/services/app-library',
         targetPath: "/"
       });
+    console.log("because of $LOCAL_APP_LIBRARY being true we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/app-library" );
   }
   var defaultProxies = [{
     proto: kube.protocol(),
