@@ -220,25 +220,39 @@ module Kubernetes {
   }
 
   /**
+   * Returns the root URL for the kind
+   */
+  export function kubernetesUrlForKind(KubernetesApiURL, kind, namespace = null, path = null) {
+    var pathSegment = "";
+    if (path) {
+      pathSegment = "/" + Core.trimLeading(path, "/");
+    }
+    var lowerKind = kind.toLowerCase() + "s";
+    // TODO hack for pre-v1beta3
+    var v1beta1Or2 = (defaultApiVersion === "v1beta1" || defaultApiVersion === "v1beta2");
+    if (lowerKind === "replicationcontrollers" && v1beta1Or2) {
+      lowerKind = "replicationControllers";
+    }
+    if (v1beta1Or2) {
+      var postfix = "";
+      if (namespace) {
+        postfix = "?namespace=" + namespace;
+      }
+      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + lowerKind + pathSegment + postfix);
+    } else {
+      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/" + lowerKind + pathSegment + postfix);
+    }
+  };
+
+  /**
    * Returns the base URL for the kind of kubernetes resource or null if it cannot be found
    */
   export function kubernetesUrlForItemKind(KubernetesApiURL, json) {
     var kind = json.kind;
     if (kind) {
-      var lowerKind = kind.toLowerCase() + "s";
-      // TODO hack for pre-v1beta3
-      if (lowerKind === "replicationcontrollers") {
-        lowerKind = "replicationControllers";
-      }
-      var postfix = "";
-      var namespace = json.namespace;
-      if (namespace) {
-        postfix = "?namespace=" + namespace;
-      }
-      // TODO the /ns/{namespace} path doesn't seem to work yet
-      return UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/" + lowerKind + postfix);
+      return kubernetesUrlForKind(KubernetesApiURL, kind, json.namespace);
     } else {
-      log.warn("Ignoring uknown kind " + kind + " for kubernetes json: " + angular.toJson(json));
+      log.warn("Ignoring missing kind " + kind + " for kubernetes json: " + angular.toJson(json));
       return null;
     }
   }
@@ -382,9 +396,7 @@ module Kubernetes {
     var id = replicationController.id;
     var namespace = replicationController.namespace || "";
     KubernetesApiURL.then((KubernetesApiURL) => {
-      // TODO despite swagger saying this is valid, the following URL gives a 404 on a GET
-      //var url = UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/ns/" + namespace + "/replicationControllers/" + id);
-      var url = UrlHelpers.join(KubernetesApiURL, "/api/v1beta1/replicationControllers/" + id + "?namespace=" + namespace);
+      var url = kubernetesUrlForKind(KubernetesApiURL, "ReplicationController", namespace, id);
       $http.get(url).
         success(function (data, status, headers, config) {
           if (data) {
