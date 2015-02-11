@@ -264,6 +264,12 @@ img.icon-selected-app {
     background-color: #ffffff;
 }
 
+.service-view-detail-pod-summary table td,
+.service-view-detail-pod-summary-expand table td {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .service-view-detail-pod-template {
 }
 
