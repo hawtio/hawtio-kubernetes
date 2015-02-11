@@ -219,6 +219,10 @@ module Kubernetes {
     }
   }
 
+  export function isV1beta1Or2() {
+    return defaultApiVersion === "v1beta1" || defaultApiVersion === "v1beta2";
+  }
+
   /**
    * Returns the root URL for the kind
    */
@@ -228,12 +232,10 @@ module Kubernetes {
       pathSegment = "/" + Core.trimLeading(path, "/");
     }
     var lowerKind = kind.toLowerCase() + "s";
-    // TODO hack for pre-v1beta3
-    var v1beta1Or2 = (defaultApiVersion === "v1beta1" || defaultApiVersion === "v1beta2");
-    if (lowerKind === "replicationcontrollers" && v1beta1Or2) {
+    if (lowerKind === "replicationcontrollers" && isV1beta1Or2()) {
       lowerKind = "replicationControllers";
     }
-    if (v1beta1Or2) {
+    if (isV1beta1Or2()) {
       var postfix = "";
       if (namespace) {
         postfix = "?namespace=" + namespace;
@@ -254,6 +256,26 @@ module Kubernetes {
     } else {
       log.warn("Ignoring missing kind " + kind + " for kubernetes json: " + angular.toJson(json));
       return null;
+    }
+  }
+
+  export function kubernetesProxyUrlForService(KubernetesApiURL, service, path = null) {
+    var pathSegment = "";
+    if (path) {
+      pathSegment = "/" + Core.trimLeading(path, "/");
+    } else {
+      pathSegment = "/";
+    }
+    var namespace = service.namespace;
+    if (isV1beta1Or2()) {
+      var postfix = "?namespace=" + namespace;
+      return KubernetesApiURL.then((KubernetesApiURL) => {
+        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/services/" + service.id + pathSegment + postfix);
+      });
+    } else {
+      return KubernetesApiURL.then((KubernetesApiURL) => {
+        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/services/" + service.name + pathSegment);
+      });
     }
   }
 
