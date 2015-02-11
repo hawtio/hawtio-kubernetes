@@ -4,22 +4,23 @@
 
 module Kubernetes {
 
-  var OverviewDirective = _module.directive("kubernetesOverview", ["$templateCache", "$compile", "$interpolate", "$timeout", "$window", "KubernetesState", ($templateCache:ng.ITemplateCacheService, $compile:ng.ICompileService, $interpolate:ng.IInterpolateService, $timeout:ng.ITimeoutService, $window:ng.IWindowService, KubernetesState) => {
+  var OverviewDirective = _module.directive("kubernetesOverview", ["$templateCache", "$compile", "$interpolate", "$timeout", "$window", "KubernetesState", 'KubernetesModel', ($templateCache:ng.ITemplateCacheService, $compile:ng.ICompileService, $interpolate:ng.IInterpolateService, $timeout:ng.ITimeoutService, $window:ng.IWindowService, KubernetesState, KubernetesModel) => {
     return {
       restrict: 'E',
       replace: true,
       link: (scope, element, attr) => {
+        scope.model = KubernetesModel;
         element.css({visibility: 'hidden'});
         scope.getEntity = (type:string, key:string) => {
           switch (type) {
             case 'host':
-              return scope.hostsByKey[key];
+              return scope.model.hostsByKey[key];
             case 'pod':
-              return scope.podsByKey[key];
+              return scope.model.podsByKey[key];
             case 'replicationController':
-              return scope.replicationControllersByKey[key];
+              return scope.model.replicationControllersByKey[key];
             case 'service':
-              return scope.servicesByKey[key];
+              return scope.model.servicesByKey[key];
             default:
               return undefined;
 
@@ -153,11 +154,11 @@ module Kubernetes {
         }
         function firstDraw() {
           log.debug("First draw");
-          var services = scope.services;
-          var replicationControllers = scope.replicationControllers;
-          var pods = scope.pods;
-          var hosts = scope.hosts;
-          // log.debug("hosts: ", scope.hosts);
+          var services = scope.model.services;
+          var replicationControllers = scope.model.replicationControllers;
+          var pods = scope.model.pods;
+          var hosts = scope.model.hosts;
+          // log.debug("hosts: ", scope.model.hosts);
           var parentEl = angular.element($templateCache.get("overviewTemplate.html"));
           var servicesEl = parentEl.find(".services");
           var hostsEl = parentEl.find(".hosts");
@@ -179,10 +180,10 @@ module Kubernetes {
         function update() {
           scope.$emit('jsplumbDoWhileSuspended', () => {
             log.debug("Update");
-            var services = scope.services.filter(namespaceFilter);
-            var replicationControllers = scope.replicationControllers.filter(namespaceFilter);
-            var pods = scope.pods.filter(namespaceFilter);
-            var hosts = scope.hosts;
+            var services = scope.model.services.filter(namespaceFilter);
+            var replicationControllers = scope.model.replicationControllers.filter(namespaceFilter);
+            var pods = scope.model.pods.filter(namespaceFilter);
+            var hosts = scope.model.hosts;
             var parentEl = element.find('[hawtio-jsplumb]');
             var children = parentEl.find('.jsplumb-node');
             children.each((index, c) => {
@@ -194,13 +195,13 @@ module Kubernetes {
               var type = child.attr('data-type');
               switch (type) {
                 case 'host':
-                  if (key in scope.hostsByKey) {
+                  if (key in scope.model.hostsByKey) {
                     return;
                   }
                   break;
                 case 'service':
-                  if (key in scope.servicesByKey && scope.servicesByKey[key].namespace == scope.kubernetes.selectedNamespace) {
-                    var service = scope.servicesByKey[key];
+                  if (key in scope.model.servicesByKey && scope.model.servicesByKey[key].namespace == scope.kubernetes.selectedNamespace) {
+                    var service = scope.model.servicesByKey[key];
                     child.attr('connect-to', service.connectTo);
                     return;
                   }
@@ -211,13 +212,13 @@ module Kubernetes {
                     return;
                   }
                   */
-                  if (key in scope.podsByKey && scope.podsByKey[key].namespace == scope.kubernetes.selectedNamespace) {
+                  if (key in scope.model.podsByKey && scope.model.podsByKey[key].namespace == scope.kubernetes.selectedNamespace) {
                     return;
                   }
                   break;
                 case 'replicationController':
-                  if (key in scope.replicationControllersByKey && scope.replicationControllersByKey[key].namespace == scope.kubernetes.selectedNamespace) {
-                    var replicationController = scope.replicationControllersByKey[key];
+                  if (key in scope.model.replicationControllersByKey && scope.model.replicationControllersByKey[key].namespace == scope.kubernetes.selectedNamespace) {
+                    var replicationController = scope.model.replicationControllersByKey[key];
                     child.attr('connect-to', replicationController.connectTo);
                     return;
                   }
@@ -262,13 +263,10 @@ module Kubernetes {
 
   var scopeName = "OverviewController";
 
-  var OverviewController = controller(scopeName, ["$scope", "$location", "KubernetesServices", "KubernetesPods", "KubernetesReplicationControllers", "KubernetesState", ($scope, $location, KubernetesServices, KubernetesPods, KubernetesReplicationControllers, KubernetesState) => {
+  var OverviewController = controller(scopeName, ["$scope", "$location", "KubernetesModel","KubernetesState", ($scope, $location, KubernetesModel, KubernetesState) => {
     $scope.name = scopeName;
     $scope.kubernetes = KubernetesState;
-    $scope.services = null;
-    $scope.replicationControllers = null;
-    $scope.pods = null;
-    $scope.hosts = null;
+    $scope.model = KubernetesModel;
 
     $scope.count = 0;
     var redraw = false;
@@ -296,6 +294,13 @@ module Kubernetes {
 
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'kubernetes.selectedNamespace', 'namespace', undefined);
 
+    $scope.$on('kubernetesModelUpdated', function () {
+      log.debug("Redrawing");
+      $scope.count = $scope.count + 1;
+      Core.$apply($scope);
+    });
+
+    /*
     KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {
       KubernetesReplicationControllers.then((KubernetesReplicationControllers:ng.resource.IResourceClass) => {
         KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
@@ -399,6 +404,7 @@ module Kubernetes {
         }
       }
     }
+  */
 
   }]);
 

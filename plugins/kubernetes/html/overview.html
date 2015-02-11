@@ -39,22 +39,23 @@
     <div id="{{pod._key}}"
          data-type="pod"
          title="Pod ID: {{pod.id}}"
-         class="jsplumb-node kubernetes-node kubernetes-pod-node" 
+         class="jsplumb-node kubernetes-node kubernetes-pod-node"
          ng-mouseenter="mouseEnter($event)"
          ng-mouseleave="mouseLeave($event)"
          ng-controller="Kubernetes.OverviewBoxController"
          ng-init="entity=getEntity('pod', '{{pod._key}}')"
          ng-click="viewDetails('pods')">
-    <div class="css-table">
-      <div class="css-table-row">
-        <div class="pod-status-cell css-table-cell">
-          <span ng-init="row={ entity: entity }" ng-include="'statusTemplate.html'"></span>
+      <div class="css-table">
+        <div class="css-table-row">
+          <div class="pod-status-cell css-table-cell">
+            <span ng-init="row={ entity: entity }" ng-include="'statusTemplate.html'"></span>
+          </div>
+          <div class="pod-label-cell css-table-cell">
+            <span ng-init="row={ entity: entity }" ng-include="'labelTemplate.html'"></span>
+          </div>
         </div>
-        <div class="pod-label-cell css-table-cell">
-          <span ng-init="row={ entity: entity }" ng-include="'labelTemplate.html'"></span>
-        </div>
+      </div>
     </div>
-  </div>
   </script>
   <script type="text/ng-template" id="replicationControllerTemplate.html">
     <div class="kubernetes-overview-row">
@@ -71,7 +72,8 @@
             ng-controller="Kubernetes.OverviewBoxController"
             ng-init="entity=getEntity('replicationController', '{{replicationController._key}}')"
             ng-click="viewDetails('replicationControllers')">
-          <div ng-init="entity = entity" ng-include="'iconCellTemplate.html'">
+          <div class="ngCellText">
+            <img class="app-icon-small" ng-src="{{entity.$iconUrl}}">
           </div>
         </div>
       </div>
