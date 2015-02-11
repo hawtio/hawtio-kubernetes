@@ -396,7 +396,7 @@ module Kubernetes {
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
    */
-  export function createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+  export function createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
 
@@ -441,6 +441,12 @@ module Kubernetes {
             KubernetesServices.query((response) => {
               if (response && hasChanged(response, "services")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
+                angular.forEach(items, (item) => {
+                  kubernetesProxyUrlForService(KubernetesApiURL, item).then((url) => {
+                    item.proxyUrl = url;
+                  });
+                });
+
                 $scope.services = items;
                 //$scope.orRedraw(ArrayHelpers.sync($scope.services, items, "_key"));
               }

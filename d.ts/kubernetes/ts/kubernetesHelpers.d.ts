@@ -46,10 +46,16 @@ declare module Kubernetes {
      * are processed first; then turned into an array. Otherwise the json is put into an array so it can be processed polymorphically
      */
     function convertKubernetesJsonToItems(json: any): any[];
+    function isV1beta1Or2(): boolean;
+    /**
+     * Returns the root URL for the kind
+     */
+    function kubernetesUrlForKind(KubernetesApiURL: any, kind: any, namespace?: any, path?: any): string;
     /**
      * Returns the base URL for the kind of kubernetes resource or null if it cannot be found
      */
     function kubernetesUrlForItemKind(KubernetesApiURL: any, json: any): string;
+    function kubernetesProxyUrlForService(KubernetesApiURL: any, service: any, path?: any): any;
     /**
      * Runs the given application JSON
      */

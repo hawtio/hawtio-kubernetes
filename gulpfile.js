@@ -129,7 +129,7 @@ gulp.task('connect', ['watch'], function() {
     proto: kube.protocol(),
     port: kube.port(),
     hostname: kube.hostname(),
-    path: '/services/kubernetes',
+    path: '/kubernetes',
     targetPath: kube.path()
   }, {
     proto: kube.protocol(),
@@ -195,4 +195,4 @@ gulp.task('site', ['clean', 'build'], function() {
 gulp.task('default', ['connect']);
 
 
-    
+
