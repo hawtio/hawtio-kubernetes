@@ -242,14 +242,19 @@ module Kubernetes {
             });
           });
         }
-        scope.$watch('count', (count) => {
-          if (count > 0) {
+        function refreshDrawing() {
             if (element.children().length === 0) {
               firstDraw();
             } else {
               update();
             }
           }
+
+        scope.$on('kubernetesModelUpdated', refreshDrawing);
+
+        // detect the view changing after the last time the model changed
+        scope.$on("$routeChangeSuccess", () => {
+          setTimeout(refreshDrawing, 200);
         });
       }
     };
@@ -268,143 +273,7 @@ module Kubernetes {
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
 
-    $scope.count = 0;
-    var redraw = false;
-
-    var services = [];
-    var replicationControllers = [];
-    var pods = [];
-    var hosts = [];
-    var byId = (thing) => { return thing.id; };
-
-
-    function populateKey(item) {
-        var result = item;
-        result['_key']=item.namespace+"-"+item.id;
-        return result;
-    }
-
-    function populateKeys(items:Array<any>) {
-        var result = [];
-        angular.forEach(items, (item) => {
-            result.push(populateKey(item));
-        });
-        return result;
-    }
-
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'kubernetes.selectedNamespace', 'namespace', undefined);
-
-    $scope.$on('kubernetesModelUpdated', function () {
-      log.debug("Redrawing");
-      $scope.count = $scope.count + 1;
-      Core.$apply($scope);
-    });
-
-    /*
-    KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {
-      KubernetesReplicationControllers.then((KubernetesReplicationControllers:ng.resource.IResourceClass) => {
-        KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
-          $scope.fetch = PollHelpers.setupPolling($scope, (next: () => void) => {
-            var ready = 0;
-            var numServices = 3;
-            function maybeNext(count) {
-              ready = count;
-              // log.debug("Completed: ", ready);
-              if (ready >= numServices) {
-                // log.debug("Fetching another round");
-                maybeInit();
-                next();
-              }
-            }
-            KubernetesServices.query((response) => {
-              if (response) {
-                var items = populateKeys((response.items || []).sortBy(byId));
-                redraw = ArrayHelpers.sync(services, items, "_key");
-              }
-              maybeNext(ready + 1);
-            });
-            KubernetesReplicationControllers.query((response) => {
-              if (response) {
-                var items = populateKeys((response.items || []).sortBy(byId));
-                redraw = ArrayHelpers.sync(replicationControllers, items, "_key");
-              }
-              maybeNext(ready + 1);
-            });
-            KubernetesPods.query((response) => {
-              if (response) {
-                var items = populateKeys((response.items || []).sortBy(byId));
-                redraw = ArrayHelpers.sync(pods, items, "_key");
-              }
-              maybeNext(ready + 1);
-            });
-          });
-          $scope.fetch();
-        });
-      });
-    });
-    function selectPods(pods, namespace, labels) {
-      return pods.filter((pod) => { return pod.namespace === namespace && selectorMatches(labels, pod.labels); });
-    }
-    function maybeInit() {
-      if (services && replicationControllers && pods) {
-        $scope.servicesByKey = {};
-        $scope.podsByKey = {};
-        $scope.replicationControllersByKey = {};
-        $scope.kubernetes.namespaces = {};
-        services.forEach((service) => {
-          $scope.servicesByKey[service._key] = service;
-          var selectedPods = selectPods(pods, service.namespace, service.selector);
-          service.connectTo = selectedPods.map((pod) => { return pod._key; }).join(',');
-        });
-        replicationControllers.forEach((replicationController) => {
-          $scope.replicationControllersByKey[replicationController._key] = replicationController
-          var selectedPods = selectPods(pods, replicationController.namespace, replicationController.desiredState.replicaSelector);
-          replicationController.connectTo = selectedPods.map((pod) => { return pod._key; }).join(',');
-        });
-        var hostsByKey = {};
-        pods.forEach((pod) => {
-          $scope.podsByKey[pod._key] = pod;
-          var host =  pod.currentState.host;
-          hostsByKey[host] = hostsByKey[host] || [];
-          hostsByKey[host].push(pod);
-
-        });
-        var tmpHosts = [];
-        var oldHostsLength = hosts.length;
-
-          for (var hostKey in hostsByKey) {
-              tmpHosts.push({
-                  id: hostKey,
-                  pods: hostsByKey[hostKey]
-              });
-          }
-
-        redraw = ArrayHelpers.removeElements(hosts, tmpHosts);
-        tmpHosts.forEach((newHost) => {
-          var oldHost:any = hosts.find((h) => { return h.id === newHost.id });
-          if (!oldHost) {
-            redraw = true;
-            hosts.push(newHost);
-          } else {
-            redraw = ArrayHelpers.sync(oldHost.pods, newHost.pods);
-          }
-        });
-
-        updateNamespaces($scope.kubernetes, pods, replicationControllers, services);
-
-        $scope.hosts = hosts;
-        $scope.hostsByKey = hostsByKey;
-        $scope.pods = pods;
-        $scope.services = services;
-        $scope.replicationControllers = replicationControllers;
-        if (redraw) {
-          log.debug("Redrawing");
-          $scope.count = $scope.count + 1;
-          redraw = false;
-        }
-      }
-    }
-  */
 
   }]);
 

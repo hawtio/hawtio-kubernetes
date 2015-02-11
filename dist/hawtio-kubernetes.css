@@ -138,7 +138,14 @@
 
 .ngCellText .app-icon-small {
   width: 24px;
+  vertical-align: middle;
 }
+
+.kubernetes-overview-cell .app-icon-medium {
+  width: 32px;
+  height: 32px;
+}
+
 .filter-header {
     padding-bottom: 10px;
 }
@@ -151,9 +158,6 @@
     padding-left: 4px;
 }
 
-.ngCellText .app-icon-small {
-    vertical-align: middle;
-}
 
 img.icon-small-app {
     width: 24px;

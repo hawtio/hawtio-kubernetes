@@ -70,11 +70,8 @@
             ng-mouseleave="mouseLeave($event)"
             class="jsplumb-node kubernetes-replicationController-node kubernetes-node"
             ng-controller="Kubernetes.OverviewBoxController"
-            ng-init="entity=getEntity('replicationController', '{{replicationController._key}}')"
             ng-click="viewDetails('replicationControllers')">
-          <div class="ngCellText">
-            <img class="app-icon-small" ng-src="{{entity.$iconUrl}}">
-          </div>
+            <img class="app-icon-medium" ng-src="{{replicationController.$iconUrl}}">
         </div>
       </div>
     </div>
