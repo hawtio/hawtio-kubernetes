@@ -105,8 +105,6 @@ module Kubernetes {
   }
 
   export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) {
-    $scope.entityPageLink = entityPageLink;
-
     if (!KubernetesState.selectedNamespace) {
       KubernetesState.selectedNamespace = $routeParams.namespace || $location.search()["namespace"];
     }
