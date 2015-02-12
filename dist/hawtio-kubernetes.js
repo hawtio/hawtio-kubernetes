@@ -1632,25 +1632,15 @@ var Kubernetes;
                         case 'pod':
                             break;
                         case 'service':
-                            // swap this connection around so the arrow is pointing to the service
-                            var target = edge.target;
-                            var source = edge.source;
-                            edge.target = source;
-                            edge.source = target;
                             params.target = edge.target.el;
                             params.source = edge.source.el;
                             params.paintStyle = {
                                 lineWidth: 2,
                                 strokeStyle: '#5555cc'
                             };
-                            /*
-                            params.overlays = [
-                              [ 'PlainArrow', { location: 2, direction: -1, width: 4, length: 4 } ]
-                            ]
-                            */
                             params.anchors = [
-                                ["ContinuousLeft", {}],
-                                ["ContinuousRight", { shape: "Rectangle" }]
+                                ["ContinuousRight", {}],
+                                ["ContinuousLeft", {}]
                             ];
                             break;
                         case 'replicationController':

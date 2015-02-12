@@ -112,7 +112,7 @@ gulp.task('connect', ['watch'], function() {
   // lets disable unauthorised TLS issues with kube REST API
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-  var kube = uri((process.env.KUBERNETES_MASTER || 'http://localhost:8080') + '/api');
+  var kube = uri((process.env.KUBERNETES_MASTER || 'https://localhost:8443') + '/api');
   console.log("Connecting to Kubernetes on: " + kube);
 
   var localProxies = [];
