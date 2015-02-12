@@ -1628,45 +1628,23 @@ var Kubernetes;
                 scope.customizeConnectionOptions = function (jsPlumb, edge, params, options) {
                     var type = edge.source.el.attr('data-type');
                     options.connector = ["Bezier", { curviness: 50, stub: 25, alwaysRespectStubs: true }];
+                    params.paintStyle = {
+                        lineWidth: 2,
+                        strokeStyle: '#5555cc'
+                    };
                     switch (type) {
                         case 'pod':
                             break;
                         case 'service':
-                            // swap this connection around so the arrow is pointing to the service
-                            var target = edge.target;
-                            var source = edge.source;
-                            edge.target = source;
-                            edge.source = target;
-                            params.target = edge.target.el;
-                            params.source = edge.source.el;
-                            params.paintStyle = {
-                                lineWidth: 2,
-                                strokeStyle: '#5555cc'
-                            };
-                            /*
-                            params.overlays = [
-                              [ 'PlainArrow', { location: 2, direction: -1, width: 4, length: 4 } ]
-                            ]
-                            */
                             params.anchors = [
-                                ["ContinuousLeft", {}],
-                                ["ContinuousRight", { shape: "Rectangle" }]
+                                [1, 0.5, 0, 0, -10, -90],
+                                [0, 0.5, 0, 0, -10, -90]
                             ];
                             break;
                         case 'replicationController':
-                            params.paintStyle = {
-                                lineWidth: 2,
-                                dashstyle: '2 2',
-                                strokeStyle: '#44aa44'
-                            };
-                            /*
-                            params.overlays = [
-                              [ 'PlainArrow', { location: 1, width: 4, length: 4 } ]
-                            ]
-                            */
                             params.anchors = [
-                                ["Perimeter", { shape: "Circle" }],
-                                ["ContinuousRight", {}]
+                                [0, 0.5, 0, 0, -10, -90],
+                                [1, 0.5, 0, 0, -10, -90]
                             ];
                             break;
                     }
