@@ -4,7 +4,7 @@
 
 module Kubernetes {
 
-  export var ServiceController = controller("ServiceController",
+  export var PodController = controller("PodController",
     ["$scope", "KubernetesModel", "KubernetesState", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesState,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
@@ -26,7 +26,7 @@ module Kubernetes {
 
     function updateData() {
       $scope.id = $routeParams["id"];
-      $scope.item = $scope.model.getService(KubernetesState.selectedNamespace, $scope.id);
+      $scope.item = $scope.model.getPod(KubernetesState.selectedNamespace, $scope.id);
       Core.$apply($scope);
     }
   }]);

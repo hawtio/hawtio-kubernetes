@@ -115,6 +115,7 @@ module Kubernetes {
         var hostsByKey = {};
 
         this.pods.forEach((pod) => {
+          if (!pod.kind) pod.kind = "Pod";
           this.podsByKey[pod._key] = pod;
           var host = pod.currentState.host;
           hostsByKey[host] = hostsByKey[host] || [];
@@ -134,6 +135,7 @@ module Kubernetes {
         });
 
         this.services.forEach((service) => {
+          if (!service.kind) service.kind = "Service";
           this.servicesByKey[service._key] = service;
           var selector = service.selector;
           service.$pods = [];
@@ -153,6 +155,7 @@ module Kubernetes {
         });
 
         this.replicationControllers.forEach((replicationController) => {
+          if (!replicationController.kind) replicationController.kind = "ReplicationController";
           this.replicationControllersByKey[replicationController._key] = replicationController
           var selector = replicationController.desiredState.replicaSelector;
           replicationController.$pods = [];

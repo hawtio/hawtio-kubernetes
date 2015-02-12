@@ -48,6 +48,11 @@ declare module Kubernetes {
     function convertKubernetesJsonToItems(json: any): any[];
     function isV1beta1Or2(): boolean;
     /**
+     * Returns a link to the detail page for the given entity
+     */
+    function entityPageLink(entity: any): string;
+    function resourceKindToUriPath(kind: any): string;
+    /**
      * Returns the root URL for the kind
      */
     function kubernetesUrlForKind(KubernetesApiURL: any, kind: any, namespace?: any, path?: any): string;

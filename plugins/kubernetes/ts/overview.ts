@@ -243,7 +243,9 @@ module Kubernetes {
   var OverviewBoxController = controller("OverviewBoxController", ["$scope", "$location", ($scope, $location:ng.ILocationService) => {
     $scope.viewDetails = (entity, path:string) => {
       if (entity) {
-        $location.path(UrlHelpers.join('/kubernetes/namespace', entity.namespace, path, entity.id));
+        var namespace = entity.namespace;
+        var id = entity.id;
+        $location.path(UrlHelpers.join('/kubernetes/namespace', namespace, path, id));
       } else {
         log.warn("No entity for viewDetails!");
       }

@@ -232,6 +232,31 @@ module Kubernetes {
   }
 
   /**
+   * Returns a link to the detail page for the given entity
+   */
+  export function entityPageLink(entity) {
+    if (entity) {
+      var id = entity.id;
+      var kind = entity.kind;
+      if (kind && id) {
+        var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
+        var namespace = entity.namespace;
+        return UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
+      }
+    }
+    return null;
+  }
+
+
+  export function resourceKindToUriPath(kind) {
+    var kindPath = kind.toLowerCase() + "s";
+    if (kindPath === "replicationcontrollers" && isV1beta1Or2()) {
+      kindPath = "replicationControllers";
+    }
+    return kindPath;
+  }
+
+  /**
    * Returns the root URL for the kind
    */
   export function kubernetesUrlForKind(KubernetesApiURL, kind, namespace = null, path = null) {
@@ -239,18 +264,15 @@ module Kubernetes {
     if (path) {
       pathSegment = "/" + Core.trimLeading(path, "/");
     }
-    var lowerKind = kind.toLowerCase() + "s";
-    if (lowerKind === "replicationcontrollers" && isV1beta1Or2()) {
-      lowerKind = "replicationControllers";
-    }
+    var kindPath = resourceKindToUriPath(kind);
     if (isV1beta1Or2()) {
       var postfix = "";
       if (namespace) {
         postfix = "?namespace=" + namespace;
       }
-      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + lowerKind + pathSegment + postfix);
+      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + kindPath + pathSegment + postfix);
     } else {
-      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/" + lowerKind + pathSegment + postfix);
+      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/" + kindPath + pathSegment + postfix);
     }
   };
 

@@ -4,27 +4,9 @@
 
 module Kubernetes {
 
-  // controller that maps a docker image to an icon path in the if possible
-  var ReplicationControllerIcon = controller("ReplicationControllerIcon", ["$scope", "jolokia", ($scope, jolokia:Jolokia.IJolokia) => {
-    $scope.iconUrl = defaultIconUrl;
-    jolokia.request({
-      type: 'exec',
-      mbean: Kubernetes.mbean,
-      operation: "iconPath(java.lang.String,java.lang.String)",
-      arguments: ['master', $scope.entity.id]
-    }, Core.onSuccess((response) => {
-      if (response.value) {
-        $scope.iconUrl = Wiki.gitRelativeURL('master', response.value);
-        Core.$apply($scope);
-      }
-    }));
-  }]);
-
   // controller that handles the 'id' field of a given view
-  export var IDSelector = controller("IDSelector", ["$scope", ($scope) => {
-    $scope.select = (id) => {
-      $scope.$emit('kubeSelectedId', id);
-    }
+  export var IDSelector = controller("IDSelector", ["$scope", "$location", ($scope, $location) => {
+    $scope.entityPageLink = entityPageLink;
   }]);
 
   // controller for the status icon cell
