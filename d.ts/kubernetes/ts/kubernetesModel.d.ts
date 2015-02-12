@@ -11,12 +11,13 @@ declare module Kubernetes {
         replicationControllers: any[];
         pods: any[];
         hosts: any[];
+        namespaces: any[];
         redraw: boolean;
         resourceVersions: {};
         hostsByKey: {};
         servicesByKey: {};
-        podsByKey: {};
         replicationControllersByKey: {};
+        podsByKey: {};
         appInfos: any[];
         appViews: any[];
         appFolders: any[];
@@ -24,6 +25,9 @@ declare module Kubernetes {
         fetch: () => void;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;
+        getService(namespace: any, id: any): any;
+        getReplicationController(namespace: any, id: any): any;
+        getPod(namespace: any, id: any): any;
         protected updateIconUrlAndAppInfo(entity: any, nameField: string): void;
         maybeInit(): void;
         protected updateApps(): void;

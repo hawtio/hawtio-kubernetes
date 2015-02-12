@@ -112,7 +112,7 @@ module Kubernetes {
       Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
     });
 
-    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
+    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
     $scope.connect = {
       dialog: new UI.Dialog(),

@@ -30,7 +30,7 @@ declare module Kubernetes {
      * Returns the labels text string using the <code>key1=value1,key2=value2,....</code> format
      */
     function labelsToString(labels: any, seperatorText?: string): string;
-    function initShared($scope: any, $location: any, $http: any, $timeout: any, $routeParams: any, KubernetesState: any, KubernetesApiURL: any): void;
+    function initShared($scope: any, $location: any, $http: any, $timeout: any, $routeParams: any, KubernetesModel: any, KubernetesState: any, KubernetesApiURL: any): void;
     /**
      * Given the list of pods lets iterate through them and find all pods matching the selector
      * and return counters based on the status of the pod

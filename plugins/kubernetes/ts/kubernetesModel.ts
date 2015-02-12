@@ -7,9 +7,13 @@ module Kubernetes {
     return thing.id;
   }
 
+  function createKey(namespace, id) {
+    return (namespace || "") + "-" + id;
+  }
+
   function populateKey(item) {
     var result = item;
-    result['_key'] = item.namespace + "-" + item.id;
+    result['_key'] = createKey(item.namespace, item.id);
     return result;
   }
 
@@ -38,14 +42,15 @@ module Kubernetes {
     public replicationControllers = [];
     public pods = [];
     public hosts = [];
+    public namespaces = [];
     public redraw = false;
     public resourceVersions = {};
 
     // various views on the data
     public hostsByKey = {};
     public servicesByKey = {};
-    public podsByKey = {};
     public replicationControllersByKey = {};
+    public podsByKey = {};
 
     public appInfos = [];
     public appViews = [];
@@ -63,6 +68,19 @@ module Kubernetes {
     public orRedraw(flag) {
       this.redraw = this.redraw || flag;
     }
+
+    public getService(namespace, id) {
+      return this.servicesByKey[createKey(namespace ,id)];
+    }
+
+    public getReplicationController(namespace, id) {
+      return this.replicationControllersByKey[createKey(namespace ,id)];
+    }
+
+    public getPod(namespace, id) {
+      return this.podsByKey[createKey(namespace ,id)];
+    }
+
 
     protected updateIconUrlAndAppInfo(entity, nameField: string) {
       var answer = null;
@@ -94,8 +112,6 @@ module Kubernetes {
         this.servicesByKey = {};
         this.podsByKey = {};
         this.replicationControllersByKey = {};
-        this.kubernetes.namespaces = {};
-
         var hostsByKey = {};
 
         this.pods.forEach((pod) => {

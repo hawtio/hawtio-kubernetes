@@ -243,7 +243,7 @@ module Kubernetes {
   var OverviewBoxController = controller("OverviewBoxController", ["$scope", "$location", ($scope, $location:ng.ILocationService) => {
     $scope.viewDetails = (entity, path:string) => {
       if (entity) {
-        $location.path(UrlHelpers.join('/kubernetes/namespace', entity.namespace, path)).search({'_id': entity.id });
+        $location.path(UrlHelpers.join('/kubernetes/namespace', entity.namespace, path, entity.id));
       } else {
         log.warn("No entity for viewDetails!");
       }
@@ -258,7 +258,7 @@ module Kubernetes {
     $scope.model = KubernetesModel;
 
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'kubernetes.selectedNamespace', 'namespace', undefined);
-    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
+    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
   }]);
 
 }

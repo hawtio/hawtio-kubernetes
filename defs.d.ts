@@ -8,6 +8,7 @@
 /// <reference path="d.ts/kubernetes/ts/overview.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/pods.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationControllers.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/service.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/services.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
 /// <reference path="d.ts/service/ts/serviceHelpers.d.ts"/>

@@ -48,7 +48,7 @@ module Kubernetes {
       ]
     };
 
-    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
+    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
 
     $scope.$on('kubeSelectedId', ($event, id) => {

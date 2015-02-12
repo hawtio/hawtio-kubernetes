@@ -15,6 +15,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers'), route('replicationControllers.html', false))
                   .when(UrlHelpers.join(context, 'services'), route('services.html', false))
                   .when(UrlHelpers.join(context, '/namespace/:namespace/services'), route('services.html', false))
+                  .when(UrlHelpers.join(context, '/namespace/:namespace/services/:id'), route('service.html', false))
                   .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))

@@ -104,9 +104,9 @@ module Kubernetes {
     return answer;
   }
 
-  export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL) {
+  export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) {
     if (!KubernetesState.selectedNamespace) {
-      KubernetesState.selectedNamespace = $routeParams.namespace;
+      KubernetesState.selectedNamespace = $routeParams.namespace || $location.search()["namespace"];
     }
     if (!KubernetesState.selectedNamespace) {
       if (angular.isArray(KubernetesState.namespaces) && KubernetesState.namespaces.length) {
