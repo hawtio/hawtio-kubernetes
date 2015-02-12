@@ -1,8 +1,8 @@
 <script type="text/ng-template" id="idTemplate.html">
-  <div class="ngCellText" ng-controller="Kubernetes.IDSelector">
+  <div class="ngCellText">
     <a href="" 
        title="View details for {{row.entity.id}}"
-       ng-href="{{entityPageLink(row.entity)}}">
+       ng-href="{{row.entity | entityPageLink}}">
       <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
       {{row.entity.id}}</a>
   </div>

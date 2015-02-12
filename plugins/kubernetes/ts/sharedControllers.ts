@@ -4,11 +4,6 @@
 
 module Kubernetes {
 
-  // controller that handles the 'id' field of a given view
-  export var IDSelector = controller("IDSelector", ["$scope", "$location", ($scope, $location) => {
-    $scope.entityPageLink = entityPageLink;
-  }]);
-
   // controller for the status icon cell
   export var PodStatus = controller("PodStatus", ["$scope", ($scope) => {
     $scope.statusMapping = (text) => {

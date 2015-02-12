@@ -14,7 +14,7 @@
   <script type="text/ng-template" id="appServicesTemplate.html">
     <div class="ngCellText">
       <span ng-repeat="service in row.entity.services">
-        <a href="#/kubernetes/services?_id={{service.id}}">
+          <a ng-href="{{service | kubernetesPageLink}}">
           <span>{{service.name || service.id}}</span>
         </a>
       </span>
@@ -28,11 +28,11 @@
   <script type="text/ng-template" id="appReplicationControllerTemplate.html">
     <div class="ngCellText">
       <span ng-repeat="controller in row.entity.replicationControllers">
-        <a href="#/kubernetes/replicationControllers?_id={{controller.id}}">
+        <a ng-href="{{controller | kubernetesPageLink}}">
           <span>{{controller.id}}</span>
         </a>
         &nbsp;
-        <span class="btn btn-sm" ng-click="resizeDialog.open(controller)" title="Edit the number of replicas of this controller">{{controller.replicas}}</span>
+        <span class="btn btn-sm" ng-click="resizeDialog.open(controller)" title="Resize the number of replicas of this controller">{{controller.replicas}}</span>
       </span>
     </div>
   </script>
@@ -54,7 +54,7 @@
           <img ng-show="item.$iconUrl" ng-src="{{item.$iconUrl}}">
         </span>
         <span class="service-view-name" title="{{view.name}}">{{view.appName}}</span>
-        <span class="service-view-address">{{view.address}}</span>
+        <span class="service-view-address" title="Go to the service detail page"><a ng-href="{{view.service | kubernetesPageLink}}">{{view.address}}</a></span>
       </div>
 
       <div class="service-view-detail-rectangle">
@@ -69,13 +69,13 @@
           <div class="col-md-4">
             <div class="service-view-detail-pod-template" ng-show="view.controllerId">
               pod template:
-              <span class="value">{{view.controllerId}}</span>
+              <span class="value" title="Go to the replication controller detail page"><a ng-href="{{view.replicationController | kubernetesPageLink}}">{{view.controllerId}}</a></span>
             </div>
           </div>
           <div class="col-md-4 service-view-detail-pod-counts">
             <a ng-show="view.replicationController" class="value pull-right"
                ng-click="resizeDialog.open(view.replicationController)"
-               title="Edit the number of pods">
+               title="Resize the number of pods">
               {{view.podCountText}}
             </a>
             <span ng-hide="view.replicationController" class="value pull-right">
@@ -101,7 +101,7 @@
                 </td>
                 <td>
                   <div class="service-view-detail-pod-id" title="{{pod.id}}">
-                    <span class="value">Pod {{pod.idAbbrev}}</span>
+                    <span class="value">Pod <a title="Go to the pod detail page" ng-href="{{pod | kubernetesPageLink}}">{{pod.idAbbrev}}</a></span>
                   </div>
                   <div class="service-view-detail-pod-ip">
                     IP:
@@ -146,7 +146,7 @@
                 </td>
                 <td>
                   <div class="service-view-detail-pod-id" title="{{pod.id}}">
-                    <span class="value">Pod {{pod.idAbbrev}}</span>
+                    <span class="value">Pod <a title="Go to the pod detail page" ng-href="{{pod | kubernetesPageLink}}">{{pod.idAbbrev}}</a></span>
                   </div>
                   <div class="service-view-detail-pod-ip">
                     IP:

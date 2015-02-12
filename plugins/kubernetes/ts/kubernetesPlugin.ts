@@ -36,6 +36,9 @@ module Kubernetes {
     return "/kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library";
   }]);
 
+  _module.filter('kubernetesPageLink', () => entityPageLink);
+
+
   function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string,
                           $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) {
     KubernetesApiURL.then((KubernetesApiURL) => {
