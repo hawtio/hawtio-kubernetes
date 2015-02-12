@@ -104,12 +104,18 @@
   display: block;
   width: 64px;
   height: 64px;
-  padding: 15px;
+  padding: 7px;
   font-weight: bold;
   vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.kubernetes-overview-cell .app-icon-medium {
+  width: 48px;
+  height: 48px;
+}
+
 
 .kubernetes-replicationController-node img {
   width: 64px;
@@ -137,11 +143,6 @@
 .ngCellText .app-icon-small {
   width: 24px;
   vertical-align: middle;
-}
-
-.kubernetes-overview-cell .app-icon-medium {
-  width: 32px;
-  height: 32px;
 }
 
 .filter-header {
