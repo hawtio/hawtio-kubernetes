@@ -47,8 +47,13 @@
       <span class="blue">{{key}}</span>=<span class="green">{{value}}</span>
     </span>
   </script>
-  <div class="row">
+  <div class="row filter-header">
+    <div class="col-md-12" ng-hide="model.pods.length">
+      <span ng-include="'namespaceSelector.html'"></span>
+      <p></p>
+    </div>
     <div class="col-md-12" ng-show="model.pods.length">
+      <span ng-include="'namespaceSelector.html'"></span>
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"

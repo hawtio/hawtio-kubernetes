@@ -12,8 +12,12 @@
       <span class="btn btn-sm" ng-click="$parent.$parent.resizeDialog.open(row.entity)" title="Edit the number of replicas of this controller">{{row.entity.desiredState.replicas}}</span>
     </div>
   </script>
-  <div class="row">
+  <div class="row filter-header">
+    <div class="col-md-12" ng-hide="model.replicationControllers.length">
+      <span ng-include="'namespaceSelector.html'"></span>
+    </div>
     <div class="col-md-12" ng-show="model.replicationControllers.length">
+      <span ng-include="'namespaceSelector.html'"></span>
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"

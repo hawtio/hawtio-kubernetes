@@ -298,3 +298,7 @@ img.icon-selected-app {
 
 .service-view-detail-pod-id {
 }
+
+.kubernetes-view .filter-header {
+  margin-bottom: 1em;
+}

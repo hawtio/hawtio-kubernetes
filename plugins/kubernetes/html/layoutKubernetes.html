@@ -86,41 +86,13 @@
           </div>
         </form>
     </div>
-</script>
+  </script>
+  <script type="text/ng-template" id="namespaceSelector.html">
+    namespace: <select ng-model="kubernetes.selectedNamespace" ng-options="namespace for namespace in kubernetes.namespaces" title="choose the namespace - which is a selection of resources in kubernetes">
+    </select>
+  </script>
 <div class="row" ng-controller="Kubernetes.TopLevel">
-  <div class="col-md-12">
-    <ul class="nav nav-tabs connected">
-      <!--
-      <li ng-class='{active : isActive("/kubernetes/apps")}' ng-show="showAppView"
-          title="View all of the Apps running right now">
-        <a ng-href="/kubernetes/apps">Apps</a>
-      </li>
-      <li ng-class='{active : isActive("/kubernetes/services")}'
-          title="View kubernetes services and their status">
-        <a ng-href="/kubernetes/services">Services</a>
-      </li>
-      <li ng-class='{active : isActive("/kubernetes/replicationControllers")}'
-          title="View kubernetes replication controllers and their status">
-        <a ng-href="/kubernetes/replicationControllers">Controllers</a>
-      </li>
-      <li ng-class='{active : isActive("/kubernetes/pods")}'
-          title="View kubernetes pods and their status">
-        <a ng-href="/kubernetes/pods">Pods</a>
-      </li>
-      <li ng-class='{active : isActive("/kubernetes/overview")}'
-          title="View an overview diagram of the system. Version: {{version.major}}.{{version.minor}}">
-        <a ng-href="/kubernetes/overview">Diagram</a>
-      </li>
-      -->
-      <li class=pull-right>
-        namespace: <select ng-model="kubernetes.selectedNamespace" ng-options="namespace for namespace in kubernetes.namespaces" title="choose the namespace - which is a selection of resources in kubernetes">
-            <!--option ng-repeat="namespace in namespaces" value="{{namespace}}">{{namespace}}</option-->
-        </select>
-      <li>
-    </ul>
-    <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over uploader="uploader" over-class="ready-drop">
-      <div class="row" ng-view>
-      </div>
-    </div>
+  <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over uploader="uploader" over-class="ready-drop">
+    <div class="row kubernetes-view" ng-view></div>
   </div>
 </div>

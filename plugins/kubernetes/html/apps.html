@@ -168,6 +168,7 @@
   <div ng-hide="appSelectorShow">
     <div class="row filter-header">
       <div class="col-md-12">
+        <span ng-include="'namespaceSelector.html'"></span>
         <span ng-show="model.apps.length && !id">
           <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                          css-class="input-xxlarge"

@@ -1,6 +1,10 @@
 <div ng-controller="Kubernetes.Services">
-  <div class="row">
+  <div class="row filter-header">
+    <div class="col-md-12" ng-hide="model.services.length">
+      <span ng-include="'namespaceSelector.html'"></span>
+    </div>
     <div class="col-md-12" ng-show="model.services.length">
+      <span ng-include="'namespaceSelector.html'"></span>
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
