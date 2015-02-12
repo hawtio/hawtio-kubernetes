@@ -17,7 +17,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, '/namespace/:namespace/services'), route('services.html', false))
                   .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
-                  .when(UrlHelpers.join(context, 'overview'), route('overview.html', false))
+                  .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
   }]);
 
@@ -27,23 +27,6 @@ module Kubernetes {
     var answer = <ng.IDeferred<string>>$q.defer();
     answer.resolve(url);
     return answer.promise;
-
-/*
-    var answer = <ng.IDeferred<string>>$q.defer();
-    jolokia.getAttribute(Kubernetes.mbean, 'KubernetesAddress', undefined,
-      <Jolokia.IParams> Core.onSuccess((response) => {
-        var proxified = UrlHelpers.maybeProxy(jolokiaUrl, response);
-        log.debug("discovered API URL:", proxified);
-        answer.resolve(proxified);
-        Core.$apply($rootScope);
-      }, {
-        error: (response) => {
-          log.debug("error fetching API URL: ", response);
-          answer.reject(response);
-          Core.$apply($rootScope);
-        }
-      }));
-*/
   }]);
 
   _module.factory('AppLibraryURL', ['$rootScope', ($rootScope:ng.IRootScopeService) => {

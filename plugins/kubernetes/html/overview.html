@@ -17,7 +17,7 @@
              ng-init="entity=getEntity('service', '{{service._key}}')"
              ng-mouseenter="mouseEnter($event)"
              ng-mouseleave="mouseLeave($event)"
-             ng-click="viewDetails('services')">
+             ng-click="viewDetails(entity, 'services')">
           <div ng-init="entity=entity" ng-include="'serviceBoxTemplate.html'"></div>
         </div>
       </div>
@@ -44,7 +44,7 @@
          ng-mouseleave="mouseLeave($event)"
          ng-controller="Kubernetes.OverviewBoxController"
          ng-init="entity=getEntity('pod', '{{pod._key}}')"
-         ng-click="viewDetails('pods')">
+         ng-click="viewDetails(entity, 'pods')">
       <div class="css-table">
         <div class="css-table-row">
           <div class="pod-status-cell css-table-cell">
@@ -70,7 +70,8 @@
             ng-mouseleave="mouseLeave($event)"
             class="jsplumb-node kubernetes-replicationController-node kubernetes-node"
             ng-controller="Kubernetes.OverviewBoxController"
-            ng-click="viewDetails('replicationControllers')">
+            ng-init="entity=getEntity('replicationController', '{{replicationController._key}}')"
+            ng-click="viewDetails(entity, 'replicationControllers')">
             <img class="app-icon-medium" ng-src="{{replicationController.$iconUrl}}">
         </div>
       </div>

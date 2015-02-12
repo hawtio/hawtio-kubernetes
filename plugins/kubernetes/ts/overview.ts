@@ -242,27 +242,33 @@ module Kubernetes {
             });
           });
         }
+
         function refreshDrawing() {
-            if (element.children().length === 0) {
-              firstDraw();
-            } else {
-              update();
-            }
+          if (element.children().length === 0) {
+            firstDraw();
+          } else {
+            update();
           }
+          Core.$apply(scope);
+        }
 
         scope.$on('kubernetesModelUpdated', refreshDrawing);
 
         // detect the view changing after the last time the model changed
         scope.$on("$routeChangeSuccess", () => {
-          setTimeout(refreshDrawing, 200);
+          setTimeout(refreshDrawing, 100);
         });
       }
     };
   }]);
 
   var OverviewBoxController = controller("OverviewBoxController", ["$scope", "$location", ($scope, $location:ng.ILocationService) => {
-    $scope.viewDetails = (path:string) => {
-      $location.path(UrlHelpers.join('/kubernetes/namespace', $scope.entity.namespace, path)).search({'_id': $scope.entity.id });
+    $scope.viewDetails = (entity, path:string) => {
+      if (entity) {
+        $location.path(UrlHelpers.join('/kubernetes/namespace', entity.namespace, path)).search({'_id': entity.id });
+      } else {
+        log.warn("No entity for viewDetails!");
+      }
     }
   }]);
 
@@ -274,7 +280,10 @@ module Kubernetes {
     $scope.model = KubernetesModel;
 
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'kubernetes.selectedNamespace', 'namespace', undefined);
-
+    var kubernetes = KubernetesState;
+    if (kubernetes && !kubernetes.selectedNamespace && angular.isArray(kubernetes.namespaces) && kubernetes.namespaces.length) {
+      kubernetes.selectedNamespace = kubernetes.namespaces[0];
+    }
   }]);
 
 }
