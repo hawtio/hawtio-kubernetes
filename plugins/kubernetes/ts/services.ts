@@ -11,9 +11,6 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
-    $scope.id = null;
-
-    ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
 
     $scope.tableConfig = {
       data: 'model.services',
@@ -38,14 +35,6 @@ module Kubernetes {
 
     $scope.$on('kubernetesModelUpdated', function () {
       Core.$apply($scope);
-    });
-
-    $scope.$on('kubeSelectedId', ($event, id) => {
-      Kubernetes.setJson($scope, id, $scope.model.services);
-    });
-
-    $scope.$on('$routeUpdate', ($event) => {
-      Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
     });
 
     KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {

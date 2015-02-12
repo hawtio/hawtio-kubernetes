@@ -69,8 +69,6 @@ module Kubernetes {
       ]
     };
 
-    ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
-
     $scope.openLogs = () => {
       var pods = $scope.tableConfig.selectedItems;
       if (!pods || !pods.length) {
@@ -83,14 +81,6 @@ module Kubernetes {
       }
       openLogsForPods(ServiceRegistry, $window, pods);
     };
-
-    $scope.$on('kubeSelectedId', ($event, id) => {
-      Kubernetes.setJson($scope, id, $scope.model.pods);
-    });
-
-    $scope.$on('$routeUpdate', ($event) => {
-      Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
-    });
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 

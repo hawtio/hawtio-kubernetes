@@ -15,13 +15,6 @@ module Kubernetes {
       Core.$apply($scope);
     });
 
-    $scope.replicationControllers = [];
-    $scope.allReplicationControllers = [];
-    var pods = [];
-    $scope.fetched = false;
-    $scope.json = '';
-    ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
-
     $scope.tableConfig = {
       data: 'model.replicationControllers',
       showSelectionCheckbox: true,
@@ -41,15 +34,6 @@ module Kubernetes {
     };
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-
-
-    $scope.$on('kubeSelectedId', ($event, id) => {
-      Kubernetes.setJson($scope, id, $scope.replicationControllers);
-    });
-
-    $scope.$on('$routeUpdate', ($event) => {
-      Kubernetes.setJson($scope, $location.search()['_id'], $scope.pods);
-    });
 
     KubernetesReplicationControllers.then((KubernetesReplicationControllers:ng.resource.IResourceClass) => {
       KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
