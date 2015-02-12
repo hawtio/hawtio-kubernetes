@@ -14,6 +14,14 @@ module Kubernetes {
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
+    $scope.itemConfig = {
+      properties: {
+        '^\\/labels$': {
+          template: $templateCache.get('labelTemplate.html')
+        }
+      }
+    };
+
     $scope.$on('kubernetesModelUpdated', function () {
       updateData();
     });

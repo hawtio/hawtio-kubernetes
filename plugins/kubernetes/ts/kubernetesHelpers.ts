@@ -147,17 +147,18 @@ module Kubernetes {
     });
 
     $scope.$on("labelFilterUpdate", ($event, text) => {
-      var currentFilter = $scope.tableConfig.filterOptions.filterText;
+      var filterOptions = ($scope.tableConfig || {}).filterOptions || {};
+      var currentFilter = filterOptions.filterText;
       if (Core.isBlank(currentFilter)) {
-        $scope.tableConfig.filterOptions.filterText = text;
+        filterOptions.filterText = text;
       } else {
         var expressions = currentFilter.split(/\s+/);
         if (expressions.any(text)) {
           // lets exclude this filter expression
           expressions = expressions.remove(text);
-          $scope.tableConfig.filterOptions.filterText = expressions.join(" ");
+          filterOptions.filterText = expressions.join(" ");
         } else {
-          $scope.tableConfig.filterOptions.filterText = currentFilter + " " + text;
+          filterOptions.filterText = currentFilter + " " + text;
         }
       }
       $scope.id = undefined;

@@ -22,14 +22,6 @@ module Kubernetes {
     $scope.json = '';
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
 
-    $scope.detailConfig = {
-      properties: {
-        '^\\/labels$': {
-          template: $templateCache.get('labelTemplate.html')
-        }
-      }
-    };
-
     $scope.tableConfig = {
       data: 'model.replicationControllers',
       showSelectionCheckbox: true,

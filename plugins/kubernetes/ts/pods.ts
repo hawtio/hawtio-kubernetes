@@ -69,26 +69,6 @@ module Kubernetes {
       ]
     };
 
-    $scope.podDetail = {
-      properties: {
-        'manifest/containers/image$': {
-          template: $templateCache.get('imageTemplate.html')
-        },
-        'currentState/status': {
-          template: $templateCache.get('statusTemplate.html')
-        },
-        '\\/Env\\/': {
-          template: $templateCache.get('envItemTemplate.html')
-        },
-        '^\\/labels$': {
-          template: $templateCache.get('labelTemplate.html')
-        },
-        '\\/env\\/key$': {
-          hidden: true
-        }
-      }
-    };
-
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
 
     $scope.openLogs = () => {

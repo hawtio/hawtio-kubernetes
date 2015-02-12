@@ -79,7 +79,7 @@
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
-      <div ng-show="model.fetched && !id">
+      <div ng-show="model.fetched">
         <div ng-hide="model.pods.length" class="align-center">
           <p class="alert alert-info">There are no pods currently running.</p>
         </div>
@@ -88,11 +88,6 @@
                  hawtio-simple-table="tableConfig"></table>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="row" ng-show="model.fetched && id">
-    <div class="col-md-12">
-      <div hawtio-object="item" config="podDetail"></div>
     </div>
   </div>
 </div>

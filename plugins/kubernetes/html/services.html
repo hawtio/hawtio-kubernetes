@@ -26,7 +26,7 @@
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
-      <div ng-show="model.fetched && !id">
+      <div ng-show="model.fetched">
         <div ng-hide="model.services.length" class="align-center">
           <p class="alert alert-info">There are no services currently available.</p>
         </div>
@@ -34,9 +34,6 @@
           <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
                  hawtio-simple-table="tableConfig"></table>
         </div>
-      </div>
-      <div ng-show="model.fetched && id">
-        <div hawtio-object="item"></div>
       </div>
     </div>
   </div>

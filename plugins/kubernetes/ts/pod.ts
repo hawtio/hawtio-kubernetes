@@ -12,6 +12,26 @@ module Kubernetes {
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
 
+    $scope.itemConfig = {
+      properties: {
+        'manifest/containers/image$': {
+          template: $templateCache.get('imageTemplate.html')
+        },
+        'currentState/status': {
+          template: $templateCache.get('statusTemplate.html')
+        },
+        '\\/Env\\/': {
+          template: $templateCache.get('envItemTemplate.html')
+        },
+        '^\\/labels$': {
+          template: $templateCache.get('labelTemplate.html')
+        },
+        '\\/env\\/key$': {
+          hidden: true
+        }
+      }
+    };
+
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
     $scope.$on('kubernetesModelUpdated', function () {
