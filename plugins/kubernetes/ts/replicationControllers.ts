@@ -9,7 +9,6 @@ module Kubernetes {
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia, $http, $timeout, KubernetesApiURL) => {
 
-    $scope.namespace = $routeParams.namespace;
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
     $scope.$on('kubernetesModelUpdated', function () {
@@ -49,7 +48,7 @@ module Kubernetes {
       ]
     };
 
-    Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
+    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
 
 
     $scope.$on('kubeSelectedId', ($event, id) => {

@@ -13,7 +13,6 @@ module Kubernetes {
       Core.$apply($scope);
     });
 
-    $scope.namespace = $routeParams.namespace;
     $scope.apps = [];
     $scope.allApps = [];
     $scope.kubernetes = KubernetesState;
@@ -61,7 +60,7 @@ module Kubernetes {
       ]
     };
 
-    Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
+    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
 
 
     $scope.expandedPods = [];

@@ -104,7 +104,15 @@ module Kubernetes {
     return answer;
   }
 
-  export function initShared($scope, $location, $http, $timeout, KubernetesApiURL) {
+  export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL) {
+    if (!KubernetesState.selectedNamespace) {
+      KubernetesState.selectedNamespace = $routeParams.namespace;
+    }
+    if (!KubernetesState.selectedNamespace) {
+      if (angular.isArray(KubernetesState.namespaces) && KubernetesState.namespaces.length) {
+        KubernetesState.selectedNamespace = KubernetesState.namespaces[0];
+      }
+    }
     $scope.resizeDialog = {
       controller: null,
       newReplicas: 0,

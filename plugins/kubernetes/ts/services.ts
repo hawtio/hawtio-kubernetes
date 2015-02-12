@@ -13,7 +13,6 @@ module Kubernetes {
     $scope.model = KubernetesModel;
     $scope.id = null;
 
-    $scope.namespace = $routeParams.namespace;
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
 
     $scope.tableConfig = {
@@ -35,7 +34,7 @@ module Kubernetes {
       ]
     };
 
-    Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
+    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
 
     $scope.$on('kubernetesModelUpdated', function () {
       Core.$apply($scope);
@@ -87,52 +86,6 @@ module Kubernetes {
             customClass: "alert alert-warning"
           }).open();
         };
-
-/*
-        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-          var ready = 0;
-          var numServices = 2;
-
-          function maybeNext(count) {
-            ready = count;
-            // log.debug("Completed: ", ready);
-            if (ready >= numServices) {
-              // log.debug("Fetching another round");
-              maybeInit();
-              next();
-            }
-          }
-
-          KubernetesServices.query((response) => {
-            $scope.fetched = true;
-            $scope.allServices = (response['items'] || []).sortBy((item) => {
-              return item.id;
-            });
-            $scope.services = $scope.allServices.filter((item) => {
-              return !$scope.kubernetes.selectedNamespace || $scope.kubernetes.selectedNamespace === item.namespace
-            });
-
-            Kubernetes.setJson($scope, $scope.id, $scope.services);
-            angular.forEach($scope.services, entity => {
-              entity.$labelsText = Kubernetes.labelsToString(entity.labels);
-            });
-            updatePodCounts();
-            maybeNext(ready + 1);
-          });
-
-          KubernetesPods.query((response) => {
-            ArrayHelpers.sync(pods, (response['items'] || []).filter((pod:KubePod) => {
-              return pod.id && (!$scope.namespace || $scope.namespace === pod.namespace)
-            }));
-            updatePodCounts();
-            maybeNext(ready + 1);
-          });
-        });
-        $scope.fetch();
-
-    function maybeInit() {
-    }
-*/
       });
     });
 

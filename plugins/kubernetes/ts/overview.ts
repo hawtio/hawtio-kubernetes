@@ -252,16 +252,13 @@ module Kubernetes {
 
   var scopeName = "OverviewController";
 
-  var OverviewController = controller(scopeName, ["$scope", "$location", "KubernetesModel","KubernetesState", ($scope, $location, KubernetesModel, KubernetesState) => {
+  var OverviewController = controller(scopeName, ["$scope", "$location", "$http", "$timeout", "$routeParams", "KubernetesModel","KubernetesState", "KubernetesApiURL", ($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) => {
     $scope.name = scopeName;
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
 
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'kubernetes.selectedNamespace', 'namespace', undefined);
-    var kubernetes = KubernetesState;
-    if (kubernetes && !kubernetes.selectedNamespace && angular.isArray(kubernetes.namespaces) && kubernetes.namespaces.length) {
-      kubernetes.selectedNamespace = kubernetes.namespaces[0];
-    }
+    Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
   }]);
 
 }

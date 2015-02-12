@@ -102,7 +102,15 @@ var Kubernetes;
         return answer;
     }
     Kubernetes.labelsToString = labelsToString;
-    function initShared($scope, $location, $http, $timeout, KubernetesApiURL) {
+    function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL) {
+        if (!KubernetesState.selectedNamespace) {
+            KubernetesState.selectedNamespace = $routeParams.namespace;
+        }
+        if (!KubernetesState.selectedNamespace) {
+            if (angular.isArray(KubernetesState.namespaces) && KubernetesState.namespaces.length) {
+                KubernetesState.selectedNamespace = KubernetesState.namespaces[0];
+            }
+        }
         $scope.resizeDialog = {
             controller: null,
             newReplicas: 0,
@@ -1156,7 +1164,6 @@ var Kubernetes;
         $scope.$on('kubernetesModelUpdated', function () {
             Core.$apply($scope);
         });
-        $scope.namespace = $routeParams.namespace;
         $scope.apps = [];
         $scope.allApps = [];
         $scope.kubernetes = KubernetesState;
@@ -1197,7 +1204,7 @@ var Kubernetes;
                 { field: 'namespace', displayName: 'Namespace' }
             ]
         };
-        Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
+        Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
         $scope.expandedPods = [];
         $scope.podExpanded = function (pod) {
             var id = (pod || {}).id;
@@ -1793,15 +1800,12 @@ var Kubernetes;
         };
     }]);
     var scopeName = "OverviewController";
-    var OverviewController = Kubernetes.controller(scopeName, ["$scope", "$location", "KubernetesModel", "KubernetesState", function ($scope, $location, KubernetesModel, KubernetesState) {
+    var OverviewController = Kubernetes.controller(scopeName, ["$scope", "$location", "$http", "$timeout", "$routeParams", "KubernetesModel", "KubernetesState", "KubernetesApiURL", function ($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) {
         $scope.name = scopeName;
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
         ControllerHelpers.bindModelToSearchParam($scope, $location, 'kubernetes.selectedNamespace', 'namespace', undefined);
-        var kubernetes = KubernetesState;
-        if (kubernetes && !kubernetes.selectedNamespace && angular.isArray(kubernetes.namespaces) && kubernetes.namespaces.length) {
-            kubernetes.selectedNamespace = kubernetes.namespaces[0];
-        }
+        Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
     }]);
 })(Kubernetes || (Kubernetes = {}));
 
@@ -1821,7 +1825,6 @@ var Kubernetes;
         $scope.$on('kubernetesModelUpdated', function () {
             Core.$apply($scope);
         });
-        $scope.namespace = $routeParams.namespace;
         $scope.itemSchema = Forms.createFormConfiguration();
         $scope.hasService = function (name) { return Service.hasService(ServiceRegistry, name); };
         $scope.tableConfig = {
@@ -1907,7 +1910,7 @@ var Kubernetes;
         $scope.$on('$routeUpdate', function ($event) {
             Kubernetes.setJson($scope, $location.search()['_id'], $scope.model.pods);
         });
-        Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
+        Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
         $scope.connect = {
             dialog: new UI.Dialog(),
             saveCredentials: false,
@@ -2013,7 +2016,6 @@ var Kubernetes;
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.ReplicationControllers = Kubernetes.controller("ReplicationControllers", ["$scope", "KubernetesModel", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia", "$http", "$timeout", "KubernetesApiURL", function ($scope, KubernetesModel, KubernetesReplicationControllers, KubernetesPods, KubernetesState, $templateCache, $location, $routeParams, jolokia, $http, $timeout, KubernetesApiURL) {
-        $scope.namespace = $routeParams.namespace;
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
         $scope.$on('kubernetesModelUpdated', function () {
@@ -2049,7 +2051,7 @@ var Kubernetes;
                 { field: 'namespace', displayName: 'Namespace' }
             ]
         };
-        Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
+        Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
         $scope.$on('kubeSelectedId', function ($event, id) {
             Kubernetes.setJson($scope, id, $scope.replicationControllers);
         });
@@ -2110,7 +2112,6 @@ var Kubernetes;
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
         $scope.id = null;
-        $scope.namespace = $routeParams.namespace;
         ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
         $scope.tableConfig = {
             data: 'model.services',
@@ -2130,7 +2131,7 @@ var Kubernetes;
                 { field: 'namespace', displayName: 'Namespace' }
             ]
         };
-        Kubernetes.initShared($scope, $location, $http, $timeout, KubernetesApiURL);
+        Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesState, KubernetesApiURL);
         $scope.$on('kubernetesModelUpdated', function () {
             Core.$apply($scope);
         });
@@ -2178,51 +2179,6 @@ var Kubernetes;
                         customClass: "alert alert-warning"
                     }).open();
                 };
-                /*
-                        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-                          var ready = 0;
-                          var numServices = 2;
-                
-                          function maybeNext(count) {
-                            ready = count;
-                            // log.debug("Completed: ", ready);
-                            if (ready >= numServices) {
-                              // log.debug("Fetching another round");
-                              maybeInit();
-                              next();
-                            }
-                          }
-                
-                          KubernetesServices.query((response) => {
-                            $scope.fetched = true;
-                            $scope.allServices = (response['items'] || []).sortBy((item) => {
-                              return item.id;
-                            });
-                            $scope.services = $scope.allServices.filter((item) => {
-                              return !$scope.kubernetes.selectedNamespace || $scope.kubernetes.selectedNamespace === item.namespace
-                            });
-                
-                            Kubernetes.setJson($scope, $scope.id, $scope.services);
-                            angular.forEach($scope.services, entity => {
-                              entity.$labelsText = Kubernetes.labelsToString(entity.labels);
-                            });
-                            updatePodCounts();
-                            maybeNext(ready + 1);
-                          });
-                
-                          KubernetesPods.query((response) => {
-                            ArrayHelpers.sync(pods, (response['items'] || []).filter((pod:KubePod) => {
-                              return pod.id && (!$scope.namespace || $scope.namespace === pod.namespace)
-                            }));
-                            updatePodCounts();
-                            maybeNext(ready + 1);
-                          });
-                        });
-                        $scope.fetch();
-                
-                    function maybeInit() {
-                    }
-                */
             });
         });
     }]);
