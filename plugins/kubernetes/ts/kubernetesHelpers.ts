@@ -253,7 +253,11 @@ module Kubernetes {
       if (kind && id) {
         var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
         var namespace = entity.namespace;
-        return UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
+        if (namespace && isIgnoreNamespaceKind(kind)) {
+          return UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
+        } else {
+          return UrlHelpers.join('/kubernetes', path, id);
+        }
       }
     }
     return null;
@@ -268,6 +272,10 @@ module Kubernetes {
     return kindPath;
   }
 
+  function isIgnoreNamespaceKind(kind) {
+    return kind === "Host" || kind === "Minion";
+  }
+
   /**
    * Returns the root URL for the kind
    */
@@ -277,9 +285,10 @@ module Kubernetes {
       pathSegment = "/" + Core.trimLeading(path, "/");
     }
     var kindPath = resourceKindToUriPath(kind);
-    if (isV1beta1Or2()) {
+    var ignoreNamespace = isIgnoreNamespaceKind(kind);
+    if (isV1beta1Or2() || ignoreNamespace) {
       var postfix = "";
-      if (namespace) {
+      if (namespace && !ignoreNamespace) {
         postfix = "?namespace=" + namespace;
       }
       return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + kindPath + pathSegment + postfix);
