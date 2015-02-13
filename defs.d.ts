@@ -3,6 +3,7 @@
 /// <reference path="d.ts/kubernetes/ts/kubernetesModel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/connect.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/host.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/hosts.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesJsonDirective.d.ts"/>

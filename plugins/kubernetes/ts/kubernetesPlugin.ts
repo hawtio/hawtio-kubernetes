@@ -38,6 +38,18 @@ module Kubernetes {
     return "/kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library";
   }]);
 
+  _module.factory('ConnectDialogService', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
+    return  {
+            dialog: new UI.Dialog(),
+            saveCredentials: false,
+            userName: null,
+            password: null,
+            jolokiaUrl: null,
+            containerName: null,
+            view: null
+    };
+  }]);
+
   _module.filter('kubernetesPageLink', () => entityPageLink);
 
 

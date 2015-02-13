@@ -61,10 +61,9 @@
     <i class="fa" ng-class="statusMapping(entity.currentState.status)"></i>
     <span ng-show="data">{{data}}</span>
     <!-- in table -->
-    <span ng-show="entity.$jolokiaUrl">
+    <span ng-show="entity.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
       <a class="clickable"
-         href=""
-         ng-click="$parent.$parent.$parent.connect.doConnect(row.entity)"
+         ng-click="doConnect(row.entity)"
          title="Open a new window and connect to this container">
         <i class="fa fa-sign-in"></i>
       </a>
@@ -101,5 +100,35 @@
 <div class="row" ng-controller="Kubernetes.TopLevel">
   <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over uploader="uploader" over-class="ready-drop">
     <div class="row kubernetes-view" ng-view></div>
+  </div>
+</div>
+<div ng-controller="Kubernetes.ConnectController">
+  <div hawtio-confirm-dialog="connect.dialog.show" title="Connect to {{connect.containerName}}?"
+       ok-button-text="Connect" on-ok="onOK()">
+    <div class="dialog-body">
+      <p>Please enter the user name and password for {{connect.containerName}}:</p>
+
+      <div class="control-group">
+        <label class="control-label">User name: </label>
+
+        <div class="controls">
+          <input name="userName" ng-model="connect.userName" type="text" autofill>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Password: </label>
+
+        <div class="controls">
+          <input name="password" ng-model="connect.password" type="password" autofill>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="connect.saveCredentials"> Save these credentials as the default
+          </label>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

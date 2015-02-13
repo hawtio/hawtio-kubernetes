@@ -91,10 +91,9 @@
                 <td class="service-view-detail-pod-status">
                   <i ng-class="pod.statusClass"></i>
                 </td>
-                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl">
+                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
                   <a class="clickable"
-                     href=""
-                     ng-click="pod.$connect.doConnect(pod)"
+                     ng-click="doConnect(pod)"
                      title="Open a new window and connect to this container">
                     <i class="fa fa-sign-in"></i>
                   </a>
@@ -138,10 +137,9 @@
                 <td class="service-view-detail-pod-status">
                   <i ng-class="pod.statusClass"></i>
                 </td>
-                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl">
+                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
                   <a class="clickable"
-                     href=""
-                     ng-click="pod.$connect.doConnect(pod)"
+                     ng-click="doConnect(pod)"
                      title="Open a new window and connect to this container">
                     <i class="fa fa-sign-in"></i>
                   </a>
