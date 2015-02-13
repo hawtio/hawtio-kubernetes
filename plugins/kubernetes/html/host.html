@@ -1,14 +1,14 @@
 <div ng-controller="Kubernetes.HostController">
   <div class="row">
     <div class="col-md-12">
+      <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
+              href="/kubernetes/hosts"><i class="fa fa-list"></i></a>
+      <a class="btn btn-primary pull-right"
               title="View all the pods on this host"
               href="/kubernetes/pods/?q=host={{item.id}}">
         Pods
       </a>
-      <span class="pull-right">&nbsp;</span>
-      <a class="btn btn-primary pull-right"
-              href="/kubernetes/hosts"><i class="fa fa-list"></i></a>
     </div>
   </div>
   <div class="row">
