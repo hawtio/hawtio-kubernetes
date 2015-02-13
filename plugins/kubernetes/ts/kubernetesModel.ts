@@ -350,25 +350,12 @@ module Kubernetes {
       var hostPort = null;
       var currentState = entity.currentState || {};
       var desiredState = entity.desiredState || {};
+      var podId = entity.id || entity.name;
       var host = currentState["host"];
       var podIP = currentState["podIP"];
       var hasDocker = false;
       var foundContainerPort = null;
-      if (currentState && !podIP) {
-        angular.forEach(info, (containerInfo, containerName) => {
-          if (!hostPort) {
-            var jolokiaHostPort = Core.pathGet(containerInfo, ["detailInfo", "HostConfig", "PortBindings", "8778/tcp"]);
-            if (jolokiaHostPort) {
-              var hostPorts = jolokiaHostPort.map("HostPort");
-              if (hostPorts && hostPorts.length > 0) {
-                hostPort = hostPorts[0];
-                hasDocker = true;
-              }
-            }
-          }
-        });
-      }
-      if (desiredState && !hostPort) {
+      if (desiredState) {
         var containers = Core.pathGet(desiredState, ["manifest", "containers"]);
         angular.forEach(containers, (container) => {
           if (!hostPort) {
@@ -393,36 +380,9 @@ module Kubernetes {
           }
         });
       }
-      if (podIP && foundContainerPort) {
-        host = podIP;
-        hostPort = foundContainerPort;
-        hasDocker = false;
-      }
-      if (hostPort) {
-        if (!host) {
-          host = "localhost";
-        }
-        // if Kubernetes is running locally on a platform which doesn't support docker natively
-        // then docker containers will be on a different IP so lets check for localhost and
-        // switch to the docker IP if its available
-        // TODO
-        var dockerIp = null;
-        var currentHostName = null;
-        if (dockerIp && hasDocker) {
-          if (host === "localhost" || host === "127.0.0.1" || host === currentHostName) {
-            host = dockerIp;
-          }
-        }
-        if (isRunning(currentState)) {
-          entity.$jolokiaUrl = "http://" + host + ":" + hostPort + "/jolokia/";
-
-          // TODO note if we can't access the docker/local host we could try access via
-          // the pod IP; but typically you need to explicitly enable that inside boot2docker
-          // see: https://github.com/fabric8io/fabric8/blob/2.0/docs/getStarted.md#if-you-are-on-a-mac
-
-          // TODO
-          //entity.$connect = $scope.connect;
-        }
+      if (isRunning(currentState) && podId && foundContainerPort) {
+        entity.$jolokiaUrl = "/kubernetes/api/" + defaultApiVersion + "/proxy/pods/"
+        + podId + ":" + foundContainerPort + "/jolokia/";
       }
     }
   }

@@ -64,7 +64,7 @@
     <span ng-show="entity.$jolokiaUrl">
       <a class="clickable"
          href=""
-         ng-click="entity.$connect.doConnect(row.entity)"
+         ng-click="$parent.$parent.$parent.connect.doConnect(row.entity)"
          title="Open a new window and connect to this container">
         <i class="fa fa-sign-in"></i>
       </a>
