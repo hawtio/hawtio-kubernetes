@@ -302,3 +302,8 @@ img.icon-selected-app {
 .kubernetes-view .filter-header {
   margin-bottom: 1em;
 }
+
+.controller-pod-counts {
+    padding-right: 16px;
+    padding-top: 8px;
+}
