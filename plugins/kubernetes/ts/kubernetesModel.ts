@@ -195,7 +195,8 @@ module Kubernetes {
             hostIP: hostIP,
             pods: hostPods,
             kind: "Host",
-            $podCounters: podCounters
+            $podCounters: podCounters,
+            $iconUrl: hostIconUrl
           };
           tmpHosts.push(hostDetails);
         }
