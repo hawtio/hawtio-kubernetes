@@ -253,7 +253,7 @@ module Kubernetes {
       if (kind && id) {
         var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
         var namespace = entity.namespace;
-        if (namespace && isIgnoreNamespaceKind(kind)) {
+        if (namespace && !isIgnoreNamespaceKind(kind)) {
           return UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
         } else {
           return UrlHelpers.join('/kubernetes', path, id);

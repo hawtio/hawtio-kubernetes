@@ -114,7 +114,9 @@
                   </div>
                   <div class="service-view-detail-pod-minion">
                     minion:
-                    <span class="value">{{pod.currentState.host}}</span>
+                    <span class="value">
+                      <a ng-show="pod.currentState.host" ng-href="/kubernetes/hosts/{{pod.currentState.host}}">{{pod.currentState.host}}</a>
+                    </span>
                   </div>
                 </td>
                 <td class="service-view-detail-pod-expand" ng-click="collapsePod(pod)">
