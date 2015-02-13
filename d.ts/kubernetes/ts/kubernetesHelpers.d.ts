@@ -9,6 +9,7 @@ declare module Kubernetes {
     var log: Logging.Logger;
     var keepPollingModel: boolean;
     var defaultIconUrl: string;
+    var hostIconUrl: string;
     var defaultApiVersion: string;
     var labelFilterTextSeparator: string;
     var appSuffix: string;

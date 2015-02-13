@@ -62,11 +62,15 @@ module Kubernetes {
         {
           field: 'currentState.podIP',
           displayName: 'Pod IP'
-        },
+        }
+        /*
+        TODO only show namespace if we have a 'show all namespaces' option
+        ,
         {
               field: 'namespace',
               displayName: 'Namespace'
         }
+        */
       ]
     };
 
