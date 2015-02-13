@@ -51,16 +51,17 @@ module Kubernetes {
         },
         {
           field: 'currentState.host',
-          displayName: 'Host'
-        },
-        {
-          field: 'currentState.podIP',
-          displayName: 'Pod IP'
+          displayName: 'Host',
+          cellTemplate: $templateCache.get("hostTemplate.html")
         },
         {
           field: 'labels',
           displayName: 'Labels',
           cellTemplate: $templateCache.get("labelTemplate.html")
+        },
+        {
+          field: 'currentState.podIP',
+          displayName: 'Pod IP'
         },
         {
               field: 'namespace',

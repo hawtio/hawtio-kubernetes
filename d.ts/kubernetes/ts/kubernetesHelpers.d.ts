@@ -10,6 +10,7 @@ declare module Kubernetes {
     var keepPollingModel: boolean;
     var defaultIconUrl: string;
     var defaultApiVersion: string;
+    var labelFilterTextSeparator: string;
     var appSuffix: string;
     interface KubePod {
         id: string;
@@ -35,7 +36,7 @@ declare module Kubernetes {
      * Given the list of pods lets iterate through them and find all pods matching the selector
      * and return counters based on the status of the pod
      */
-    function createPodCounters(selector: any, pods: any, outputPods?: any[]): {
+    function createPodCounters(selector: any, pods: any, outputPods?: any[], podLinkQuery?: any): {
         podsLink: string;
         valid: number;
         waiting: number;

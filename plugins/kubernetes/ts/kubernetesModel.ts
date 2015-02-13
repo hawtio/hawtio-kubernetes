@@ -121,6 +121,9 @@ module Kubernetes {
           podsByHost[host] = podsByHost[host] || [];
           podsByHost[host].push(pod);
           pod.$labelsText = Kubernetes.labelsToString(pod.labels);
+          if (host) {
+            pod.$labelsText += labelFilterTextSeparator + "host=" + host;
+          }
           pod.$iconUrl = defaultIconUrl;
           this.discoverPodConnections(pod);
           pod.$containerPorts = [];
@@ -178,7 +181,7 @@ module Kubernetes {
 
         for (var hostKey in podsByHost) {
           var hostPods = [];
-          var podCounters = createPodCounters((pod) => (pod.currentState || {}).host === hostKey, this.pods, hostPods);
+          var podCounters = createPodCounters((pod) => (pod.currentState || {}).host === hostKey, this.pods, hostPods, "host=" + hostKey);
           var hostIP = null;
           if (hostPods.length) {
             var pod = hostPods[0];

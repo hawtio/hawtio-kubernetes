@@ -14,6 +14,7 @@ module Kubernetes {
   export var defaultIconUrl = Core.url("/" + pluginPath + "img/kubernetes.svg");
 
   export var defaultApiVersion = "v1beta2";
+  export var labelFilterTextSeparator = ",";
 
   export var appSuffix = ".app";
 
@@ -92,10 +93,11 @@ module Kubernetes {
   }
 
 
+
   /**
    * Returns the labels text string using the <code>key1=value1,key2=value2,....</code> format
    */
-  export function labelsToString(labels, seperatorText = ",") {
+  export function labelsToString(labels, seperatorText = labelFilterTextSeparator) {
     var answer = "";
     angular.forEach(labels, (value, key) => {
       var separator = answer ? seperatorText : "";
@@ -169,7 +171,7 @@ module Kubernetes {
    * Given the list of pods lets iterate through them and find all pods matching the selector
    * and return counters based on the status of the pod
    */
-  export function createPodCounters(selector, pods, outputPods = []) {
+  export function createPodCounters(selector, pods, outputPods = [], podLinkQuery = null) {
     var filterFn;
     if (angular.isFunction(selector)) {
       filterFn = selector;
@@ -183,7 +185,10 @@ module Kubernetes {
       error: 0
     };
     if (selector) {
-      answer.podsLink = Core.url("/kubernetes/pods?q=" + encodeURIComponent(Kubernetes.labelsToString(selector, " ")));
+      if (!podLinkQuery) {
+        podLinkQuery = Kubernetes.labelsToString(selector, " ");
+      }
+      answer.podsLink = Core.url("/kubernetes/pods?q=" + encodeURIComponent(podLinkQuery));
       angular.forEach(pods, pod => {
         if (filterFn(pod)) {
           outputPods.push(pod);
