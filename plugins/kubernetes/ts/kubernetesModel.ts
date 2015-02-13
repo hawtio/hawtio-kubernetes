@@ -47,7 +47,7 @@ module Kubernetes {
     public resourceVersions = {};
 
     // various views on the data
-    public hostsByKey = {};
+    public podsByHost = {};
     public servicesByKey = {};
     public replicationControllersByKey = {};
     public podsByKey = {};
@@ -112,14 +112,14 @@ module Kubernetes {
         this.servicesByKey = {};
         this.podsByKey = {};
         this.replicationControllersByKey = {};
-        var hostsByKey = {};
+        var podsByHost = {};
 
         this.pods.forEach((pod) => {
           if (!pod.kind) pod.kind = "Pod";
           this.podsByKey[pod._key] = pod;
           var host = pod.currentState.host;
-          hostsByKey[host] = hostsByKey[host] || [];
-          hostsByKey[host].push(pod);
+          podsByHost[host] = podsByHost[host] || [];
+          podsByHost[host].push(pod);
           pod.$labelsText = Kubernetes.labelsToString(pod.labels);
           pod.$iconUrl = defaultIconUrl;
           this.discoverPodConnections(pod);
@@ -174,14 +174,27 @@ module Kubernetes {
           }
         });
         var tmpHosts = [];
-        var oldHostsLength = this.hosts.length;
-        this.hostsByKey = hostsByKey;
+        this.podsByHost = podsByHost;
 
-        for (var hostKey in hostsByKey) {
-          tmpHosts.push({
+        for (var hostKey in podsByHost) {
+          var hostPods = [];
+          var podCounters = createPodCounters((pod) => (pod.currentState || {}).host === hostKey, this.pods, hostPods);
+          var hostIP = null;
+          if (hostPods.length) {
+            var pod = hostPods[0];
+            var currentState = pod.currentState;
+            if (currentState) {
+              hostIP = currentState.hostIP;
+            }
+          }
+          var hostDetails = {
             id: hostKey,
-            pods: hostsByKey[hostKey]
-          });
+            hostIP: hostIP,
+            pods: hostPods,
+            kind: "Host",
+            $podCounters: podCounters
+          };
+          tmpHosts.push(hostDetails);
         }
 
         this.orRedraw(ArrayHelpers.removeElements(this.hosts, tmpHosts));

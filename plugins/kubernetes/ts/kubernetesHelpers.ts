@@ -170,6 +170,12 @@ module Kubernetes {
    * and return counters based on the status of the pod
    */
   export function createPodCounters(selector, pods, outputPods = []) {
+    var filterFn;
+    if (angular.isFunction(selector)) {
+      filterFn = selector;
+    } else {
+      filterFn = (pod) => selectorMatches(selector, pod.labels);
+    }
     var answer = {
       podsLink: "",
       valid: 0,
@@ -179,7 +185,7 @@ module Kubernetes {
     if (selector) {
       answer.podsLink = Core.url("/kubernetes/pods?q=" + encodeURIComponent(Kubernetes.labelsToString(selector, " ")));
       angular.forEach(pods, pod => {
-        if (selectorMatches(selector, pod.labels)) {
+        if (filterFn(pod)) {
           outputPods.push(pod);
           var status = (pod.currentState || {}).status;
 

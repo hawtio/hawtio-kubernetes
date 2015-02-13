@@ -14,7 +14,7 @@ declare module Kubernetes {
         namespaces: any[];
         redraw: boolean;
         resourceVersions: {};
-        hostsByKey: {};
+        podsByHost: {};
         servicesByKey: {};
         replicationControllersByKey: {};
         podsByKey: {};

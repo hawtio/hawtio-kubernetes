@@ -20,6 +20,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, '/namespace/:namespace/services/:id'), route('service.html', false))
                   .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
+                  .when(UrlHelpers.join(context, 'hosts'), route('hosts.html', false))
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
   }]);
@@ -117,6 +118,11 @@ module Kubernetes {
                       .title(() => 'Pods')
                       .build();
 
+    var hosts = builder.id('kube-hosts')
+                      .href(() => UrlHelpers.join(context, 'hosts'))
+                      .title(() => 'Hosts')
+                      .build();
+
     var overview = builder.id('kube-overview')
                           .href(() => UrlHelpers.join(context, 'overview'))
                           .title(() => 'Diagram')
@@ -126,7 +132,7 @@ module Kubernetes {
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => isKubernetes(workspace))
-                         .tabs(apps, services, controllers, pods, overview)
+                         .tabs(apps, services, controllers, pods, hosts, overview)
                          .build();
 
     HawtioNav.add(mainTab);

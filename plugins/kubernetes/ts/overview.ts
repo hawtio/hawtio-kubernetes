@@ -14,7 +14,7 @@ module Kubernetes {
         scope.getEntity = (type:string, key:string) => {
           switch (type) {
             case 'host':
-              return scope.model.hostsByKey[key];
+              return scope.model.podsByHost[key];
             case 'pod':
               return scope.model.podsByKey[key];
             case 'replicationController':
@@ -181,7 +181,7 @@ module Kubernetes {
               var type = child.attr('data-type');
               switch (type) {
                 case 'host':
-                  if (key in scope.model.hostsByKey) {
+                  if (key in scope.model.podsByHost) {
                     return;
                   }
                   break;
