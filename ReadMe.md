@@ -1,4 +1,4 @@
-## hawtio-kubernetes
+## hawtio-kubernetes [![Circle CI](https://circleci.com/gh/hawtio/hawtio-kubernetes.svg?style=svg)](https://circleci.com/gh/hawtio/hawtio-kubernetes)
 
 This plugin provides a [Kubernetes](http://kubernetes.io/) console for hawtio
 
