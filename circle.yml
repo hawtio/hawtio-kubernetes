@@ -12,6 +12,10 @@ dependencies:
   override:
     - gulp site
 
+test:
+  override:
+    - echo yes
+
 deployment:
   hub:
     branch: master
