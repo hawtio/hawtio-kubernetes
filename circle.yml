@@ -8,7 +8,7 @@ dependencies:
   pre:
     - npm install -g bower gulp slush slush-hawtio-javascript slush-hawtio-typescript typescript
     - npm install
-    - bower
+    - bower install
   override:
     - gulp site
 
