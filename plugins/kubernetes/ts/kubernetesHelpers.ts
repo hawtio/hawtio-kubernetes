@@ -11,8 +11,8 @@ module Kubernetes {
 
   export var keepPollingModel = true;
 
-  export var defaultIconUrl = Core.url("/" + pluginPath + "img/kubernetes.svg");
-  export var hostIconUrl = Core.url("/" + pluginPath + "img/host.svg");
+  export var defaultIconUrl = Core.url("/img/kubernetes.svg");
+  export var hostIconUrl = Core.url("/img/host.svg");
 
   export var defaultApiVersion = "v1beta2";
   export var labelFilterTextSeparator = ",";

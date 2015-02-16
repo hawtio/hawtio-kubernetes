@@ -95,7 +95,7 @@ gulp.task('concat', ['template'], function() {
 });
 
 gulp.task('clean', ['concat'], function() {
-  return gulp.src(['templates.js', 'compiled.js', 'site'], { read: false })
+  return gulp.src(['templates.js', 'compiled.js', 'site/**'], { read: false })
     .pipe(plugins.clean());
 });
 
@@ -118,6 +118,9 @@ gulp.task('connect', ['watch'], function() {
   var staticAssets = [{
       path: '/',
       dir: '.'
+  }, {
+      path: '/',
+      dir: './dist/'
   }];
 
   var dirs = fs.readdirSync('./libs');
@@ -206,6 +209,7 @@ gulp.task('build', ['bower', 'path-adjust', 'tsc', 'template', 'concat', 'clean'
 
 gulp.task('site', ['clean', 'build'], function() {
   gulp.src(['index.html', 'css/**', 'images/**', 'libs/**', 'dist/**'], {base: '.'}).pipe(gulp.dest('site'));
+  //gulp.src(['plugins/*/img/**'], {base: '.'}).pipe(gulp.dest('site/img'));
 });
 
 gulp.task('default', ['connect']);
