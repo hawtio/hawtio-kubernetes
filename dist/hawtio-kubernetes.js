@@ -1172,9 +1172,14 @@ var Kubernetes;
     Kubernetes._module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', function ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
         return Kubernetes.createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
     }]);
-    Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', function (viewRegistry, workspace, ServiceRegistry, HawtioNav) {
+    Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', 'WelcomePageRegistry', function (viewRegistry, workspace, ServiceRegistry, HawtioNav, welcome) {
         Kubernetes.log.debug("Running");
         viewRegistry['kubernetes'] = Kubernetes.templatePath + 'layoutKubernetes.html';
+        welcome.pages.push({
+            rank: 8,
+            isValid: function () { return !Core.isRemoteConnection() && Kubernetes.isKubernetes(workspace); },
+            href: function () { return Kubernetes.context; }
+        });
         var builder = HawtioNav.builder();
         var apps = builder.id('kube-apps').href(function () { return UrlHelpers.join(Kubernetes.context, 'apps'); }).title(function () { return 'Apps'; }).build();
         var services = builder.id('kube-services').href(function () { return UrlHelpers.join(Kubernetes.context, 'services'); }).title(function () { return 'Services'; }).build();
