@@ -95,7 +95,7 @@ gulp.task('concat', ['template'], function() {
 });
 
 gulp.task('clean', ['concat'], function() {
-  return gulp.src(['templates.js', 'compiled.js', 'site/**'], { read: false })
+  return gulp.src(['templates.js', 'compiled.js', './site/'], { read: false })
     .pipe(plugins.clean());
 });
 
@@ -118,9 +118,6 @@ gulp.task('connect', ['watch'], function() {
   var staticAssets = [{
       path: '/',
       dir: '.'
-  }, {
-      path: '/',
-      dir: './dist/'
   }];
 
   var dirs = fs.readdirSync('./libs');
@@ -208,8 +205,21 @@ gulp.task('reload', function() {
 gulp.task('build', ['bower', 'path-adjust', 'tsc', 'template', 'concat', 'clean']);
 
 gulp.task('site', ['clean', 'build'], function() {
-  gulp.src(['index.html', 'css/**', 'images/**', 'libs/**', 'dist/**'], {base: '.'}).pipe(gulp.dest('site'));
-  //gulp.src(['plugins/*/img/**'], {base: '.'}).pipe(gulp.dest('site/img'));
+  gulp.src(['index.html', 'css/**', 'images/**', 'img/**', 'libs/**', 'dist/**'], {base: '.'}).pipe(gulp.dest('site'));
+
+  var dirs = fs.readdirSync('./libs');
+  dirs.forEach(function(dir) {
+    var path = './libs/' + dir + "/img";
+    try {
+      if (fs.statSync(path).isDirectory()) {
+        console.log("found image dir: " + path);
+        var pattern = 'libs/' + dir + "/img/**";
+        gulp.src([pattern]).pipe(gulp.dest('site/img'));
+      }
+    } catch (e) {
+      // ignore, file does not exist
+    }
+  });
 });
 
 gulp.task('default', ['connect']);
