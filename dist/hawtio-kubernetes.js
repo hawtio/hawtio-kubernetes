@@ -1199,6 +1199,17 @@ var Kubernetes;
             }
         }).href(function () { return Kubernetes.context; }).title(function () { return 'Kubernetes'; }).isValid(function () { return Kubernetes.isKubernetes(workspace); }).tabs(apps, services, controllers, pods, hosts, overview).build();
         HawtioNav.add(mainTab);
+        // lets disable connect
+        var navItems = HawtioNav.items || [];
+        var connect = navItems.find(function (item) { return item.id === "jvm"; });
+        if (connect) {
+            connect.isValid = function () { return false; };
+        }
+        // images plugin doesn't work yet...
+        var dockerRegistry = navItems.find(function (item) { return item.id === "docker-registry"; });
+        if (dockerRegistry) {
+            dockerRegistry.isValid = function () { return false; };
+        }
         /*
         workspace.topLevelTabs.push({
           id: 'kubernetes',

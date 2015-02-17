@@ -167,6 +167,18 @@ module Kubernetes {
 
     HawtioNav.add(mainTab);
 
+    // lets disable connect
+    var navItems = HawtioNav.items || [];
+    var connect = navItems.find((item) => item.id === "jvm");
+    if (connect) {
+      connect.isValid = () => false;
+    }
+    // images plugin doesn't work yet...
+    var dockerRegistry = navItems.find((item) => item.id === "docker-registry");
+    if (dockerRegistry) {
+      dockerRegistry.isValid = () => false;
+    }
+
     /*
     workspace.topLevelTabs.push({
       id: 'kubernetes',
