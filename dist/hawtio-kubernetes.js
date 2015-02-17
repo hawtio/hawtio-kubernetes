@@ -1927,7 +1927,8 @@ var Kubernetes;
                 }
                 function appendNewElements(parentEl, template, thingName, things) {
                     things.forEach(function (thing) {
-                        var existing = parentEl.find("#" + thing['_key']);
+                        var key = thing['_key'] || thing['id'];
+                        var existing = parentEl.find("#" + key);
                         if (!existing.length) {
                             parentEl.append($compile(createElement(template, thingName, thing))(scope));
                         }
@@ -1979,6 +1980,7 @@ var Kubernetes;
                             var type = child.attr('data-type');
                             switch (type) {
                                 case 'host':
+                                    Kubernetes.log.debug('key: ', key);
                                     if (key in scope.model.podsByHost) {
                                         return;
                                     }
