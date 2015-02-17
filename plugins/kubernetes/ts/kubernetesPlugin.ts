@@ -106,14 +106,10 @@ module Kubernetes {
     return createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
   }]);
 
-  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', 'WelcomePageRegistry', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav, welcome) => {
+  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
     log.debug("Running");
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
-    welcome.pages.push({
-      rank: 8,
-      isValid: () => !Core.isRemoteConnection() && isKubernetes(workspace),
-      href: () => context
-    });
+
     var builder = HawtioNav.builder();
 
     var apps = builder.id('kube-apps')
@@ -147,6 +143,22 @@ module Kubernetes {
                           .build();
 
     var mainTab = builder.id('kubernetes')
+                         .rank(100)
+                         .defaultPage({
+                           rank: 100,
+                           isValid: (yes, no) => {
+                             // TODO not sure if we need the tree loaded for this
+                             var name = 'KubernetesDefaultPage';
+                             workspace.addNamedTreePostProcessor(name, (tree) => {
+                               workspace.removeNamedTreePostProcessor(name);
+                               if (!Core.isRemoteConnection() && isKubernetes(workspace)) {
+                                 yes();
+                               } else {
+                                 no();
+                               }
+                             });
+                           }
+                         }) 
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => isKubernetes(workspace))

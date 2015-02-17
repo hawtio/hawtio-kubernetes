@@ -1172,14 +1172,9 @@ var Kubernetes;
     Kubernetes._module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', function ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
         return Kubernetes.createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
     }]);
-    Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', 'WelcomePageRegistry', function (viewRegistry, workspace, ServiceRegistry, HawtioNav, welcome) {
+    Kubernetes._module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', function (viewRegistry, workspace, ServiceRegistry, HawtioNav) {
         Kubernetes.log.debug("Running");
         viewRegistry['kubernetes'] = Kubernetes.templatePath + 'layoutKubernetes.html';
-        welcome.pages.push({
-            rank: 8,
-            isValid: function () { return !Core.isRemoteConnection() && Kubernetes.isKubernetes(workspace); },
-            href: function () { return Kubernetes.context; }
-        });
         var builder = HawtioNav.builder();
         var apps = builder.id('kube-apps').href(function () { return UrlHelpers.join(Kubernetes.context, 'apps'); }).title(function () { return 'Apps'; }).build();
         var services = builder.id('kube-services').href(function () { return UrlHelpers.join(Kubernetes.context, 'services'); }).title(function () { return 'Services'; }).build();
@@ -1187,7 +1182,22 @@ var Kubernetes;
         var pods = builder.id('kube-pods').href(function () { return UrlHelpers.join(Kubernetes.context, 'pods'); }).title(function () { return 'Pods'; }).build();
         var hosts = builder.id('kube-hosts').href(function () { return UrlHelpers.join(Kubernetes.context, 'hosts'); }).title(function () { return 'Hosts'; }).build();
         var overview = builder.id('kube-overview').href(function () { return UrlHelpers.join(Kubernetes.context, 'overview'); }).title(function () { return 'Diagram'; }).build();
-        var mainTab = builder.id('kubernetes').href(function () { return Kubernetes.context; }).title(function () { return 'Kubernetes'; }).isValid(function () { return Kubernetes.isKubernetes(workspace); }).tabs(apps, services, controllers, pods, hosts, overview).build();
+        var mainTab = builder.id('kubernetes').rank(100).defaultPage({
+            rank: 100,
+            isValid: function (yes, no) {
+                // TODO not sure if we need the tree loaded for this
+                var name = 'KubernetesDefaultPage';
+                workspace.addNamedTreePostProcessor(name, function (tree) {
+                    workspace.removeNamedTreePostProcessor(name);
+                    if (!Core.isRemoteConnection() && Kubernetes.isKubernetes(workspace)) {
+                        yes();
+                    }
+                    else {
+                        no();
+                    }
+                });
+            }
+        }).href(function () { return Kubernetes.context; }).title(function () { return 'Kubernetes'; }).isValid(function () { return Kubernetes.isKubernetes(workspace); }).tabs(apps, services, controllers, pods, hosts, overview).build();
         HawtioNav.add(mainTab);
         /*
         workspace.topLevelTabs.push({
