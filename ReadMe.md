@@ -2,7 +2,20 @@
 
 This plugin provides a [Kubernetes](http://kubernetes.io/) console for hawtio
 
-### Basic usage
+![controllers tab screenshot](http://fabric8.io/v2/images/controllers.png)
+
+### Running
+
+#### Running a release
+
+If you have a [Kubernetes](http://kubernetes.io/) or [OpenShift](http://www.openshift.org/) environment, the easiest way to try out this console is to just run the app directly in kubernetes via [these instructions](http://fabric8.io/v2/console.html#running-the-console-on-kubernetesopenshift)
+
+Or you can try running the [fabric8/hawtio-kubernetes docker image](https://registry.hub.docker.com/u/fabric8/hawtio-kubernetes/):
+
+    docker pull fabric8/hawtio-kubernetes
+    docker run -it -p 9090:9090 -e KUBERNETES_SERVICE_HOST=$DOCKER_IP fabric8/hawtio-kubernetes
+
+Where **DOCKER_IP** is the IP address or host running the kubernetes master.
 
 #### Running this plugin locally
 
