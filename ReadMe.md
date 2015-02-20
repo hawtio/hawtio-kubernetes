@@ -33,11 +33,15 @@ Then install all local nodejs packages and update bower dependencies via:
     npm install
     bower update
 
+Next you need to setup the **KUBERNETES_MASTER** environment variable to point to the kubernetes master you want to run against. e.g.
+
+    export KUBERNETES_MASTER=https://$DOCKER_IP:8443
+
+Where **DOCKER_IP** is the IP address or host running the kubernetes master.
+
 Then to run the web application:
 
     gulp
-
-The build uses the $KUBERNETES_MASTER environment variable to connect to Kubernetes
 
 #### Install the bower package
 
