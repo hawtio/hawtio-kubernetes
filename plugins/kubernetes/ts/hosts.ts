@@ -40,44 +40,5 @@ module Kubernetes {
     };
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-
-    KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
-      $scope.deletePrompt = (selected) => {
-        if (angular.isString(selected)) {
-          selected = [{
-            id: selected
-          }];
-        }
-        UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
-          collection: selected,
-          index: 'id',
-          onClose: (result:boolean) => {
-            if (result) {
-              function deleteSelected(selected:Array<KubePod>, next:KubePod) {
-                if (next) {
-                  log.debug("deleting: ", next.id);
-                  KubernetesPods.delete({
-                    id: next.id
-                  }, undefined, () => {
-                    log.debug("deleted: ", next.id);
-                    deleteSelected(selected, selected.shift());
-                  }, (error) => {
-                    log.debug("Error deleting: ", error);
-                    deleteSelected(selected, selected.shift());
-                  });
-                }
-              }
-              deleteSelected(selected, selected.shift());
-            }
-          },
-          title: 'Delete pods?',
-          action: 'The following pods will be deleted:',
-          okText: 'Delete',
-          okClass: 'btn-danger',
-          custom: "This operation is permanent once completed!",
-          customClass: "alert alert-warning"
-        }).open();
-      };
-    });
   }]);
 }

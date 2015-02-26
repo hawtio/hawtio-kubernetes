@@ -15,9 +15,13 @@ module Kubernetes {
   export var hostIconUrl = Core.url("/img/host.svg");
 
   export var defaultApiVersion = "v1beta2";
+  export var defaultOSApiVersion = "v1beta1";
   export var labelFilterTextSeparator = ",";
 
   export var appSuffix = ".app";
+
+  export var buildConfigsRestURL = "/kubernetes/osapi/" + defaultOSApiVersion + "/buildConfigs";
+  export var buildsRestURL = "/kubernetes/osapi/" + defaultOSApiVersion + "/builds";
 
   export interface KubePod {
     id:string;
@@ -331,6 +335,10 @@ module Kubernetes {
     }
   }
 
+  export function buildConfigRestUrl(id) {
+    return UrlHelpers.join(buildConfigsRestURL, id);
+  }
+
   /**
    * Runs the given application JSON
    */
@@ -621,4 +629,33 @@ module Kubernetes {
   export function gitPathToUrl(iconPath, branch = "master") {
     return (HawtioCore.injector.get('AppLibraryURL') || '') + "/git/" + branch + iconPath;
   }
+
+
+  /**
+   * Configures the json schema
+   */
+  export function configureSchema() {
+    angular.forEach(schema.definitions, (definition, name) => {
+      var properties = definition.properties;
+      if (properties) {
+        var hideProperties = ["creationTimestamp", "kind", "apiVersion", "annotations", "additionalProperties", "namespace", "resourceVersion", "selfLink", "uid"];
+        angular.forEach(hideProperties, (propertyName) => {
+          var property = properties[propertyName];
+          if (property) {
+            property["hidden"]  = true;
+          }
+        });
+        angular.forEach(properties, (property, propertyName) => {
+          var ref = property["$ref"];
+          var type = property["type"];
+          if (!type && ref) {
+            property["type"] = "object";
+          }
+        });
+
+      }
+
+    })
+  }
+
 }

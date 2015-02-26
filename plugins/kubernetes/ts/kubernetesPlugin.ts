@@ -4,7 +4,7 @@
 
 module Kubernetes {
 
-  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'wiki']);
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'wiki', 'restmod']);
   export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
@@ -22,6 +22,11 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'hosts'), route('hosts.html', false))
                   .when(UrlHelpers.join(context, 'hosts/:id'), route('host.html', true))
+                  .when(UrlHelpers.join(context, 'builds'), route('builds.html', false))
+                  .when(UrlHelpers.join(context, 'builds/:id'), route('build.html', true))
+                  .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
+                  .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
+                  .when(UrlHelpers.join(context, 'buildConfig'), route('buildConfig.html', true))
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
   }]);
@@ -95,6 +100,15 @@ module Kubernetes {
     return answer.promise;
   }]);
 
+  _module.factory('KubernetesBuilds', ['restmod', (restmod) => {
+    return restmod.model(buildConfigsRestURL);
+  }]);
+
+  _module.factory('KubernetesSchema', ['$rootScope', ($rootScope) => {
+    configureSchema();
+    return schema;
+  }]);
+
   _module.factory('KubernetesState', [() => {
     return {
       namespaces: [],
@@ -137,6 +151,16 @@ module Kubernetes {
                       .title(() => 'Hosts')
                       .build();
 
+    var builds = builder.id('kube-builds')
+                      .href(() => UrlHelpers.join(context, 'builds'))
+                      .title(() => 'Builds')
+                      .build();
+
+    var buildConfigs = builder.id('kube-buildConfigs')
+                      .href(() => UrlHelpers.join(context, 'buildConfigs'))
+                      .title(() => 'Build Configs')
+                      .build();
+
     var overview = builder.id('kube-overview')
                           .href(() => UrlHelpers.join(context, 'overview'))
                           .title(() => 'Diagram')
@@ -162,7 +186,7 @@ module Kubernetes {
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => isKubernetes(workspace))
-                         .tabs(apps, services, controllers, pods, hosts, overview)
+                         .tabs(apps, services, controllers, pods, hosts, builds, buildConfigs, overview)
                          .build();
 
     HawtioNav.add(mainTab);

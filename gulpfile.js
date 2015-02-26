@@ -113,6 +113,7 @@ gulp.task('connect', ['watch'], function() {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   var kube = uri((process.env.KUBERNETES_MASTER || 'https://localhost:8443') + '/api');
+  var osapi = uri((process.env.KUBERNETES_MASTER || 'https://localhost:8443') + '/osapi');
   console.log("Connecting to Kubernetes on: " + kube);
 
   var staticAssets = [{
@@ -150,6 +151,12 @@ gulp.task('connect', ['watch'], function() {
     hostname: kube.hostname(),
     path: '/kubernetes/api',
     targetPath: kube.path()
+  }, {
+    proto: osapi.protocol(),
+    port: osapi.port(),
+    hostname: osapi.hostname(),
+    path: '/kubernetes/osapi',
+    targetPath: osapi.path()
   }, {
     proto: kube.protocol(),
     hostname: kube.hostname(),

@@ -1,0 +1,34 @@
+<div class="row" ng-controller="Kubernetes.BuildConfigsController">
+  <script type="text/ng-template" id="hostLinkTemplate.html">
+    <div class="ngCellText">
+      </div>
+  </script>
+  <div class="row">
+    <div class="col-md-12" ng-show="buildConfigs.length">
+      <span ng-show="!id">
+        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter build configurations..."></hawtio-filter>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="fetched">
+        <div class="align">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="fetched">
+        <div ng-hide="buildConfigs.length" class="align-center">
+          <p class="alert alert-info">There are no build configurations available.</p>
+          <a class="btn btn-primary" href="/kubernetes/buildConfig">Create Build Configuration</a>
+        </div>
+        <div ng-show="buildConfigs.length">
+          <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
+                 hawtio-simple-table="tableConfig"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

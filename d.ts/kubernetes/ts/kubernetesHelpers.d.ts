@@ -11,8 +11,11 @@ declare module Kubernetes {
     var defaultIconUrl: string;
     var hostIconUrl: string;
     var defaultApiVersion: string;
+    var defaultOSApiVersion: string;
     var labelFilterTextSeparator: string;
     var appSuffix: string;
+    var buildConfigsRestURL: string;
+    var buildsRestURL: string;
     interface KubePod {
         id: string;
         namespace: string;
@@ -63,6 +66,7 @@ declare module Kubernetes {
      */
     function kubernetesUrlForItemKind(KubernetesApiURL: any, json: any): string;
     function kubernetesProxyUrlForService(KubernetesApiURL: any, service: any, path?: any): any;
+    function buildConfigRestUrl(id: any): string;
     /**
      * Runs the given application JSON
      */
@@ -89,4 +93,8 @@ declare module Kubernetes {
      * converts a git path into an accessible URL for the browser
      */
     function gitPathToUrl(iconPath: any, branch?: string): string;
+    /**
+     * Configures the json schema
+     */
+    function configureSchema(): void;
 }
