@@ -6,9 +6,9 @@
   <div class="row">
     <div class="col-md-12" ng-show="pipelines.length">
       <span ng-show="!id">
-        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+        <hawtio-filter ng-model="filterText"
                        css-class="input-xxlarge"
-                       placeholder="Filter build configurations..."></hawtio-filter>
+                       placeholder="Filter builds..."></hawtio-filter>
       </span>
     </div>
   </div>
@@ -28,7 +28,7 @@
     </div>
   </div>
   <div ng-show="fetched && pipelines.length">
-    <div ng-repeat="pipeline in pipelines">
+    <div ng-repeat="pipeline in pipelines | filter:filterText">
       <div class="row">
         <div class="col-md-12">
 
