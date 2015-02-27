@@ -21,7 +21,7 @@
   "dependencies": {
     "hawtio-core": "~2.0.0",
     "hawtio-core-navigation": "~2.0.0",
-    "hawtio-forms": "~2.0.0",
+    "hawtio-forms": "~2.0.6",
     "hawtio-ui": "~2.0.0",
     "hawtio-utilities": "~2.0.20",
     "hawtio-wiki": "~2.0.1",

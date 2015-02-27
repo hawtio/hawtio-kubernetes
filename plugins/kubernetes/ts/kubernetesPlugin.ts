@@ -104,8 +104,9 @@ module Kubernetes {
     return restmod.model(buildConfigsRestURL);
   }]);
 
-  _module.factory('KubernetesSchema', ['$rootScope', ($rootScope) => {
+  _module.factory('KubernetesSchema', ['SchemaRegistry', (SchemaRegistry) => {
     configureSchema();
+    SchemaRegistry.addSchema('kubernetes', schema);
     return schema;
   }]);
 
