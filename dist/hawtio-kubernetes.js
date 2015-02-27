@@ -654,8 +654,9 @@ var Kubernetes;
                 angular.forEach(properties, function (property, propertyName) {
                     var ref = property["$ref"];
                     var type = property["type"];
-                    if (!type && ref) {
-                        property["type"] = "object";
+                    if (ref && (!type || type === "object")) {
+                        //property["type"] = "object";
+                        property["type"] = ref;
                     }
                 });
             }
