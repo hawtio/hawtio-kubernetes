@@ -32,7 +32,8 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'builds/:id'), route('build.html', true))
                   .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
                   .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
-                  .when(UrlHelpers.join(context, 'buildConfig'), route('buildConfig.html', true))
+                  .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
+                  .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
                   .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });

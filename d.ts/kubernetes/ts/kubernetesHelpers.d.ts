@@ -67,6 +67,7 @@ declare module Kubernetes {
     function kubernetesUrlForItemKind(KubernetesApiURL: any, json: any): string;
     function kubernetesProxyUrlForService(KubernetesApiURL: any, service: any, path?: any): any;
     function buildConfigRestUrl(id: any): string;
+    function buildRestUrl(id: any): string;
     /**
      * Runs the given application JSON
      */

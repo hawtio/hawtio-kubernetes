@@ -4,7 +4,7 @@
 
 module Kubernetes {
 
-  export var BuildConfigController = controller("BuildConfigController",
+  export var BuildController = controller("BuildController",
     ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
       ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
@@ -13,7 +13,7 @@ module Kubernetes {
         $scope.model = KubernetesModel;
         $scope.id = $routeParams["id"];
         $scope.schema = KubernetesSchema;
-        $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
+        $scope.config = KubernetesSchema.definitions.os_build_Build;
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
@@ -30,7 +30,7 @@ module Kubernetes {
         function updateData() {
           $scope.item = null;
           if ($scope.id) {
-            var url = buildConfigRestUrl;
+            var url = buildRestUrl;
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {

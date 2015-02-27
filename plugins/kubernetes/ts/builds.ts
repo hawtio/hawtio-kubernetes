@@ -25,7 +25,8 @@ module Kubernetes {
       columnDefs: [
         {
           field: 'metadata.name',
-          displayName: 'Name'
+          displayName: 'Name',
+          cellTemplate: $templateCache.get("buildLinkTemplate.html")
         },
         {
           field: 'status',

@@ -1,9 +1,14 @@
 <div class="row" ng-controller="Kubernetes.BuildsController">
-  <script type="text/ng-template" id="hostLinkTemplate.html">
-    <div class="ngCellText">
+  <script type="text/ng-template" id="buildLinkTemplate.html">
+      <div class="ngCellText">
+        <a title="View details for this build configuration"
+           href="/kubernetes/builds/{{row.entity.metadata.name}}">
+  <!--
+          <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
+  -->
+          {{row.entity.metadata.name}}</a>
       </div>
-  </script>
-  <div class="row">
+    </script>  <div class="row">
     <div class="col-md-12" ng-show="builds.length">
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"

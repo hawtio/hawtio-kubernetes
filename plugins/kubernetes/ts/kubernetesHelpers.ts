@@ -340,6 +340,10 @@ module Kubernetes {
     return UrlHelpers.join(buildConfigsRestURL, id);
   }
 
+  export function buildRestUrl(id) {
+    return UrlHelpers.join(buildsRestURL, id);
+  }
+
   /**
    * Runs the given application JSON
    */
