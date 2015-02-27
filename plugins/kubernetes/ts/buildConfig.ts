@@ -13,17 +13,7 @@ module Kubernetes {
         $scope.model = KubernetesModel;
         $scope.id = $routeParams["id"];
         $scope.schema = KubernetesSchema;
-        //$scope.buildConfigSchema = KubernetesSchema.definitions.os_build_BuildConfig;
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
-
-/*
-        $scope.config = {
-          "style": HawtioForms.FormStyle.HORIZONTAL,
-          "disableHumanizeLabel": false,
-          hideLegend: true,
-          "properties": $scope.buildConfigSchema.properties
-        };
-*/
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 

@@ -120,6 +120,7 @@ module Kubernetes {
         KubernetesState.selectedNamespace = KubernetesState.namespaces[0];
       }
     }
+    $scope.namespace = KubernetesState.selectedNamespace || "default";
     $scope.resizeDialog = {
       controller: null,
       newReplicas: 0,

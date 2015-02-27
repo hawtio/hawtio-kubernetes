@@ -1,13 +1,14 @@
-<div ng-controller="Kubernetes.BuildConfigController">
+<div ng-controller="Kubernetes.ServiceEditController">
   <div class="row">
     <div class="col-md-12">
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
-              href="/kubernetes/buildConfigs"><i class="fa fa-list"></i></a>
+         title="Go back to viewing all the services"
+              href="/kubernetes/services"><i class="fa fa-list"></i></a>
       <button class="btn btn-primary pull-right"
-              title="Saves changes to this build configuration"
+              title="Create a new service"
               ng-click="save()">
-        Save
+        Create Service
       </button>
     </div>
   </div>
