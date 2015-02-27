@@ -14,6 +14,7 @@
 /// <reference path="d.ts/kubernetes/ts/kubernetesJsonDirective.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesTopLevel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/overview.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/pipelines.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/pod.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/pods.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationController.d.ts"/>

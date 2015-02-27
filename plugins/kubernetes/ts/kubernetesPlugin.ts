@@ -27,6 +27,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
                   .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
                   .when(UrlHelpers.join(context, 'buildConfig'), route('buildConfig.html', true))
+                  .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
   }]);
@@ -162,6 +163,11 @@ module Kubernetes {
                       .title(() => 'Build Configs')
                       .build();
 
+    var pipelines = builder.id('kube-pipelines')
+                      .href(() => UrlHelpers.join(context, 'pipelines'))
+                      .title(() => 'Pipelines')
+                      .build();
+
     var overview = builder.id('kube-overview')
                           .href(() => UrlHelpers.join(context, 'overview'))
                           .title(() => 'Diagram')
@@ -187,7 +193,7 @@ module Kubernetes {
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => isKubernetes(workspace))
-                         .tabs(apps, services, controllers, pods, hosts, builds, buildConfigs, overview)
+                         .tabs(apps, services, controllers, pods, hosts, overview, builds, buildConfigs, pipelines)
                          .build();
 
     HawtioNav.add(mainTab);
