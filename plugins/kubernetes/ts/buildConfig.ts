@@ -84,7 +84,8 @@ module Kubernetes {
                   },
                   "type": "STI"
                 }
-              }
+              },
+              "triggers": []
             };
             Core.$apply($scope);
           }

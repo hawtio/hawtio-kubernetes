@@ -649,8 +649,17 @@ module Kubernetes {
           var ref = property["$ref"];
           var type = property["type"];
           if (ref && (!type || type === "object")) {
-            //property["type"] = "object";
             property["type"] = ref;
+          }
+          if (type === "array") {
+            var items = property["items"];
+            if (items) {
+              var ref = items["$ref"];
+              var type = items["type"];
+              if (ref && (!type || type === "object")) {
+                items["type"] = ref;
+              }
+            }
           }
         });
 
