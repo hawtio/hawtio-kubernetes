@@ -47,7 +47,13 @@
               height: 80px;
               border: 20px;
               margin: 5px;"
-                 ng-repeat="step in pipeline.triggersSteps">{{step.buildConfig.metadata.name}}
+                 ng-repeat="step in pipeline.triggersSteps">
+              <a title="View details for this build configuration"
+                 href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
+        <!--
+                <img class="app-icon-small" ng-src="{{step.buildConfig.$iconUrl}}">
+        -->
+                {{step.buildConfig.metadata.name}}</a>
             </div>
           </div>
         </div>
