@@ -30,7 +30,7 @@ module Kubernetes {
         function updateData() {
           $scope.item = null;
           if ($scope.id) {
-            var url = buildRestUrl;
+            var url = buildRestUrl($scope.id);
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {

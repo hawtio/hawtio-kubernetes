@@ -16,6 +16,17 @@
                        css-class="input-xxlarge"
                        placeholder="Filter build configurations..."></hawtio-filter>
       </span>
+      <button ng-show="model.fetched"
+              title="Delete the selected build configuration"
+              class="btn btn-danger pull-right"
+              ng-disabled="!id && tableConfig.selectedItems.length == 0"
+              ng-click="deletePrompt(id || tableConfig.selectedItems)">
+        <i class="fa fa-remove"></i> Delete
+      </button>
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-default pull-right"
+         title="Create a new build configuration"
+         href="/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create</a>
     </div>
   </div>
   <div class="row">
