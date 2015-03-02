@@ -96,6 +96,7 @@ declare module Kubernetes {
      */
     function gitPathToUrl(iconPath: any, branch?: string): string;
     function enrichBuildConfig(KubernetesApiURL: any, buildConfig: any): void;
+    function enrichBuild(build: any): void;
     /**
      * Configures the json schema
      */

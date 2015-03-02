@@ -694,6 +694,22 @@ module Kubernetes {
     }
   }
 
+  export function enrichBuild(build) {
+    if (build) {
+      var metadata = build.metadata || {};
+      var creationTimestamp = metadata.creationTimestamp;
+      var name = metadata.name;
+      build.$name = name;
+      if (creationTimestamp) {
+        var d = new Date(creationTimestamp);
+        build.$creationDate = d;
+      }
+      if (name) {
+        build.$logLink = UrlHelpers.join("kubernetes/buildLog", name);
+      }
+    }
+  }
+
   /**
    * Configures the json schema
    */

@@ -43,6 +43,11 @@
       </span>
     </div>
   </script>
+  <script type="text/ng-template" id="buildTimeTemplate.html">
+    <div class="ngCellText" title="built at: {{row.entity.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
+      {{row.entity.$creationDate.relative()}}
+    </div>
+  </script>
   <div class="row">
     <div class="col-md-12" ng-show="builds.length">
       <span ng-show="!id">

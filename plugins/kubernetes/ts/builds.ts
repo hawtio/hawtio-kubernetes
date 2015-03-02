@@ -29,6 +29,12 @@ module Kubernetes {
             cellTemplate: $templateCache.get("buildLinkTemplate.html")
           },
           {
+            field: '$creationDate',
+            displayName: 'Time',
+            defaultSort: true,
+            cellTemplate: $templateCache.get("buildTimeTemplate.html")
+          },
+          {
             field: 'status',
             displayName: 'Status',
             cellTemplate: $templateCache.get("buildStatusTemplate.html")
@@ -65,7 +71,11 @@ module Kubernetes {
           success(function (data, status, headers, config) {
             if (data) {
               //console.log("got data " + angular.toJson(data, true));
-              $scope.builds = data.items;
+              var builds = data.items;
+              angular.forEach(builds, (build) => {
+                enrichBuild(build);
+              });
+              $scope.builds = _.sortBy(builds, ["$creationDate", "$name"]);
               $scope.fetched = true;
             }
             Core.$apply($scope);
