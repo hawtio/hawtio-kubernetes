@@ -81,6 +81,9 @@ module Kubernetes {
       return this.podsByKey[createKey(namespace ,id)];
     }
 
+    public podsForNamespace(namespace = this.currentNamespace()) {
+      return _.filter(this.pods, { namespace: namespace });
+    }
 
     /**
      * Returns the current selected namespace or the default namespace

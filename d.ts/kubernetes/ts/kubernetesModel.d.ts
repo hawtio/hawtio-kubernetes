@@ -28,6 +28,7 @@ declare module Kubernetes {
         getService(namespace: any, id: any): any;
         getReplicationController(namespace: any, id: any): any;
         getPod(namespace: any, id: any): any;
+        podsForNamespace(namespace?: any): any[];
         /**
          * Returns the current selected namespace or the default namespace
          */

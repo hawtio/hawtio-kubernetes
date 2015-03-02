@@ -38,22 +38,42 @@
             border-radius: 4px;"
                hawtio-auto-columns=".ex-children"
                min-margin="5">
-            <div class="ex-children"
+            <div class="ex-children {{step.$class}}"
                  style="display: inline-block;
               border-radius: 4px;
-              background: lightgreen;
               text-align: center;
               vertical-align: middle;
               height: 80px;
               border: 20px;
               margin: 5px;"
                  ng-repeat="step in pipeline.triggersSteps">
-              <a title="View details for this build configuration"
-                 href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
-        <!--
-                <img class="app-icon-small" ng-src="{{step.buildConfig.$iconUrl}}">
-        -->
-                {{step.buildConfig.metadata.name}}</a>
+              <span ng-switch="step.buildConfig.kind">
+                <span ng-switch-default="">
+                  <a title="View details for this build configuration"
+                     href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
+            <!--
+                    <img class="app-icon-small" ng-src="{{step.buildConfig.$iconUrl}}">
+            -->
+                    {{step.buildConfig.metadata.name}}
+                  </a>
+                </span>
+                <span ng-switch-when="DeploymentConfig">
+                <a title="View details for this deployment configuration"
+                   href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
+          <!--
+                  <img class="app-icon-small" ng-src="{{step.buildConfig.$iconUrl}}">
+          -->
+                  {{step.buildConfig.metadata.name}}
+                </a>
+                  <span class="pipeline-pod-counts" ng-show="step.$podCounters">pods:
+                    <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}" title="View pods for this deployment">
+                      <span class="badge badge-success">{{step.$podCounters.valid}}</span>
+                      <span ng-show="step.$podCounters.waiting" class="badge">{{step.$podCounters.waiting}}</span>
+                      <span ng-show="step.$podCounters.error" class="badge badge-warning">{{step.$podCounters.error}}</span>
+                    </a>
+                  </span>
+                </span>
+              </span>
             </div>
           </div>
         </div>

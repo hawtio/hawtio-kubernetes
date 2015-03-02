@@ -35,6 +35,17 @@ module Kubernetes {
           error(function (data, status, headers, config) {
             log.warn("Failed to load " + url + " " + data + " " + status);
           });
+        url = deploymentConfigsRestURL;
+        $http.get(url).
+          success(function (data, status, headers, config) {
+            if (data) {
+              $scope.deploymentConfigs = data.items;
+              updateData();
+            }
+          }).
+          error(function (data, status, headers, config) {
+            log.warn("Failed to load " + url + " " + data + " " + status);
+          });
       }
 
       /**
@@ -52,7 +63,8 @@ module Kubernetes {
                 buildConfig: buildConfig,
                 builds: [],
                 triggeredBy: null,
-                triggersSteps: []
+                triggersSteps: [],
+                $class: 'pipeline-build'
               }
             }
           });
@@ -86,6 +98,46 @@ module Kubernetes {
                 }
               });
             }
+          });
+
+          angular.forEach($scope.deploymentConfigs, (deploymentConfig) => {
+            if (!deploymentConfig.kind) {
+              deploymentConfig.kind = "DeploymentConfig";
+            }
+            angular.forEach(deploymentConfig.triggers, (trigger) => {
+              var type = trigger.type;
+              var imageChangeParams = trigger.imageChangeParams;
+              if (imageChangeParams && type === "ImageChange") {
+                var from = imageChangeParams.from;
+                if (from) {
+                  var name = from.name;
+                  if (from.kind === "ImageRepository") {
+                    var tag = imageChangeParams.tag || "latest";
+                    if (name) {
+                      // now lets find a pipeline step which fires from this
+                      angular.forEach(pipelineSteps, (pipelineStep, key) => {
+                        var to = Core.pathGet(pipelineStep, ["buildConfig", "parameters", "output", "to"]);
+                        if (to && to.kind === "ImageRepository") {
+                          var toName = to.name;
+                          if (toName === name) {
+                            var selector = Core.pathGet(deploymentConfig, ["template", "controllerTemplate", "replicaSelector"]);
+                            var pods = [];
+                            var $podCounters = selector ? createPodCounters(selector, KubernetesModel.podsForNamespace(), pods) : null;
+                            var deployPipelineStep = {
+                              buildConfig: deploymentConfig,
+                              $class: 'pipeline-deploy',
+                              $podCounters: $podCounters,
+                              $pods: pods
+                            };
+                            pipelineStep.triggersSteps.push(deployPipelineStep);
+                          }
+                        }
+                      });
+                    }
+                  }
+                }
+              }
+            });
           });
 
           // TODO here's a hack to populate some dummy data

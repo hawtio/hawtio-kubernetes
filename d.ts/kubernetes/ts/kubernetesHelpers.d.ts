@@ -17,6 +17,7 @@ declare module Kubernetes {
     var appSuffix: string;
     var buildConfigsRestURL: string;
     var buildsRestURL: string;
+    var deploymentConfigsRestURL: string;
     interface KubePod {
         id: string;
         namespace: string;

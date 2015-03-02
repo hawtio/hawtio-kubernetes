@@ -307,3 +307,16 @@ img.icon-selected-app {
     padding-right: 16px;
     padding-top: 8px;
 }
+
+.pipeline-build {
+    background: lightgreen;
+}
+
+.pipeline-deploy {
+    background: goldenrod;
+}
+
+.pipeline-pod-counts {
+    padding-right: 16px;
+    padding-top: 8px;
+}
