@@ -1,14 +1,40 @@
 <div class="row" ng-controller="Kubernetes.BuildsController">
   <script type="text/ng-template" id="buildLinkTemplate.html">
-      <div class="ngCellText">
-        <a title="View details for this build configuration"
-           href="/kubernetes/builds/{{row.entity.metadata.name}}">
-  <!--
-          <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
-  -->
-          {{row.entity.metadata.name}}</a>
-      </div>
-    </script>  <div class="row">
+    <div class="ngCellText">
+      <a title="View details for this build configuration"
+         href="/kubernetes/builds/{{row.entity.metadata.name}}">
+        <!--
+                <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
+        -->
+        {{row.entity.metadata.name}}</a>
+    </div>
+  </script>
+  <script type="text/ng-template" id="buildRepositoryTemplate.html">
+    <div class="ngCellText">
+      <a ng-show="row.entity.parameters.source.git.uri" target="gitRepository"
+         title="View the git based source repository"
+         href="{{row.entity.parameters.source.git.uri}}">
+        {{row.entity.parameters.source.git.uri}}
+      </a>
+      <span ng-hide="row.entity.parameters.source.git.uri">
+        {{row.entity.parameters.source.git.uri}}
+      </span>
+    </div>
+  </script>
+  <script type="text/ng-template" id="buildStatusTemplate.html">
+    <div class="ngCellText" ng-switch="row.entity.status">
+      <span ng-switch-when="Failed" class="text-danger">
+        <i class="fa fa-exclamation-circle"></i> Failed
+      </span>
+      <span ng-switch-when="Complete" class="text-success">
+        <i class="fa fa-check-circle"></i> Complete
+      </span>
+      <span ng-switch-default class="text-warning">
+        {{row.entity.status}}
+      </span>
+    </div>
+  </script>
+  <div class="row">
     <div class="col-md-12" ng-show="builds.length">
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"

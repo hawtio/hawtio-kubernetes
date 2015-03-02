@@ -30,7 +30,8 @@ module Kubernetes {
         },
         {
           field: 'status',
-          displayName: 'Name'
+          displayName: 'Status',
+          cellTemplate: $templateCache.get("buildStatusTemplate.html")
         },
         {
           field: 'parameters.source.type',
@@ -38,7 +39,8 @@ module Kubernetes {
         },
         {
           field: 'parameters.source.git.uri',
-          displayName: 'Repository'
+          displayName: 'Repository',
+          cellTemplate: $templateCache.get("buildRepositoryTemplate.html")
         },
         {
           field: 'parameters.strategy.type',
