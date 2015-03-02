@@ -23,8 +23,11 @@
   </script>
   <script type="text/ng-template" id="buildStatusTemplate.html">
     <div class="ngCellText" ng-switch="row.entity.status">
-      <span ng-switch-when="Failed" class="text-danger">
-        <i class="fa fa-exclamation-circle"></i> Failed
+      <span ng-switch-when="New" class="text-primary">
+        <i class="fa fa-spin fa-spinner"></i> New
+      </span>
+      <span ng-switch-when="Pending" class="text-primary">
+        <i class="fa fa-spin fa-spinner"></i> Pending
       </span>
       <span ng-switch-when="Running" class="text-primary">
         <i class="fa fa-spin fa-spinner"></i> Running
@@ -32,8 +35,11 @@
       <span ng-switch-when="Complete" class="text-success">
         <i class="fa fa-check-circle"></i> Complete
       </span>
+      <span ng-switch-when="Failed" class="text-danger">
+        <i class="fa fa-exclamation-circle"></i> Failed
+      </span>
       <span ng-switch-default class="text-warning">
-        {{row.entity.status}}
+        <i class="fa fa-exclamation-triangle"></i> {{row.entity.status}}
       </span>
     </div>
   </script>
