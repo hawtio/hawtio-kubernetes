@@ -95,6 +95,7 @@ declare module Kubernetes {
      * converts a git path into an accessible URL for the browser
      */
     function gitPathToUrl(iconPath: any, branch?: string): string;
+    function enrichBuildConfig(KubernetesApiURL: any, buildConfig: any): void;
     /**
      * Configures the json schema
      */

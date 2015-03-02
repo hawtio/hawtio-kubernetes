@@ -27,6 +27,11 @@
       <a class="btn btn-default pull-right"
          title="Create a new build configuration"
          href="/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create</a>
+      <span class="pull-right">&nbsp;</span>
+      <button class="btn btn-primary pull-right"
+         title="Trigger the given build"
+         ng-disabled="tableConfig.selectedItems.length != 1 || !tableConfig.selectedItems[0].$triggerUrl"
+         ng-click="trigger(tableConfig.selectedItems[0])"><i class="fa fa-play"></i> Trigger</button>
     </div>
   </div>
   <div class="row">

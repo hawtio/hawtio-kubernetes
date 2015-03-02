@@ -639,6 +639,33 @@ module Kubernetes {
   }
 
 
+  export function enrichBuildConfig(KubernetesApiURL, buildConfig) {
+    if (buildConfig) {
+      var triggerUrl: string = null;
+      var name = Core.pathGet(buildConfig, ["metadata", "name"]);
+      if (name) {
+        KubernetesApiURL.then((KubernetesApiURL) => {
+          angular.forEach(buildConfig.triggers, (trigger) => {
+            if (!triggerUrl) {
+              var type = trigger.type;
+              if (type) {
+                var generic = trigger[type];
+                if (type && generic) {
+                  var secret = generic.secret;
+                  if (secret) {
+                    triggerUrl = UrlHelpers.join(KubernetesApiURL, 'osapi', defaultOSApiVersion, 'buildConfigHooks', name, secret, type);
+                    console.log("got trigger: " + triggerUrl);
+                    buildConfig.$triggerUrl = triggerUrl;
+                  }
+                }
+              }
+            }
+          });
+        });
+      }
+    }
+  }
+
   /**
    * Configures the json schema
    */
@@ -670,9 +697,9 @@ module Kubernetes {
             }
           }
         });
-
       }
 
+      schema.definitions.os_build_WebHookTrigger.properties.secret.type = "password";
     })
   }
 
