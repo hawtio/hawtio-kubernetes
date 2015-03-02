@@ -28,6 +28,10 @@ declare module Kubernetes {
         getService(namespace: any, id: any): any;
         getReplicationController(namespace: any, id: any): any;
         getPod(namespace: any, id: any): any;
+        /**
+         * Returns the current selected namespace or the default namespace
+         */
+        currentNamespace(): any;
         protected updateIconUrlAndAppInfo(entity: any, nameField: string): void;
         maybeInit(): void;
         protected updateApps(): void;

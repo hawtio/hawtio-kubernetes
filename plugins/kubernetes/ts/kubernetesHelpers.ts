@@ -18,6 +18,8 @@ module Kubernetes {
   export var defaultOSApiVersion = "v1beta1";
   export var labelFilterTextSeparator = ",";
 
+  export var defaultNamespace = "default";
+
   export var appSuffix = ".app";
 
   export var buildConfigsRestURL = "/kubernetes/osapi/" + defaultOSApiVersion + "/buildConfigs";
@@ -111,6 +113,7 @@ module Kubernetes {
     return answer;
   }
 
+
   export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) {
     if (!KubernetesState.selectedNamespace) {
       KubernetesState.selectedNamespace = $routeParams.namespace || $location.search()["namespace"];
@@ -120,7 +123,7 @@ module Kubernetes {
         KubernetesState.selectedNamespace = KubernetesState.namespaces[0];
       }
     }
-    $scope.namespace = KubernetesState.selectedNamespace || "default";
+    $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
     $scope.resizeDialog = {
       controller: null,
       newReplicas: 0,
@@ -430,7 +433,7 @@ module Kubernetes {
    * Returns a link to the kibana logs web application
    */
   export function kibanaLogsLink(ServiceRegistry) {
-    var link = Service.serviceLink(ServiceRegistry, "kibana-service");
+    var link = ServiceRegistry.serviceLink("kibana-service");
     if (link) {
       if (!link.endsWith("/")) {
         link += "/";

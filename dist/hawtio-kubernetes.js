@@ -4,125 +4,6 @@
 /// <reference path="../libs/hawtio-wiki/defs.d.ts"/>
 
 /// <reference path="../../includes.ts"/>
-var Service;
-(function (Service) {
-    Service.pluginName = 'Service';
-    Service.log = Logger.get(Service.pluginName);
-    /**
-     * Used to specify whether the "service" URL should be polled for services using kubernetes or kubernetes-like service discover.
-     * For more details see: https://github.com/hawtio/hawtio/blob/master/docs/Services.md
-     */
-    Service.pollServices = false;
-    /**
-     * Returns true if there is a service available for the given ID or false
-     */
-    function hasService(ServiceRegistry, serviceName) {
-        if (!ServiceRegistry || !serviceName) {
-            return false;
-        }
-        var answer = false;
-        angular.forEach(ServiceRegistry.services, function (service) {
-            if (serviceName === service.id) {
-                answer = true;
-            }
-        });
-        return answer;
-    }
-    Service.hasService = hasService;
-    /**
-     * Returns the service for the given service name (ID) or null if it cannot be found
-     *
-     * @param ServiceRegistry
-     * @param serviceName
-     * @return {null}
-     */
-    function findService(ServiceRegistry, serviceName) {
-        var answer = null;
-        if (ServiceRegistry && serviceName) {
-            angular.forEach(ServiceRegistry.services, function (service) {
-                if (serviceName === service.id) {
-                    answer = service;
-                }
-            });
-        }
-        return answer;
-    }
-    Service.findService = findService;
-    /**
-     * Returns the service link for the given service name
-     *
-     * @param ServiceRegistry
-     * @param serviceName
-     * @return {null}
-     */
-    function serviceLink(ServiceRegistry, serviceName) {
-        var service = findService(ServiceRegistry, serviceName);
-        if (service) {
-            var portalIP = service.portalIP;
-            var port = service.port;
-            // TODO use annotations to support other kinds of protocol?
-            var protocol = "http://";
-            if (portalIP) {
-                if (port) {
-                    return protocol + portalIP + ":" + port + "/";
-                }
-                else {
-                    return protocol + portalIP;
-                }
-            }
-        }
-        return "";
-    }
-    Service.serviceLink = serviceLink;
-})(Service || (Service = {}));
-
-/// <reference path="serviceHelpers.ts"/>
-/// <reference path="../../includes.ts"/>
-var Service;
-(function (Service) {
-    Service._module = angular.module(Service.pluginName, ['hawtio-core']);
-    Service._module.factory("ServiceRegistry", ['$http', '$rootScope', 'workspace', function ($http, $rootScope, workspace) {
-        var self = {
-            name: 'ServiceRegistry',
-            services: [],
-            fetch: function (next) {
-                if (Kubernetes.isKubernetesTemplateManager(workspace) || Service.pollServices) {
-                    $http({
-                        method: 'GET',
-                        url: 'service'
-                    }).success(function (data, status, headers, config) {
-                        self.onSuccessfulPoll(next, data, status, headers, config);
-                    }).error(function (data, status, headers, config) {
-                        self.onFailedPoll(next, data, status, headers, config);
-                    });
-                }
-            },
-            onSuccessfulPoll: function (next, data, status, headers, config) {
-                var triggerUpdate = ArrayHelpers.sync(self.services, data.items);
-                if (triggerUpdate) {
-                    Service.log.debug("Services updated: ", self.services);
-                    Core.$apply($rootScope);
-                }
-                next();
-            },
-            onFailedPoll: function (next, data, status, headers, config) {
-                Service.log.debug("Failed poll, data: ", data, " status: ", status);
-                next();
-            }
-        };
-        return self;
-    }]);
-    Service._module.run(['ServiceRegistry', '$timeout', 'jolokia', function (ServiceRegistry, $timeout, jolokia) {
-        ServiceRegistry.go = PollHelpers.setupPolling(ServiceRegistry, function (next) {
-            ServiceRegistry.fetch(next);
-        }, 2000, $timeout, jolokia);
-        ServiceRegistry.go();
-        Service.log.debug("Loaded");
-    }]);
-    hawtioPluginLoader.addModule(Service.pluginName);
-})(Service || (Service = {}));
-
-/// <reference path="../../includes.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
     Kubernetes.context = '/kubernetes';
@@ -138,6 +19,7 @@ var Kubernetes;
     Kubernetes.defaultApiVersion = "v1beta2";
     Kubernetes.defaultOSApiVersion = "v1beta1";
     Kubernetes.labelFilterTextSeparator = ",";
+    Kubernetes.defaultNamespace = "default";
     Kubernetes.appSuffix = ".app";
     Kubernetes.buildConfigsRestURL = "/kubernetes/osapi/" + Kubernetes.defaultOSApiVersion + "/buildConfigs";
     Kubernetes.buildsRestURL = "/kubernetes/osapi/" + Kubernetes.defaultOSApiVersion + "/builds";
@@ -235,7 +117,7 @@ var Kubernetes;
                 KubernetesState.selectedNamespace = KubernetesState.namespaces[0];
             }
         }
-        $scope.namespace = KubernetesState.selectedNamespace || "default";
+        $scope.namespace = KubernetesState.selectedNamespace || Kubernetes.defaultNamespace;
         $scope.resizeDialog = {
             controller: null,
             newReplicas: 0,
@@ -557,7 +439,7 @@ var Kubernetes;
      * Returns a link to the kibana logs web application
      */
     function kibanaLogsLink(ServiceRegistry) {
-        var link = Service.serviceLink(ServiceRegistry, "kibana-service");
+        var link = ServiceRegistry.serviceLink("kibana-service");
         if (link) {
             if (!link.endsWith("/")) {
                 link += "/";
@@ -865,6 +747,16 @@ var Kubernetes;
         };
         KubernetesModelService.prototype.getPod = function (namespace, id) {
             return this.podsByKey[createKey(namespace, id)];
+        };
+        /**
+         * Returns the current selected namespace or the default namespace
+         */
+        KubernetesModelService.prototype.currentNamespace = function () {
+            var answer = null;
+            if (this.kubernetes) {
+                answer = this.kubernetes.selectedNamespace;
+            }
+            return answer || Kubernetes.defaultNamespace;
         };
         KubernetesModelService.prototype.updateIconUrlAndAppInfo = function (entity, nameField) {
             var answer = null;
@@ -1348,6 +1240,9 @@ var Kubernetes;
             selectedNamespace: null
         };
     }]);
+    Kubernetes._module.factory('ServiceRegistry', [function () {
+        return new Kubernetes.ServiceRegistryService();
+    }]);
     Kubernetes._module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', function ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
         return Kubernetes.createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
     }]);
@@ -1405,7 +1300,7 @@ var Kubernetes;
             id: 'kibana',
             content: 'Logs',
             title: 'View and search all logs across all containers using Kibana and ElasticSearch',
-            isValid: function (workspace) { return Service.hasService(ServiceRegistry, "kibana-service"); },
+            isValid: function (workspace) { return ServiceRegistry.hasService("kibana-service"); },
             href: function () { return Kubernetes.kibanaLogsLink(ServiceRegistry); },
             isActive: function (workspace) { return false; }
         });
@@ -1413,8 +1308,8 @@ var Kubernetes;
             id: 'grafana',
             content: 'Metrics',
             title: 'Views metrics across all containers using Grafana and InfluxDB',
-            isValid: function (workspace) { return Service.hasService(ServiceRegistry, "grafana-service"); },
-            href: function () { return Service.serviceLink(ServiceRegistry, "grafana-service"); },
+            isValid: function (workspace) { return ServiceRegistry.hasService("grafana-service"); },
+            href: function () { return ServiceRegistry.serviceLink("grafana-service"); },
             isActive: function (workspace) { return false; }
         });
     }]);
@@ -2752,7 +2647,7 @@ var Kubernetes;
             Core.$apply($scope);
         });
         $scope.itemSchema = Forms.createFormConfiguration();
-        $scope.hasService = function (name) { return Service.hasService(ServiceRegistry, name); };
+        $scope.hasService = function (name) { return ServiceRegistry.hasService(name); };
         $scope.tableConfig = {
             data: 'model.pods',
             showSelectionCheckbox: true,
@@ -2808,7 +2703,6 @@ var Kubernetes;
             Kubernetes.openLogsForPods(ServiceRegistry, $window, pods);
         };
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-        ;
         KubernetesPods.then(function (KubernetesPods) {
             $scope.deletePrompt = function (selected) {
                 if (angular.isString(selected)) {
@@ -6197,6 +6091,84 @@ var Kubernetes;
             }
         }
     }]);
+})(Kubernetes || (Kubernetes = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
+/// <reference path="kubernetesModel.ts"/>
+var Kubernetes;
+(function (Kubernetes) {
+    /**
+     * Represents a simple interface to service discovery that can be used early on in the application lifecycle before the
+     * underlying model has been created via dependency injection
+     */
+    var ServiceRegistryService = (function () {
+        function ServiceRegistryService() {
+            this.model = null;
+        }
+        /**
+         * Returns true if there is a service available for the given ID or false
+         */
+        ServiceRegistryService.prototype.hasService = function (serviceName) {
+            return this.findService(serviceName) ? true : false;
+        };
+        /**
+         * Returns the service for the given service name (ID) or null if it cannot be found
+         *
+         * @param serviceName the name of the service to look for
+         * @return {null}
+         */
+        ServiceRegistryService.prototype.findService = function (serviceName) {
+            var answer = null;
+            if (serviceName) {
+                var model = this.getModel();
+                if (model) {
+                    var namespace = model.currentNamespace();
+                    return model.getService(namespace, serviceName);
+                }
+            }
+            return answer;
+        };
+        /**
+         * Returns the service link for the given service name
+         *
+         * @param serviceName the name of the service
+         * @return {null}
+         */
+        ServiceRegistryService.prototype.serviceLink = function (serviceName) {
+            var service = this.findService(serviceName);
+            if (service) {
+                var portalIP = service.portalIP;
+                var port = service.port;
+                // TODO use annotations to support other kinds of protocol?
+                var protocol = "http://";
+                if (portalIP) {
+                    if (port) {
+                        return protocol + portalIP + ":" + port + "/";
+                    }
+                    else {
+                        return protocol + portalIP;
+                    }
+                }
+            }
+            return "";
+        };
+        ServiceRegistryService.prototype.getModel = function () {
+            var answer = this.model;
+            // lets allow lazy load so we can be invoked before the injector has been created
+            if (!answer) {
+                var injector = HawtioCore.injector;
+                if (injector) {
+                    this.model = injector.get('KubernetesModel');
+                }
+            }
+            answer = this.model;
+            return answer;
+        };
+        return ServiceRegistryService;
+    })();
+    Kubernetes.ServiceRegistryService = ServiceRegistryService;
 })(Kubernetes || (Kubernetes = {}));
 
 /// <reference path="../../includes.ts"/>

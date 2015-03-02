@@ -13,6 +13,7 @@ declare module Kubernetes {
     var defaultApiVersion: string;
     var defaultOSApiVersion: string;
     var labelFilterTextSeparator: string;
+    var defaultNamespace: string;
     var appSuffix: string;
     var buildConfigsRestURL: string;
     var buildsRestURL: string;

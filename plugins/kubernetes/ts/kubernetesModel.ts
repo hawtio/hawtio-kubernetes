@@ -82,6 +82,17 @@ module Kubernetes {
     }
 
 
+    /**
+     * Returns the current selected namespace or the default namespace
+     */
+    public currentNamespace() {
+      var answer = null;
+      if (this.kubernetes) {
+        answer = this.kubernetes.selectedNamespace;
+      }
+      return answer || defaultNamespace;
+    }
+
     protected updateIconUrlAndAppInfo(entity, nameField: string) {
       var answer = null;
       var id = entity.id;

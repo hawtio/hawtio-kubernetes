@@ -21,7 +21,7 @@ module Kubernetes {
 
     $scope.itemSchema = Forms.createFormConfiguration();
 
-    $scope.hasService = (name) => Service.hasService(ServiceRegistry, name);
+    $scope.hasService = (name) => ServiceRegistry.hasService(name);
 
     $scope.tableConfig = {
       data: 'model.pods',
@@ -88,8 +88,6 @@ module Kubernetes {
     };
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-
-;
 
     KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
       $scope.deletePrompt = (selected) => {

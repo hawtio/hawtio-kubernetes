@@ -130,6 +130,10 @@ module Kubernetes {
     };
   }]);
 
+  _module.factory('ServiceRegistry', [() => {
+    return new ServiceRegistryService();
+  }]);
+
   _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) => {
     return createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
   }]);
@@ -236,7 +240,7 @@ module Kubernetes {
       id: 'kibana',
       content: 'Logs',
       title: 'View and search all logs across all containers using Kibana and ElasticSearch',
-      isValid: (workspace) => Service.hasService(ServiceRegistry, "kibana-service"),
+      isValid: (workspace) => ServiceRegistry.hasService("kibana-service"),
       href: () => kibanaLogsLink(ServiceRegistry),
       isActive: (workspace) => false
     });
@@ -245,8 +249,8 @@ module Kubernetes {
       id: 'grafana',
       content: 'Metrics',
       title: 'Views metrics across all containers using Grafana and InfluxDB',
-      isValid: (workspace) => Service.hasService(ServiceRegistry, "grafana-service"),
-      href: () => Service.serviceLink(ServiceRegistry, "grafana-service"),
+      isValid: (workspace) => ServiceRegistry.hasService("grafana-service"),
+      href: () => ServiceRegistry.serviceLink("grafana-service"),
       isActive: (workspace) => false
     });
 
