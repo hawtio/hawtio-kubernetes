@@ -150,6 +150,32 @@ module Kubernetes {
       close: () => {
         $scope.resizeDialog.dialog.close();
       }
+    };
+
+    $scope.triggerBuild = (buildConfig) => {
+      var url = buildConfig.$triggerUrl;
+      console.log("triggering build at url: " + url);
+      if (url) {
+        //var data = {};
+        var data = null;
+        var config = {
+          headers: {
+            'Content-Type': "application/json"
+          }
+        };
+        var name = Core.pathGet(buildConfig, ["metadata", "name"]);
+        Core.notification('info', "Triggering build " + name);
+        $http.post(url, data, config).
+          success(function (data, status, headers, config) {
+            console.log("trigger worked! got data " + angular.toJson(data, true));
+            // TODO should we show some link to the build
+            Core.notification('info', "Building " + name);
+          }).
+          error(function (data, status, headers, config) {
+            log.warn("Failed to load " + url + " " + data + " " + status);
+            Core.notification('error', "Failed to trigger build for " + name + ". Returned code: " + status + " " + data);
+          });
+      };
     }
 
     // update the URL if the filter is changed
@@ -645,21 +671,23 @@ module Kubernetes {
       var name = Core.pathGet(buildConfig, ["metadata", "name"]);
       if (name) {
         KubernetesApiURL.then((KubernetesApiURL) => {
-          angular.forEach(buildConfig.triggers, (trigger) => {
-            if (!triggerUrl) {
-              var type = trigger.type;
-              if (type) {
-                var generic = trigger[type];
-                if (type && generic) {
-                  var secret = generic.secret;
-                  if (secret) {
-                    triggerUrl = UrlHelpers.join(KubernetesApiURL, 'osapi', defaultOSApiVersion, 'buildConfigHooks', name, secret, type);
-                    console.log("got trigger: " + triggerUrl);
-                    buildConfig.$triggerUrl = triggerUrl;
+          angular.forEach([false, true], (flag) => {
+            angular.forEach(buildConfig.triggers, (trigger) => {
+              if (!triggerUrl) {
+                var type = trigger.type;
+                if (type === "generic" || flag) {
+                  var generic = trigger[type];
+                  if (type && generic) {
+                    var secret = generic.secret;
+                    if (secret) {
+                      triggerUrl = UrlHelpers.join(KubernetesApiURL, 'osapi', defaultOSApiVersion, 'buildConfigHooks', name, secret, type);
+                      console.log("got trigger: " + triggerUrl);
+                      buildConfig.$triggerUrl = triggerUrl;
+                    }
                   }
                 }
               }
-            }
+            });
           });
         });
       }
