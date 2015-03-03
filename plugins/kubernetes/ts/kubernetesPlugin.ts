@@ -30,6 +30,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'hosts/:id'), route('host.html', true))
                   .when(UrlHelpers.join(context, 'builds'), route('builds.html', false))
                   .when(UrlHelpers.join(context, 'builds/:id'), route('build.html', true))
+                  .when(UrlHelpers.join(context, 'buildLogs/:id'), route('buildLogs.html', true))
                   .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
                   .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
                   .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))

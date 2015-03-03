@@ -26,6 +26,7 @@ module Kubernetes {
   export var buildConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigs";
   export var buildConfigHooksRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigHooks";
   export var buildsRestURL = osapiPrefix + defaultOSApiVersion + "/builds";
+  export var buildsLogsRestURL = osapiPrefix + defaultOSApiVersion + "/proxy/buildLogs";
   export var routesRestURL = osapiPrefix + defaultOSApiVersion + "/routes";
   export var deploymentConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/deploymentConfigs";
 
@@ -377,6 +378,10 @@ module Kubernetes {
     return UrlHelpers.join(buildsRestURL, id);
   }
 
+  export function buildLogsRestUrl(id) {
+    return UrlHelpers.join(buildsLogsRestURL, id);
+  }
+
   /**
    * Runs the given application JSON
    */
@@ -723,6 +728,12 @@ module Kubernetes {
   export function enrichBuild(build) {
     if (build) {
       var metadata = build.metadata || {};
+      var labels = metadata.labels || {};
+      var configId = labels.buildconfig;
+      build.$configId = configId;
+      if (configId) {
+        build.$configLink = UrlHelpers.join("kubernetes/buildConfigs", configId);
+      }
       var creationTimestamp = metadata.creationTimestamp;
       var name = metadata.name;
       build.$name = name;
@@ -731,9 +742,11 @@ module Kubernetes {
         build.$creationDate = d;
       }
       if (name) {
-        build.$logLink = UrlHelpers.join("kubernetes/buildLog", name);
+        build.$viewLink = UrlHelpers.join("kubernetes/builds", name);
+        build.$logsLink = UrlHelpers.join("kubernetes/buildLogs", name);
       }
     }
+    return build;
   }
 
   /**

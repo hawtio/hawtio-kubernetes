@@ -1,12 +1,18 @@
 <div ng-controller="Kubernetes.BuildController">
   <div class="row">
     <div class="col-md-12">
-      <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
               href="/kubernetes/builds"><i class="fa fa-list"></i></a>
-      <a class="btn btn-primary pull-right"
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-default pull-right" ng-show="entity.$configLink"
+              title="View the build configuration"
+              href="{{entity.$configLink}}">
+        Configuration
+      </a>
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-primary pull-right" ng-show="entity.$logsLink"
               title="View the build logs"
-              href="{{logsLink}}">
+              href="{{entity.$logsLink}}">
         View Log
       </a>
     </div>

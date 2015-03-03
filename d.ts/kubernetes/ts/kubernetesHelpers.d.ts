@@ -19,6 +19,7 @@ declare module Kubernetes {
     var buildConfigsRestURL: string;
     var buildConfigHooksRestURL: string;
     var buildsRestURL: string;
+    var buildsLogsRestURL: string;
     var routesRestURL: string;
     var deploymentConfigsRestURL: string;
     interface KubePod {
@@ -73,6 +74,7 @@ declare module Kubernetes {
     function kubernetesProxyUrlForService(KubernetesApiURL: any, service: any, path?: any): any;
     function buildConfigRestUrl(id: any): string;
     function buildRestUrl(id: any): string;
+    function buildLogsRestUrl(id: any): string;
     /**
      * Runs the given application JSON
      */
@@ -102,7 +104,7 @@ declare module Kubernetes {
     function enrichBuildConfig(buildConfig: any, sortedBuilds: any): void;
     function enrichBuildConfigs(buildConfigs: any, sortedBuilds: any): any;
     function enrichBuilds(builds: any): {}[];
-    function enrichBuild(build: any): void;
+    function enrichBuild(build: any): any;
     /**
      * Configures the json schema
      */

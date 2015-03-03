@@ -4,7 +4,7 @@
 
 module Kubernetes {
 
-  export var BuildController = controller("BuildController",
+  export var BuildLogsController = controller("BuildLogsController",
     ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
       ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
@@ -25,6 +25,8 @@ module Kubernetes {
           updateData();
         });
 
+        $scope.logsText = "Loading logs...";
+
         updateData();
 
         function updateData() {
@@ -41,6 +43,21 @@ module Kubernetes {
               }).
               error(function (data, status, headers, config) {
                 log.warn("Failed to load " + url + " " + data + " " + status);
+              });
+
+            url = buildLogsRestUrl($scope.id);
+            $http.get(url).
+              success(function (data, status) {
+                $scope.logsText = data;
+                Core.$apply($scope);
+              }).
+              error(function (data, status) {
+                $scope.logsText = "Failed to load logs from: " + url + " " + data + " status: " + status;
+                Core.$apply($scope);
+              }).
+              catch(function (error) {
+                $scope.logsText = "Failed to load logs " + error;
+                Core.$apply($scope);
               });
           } else {
             $scope.fetched = true;

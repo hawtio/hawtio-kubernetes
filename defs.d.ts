@@ -7,6 +7,7 @@
 /// <reference path="d.ts/kubernetes/ts/buildConfig.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/buildConfigEdit.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/buildConfigs.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/buildLogs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/builds.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/connect.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/host.d.ts"/>

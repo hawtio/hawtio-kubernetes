@@ -40,6 +40,11 @@ module Kubernetes {
             cellTemplate: $templateCache.get("buildStatusTemplate.html")
           },
           {
+            field: '$logsLink',
+            displayName: 'Logs',
+            cellTemplate: $templateCache.get("buildLogsTemplate.html")
+          },
+          {
             field: 'parameters.source.type',
             displayName: 'Source'
           },

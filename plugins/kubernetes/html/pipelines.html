@@ -49,16 +49,22 @@
                  ng-repeat="step in pipeline.triggersSteps">
               <span ng-switch="step.buildConfig.kind">
                 <span ng-switch-default="">
-                  <a title="View details for this build configuration"
-                     href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
-            <!--
-                    <img class="app-icon-small" ng-src="{{step.buildConfig.$iconUrl}}">
-            -->
-                    {{step.buildConfig.metadata.name}}
-                  </a>
+                  <div class="pipeline-build-details">
+                    <a title="View details for this build configuration"
+                       href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
+                      <i class="fa fa-cog"></i>
+                      {{step.buildConfig.metadata.name}}
+                    </a>
+                  </div>
                   <div class="pipeline-last-build" ng-show="step.buildConfig.$lastBuild">
-                    <div class="pipeline-last-build-time" title="last build was at: {{step.buildConfig.$lastBuild.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
-                      <div class="ngCellText" ng-switch="step.buildConfig.$lastBuild.status">
+                    <a href="{{step.buildConfig.$lastBuild.$viewLink}}" title="view this build">
+                      <i class="fa fa-info"></i>
+                      build
+                    </a>
+                  </div>
+                    <div class="ngCellText" class="pipeline-last-build-time"
+                         title="last build was at: {{step.buildConfig.$lastBuild.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
+                      <div ng-switch="step.buildConfig.$lastBuild.status">
                         <span ng-switch-when="New" class="text-primary">
                           <i class="fa fa-spin fa-spinner"></i> new: {{step.buildConfig.$lastBuild.$creationDate.relative()}}
                         </span>
@@ -79,23 +85,32 @@
                         </span>
                       </div>
                     </div>
+                  <div class="pipeline-last-build-logs">
+                    <a href="{{step.buildConfig.$lastBuild.$logsLink}}" title="view the logs of this build">
+                      <i class="fa fa-file-text-o"></i>
+                      logs
+                    </a>
                   </div>
                 </span>
                 <span ng-switch-when="DeploymentConfig">
-                <a title="View details for this deployment configuration"
-                   href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
-          <!--
-                  <img class="app-icon-small" ng-src="{{step.buildConfig.$iconUrl}}">
-          -->
-                  {{step.buildConfig.metadata.name}}
-                </a>
+                  <div class="pipeline-build-details">
+                    <a title="View details for this deployment configuration"
+                       href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
+                      <i class="fa fa-cogs"></i>
+                      {{step.buildConfig.metadata.name}}
+                    </a>
+                  </div>
+                  <div class="pipline-deploy-pods">
                   <span class="pipeline-pod-counts" ng-show="step.$podCounters">pods:
-                    <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}" title="View pods for this deployment">
+                    <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}"
+                       title="View pods for this deployment">
                       <span class="badge badge-success">{{step.$podCounters.valid}}</span>
                       <span ng-show="step.$podCounters.waiting" class="badge">{{step.$podCounters.waiting}}</span>
-                      <span ng-show="step.$podCounters.error" class="badge badge-warning">{{step.$podCounters.error}}</span>
+                      <span ng-show="step.$podCounters.error"
+                            class="badge badge-warning">{{step.$podCounters.error}}</span>
                     </a>
                   </span>
+                  </div>
                 </span>
               </span>
             </div>
