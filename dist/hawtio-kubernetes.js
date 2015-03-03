@@ -1984,7 +1984,7 @@ var Kubernetes;
                     $scope.logsText = "Failed to load logs from: " + url + " " + data + " status: " + status;
                     Core.$apply($scope);
                 }).catch(function (error) {
-                    $scope.logsText = "Failed to load logs " + error;
+                    $scope.logsText = "Failed to load logs: " + angular.toJson(error, true);
                     Core.$apply($scope);
                 });
             }

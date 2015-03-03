@@ -56,7 +56,7 @@ module Kubernetes {
                 Core.$apply($scope);
               }).
               catch(function (error) {
-                $scope.logsText = "Failed to load logs " + error;
+                $scope.logsText = "Failed to load logs: " + angular.toJson(error, true);
                 Core.$apply($scope);
               });
           } else {
