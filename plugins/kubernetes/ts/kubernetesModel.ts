@@ -43,6 +43,7 @@ module Kubernetes {
     public pods = [];
     public hosts = [];
     public namespaces = [];
+    public routes = [];
     public redraw = false;
     public resourceVersions = {};
 
@@ -57,6 +58,7 @@ module Kubernetes {
     public appFolders = [];
 
     public fetched = false;
+    public isOpenShift = false;
 
     public fetch = () => {
     };
@@ -286,6 +288,22 @@ module Kubernetes {
           });
         }
       });
+      angular.forEach(this.routes, (route) => {
+        var metadata = route.metadata || {};
+        var serviceName = route.serviceName;
+        var host = route.host;
+        var namespace = metadata.namespace || defaultNamespace;
+        if (serviceName && host) {
+          var service = this.getService(namespace, serviceName);
+          if (service) {
+            service.$host = host;
+          } else {
+            console.log("Could not find service " + serviceName + " namespace " + namespace + " for route: " + metadata.name);
+          }
+        }
+      });
+
+
       this.appViews = appViews;
 
       if (this.appInfos && this.appViews) {
@@ -416,7 +434,7 @@ module Kubernetes {
         KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
           $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
             var ready = 0;
-            var numServices = 4;
+            var numServices = 5;
             var dataChanged = false;
             var changedResourceVersion = null;
 
@@ -502,6 +520,21 @@ module Kubernetes {
               error(function(data, status, headers, config) {
                 maybeNext(ready + 1);
               });
+
+            var url = routesRestURL;
+            $http.get(url).
+              success(function (data, status, headers, config) {
+                if (data) {
+                  $scope.routes = data.items;
+                  $scope.isOpenShift = true;
+                  maybeNext(ready + 1);
+                }
+              }).
+              error(function (data, status, headers, config) {
+                log.warn("Failed to load " + url + " " + data + " " + status);
+                maybeNext(ready + 1);
+              });
+
           });
           $scope.fetch();
         });

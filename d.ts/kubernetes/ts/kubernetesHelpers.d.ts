@@ -19,6 +19,7 @@ declare module Kubernetes {
     var buildConfigsRestURL: string;
     var buildConfigHooksRestURL: string;
     var buildsRestURL: string;
+    var routesRestURL: string;
     var deploymentConfigsRestURL: string;
     interface KubePod {
         id: string;

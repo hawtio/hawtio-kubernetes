@@ -12,6 +12,7 @@ declare module Kubernetes {
         pods: any[];
         hosts: any[];
         namespaces: any[];
+        routes: any[];
         redraw: boolean;
         resourceVersions: {};
         podsByHost: {};
@@ -22,6 +23,7 @@ declare module Kubernetes {
         appViews: any[];
         appFolders: any[];
         fetched: boolean;
+        isOpenShift: boolean;
         fetch: () => void;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;

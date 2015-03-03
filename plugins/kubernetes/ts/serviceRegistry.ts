@@ -54,8 +54,13 @@ module Kubernetes {
     public serviceLink(serviceName: string): string {
       var service = this.findService(serviceName);
       if (service) {
-        var portalIP = service.portalIP;
-        var port = service.port;
+        var portalIP = service.$host;
+        // lets assume no custom port for now for external routes
+        var port = null;
+        if (!portalIP) {
+          portalIP = service.portalIP;
+          port = service.port;
+        }
 
         // TODO use annotations to support other kinds of protocol?
         var protocol = "http://";

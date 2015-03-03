@@ -26,6 +26,7 @@ module Kubernetes {
   export var buildConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigs";
   export var buildConfigHooksRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigHooks";
   export var buildsRestURL = osapiPrefix + defaultOSApiVersion + "/builds";
+  export var routesRestURL = osapiPrefix + defaultOSApiVersion + "/routes";
   export var deploymentConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/deploymentConfigs";
 
   export interface KubePod {

@@ -25,6 +25,7 @@ var Kubernetes;
     Kubernetes.buildConfigsRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/buildConfigs";
     Kubernetes.buildConfigHooksRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/buildConfigHooks";
     Kubernetes.buildsRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/builds";
+    Kubernetes.routesRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/routes";
     Kubernetes.deploymentConfigsRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/deploymentConfigs";
     //var fabricDomain = Fabric.jmxDomain;
     var fabricDomain = "io.fabric8";
@@ -717,7 +718,7 @@ var Kubernetes;
         angular.forEach(builds, function (build) {
             enrichBuild(build);
         });
-        return _.sortByAll(builds, ["$creationDate", "$name"]).reverse();
+        return _.sortBy(builds, "$creationDate").reverse();
     }
     Kubernetes.enrichBuilds = enrichBuilds;
     function enrichBuild(build) {
@@ -813,6 +814,7 @@ var Kubernetes;
             this.pods = [];
             this.hosts = [];
             this.namespaces = [];
+            this.routes = [];
             this.redraw = false;
             this.resourceVersions = {};
             // various views on the data
@@ -824,6 +826,7 @@ var Kubernetes;
             this.appViews = [];
             this.appFolders = [];
             this.fetched = false;
+            this.isOpenShift = false;
             this.fetch = function () {
             };
         }
@@ -991,6 +994,7 @@ var Kubernetes;
             }
         };
         KubernetesModelService.prototype.updateApps = function () {
+            var _this = this;
             // lets create the app views by trying to join controllers / services / pods that are related
             var appViews = [];
             this.replicationControllers.forEach(function (replicationController) {
@@ -1036,6 +1040,21 @@ var Kubernetes;
                         pods: service.$pods || [],
                         services: [service]
                     });
+                }
+            });
+            angular.forEach(this.routes, function (route) {
+                var metadata = route.metadata || {};
+                var serviceName = route.serviceName;
+                var host = route.host;
+                var namespace = metadata.namespace || Kubernetes.defaultNamespace;
+                if (serviceName && host) {
+                    var service = _this.getService(namespace, serviceName);
+                    if (service) {
+                        service.$host = host;
+                    }
+                    else {
+                        console.log("Could not find service " + serviceName + " namespace " + namespace + " for route: " + metadata.name);
+                    }
                 }
             });
             this.appViews = appViews;
@@ -1159,7 +1178,7 @@ var Kubernetes;
                 KubernetesPods.then(function (KubernetesPods) {
                     $scope.fetch = PollHelpers.setupPolling($scope, function (next) {
                         var ready = 0;
-                        var numServices = 4;
+                        var numServices = 5;
                         var dataChanged = false;
                         var changedResourceVersion = null;
                         function maybeNext(count) {
@@ -1233,6 +1252,17 @@ var Kubernetes;
                             }
                             maybeNext(ready + 1);
                         }).error(function (data, status, headers, config) {
+                            maybeNext(ready + 1);
+                        });
+                        var url = Kubernetes.routesRestURL;
+                        $http.get(url).success(function (data, status, headers, config) {
+                            if (data) {
+                                $scope.routes = data.items;
+                                $scope.isOpenShift = true;
+                                maybeNext(ready + 1);
+                            }
+                        }).error(function (data, status, headers, config) {
+                            Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
                             maybeNext(ready + 1);
                         });
                     });
@@ -6303,8 +6333,13 @@ var Kubernetes;
         ServiceRegistryService.prototype.serviceLink = function (serviceName) {
             var service = this.findService(serviceName);
             if (service) {
-                var portalIP = service.portalIP;
-                var port = service.port;
+                var portalIP = service.$host;
+                // lets assume no custom port for now for external routes
+                var port = null;
+                if (!portalIP) {
+                    portalIP = service.portalIP;
+                    port = service.port;
+                }
                 // TODO use annotations to support other kinds of protocol?
                 var protocol = "http://";
                 if (portalIP) {
