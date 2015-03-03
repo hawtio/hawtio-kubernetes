@@ -716,7 +716,7 @@ module Kubernetes {
     angular.forEach(builds, (build) => {
       enrichBuild(build);
     });
-    return _.sortByAll(builds, ["$creationDate", "$name"]).reverse();
+    return _.sortBy(builds, "$creationDate").reverse();
   }
 
   export function enrichBuild(build) {
