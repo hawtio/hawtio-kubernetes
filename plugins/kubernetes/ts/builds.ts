@@ -71,11 +71,7 @@ module Kubernetes {
           success(function (data, status, headers, config) {
             if (data) {
               //console.log("got data " + angular.toJson(data, true));
-              var builds = data.items;
-              angular.forEach(builds, (build) => {
-                enrichBuild(build);
-              });
-              $scope.builds = _.sortBy(builds, ["$creationDate", "$name"]);
+              $scope.builds = enrichBuilds(data.items);
               $scope.fetched = true;
             }
             Core.$apply($scope);

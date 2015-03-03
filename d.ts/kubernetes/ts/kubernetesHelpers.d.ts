@@ -15,7 +15,9 @@ declare module Kubernetes {
     var labelFilterTextSeparator: string;
     var defaultNamespace: string;
     var appSuffix: string;
+    var osapiPrefix: string;
     var buildConfigsRestURL: string;
+    var buildConfigHooksRestURL: string;
     var buildsRestURL: string;
     var deploymentConfigsRestURL: string;
     interface KubePod {
@@ -96,7 +98,9 @@ declare module Kubernetes {
      * converts a git path into an accessible URL for the browser
      */
     function gitPathToUrl(iconPath: any, branch?: string): string;
-    function enrichBuildConfig(KubernetesApiURL: any, buildConfig: any): void;
+    function enrichBuildConfig(buildConfig: any, sortedBuilds: any): void;
+    function enrichBuildConfigs(buildConfigs: any, sortedBuilds: any): any;
+    function enrichBuilds(builds: any): {}[];
     function enrichBuild(build: any): void;
     /**
      * Configures the json schema

@@ -35,7 +35,8 @@ module Kubernetes {
               success(function (data, status, headers, config) {
                 if (data) {
                   $scope.entity = data;
-                  enrichBuildConfig(KubernetesApiURL, data);
+                  var sortedBuilds = null;
+                  enrichBuildConfig(data, sortedBuilds);
                 }
                 $scope.fetched = true;
                 Core.$apply($scope);

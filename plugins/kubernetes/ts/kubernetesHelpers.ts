@@ -22,9 +22,11 @@ module Kubernetes {
 
   export var appSuffix = ".app";
 
-  export var buildConfigsRestURL = "/kubernetes/osapi/" + defaultOSApiVersion + "/buildConfigs";
-  export var buildsRestURL = "/kubernetes/osapi/" + defaultOSApiVersion + "/builds";
-  export var deploymentConfigsRestURL = "/kubernetes/osapi/" + defaultOSApiVersion + "/deploymentConfigs";
+  export var osapiPrefix = "/kubernetes/osapi/";
+  export var buildConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigs";
+  export var buildConfigHooksRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigHooks";
+  export var buildsRestURL = osapiPrefix + defaultOSApiVersion + "/builds";
+  export var deploymentConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/deploymentConfigs";
 
   export interface KubePod {
     id:string;
@@ -666,33 +668,55 @@ module Kubernetes {
   }
 
 
-  export function enrichBuildConfig(KubernetesApiURL, buildConfig) {
+  export function enrichBuildConfig(buildConfig, sortedBuilds) {
     if (buildConfig) {
-      var triggerUrl: string = null;
+      var triggerUrl:string = null;
       var name = Core.pathGet(buildConfig, ["metadata", "name"]);
       if (name) {
-        KubernetesApiURL.then((KubernetesApiURL) => {
-          angular.forEach([false, true], (flag) => {
-            angular.forEach(buildConfig.triggers, (trigger) => {
-              if (!triggerUrl) {
-                var type = trigger.type;
-                if (type === "generic" || flag) {
-                  var generic = trigger[type];
-                  if (type && generic) {
-                    var secret = generic.secret;
-                    if (secret) {
-                      triggerUrl = UrlHelpers.join(KubernetesApiURL, 'osapi', defaultOSApiVersion, 'buildConfigHooks', name, secret, type);
-                      console.log("got trigger: " + triggerUrl);
-                      buildConfig.$triggerUrl = triggerUrl;
-                    }
+        angular.forEach([false, true], (flag) => {
+          angular.forEach(buildConfig.triggers, (trigger) => {
+            if (!triggerUrl) {
+              var type = trigger.type;
+              if (type === "generic" || flag) {
+                var generic = trigger[type];
+                if (type && generic) {
+                  var secret = generic.secret;
+                  if (secret) {
+                    triggerUrl = UrlHelpers.join(buildConfigHooksRestURL, name, secret, type);
+                    buildConfig.$triggerUrl = triggerUrl;
                   }
                 }
               }
-            });
+            }
           });
         });
+
+        // lets find the latest build...
+        if (sortedBuilds) {
+          buildConfig.$lastBuild = _.find(sortedBuilds, {
+            metadata: {
+              labels: {
+                buildconfig: name
+              }
+            }
+          });
+        }
       }
     }
+  }
+
+  export function enrichBuildConfigs(buildConfigs, sortedBuilds) {
+    angular.forEach(buildConfigs, (buildConfig) => {
+      enrichBuildConfig(buildConfig, sortedBuilds);
+    });
+    return buildConfigs;
+  }
+
+  export function enrichBuilds(builds) {
+    angular.forEach(builds, (build) => {
+      enrichBuild(build);
+    });
+    return _.sortByAll(builds, ["$creationDate", "$name"]).reverse();
   }
 
   export function enrichBuild(build) {

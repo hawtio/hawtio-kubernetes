@@ -17,7 +17,7 @@ module Kubernetes {
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {
-              $scope.builds = data.items;
+              $scope.builds = enrichBuilds(data.items);
               updateData();
             }
           }).
@@ -53,7 +53,8 @@ module Kubernetes {
        */
       function updateData() {
         var pipelineSteps = {};
-        if ($scope.buildConfigs && $scope.builds) {
+        if ($scope.buildConfigs && $scope.builds && $scope.deploymentConfigs) {
+          enrichBuildConfigs($scope.buildConfigs, $scope.builds);
           $scope.fetched = true;
 
           angular.forEach($scope.buildConfigs, (buildConfig) => {
@@ -83,7 +84,7 @@ module Kubernetes {
           // TODO now we need to look at the triggers to figure out which pipelineSteps triggers each pipelineStep
 
 
-          // now lets create an array of all piplines, starting from the first known step with a list of the steps
+          // now lets create an array of all pipelines, starting from the first known step with a list of the steps
 
           var pipelines = [];
           angular.forEach(pipelineSteps, (pipelineStep, key) => {

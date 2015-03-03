@@ -59,10 +59,8 @@ module Kubernetes {
           success(function (data, status, headers, config) {
             if (data) {
               console.log("got data " + angular.toJson(data, true));
-              $scope.buildConfigs = data.items;
-              angular.forEach($scope.buildConfigs, (buildConfig) => {
-                enrichBuildConfig(KubernetesApiURL, buildConfig);
-              });
+              var sortedBuilds = null;
+              $scope.buildConfigs = enrichBuildConfigs(data.items, sortedBuilds);
               $scope.fetched = true;
             }
           }).
