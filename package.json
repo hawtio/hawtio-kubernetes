@@ -11,7 +11,7 @@
     "gulp-concat": "^2.4.2",
     "gulp-load-plugins": "^0.8.0",
     "gulp-notify": "^2.1.0",
-    "gulp-typescript": "^2.3.0",
+    "gulp-typescript": "^2.4.2",
     "gulp-watch": "^3.0.0",
     "hawtio-node-backend": "^2.0.5",
     "through2": "^0.6.3",

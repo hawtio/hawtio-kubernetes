@@ -1314,6 +1314,24 @@ var Kubernetes;
     Kubernetes._module.factory('AppLibraryURL', ['$rootScope', function ($rootScope) {
         return "/kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/app-library";
     }]);
+    Kubernetes._module.factory('WikiGitUrlPrefix', function () {
+        return "kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/app-library";
+    });
+    Kubernetes._module.factory('wikiRepository', ["$location", "localStorage", function ($location, localStorage) {
+        // TODO lets switch to using REST rather than jolokia soon for the wiki
+        var url = "/kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/app-library-jolokia/jolokia";
+        // TODO what to use here...
+        var user = "admin";
+        var password = "admin";
+        var jolokia = Core.createJolokia(url, user, password);
+        var workspace = Core.createRemoteWorkspace(jolokia, $location, localStorage);
+        return new Wiki.GitWikiRepository(function () {
+            console.log("Creating a using the jolokia URL: " + url);
+            var gitRepo = Git.createGitRepository(workspace, jolokia, localStorage);
+            console.log("Got git based repo: " + gitRepo);
+            return gitRepo;
+        });
+    }]);
     Kubernetes._module.factory('ConnectDialogService', ['$rootScope', function ($rootScope) {
         return {
             dialog: new UI.Dialog(),
@@ -1428,15 +1446,14 @@ var Kubernetes;
         if (dockerRegistry) {
             dockerRegistry.isValid = function () { return false; };
         }
-        /*
         workspace.topLevelTabs.push({
-          id: 'kubernetes',
-          content: 'Kubernetes',
-          isValid: (workspace:Core.Workspace) => isKubernetes(workspace),
-          isActive: (workspace:Core.Workspace) => workspace.isLinkActive('kubernetes'),
-          href: () => defaultRoute
+            id: 'library',
+            content: 'Library',
+            title: 'View the library of applications',
+            isValid: function (workspace) { return ServiceRegistry.hasService("app-library") && ServiceRegistry.hasService("app-library-jolokia"); },
+            href: function () { return "/wiki/view"; },
+            isActive: function (workspace) { return false; }
         });
-        */
         workspace.topLevelTabs.push({
             id: 'kibana',
             content: 'Logs',

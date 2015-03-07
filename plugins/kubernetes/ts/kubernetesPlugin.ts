@@ -52,6 +52,28 @@ module Kubernetes {
     return "/kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library";
   }]);
 
+  _module.factory('WikiGitUrlPrefix', () => {
+    return "kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library";
+  });
+
+  _module.factory('wikiRepository', ["$location", "localStorage", ($location, localStorage) => {
+    // TODO lets switch to using REST rather than jolokia soon for the wiki
+
+    var url = "/kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library-jolokia/jolokia";
+    // TODO what to use here...
+    var user = "admin";
+    var password = "admin";
+    var jolokia = Core.createJolokia(url, user, password);
+    var workspace = Core.createRemoteWorkspace(jolokia, $location, localStorage);
+
+    return new Wiki.GitWikiRepository(() => {
+      console.log("Creating a using the jolokia URL: " + url);
+      var gitRepo = Git.createGitRepository(workspace, jolokia, localStorage);
+      console.log("Got git based repo: " + gitRepo);
+      return gitRepo;
+    });
+  }]);
+
   _module.factory('ConnectDialogService', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
     return  {
             dialog: new UI.Dialog(),
@@ -138,6 +160,8 @@ module Kubernetes {
   _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) => {
     return createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods);
   }]);
+
+
 
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
     log.debug("Running");
@@ -227,15 +251,14 @@ module Kubernetes {
       dockerRegistry.isValid = () => false;
     }
 
-    /*
     workspace.topLevelTabs.push({
-      id: 'kubernetes',
-      content: 'Kubernetes',
-      isValid: (workspace:Core.Workspace) => isKubernetes(workspace),
-      isActive: (workspace:Core.Workspace) => workspace.isLinkActive('kubernetes'),
-      href: () => defaultRoute
+      id: 'library',
+      content: 'Library',
+      title: 'View the library of applications',
+      isValid: (workspace) => ServiceRegistry.hasService("app-library") && ServiceRegistry.hasService("app-library-jolokia"),
+      href: () => "/wiki/view",
+      isActive: (workspace) => false
     });
-    */
 
     workspace.topLevelTabs.push({
       id: 'kibana',

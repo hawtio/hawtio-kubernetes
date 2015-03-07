@@ -24,7 +24,7 @@
     "hawtio-forms": "~2.0.6",
     "hawtio-ui": "~2.0.0",
     "hawtio-utilities": "~2.0.20",
-    "hawtio-wiki": "~2.0.1",
+    "hawtio-wiki": "~2.0.25",
     "hawtio-template-cache": "*",
     "angular-restmod": "~1.1.8"
   },
