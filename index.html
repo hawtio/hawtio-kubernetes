@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>hawtio-kubernetes</title>
     <base href='/'></base>
     <meta charset="UTF8">
 
-
     <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css" />
-    <!--
     <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css" />
-    -->
 
     <!-- bower:css -->
     <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css" />
@@ -25,6 +21,7 @@
     <!-- endbower -->
 
     <link rel="stylesheet" href="dist/hawtio-kubernetes.css" />
+    <link rel="stylesheet" href="dist/hawtio-console-assembly.css" />
 
     <!-- ES6/ES6 shim -->
     <!--[if IE 8]>
@@ -106,25 +103,21 @@
 
 
     <script src="libs/bootstrap/dist/js/bootstrap.js"></script>
-    <!--
     <script src="libs/patternfly/dist/js/patternfly.js"></script>
-    -->
 
-</head>
+  </head>
 
-<body>
-  <nav class="navbar navbar-fixed-top navbar-default navbar-pf" role="navigation">
-    <div class="container-fluid">
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-pf" role="navigation">
       <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
-      <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
+      <ul class="nav navbar-nav navbar-persistent" hawtio-sub-tabs></ul>
+    </nav>
+
+    <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
+      <div ng-include src="viewPartial"></div>
     </div>
-</nav>
 
-<div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
-    <div ng-include src="viewPartial"></div>
-</div>
+    <script src="dist/hawtio-kubernetes.js"></script>
 
-<script src="dist/hawtio-kubernetes.js"></script>
-
-</body>
+  </body>
 </html>
