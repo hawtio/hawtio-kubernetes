@@ -769,7 +769,12 @@ var Kubernetes;
             angular.forEach(deploymentConfig.triggers, function (trigger) {
                 var type = trigger.type;
                 if (!deploymentConfig.$imageChangeParams && type === "ImageChange") {
-                    deploymentConfig.$imageChangeParams = trigger.imageChangeParams;
+                    var imageChangeParams = trigger.imageChangeParams;
+                    if (imageChangeParams) {
+                        var containerNames = imageChangeParams.containerNames || [];
+                        imageChangeParams.$containerNames = containerNames.join(" ");
+                        deploymentConfig.$imageChangeParams = imageChangeParams;
+                    }
                 }
             });
         }
@@ -2343,7 +2348,7 @@ var Kubernetes;
                     displayName: 'Automatic'
                 },
                 {
-                    field: '$imageChangeParams.containerNames',
+                    field: '$imageChangeParams.$containerNames',
                     displayName: 'Container Names'
                 },
                 {

@@ -769,7 +769,12 @@ module Kubernetes {
       angular.forEach(deploymentConfig.triggers, (trigger) => {
         var type = trigger.type;
         if (!deploymentConfig.$imageChangeParams && type === "ImageChange") {
-          deploymentConfig.$imageChangeParams = trigger.imageChangeParams;
+          var imageChangeParams = trigger.imageChangeParams;
+          if (imageChangeParams) {
+            var containerNames = imageChangeParams.containerNames || [];
+            imageChangeParams.$containerNames = containerNames.join(" ");
+            deploymentConfig.$imageChangeParams = imageChangeParams;
+          }
         }
       });
     }

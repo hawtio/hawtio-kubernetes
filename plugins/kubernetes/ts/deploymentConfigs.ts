@@ -37,7 +37,7 @@ module Kubernetes {
             displayName: 'Automatic'
           },
           {
-            field: '$imageChangeParams.containerNames',
+            field: '$imageChangeParams.$containerNames',
             displayName: 'Container Names'
           },
           {
