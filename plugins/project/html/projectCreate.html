@@ -1,0 +1,25 @@
+<div ng-controller="Project.ProjectController">
+  <div class="row">
+    <div class="col-md-12">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="fetched">
+        <form>
+          <div class="form-group">
+            <label for="projectName">Project name</label>
+            <input type="text" class="form-control" id="projectName" placeholder="Enter project name" ng-model="entity.name">
+          </div>
+          <button type="submit" ng-disabled="!entity.name" ng-click="create()"
+                  class="btn btn-primary">Create Project</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

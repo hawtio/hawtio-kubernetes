@@ -278,6 +278,15 @@ module Kubernetes {
       isActive: (workspace) => false
     });
 
+    // TODO we should move this to a nicer link inside the Library soon - also lets hide until it works...
+    workspace.topLevelTabs.push({
+      id: 'createProject',
+      content: 'Create',
+      title: 'Creates a new project',
+      isValid: (workspace) => ServiceRegistry.hasService("app-library") && false,
+      href: () => "/project/create"
+    });
+
 
   }]);
 

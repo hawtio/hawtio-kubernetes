@@ -145,6 +145,31 @@ gulp.task('connect', ['watch'], function() {
       });
     console.log("because of $LOCAL_APP_LIBRARY being true we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/app-library" );
   }
+  if (process.env.LOCAL_JBOSS_FORGE === "true") {
+    localProxies.push({
+        proto: "http",
+        port: "8599",
+        hostname: "localhost",
+        path: '/kubernetes/api/v1beta2/proxy/services/jboss-forge',
+        targetPath: "/"
+      });
+    console.log("because of LOCAL_JBOSS_FORGE being true we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/jboss-forge" );
+  }
+  if (process.env.LOCAL_GOGS_HOST) {
+    var gogsPort = process.env.LOCAL_GOGS_PORT || "3000";
+    //var gogsHostName = process.env.LOCAL_GOGS_HOST + ":" + gogsPort;
+    var gogsHostName = process.env.LOCAL_GOGS_HOST;
+    console.log("Using gogs host: " + gogsHostName);
+    localProxies.push({
+        proto: "http",
+        port: gogsPort,
+        hostname: gogsHostName,
+        path: '/kubernetes/api/v1beta2/proxy/services/gogs-http-service',
+        targetPath: "/"
+      });
+    console.log("because of LOCAL_GOGS_HOST being set we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/gogs-http-service to point to http://"
+    + process.env.LOCAL_GOGS_HOST + ":" + gogsPort);
+  }
   var defaultProxies = [{
     proto: kube.protocol(),
     port: kube.port(),
