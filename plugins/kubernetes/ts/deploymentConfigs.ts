@@ -12,6 +12,7 @@ module Kubernetes {
       $scope.$on('kubernetesModelUpdated', function () {
         Core.$apply($scope);
       });
+      $scope.labelClass = containerLabelClass;
 
       $scope.tableConfig = {
         data: 'deploymentConfigs',
@@ -47,6 +48,11 @@ module Kubernetes {
           {
             field: '$imageChangeParams.tag',
             displayName: 'Tag'
+          },
+          {
+            field: 'template.controllerTemplate.podTemplate.tags',
+            displayName: 'Labels',
+            cellTemplate: $templateCache.get("deploymentConfigLabelTemplate.html")
           }
         ]
       };

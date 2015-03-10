@@ -1,4 +1,13 @@
 <div class="row" ng-controller="Kubernetes.ImageRepositoriesController">
+  <script type="text/ng-template" id="imageRegistryLabelTemplate.html">
+    <div class="ngCellText">
+      <span ng-repeat="(key, label) in row.entity.tags track by $index"
+            class="pod-label badge"
+            ng-class="labelClass(key)"
+            ng-click="clickTag(entity, key, label)"
+            title="{{key}}">{{label}}</span>
+    </div>
+  </script>
   <div class="row">
     <div class="col-md-12" ng-show="imageRepositories.length">
       <span>

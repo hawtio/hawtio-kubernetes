@@ -37,10 +37,23 @@ module Kubernetes {
           },
           {
             field: 'tags',
-            displayName: 'Tags'
+            displayName: 'Tags',
+            cellTemplate: $templateCache.get('imageRegistryLabelTemplate.html')
           }
         ]
       };
+
+      var labelColors = {
+        'prod': 'background-blue',
+        'valid': 'background-light-green',
+        'test': 'background-light-grey'
+      };
+      $scope.labelClass = (labelType:string) => {
+        if (!(labelType in labelColors)) {
+          return 'mouse-pointer';
+        }
+        else return labelColors[labelType] + ' mouse-pointer';
+      }
 
       Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 

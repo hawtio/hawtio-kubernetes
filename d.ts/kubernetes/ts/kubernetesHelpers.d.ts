@@ -112,6 +112,7 @@ declare module Kubernetes {
     function enrichDeploymentConfigs(deploymentConfigs: any): any;
     function enrichImageRepository(imageRepository: any): void;
     function enrichImageRepositories(imageRepositories: any): any;
+    function containerLabelClass(labelType: string): string;
     /**
      * Configures the json schema
      */

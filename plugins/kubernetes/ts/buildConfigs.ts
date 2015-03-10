@@ -99,13 +99,10 @@ module Kubernetes {
       }
 
       function updateData() {
-        console.log("loading data...");
         var url = buildConfigsRestURL;
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {
-              console.log("loaded data!");
-
               //console.log("got data " + angular.toJson(data, true));
               var sortedBuilds = null;
               $scope.buildConfigs = enrichBuildConfigs(data.items, sortedBuilds);

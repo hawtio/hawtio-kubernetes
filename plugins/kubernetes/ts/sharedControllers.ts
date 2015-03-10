@@ -77,17 +77,7 @@ module Kubernetes {
       $scope.$emit('labelFilterUpdate', filterTextSection);
     };
 
-    var labelColors = {
-      'version': 'background-blue',
-      'name': 'background-light-green',
-      'container': 'background-light-grey'
-    };
-    $scope.labelClass = (labelType:string) => {
-      if (!(labelType in labelColors)) {
-        return 'mouse-pointer';
-      }
-      else return labelColors[labelType] + ' mouse-pointer';
-    }
+    $scope.labelClass = containerLabelClass;
   }]);
 
 }

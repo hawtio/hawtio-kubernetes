@@ -803,6 +803,19 @@ module Kubernetes {
   }
 
 
+  var labelColors = {
+    'version': 'background-blue',
+    'name': 'background-light-green',
+    'container': 'background-light-grey'
+  };
+
+  export function containerLabelClass(labelType:string) {
+    if (!(labelType in labelColors)) {
+      return 'mouse-pointer';
+    }
+    else return labelColors[labelType] + ' mouse-pointer';
+  }
+
   /**
    * Configures the json schema
    */
