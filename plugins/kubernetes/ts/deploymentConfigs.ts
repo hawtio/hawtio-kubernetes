@@ -29,24 +29,24 @@ module Kubernetes {
             cellTemplate: $templateCache.get("deploymentConfigLinkTemplate.html")
           },
           {
-            field: 'parameters.source.type',
-            displayName: 'Source'
+            field: 'metadata.namespace',
+            displayName: 'Namespace'
           },
           {
-            field: 'parameters.source.git.uri',
-            displayName: 'Repository'
+            field: '$imageChangeParams.automatic',
+            displayName: 'Automatic'
           },
           {
-            field: 'parameters.strategy.type',
-            displayName: 'Strategy'
+            field: '$imageChangeParams.containerNames',
+            displayName: 'Container Names'
           },
           {
-            field: 'parameters.strategy.stiStrategy.image',
-            displayName: 'Source Image'
+            field: '$imageChangeParams.from.name',
+            displayName: 'From image'
           },
           {
-            field: 'parameters.output.imageTag',
-            displayName: 'Output Image'
+            field: '$imageChangeParams.tag',
+            displayName: 'Tag'
           }
         ]
       };
@@ -84,14 +84,14 @@ module Kubernetes {
       function deleteEntity(selection, nextCallback) {
         var name = (selection || {}).$name;
         if (name) {
-          console.log("About to delete build config: " + name);
+          console.log("About to delete deployment config: " + name);
           var url = deploymentConfigRestUrl(name);
           $http.delete(url).
             success(function (data, status, headers, config) {
               nextCallback();
             }).
             error(function (data, status, headers, config) {
-              log.warn("Failed to delete build config on " + url + " " + data + " " + status);
+              log.warn("Failed to delete deployment config on " + url + " " + data + " " + status);
             });
         } else {
           console.log("warning: no name for selection: " + angular.toJson(selection));

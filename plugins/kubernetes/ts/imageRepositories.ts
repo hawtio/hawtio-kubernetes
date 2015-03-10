@@ -82,7 +82,7 @@ module Kubernetes {
               nextCallback();
             }).
             error(function (data, status, headers, config) {
-              log.warn("Failed to delete build config on " + url + " " + data + " " + status);
+              log.warn("Failed to delete image repository on " + url + " " + data + " " + status);
             });
         } else {
           console.log("warning: no name for selection: " + angular.toJson(selection));

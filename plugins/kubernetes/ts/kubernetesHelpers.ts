@@ -765,27 +765,13 @@ module Kubernetes {
       var triggerUrl:string = null;
       var name = Core.pathGet(deploymentConfig, ["metadata", "name"]);
       deploymentConfig.$name = name;
-      if (name) {
-        angular.forEach([false, true], (flag) => {
-          angular.forEach(deploymentConfig.triggers, (trigger) => {
-            if (!triggerUrl) {
-/*
-              var type = trigger.type;
-              if (type === "generic" || flag) {
-                var generic = trigger[type];
-                if (type && generic) {
-                  var secret = generic.secret;
-                  if (secret) {
-                    triggerUrl = UrlHelpers.join(deploymentConfigHooksRestURL, name, secret, type);
-                    deploymentConfig.$triggerUrl = triggerUrl;
-                  }
-                }
-              }
-*/
-            }
-          });
-        });
-      }
+      var found = false;
+      angular.forEach(deploymentConfig.triggers, (trigger) => {
+        var type = trigger.type;
+        if (!deploymentConfig.$imageChangeParams && type === "ImageChange") {
+          deploymentConfig.$imageChangeParams = trigger.imageChangeParams;
+        }
+      });
     }
   }
 

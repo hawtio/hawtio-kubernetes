@@ -36,6 +36,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
                   .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
                   .when(UrlHelpers.join(context, 'deploymentConfigs'), route('deploymentConfigs.html', false))
+                  .when(UrlHelpers.join(context, 'deploymentConfigs/:id'), route('deploymentConfig.html', true))
                   .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
                   .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
