@@ -1,8 +1,8 @@
-<div class="row" ng-controller="Kubernetes.BuildConfigsController">
-  <script type="text/ng-template" id="buildConfigLinkTemplate.html">
+<div class="row" ng-controller="Kubernetes.DeploymentConfigsController">
+  <script type="text/ng-template" id="deploymentConfigLinkTemplate.html">
     <div class="ngCellText">
       <a title="View details for this build configuration"
-         href="/kubernetes/buildConfigs/{{row.entity.metadata.name}}">
+         href="/kubernetes/deploymentConfigs/{{row.entity.metadata.name}}">
 <!--
         <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
 -->
@@ -10,11 +10,11 @@
     </div>
   </script>
   <div class="row">
-    <div class="col-md-12" ng-show="buildConfigs.length">
+    <div class="col-md-12" ng-show="deploymentConfigs.length">
       <span>
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
-                       placeholder="Filter build configurations..."></hawtio-filter>
+                       placeholder="Filter deployment configurations..."></hawtio-filter>
       </span>
       <button ng-show="fetched"
               title="Delete the selected build configuration"
@@ -42,11 +42,11 @@
         </div>
       </div>
       <div ng-show="fetched">
-        <div ng-hide="buildConfigs.length" class="align-center">
-          <p class="alert alert-info">There are no build configurations available.</p>
-          <a class="btn btn-primary" href="/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create Build Configuration</a>
+        <div ng-hide="deploymentConfigs.length" class="align-center">
+          <p class="alert alert-info">There are no deployment configurations available.</p>
+          <a class="btn btn-primary" href="/kubernetes/deploymentConfigCreate"><i class="fa fa-plus"></i> Create Deployment Configuration</a>
         </div>
-        <div ng-show="buildConfigs.length">
+        <div ng-show="deploymentConfigs.length">
           <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
                  hawtio-simple-table="tableConfig"></table>
         </div>

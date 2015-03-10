@@ -3,7 +3,7 @@
 
 module Kubernetes {
 
-  export var BuildConfigsController = controller("BuildConfigsController", ["$scope", "KubernetesModel", "KubernetesBuilds", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
+  export var ImageRepositoriesController = controller("ImageRepositoriesController", ["$scope", "KubernetesModel", "KubernetesBuilds", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
     ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesBuilds, KubernetesState, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, KubernetesApiURL) => {
 
       $scope.kubernetes = KubernetesState;
@@ -14,7 +14,7 @@ module Kubernetes {
       });
 
       $scope.tableConfig = {
-        data: 'buildConfigs',
+        data: 'imageRepositories',
         showSelectionCheckbox: true,
         enableRowClickSelection: false,
         multiSelect: true,
@@ -25,28 +25,19 @@ module Kubernetes {
         columnDefs: [
           {
             field: 'metadata.name',
-            displayName: 'Name',
-            cellTemplate: $templateCache.get("buildConfigLinkTemplate.html")
+            displayName: 'Name'
           },
           {
-            field: 'parameters.source.type',
-            displayName: 'Source'
+            field: 'metadata.namespace',
+            displayName: 'Namespace'
           },
           {
-            field: 'parameters.source.git.uri',
-            displayName: 'Repository'
+            field: 'status.dockerImageRepository',
+            displayName: 'Docker Registry'
           },
           {
-            field: 'parameters.strategy.type',
-            displayName: 'Strategy'
-          },
-          {
-            field: 'parameters.strategy.stiStrategy.image',
-            displayName: 'Source Image'
-          },
-          {
-            field: 'parameters.output.imageTag',
-            displayName: 'Output Image'
+            field: 'tags',
+            displayName: 'Tags'
           }
         ]
       };
@@ -72,8 +63,8 @@ module Kubernetes {
               deleteSelected(selected, selected.shift());
             }
           },
-          title: 'Delete Build Configs?',
-          action: 'The following Build Configs will be deleted:',
+          title: 'Delete Image Repository?',
+          action: 'The following Image Repositories will be deleted:',
           okText: 'Delete',
           okClass: 'btn-danger',
           custom: "This operation is permanent once completed!",
@@ -84,8 +75,8 @@ module Kubernetes {
       function deleteEntity(selection, nextCallback) {
         var name = (selection || {}).$name;
         if (name) {
-          console.log("About to delete build config: " + name);
-          var url = buildConfigRestUrl(name);
+          console.log("About to delete image repository: " + name);
+          var url = imageRepositoryRestUrl(name);
           $http.delete(url).
             success(function (data, status, headers, config) {
               nextCallback();
@@ -99,16 +90,12 @@ module Kubernetes {
       }
 
       function updateData() {
-        console.log("loading data...");
-        var url = buildConfigsRestURL;
+        var url = imageRepositoriesRestURL;
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {
-              console.log("loaded data!");
-
               //console.log("got data " + angular.toJson(data, true));
-              var sortedBuilds = null;
-              $scope.buildConfigs = enrichBuildConfigs(data.items, sortedBuilds);
+              $scope.imageRepositories = enrichImageRepositories(data.items);
               $scope.fetched = true;
               Core.$apply($scope);
             }

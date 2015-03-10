@@ -28,6 +28,7 @@ var Kubernetes;
     Kubernetes.buildsLogsRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/proxy/buildLogs";
     Kubernetes.routesRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/routes";
     Kubernetes.deploymentConfigsRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/deploymentConfigs";
+    Kubernetes.imageRepositoriesRestURL = Kubernetes.osapiPrefix + Kubernetes.defaultOSApiVersion + "/imageRepositories";
     //var fabricDomain = Fabric.jmxDomain;
     var fabricDomain = "io.fabric8";
     Kubernetes.mbean = fabricDomain + ":type=Kubernetes";
@@ -377,6 +378,14 @@ var Kubernetes;
         return UrlHelpers.join(Kubernetes.buildConfigsRestURL, id);
     }
     Kubernetes.buildConfigRestUrl = buildConfigRestUrl;
+    function deploymentConfigRestUrl(id) {
+        return UrlHelpers.join(Kubernetes.deploymentConfigsRestURL, id);
+    }
+    Kubernetes.deploymentConfigRestUrl = deploymentConfigRestUrl;
+    function imageRepositoryRestUrl(id) {
+        return UrlHelpers.join(Kubernetes.imageRepositoriesRestURL, id);
+    }
+    Kubernetes.imageRepositoryRestUrl = imageRepositoryRestUrl;
     function buildRestUrl(id) {
         return UrlHelpers.join(Kubernetes.buildsRestURL, id);
     }
@@ -680,6 +689,7 @@ var Kubernetes;
         if (buildConfig) {
             var triggerUrl = null;
             var name = Core.pathGet(buildConfig, ["metadata", "name"]);
+            buildConfig.$name = name;
             if (name) {
                 angular.forEach([false, true], function (flag) {
                     angular.forEach(buildConfig.triggers, function (trigger) {
@@ -750,6 +760,44 @@ var Kubernetes;
         return build;
     }
     Kubernetes.enrichBuild = enrichBuild;
+    function enrichDeploymentConfig(deploymentConfig) {
+        if (deploymentConfig) {
+            var triggerUrl = null;
+            var name = Core.pathGet(deploymentConfig, ["metadata", "name"]);
+            deploymentConfig.$name = name;
+            if (name) {
+                angular.forEach([false, true], function (flag) {
+                    angular.forEach(deploymentConfig.triggers, function (trigger) {
+                        if (!triggerUrl) {
+                        }
+                    });
+                });
+            }
+        }
+    }
+    Kubernetes.enrichDeploymentConfig = enrichDeploymentConfig;
+    function enrichDeploymentConfigs(deploymentConfigs) {
+        angular.forEach(deploymentConfigs, function (deploymentConfig) {
+            enrichDeploymentConfig(deploymentConfig);
+        });
+        return deploymentConfigs;
+    }
+    Kubernetes.enrichDeploymentConfigs = enrichDeploymentConfigs;
+    function enrichImageRepository(imageRepository) {
+        if (imageRepository) {
+            var triggerUrl = null;
+            var name = Core.pathGet(imageRepository, ["metadata", "name"]);
+            imageRepository.$name = name;
+        }
+    }
+    Kubernetes.enrichImageRepository = enrichImageRepository;
+    function enrichImageRepositories(imageRepositories) {
+        angular.forEach(imageRepositories, function (imageRepository) {
+            enrichImageRepository(imageRepository);
+        });
+        return imageRepositories;
+    }
+    Kubernetes.enrichImageRepositories = enrichImageRepositories;
     /**
      * Configures the json schema
      */
@@ -1302,7 +1350,7 @@ var Kubernetes;
     Kubernetes.controller = PluginHelpers.createControllerFunction(Kubernetes._module, Kubernetes.pluginName);
     Kubernetes.route = PluginHelpers.createRoutingFunction(Kubernetes.templatePath);
     Kubernetes._module.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when(UrlHelpers.join(Kubernetes.context, '/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/podCreate'), Kubernetes.route('podCreate.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/podEdit/:id'), Kubernetes.route('podEdit.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods/:id'), Kubernetes.route('pod.html', false)).when(UrlHelpers.join(Kubernetes.context, 'replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers/:id'), Kubernetes.route('replicationController.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllerCreate'), Kubernetes.route('replicationControllerCreate.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllerEdit/:id'), Kubernetes.route('replicationControllerEdit.html', false)).when(UrlHelpers.join(Kubernetes.context, 'services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services/:id'), Kubernetes.route('service.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/serviceCreate'), Kubernetes.route('serviceCreate.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/serviceEdit/:id'), Kubernetes.route('serviceEdit.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps/:namespace'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'hosts'), Kubernetes.route('hosts.html', false)).when(UrlHelpers.join(Kubernetes.context, 'hosts/:id'), Kubernetes.route('host.html', true)).when(UrlHelpers.join(Kubernetes.context, 'builds'), Kubernetes.route('builds.html', false)).when(UrlHelpers.join(Kubernetes.context, 'builds/:id'), Kubernetes.route('build.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildLogs/:id'), Kubernetes.route('buildLogs.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigs'), Kubernetes.route('buildConfigs.html', false)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigs/:id'), Kubernetes.route('buildConfig.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigEdit/:id'), Kubernetes.route('buildConfigEdit.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigCreate'), Kubernetes.route('buildConfigCreate.html', true)).when(UrlHelpers.join(Kubernetes.context, 'pipelines'), Kubernetes.route('pipelines.html', false)).when(UrlHelpers.join(Kubernetes.context, 'overview'), Kubernetes.route('overview.html', true)).when(Kubernetes.context, { redirectTo: UrlHelpers.join(Kubernetes.context, 'apps') });
+        $routeProvider.when(UrlHelpers.join(Kubernetes.context, '/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/podCreate'), Kubernetes.route('podCreate.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/podEdit/:id'), Kubernetes.route('podEdit.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods'), Kubernetes.route('pods.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/pods/:id'), Kubernetes.route('pod.html', false)).when(UrlHelpers.join(Kubernetes.context, 'replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers'), Kubernetes.route('replicationControllers.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllers/:id'), Kubernetes.route('replicationController.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllerCreate'), Kubernetes.route('replicationControllerCreate.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/replicationControllerEdit/:id'), Kubernetes.route('replicationControllerEdit.html', false)).when(UrlHelpers.join(Kubernetes.context, 'services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services'), Kubernetes.route('services.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/services/:id'), Kubernetes.route('service.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/serviceCreate'), Kubernetes.route('serviceCreate.html', false)).when(UrlHelpers.join(Kubernetes.context, '/namespace/:namespace/serviceEdit/:id'), Kubernetes.route('serviceEdit.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'apps/:namespace'), Kubernetes.route('apps.html', false)).when(UrlHelpers.join(Kubernetes.context, 'hosts'), Kubernetes.route('hosts.html', false)).when(UrlHelpers.join(Kubernetes.context, 'hosts/:id'), Kubernetes.route('host.html', true)).when(UrlHelpers.join(Kubernetes.context, 'builds'), Kubernetes.route('builds.html', false)).when(UrlHelpers.join(Kubernetes.context, 'builds/:id'), Kubernetes.route('build.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildLogs/:id'), Kubernetes.route('buildLogs.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigs'), Kubernetes.route('buildConfigs.html', false)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigs/:id'), Kubernetes.route('buildConfig.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigEdit/:id'), Kubernetes.route('buildConfigEdit.html', true)).when(UrlHelpers.join(Kubernetes.context, 'buildConfigCreate'), Kubernetes.route('buildConfigCreate.html', true)).when(UrlHelpers.join(Kubernetes.context, 'deploymentConfigs'), Kubernetes.route('deploymentConfigs.html', false)).when(UrlHelpers.join(Kubernetes.context, 'imageRepositories'), Kubernetes.route('imageRepositories.html', false)).when(UrlHelpers.join(Kubernetes.context, 'pipelines'), Kubernetes.route('pipelines.html', false)).when(UrlHelpers.join(Kubernetes.context, 'overview'), Kubernetes.route('overview.html', true)).when(Kubernetes.context, { redirectTo: UrlHelpers.join(Kubernetes.context, 'apps') });
     }]);
     // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
     Kubernetes._module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
@@ -1416,6 +1464,8 @@ var Kubernetes;
         var hosts = builder.id('kube-hosts').href(function () { return UrlHelpers.join(Kubernetes.context, 'hosts'); }).title(function () { return 'Hosts'; }).build();
         var builds = builder.id('kube-builds').href(function () { return UrlHelpers.join(Kubernetes.context, 'builds'); }).title(function () { return 'Builds'; }).build();
         var buildConfigs = builder.id('kube-buildConfigs').href(function () { return UrlHelpers.join(Kubernetes.context, 'buildConfigs'); }).title(function () { return 'Build Configs'; }).build();
+        var deploys = builder.id('kube-deploys').href(function () { return UrlHelpers.join(Kubernetes.context, 'deploymentConfigs'); }).title(function () { return 'Deploys'; }).build();
+        var imageRepositories = builder.id('kube-imageRepositories').href(function () { return UrlHelpers.join(Kubernetes.context, 'imageRepositories'); }).title(function () { return 'Registries'; }).build();
         var pipelines = builder.id('kube-pipelines').href(function () { return UrlHelpers.join(Kubernetes.context, 'pipelines'); }).title(function () { return 'Pipelines'; }).build();
         var overview = builder.id('kube-overview').href(function () { return UrlHelpers.join(Kubernetes.context, 'overview'); }).title(function () { return 'Diagram'; }).build();
         var mainTab = builder.id('kubernetes').rank(100).defaultPage({
@@ -1433,7 +1483,7 @@ var Kubernetes;
                     }
                 });
             }
-        }).href(function () { return Kubernetes.context; }).title(function () { return 'Kubernetes'; }).isValid(function () { return Kubernetes.isKubernetes(workspace); }).tabs(apps, services, controllers, pods, hosts, overview, builds, buildConfigs, pipelines).build();
+        }).href(function () { return Kubernetes.context; }).title(function () { return 'Kubernetes'; }).isValid(function () { return Kubernetes.isKubernetes(workspace); }).tabs(apps, services, controllers, pods, hosts, overview, builds, buildConfigs, deploys, imageRepositories, pipelines).build();
         HawtioNav.add(mainTab);
         // lets disable connect
         var navItems = HawtioNav.items || [];
@@ -1951,14 +2001,59 @@ var Kubernetes;
             ]
         };
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+        $scope.deletePrompt = function (selected) {
+            UI.multiItemConfirmActionDialog({
+                collection: selected,
+                index: '$name',
+                onClose: function (result) {
+                    if (result) {
+                        function deleteSelected(selected, next) {
+                            if (next) {
+                                deleteEntity(next, function () {
+                                    deleteSelected(selected, selected.shift());
+                                });
+                            }
+                            else {
+                                updateData();
+                            }
+                        }
+                        deleteSelected(selected, selected.shift());
+                    }
+                },
+                title: 'Delete Build Configs?',
+                action: 'The following Build Configs will be deleted:',
+                okText: 'Delete',
+                okClass: 'btn-danger',
+                custom: "This operation is permanent once completed!",
+                customClass: "alert alert-warning"
+            }).open();
+        };
+        function deleteEntity(selection, nextCallback) {
+            var name = (selection || {}).$name;
+            if (name) {
+                console.log("About to delete build config: " + name);
+                var url = Kubernetes.buildConfigRestUrl(name);
+                $http.delete(url).success(function (data, status, headers, config) {
+                    nextCallback();
+                }).error(function (data, status, headers, config) {
+                    Kubernetes.log.warn("Failed to delete build config on " + url + " " + data + " " + status);
+                });
+            }
+            else {
+                console.log("warning: no name for selection: " + angular.toJson(selection));
+            }
+        }
         function updateData() {
+            console.log("loading data...");
             var url = Kubernetes.buildConfigsRestURL;
             $http.get(url).success(function (data, status, headers, config) {
                 if (data) {
-                    console.log("got data " + angular.toJson(data, true));
+                    console.log("loaded data!");
+                    //console.log("got data " + angular.toJson(data, true));
                     var sortedBuilds = null;
                     $scope.buildConfigs = Kubernetes.enrichBuildConfigs(data.items, sortedBuilds);
                     $scope.fetched = true;
+                    Core.$apply($scope);
                 }
             }).error(function (data, status, headers, config) {
                 Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
@@ -2173,6 +2268,114 @@ var Kubernetes;
 })(Kubernetes || (Kubernetes = {}));
 
 /// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
+var Kubernetes;
+(function (Kubernetes) {
+    Kubernetes.DeploymentConfigsController = Kubernetes.controller("DeploymentConfigsController", ["$scope", "KubernetesModel", "KubernetesBuilds", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL", function ($scope, KubernetesModel, KubernetesBuilds, KubernetesState, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, KubernetesApiURL) {
+        $scope.kubernetes = KubernetesState;
+        $scope.model = KubernetesModel;
+        $scope.KubernetesBuilds = KubernetesBuilds;
+        $scope.$on('kubernetesModelUpdated', function () {
+            Core.$apply($scope);
+        });
+        $scope.tableConfig = {
+            data: 'deploymentConfigs',
+            showSelectionCheckbox: true,
+            enableRowClickSelection: false,
+            multiSelect: true,
+            selectedItems: [],
+            filterOptions: {
+                filterText: $location.search()["q"] || ''
+            },
+            columnDefs: [
+                {
+                    field: 'metadata.name',
+                    displayName: 'Name',
+                    cellTemplate: $templateCache.get("deploymentConfigLinkTemplate.html")
+                },
+                {
+                    field: 'parameters.source.type',
+                    displayName: 'Source'
+                },
+                {
+                    field: 'parameters.source.git.uri',
+                    displayName: 'Repository'
+                },
+                {
+                    field: 'parameters.strategy.type',
+                    displayName: 'Strategy'
+                },
+                {
+                    field: 'parameters.strategy.stiStrategy.image',
+                    displayName: 'Source Image'
+                },
+                {
+                    field: 'parameters.output.imageTag',
+                    displayName: 'Output Image'
+                }
+            ]
+        };
+        Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+        $scope.deletePrompt = function (selected) {
+            UI.multiItemConfirmActionDialog({
+                collection: selected,
+                index: '$name',
+                onClose: function (result) {
+                    if (result) {
+                        function deleteSelected(selected, next) {
+                            if (next) {
+                                deleteEntity(next, function () {
+                                    deleteSelected(selected, selected.shift());
+                                });
+                            }
+                            else {
+                                updateData();
+                            }
+                        }
+                        deleteSelected(selected, selected.shift());
+                    }
+                },
+                title: 'Delete Deployment?',
+                action: 'The following Deployments will be deleted:',
+                okText: 'Delete',
+                okClass: 'btn-danger',
+                custom: "This operation is permanent once completed!",
+                customClass: "alert alert-warning"
+            }).open();
+        };
+        function deleteEntity(selection, nextCallback) {
+            var name = (selection || {}).$name;
+            if (name) {
+                console.log("About to delete build config: " + name);
+                var url = Kubernetes.deploymentConfigRestUrl(name);
+                $http.delete(url).success(function (data, status, headers, config) {
+                    nextCallback();
+                }).error(function (data, status, headers, config) {
+                    Kubernetes.log.warn("Failed to delete build config on " + url + " " + data + " " + status);
+                });
+            }
+            else {
+                console.log("warning: no name for selection: " + angular.toJson(selection));
+            }
+        }
+        function updateData() {
+            var url = Kubernetes.deploymentConfigsRestURL;
+            $http.get(url).success(function (data, status, headers, config) {
+                if (data) {
+                    //console.log("got data " + angular.toJson(data, true));
+                    $scope.deploymentConfigs = Kubernetes.enrichDeploymentConfigs(data.items);
+                    $scope.fetched = true;
+                    Core.$apply($scope);
+                }
+            }).error(function (data, status, headers, config) {
+                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
+            });
+        }
+        updateData();
+    }]);
+})(Kubernetes || (Kubernetes = {}));
+
+/// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
 /// <reference path="kubernetesPlugin.ts"/>
 var Kubernetes;
@@ -2248,6 +2451,105 @@ var Kubernetes;
             ]
         };
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+    }]);
+})(Kubernetes || (Kubernetes = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
+var Kubernetes;
+(function (Kubernetes) {
+    Kubernetes.ImageRepositoriesController = Kubernetes.controller("ImageRepositoriesController", ["$scope", "KubernetesModel", "KubernetesBuilds", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL", function ($scope, KubernetesModel, KubernetesBuilds, KubernetesState, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, KubernetesApiURL) {
+        $scope.kubernetes = KubernetesState;
+        $scope.model = KubernetesModel;
+        $scope.KubernetesBuilds = KubernetesBuilds;
+        $scope.$on('kubernetesModelUpdated', function () {
+            Core.$apply($scope);
+        });
+        $scope.tableConfig = {
+            data: 'imageRepositories',
+            showSelectionCheckbox: true,
+            enableRowClickSelection: false,
+            multiSelect: true,
+            selectedItems: [],
+            filterOptions: {
+                filterText: $location.search()["q"] || ''
+            },
+            columnDefs: [
+                {
+                    field: 'metadata.name',
+                    displayName: 'Name'
+                },
+                {
+                    field: 'metadata.namespace',
+                    displayName: 'Namespace'
+                },
+                {
+                    field: 'status.dockerImageRepository',
+                    displayName: 'Docker Registry'
+                },
+                {
+                    field: 'tags',
+                    displayName: 'Tags'
+                }
+            ]
+        };
+        Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+        $scope.deletePrompt = function (selected) {
+            UI.multiItemConfirmActionDialog({
+                collection: selected,
+                index: '$name',
+                onClose: function (result) {
+                    if (result) {
+                        function deleteSelected(selected, next) {
+                            if (next) {
+                                deleteEntity(next, function () {
+                                    deleteSelected(selected, selected.shift());
+                                });
+                            }
+                            else {
+                                updateData();
+                            }
+                        }
+                        deleteSelected(selected, selected.shift());
+                    }
+                },
+                title: 'Delete Image Repository?',
+                action: 'The following Image Repositories will be deleted:',
+                okText: 'Delete',
+                okClass: 'btn-danger',
+                custom: "This operation is permanent once completed!",
+                customClass: "alert alert-warning"
+            }).open();
+        };
+        function deleteEntity(selection, nextCallback) {
+            var name = (selection || {}).$name;
+            if (name) {
+                console.log("About to delete image repository: " + name);
+                var url = Kubernetes.imageRepositoryRestUrl(name);
+                $http.delete(url).success(function (data, status, headers, config) {
+                    nextCallback();
+                }).error(function (data, status, headers, config) {
+                    Kubernetes.log.warn("Failed to delete build config on " + url + " " + data + " " + status);
+                });
+            }
+            else {
+                console.log("warning: no name for selection: " + angular.toJson(selection));
+            }
+        }
+        function updateData() {
+            var url = Kubernetes.imageRepositoriesRestURL;
+            $http.get(url).success(function (data, status, headers, config) {
+                if (data) {
+                    //console.log("got data " + angular.toJson(data, true));
+                    $scope.imageRepositories = Kubernetes.enrichImageRepositories(data.items);
+                    $scope.fetched = true;
+                    Core.$apply($scope);
+                }
+            }).error(function (data, status, headers, config) {
+                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
+            });
+        }
+        updateData();
     }]);
 })(Kubernetes || (Kubernetes = {}));
 
@@ -6737,11 +7039,13 @@ $templateCache.put("plugins/kubernetes/html/build.html","<div ng-controller=\"Ku
 $templateCache.put("plugins/kubernetes/html/buildConfig.html","<div ng-controller=\"Kubernetes.BuildConfigController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/buildConfigs\"><i class=\"fa fa-list\"></i></a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <button class=\"btn btn-primary pull-right\"\n         title=\"Trigger this build\"\n         ng-disabled=\"!entity.$triggerUrl\"\n         ng-click=\"triggerBuild(entity)\"><i class=\"fa fa-play-circle-o\"></i> Trigger</button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-object=\"entity\" config=\"config\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/buildConfigCreate.html","<div ng-controller=\"Kubernetes.BuildConfigController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/buildConfigs\"><i class=\"fa fa-list\"></i></a>\n      <button class=\"btn btn-primary pull-right\"\n              title=\"Saves changes to this build configuration\"\n              ng-click=\"save()\">\n        Create Build Configuration\n      </button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-form-2=\"config\" entity=\"entity\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/buildConfigEdit.html","<div ng-controller=\"Kubernetes.BuildConfigController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/buildConfigs\"><i class=\"fa fa-list\"></i></a>\n      <button class=\"btn btn-primary pull-right\"\n              title=\"Saves changes to this build configuration\"\n              ng-click=\"save()\">\n        Save\n      </button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-form-2=\"config\" entity=\"entity\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
-$templateCache.put("plugins/kubernetes/html/buildConfigs.html","<div class=\"row\" ng-controller=\"Kubernetes.BuildConfigsController\">\n  <script type=\"text/ng-template\" id=\"buildConfigLinkTemplate.html\">\n    <div class=\"ngCellText\">\n      <a title=\"View details for this build configuration\"\n         href=\"/kubernetes/buildConfigs/{{row.entity.metadata.name}}\">\n<!--\n        <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n-->\n        {{row.entity.metadata.name}}</a>\n    </div>\n  </script>\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"buildConfigs.length\">\n      <span ng-show=\"!id\">\n        <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter build configurations...\"></hawtio-filter>\n      </span>\n      <button ng-show=\"model.fetched\"\n              title=\"Delete the selected build configuration\"\n              class=\"btn btn-danger pull-right\"\n              ng-disabled=\"!id && tableConfig.selectedItems.length == 0\"\n              ng-click=\"deletePrompt(id || tableConfig.selectedItems)\">\n        <i class=\"fa fa-remove\"></i> Delete\n      </button>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Create a new build configuration\"\n         href=\"/kubernetes/buildConfigCreate\"><i class=\"fa fa-plus\"></i> Create</a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <button class=\"btn btn-primary pull-right\"\n         title=\"Trigger the given build\"\n         ng-disabled=\"tableConfig.selectedItems.length != 1 || !tableConfig.selectedItems[0].$triggerUrl\"\n         ng-click=\"triggerBuild(tableConfig.selectedItems[0])\"><i class=\"fa fa-play-circle-o\"></i> Trigger</button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"buildConfigs.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no build configurations available.</p>\n          <a class=\"btn btn-primary\" href=\"/kubernetes/buildConfigCreate\"><i class=\"fa fa-plus\"></i> Create Build Configuration</a>\n        </div>\n        <div ng-show=\"buildConfigs.length\">\n          <table class=\"table table-condensed table-striped\" ui-if=\"kubernetes.selectedNamespace\"\n                 hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
+$templateCache.put("plugins/kubernetes/html/buildConfigs.html","<div class=\"row\" ng-controller=\"Kubernetes.BuildConfigsController\">\n  <script type=\"text/ng-template\" id=\"buildConfigLinkTemplate.html\">\n    <div class=\"ngCellText\">\n      <a title=\"View details for this build configuration\"\n         href=\"/kubernetes/buildConfigs/{{row.entity.metadata.name}}\">\n<!--\n        <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n-->\n        {{row.entity.metadata.name}}</a>\n    </div>\n  </script>\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"buildConfigs.length\">\n      <span>\n        <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter build configurations...\"></hawtio-filter>\n      </span>\n      <button ng-show=\"fetched\"\n              title=\"Delete the selected build configuration\"\n              class=\"btn btn-danger pull-right\"\n              ng-disabled=\"tableConfig.selectedItems.length == 0\"\n              ng-click=\"deletePrompt(tableConfig.selectedItems)\">\n        <i class=\"fa fa-remove\"></i> Delete\n      </button>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Create a new build configuration\"\n         href=\"/kubernetes/buildConfigCreate\"><i class=\"fa fa-plus\"></i> Create</a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <button class=\"btn btn-primary pull-right\"\n         title=\"Trigger the given build\"\n         ng-disabled=\"tableConfig.selectedItems.length != 1 || !tableConfig.selectedItems[0].$triggerUrl\"\n         ng-click=\"triggerBuild(tableConfig.selectedItems[0])\"><i class=\"fa fa-play-circle-o\"></i> Trigger</button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"buildConfigs.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no build configurations available.</p>\n          <a class=\"btn btn-primary\" href=\"/kubernetes/buildConfigCreate\"><i class=\"fa fa-plus\"></i> Create Build Configuration</a>\n        </div>\n        <div ng-show=\"buildConfigs.length\">\n          <table class=\"table table-condensed table-striped\" ui-if=\"kubernetes.selectedNamespace\"\n                 hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/buildLogs.html","<div ng-controller=\"Kubernetes.BuildLogsController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\" ng-show=\"entity.$viewLink\"\n         title=\"View the build detail\"\n         href=\"{{entity.$viewLink}}\">\n        Build\n      </a>\n      <a class=\"btn btn-primary pull-right\" ng-show=\"entity.$configLink\"\n         title=\"View the build configuration\"\n         href=\"{{entity.$configLink}}\">\n        Configuration\n      </a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <h3>logs for {{entity.$configId}}</h3>\n\n        <p>\n          <pre>\n            <code>\n              {{logsText}}\n            </code>\n          </pre>\n        </p>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/builds.html","<div class=\"row\" ng-controller=\"Kubernetes.BuildsController\">\n  <script type=\"text/ng-template\" id=\"buildLinkTemplate.html\">\n    <div class=\"ngCellText\">\n      <a title=\"View details for this build\"\n         href=\"/kubernetes/builds/{{row.entity.metadata.name}}\">\n        <!--\n                <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n        -->\n        {{row.entity.metadata.name}}</a>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"buildLogsTemplate.html\">\n    <div class=\"ngCellText\">\n      <a title=\"View the log for this build\" ng-show=\"row.entity.$logsLink\"\n         href=\"{{row.entity.$logsLink}}\">\n        <i class=\"fa fa-file-text-o\"></i>  Logs\n      </a>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"buildRepositoryTemplate.html\">\n    <div class=\"ngCellText\">\n      <a ng-show=\"row.entity.parameters.source.git.uri\" target=\"gitRepository\"\n         title=\"View the git based source repository\"\n         href=\"{{row.entity.parameters.source.git.uri}}\">\n        {{row.entity.parameters.source.git.uri}}\n      </a>\n      <span ng-hide=\"row.entity.parameters.source.git.uri\">\n        {{row.entity.parameters.source.git.uri}}\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"buildStatusTemplate.html\">\n    <div class=\"ngCellText\" ng-switch=\"row.entity.status\">\n      <span ng-switch-when=\"New\" class=\"text-primary\">\n        <i class=\"fa fa-spin fa-spinner\"></i> New\n      </span>\n      <span ng-switch-when=\"Pending\" class=\"text-primary\">\n        <i class=\"fa fa-spin fa-spinner\"></i> Pending\n      </span>\n      <span ng-switch-when=\"Running\" class=\"text-primary\">\n        <i class=\"fa fa-spin fa-spinner\"></i> Running\n      </span>\n      <span ng-switch-when=\"Complete\" class=\"text-success\">\n        <i class=\"fa fa-check-circle\"></i> Complete\n      </span>\n      <span ng-switch-when=\"Failed\" class=\"text-danger\">\n        <i class=\"fa fa-exclamation-circle\"></i> Failed\n      </span>\n      <span ng-switch-default class=\"text-warning\">\n        <i class=\"fa fa-exclamation-triangle\"></i> {{row.entity.status}}\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"buildTimeTemplate.html\">\n    <div class=\"ngCellText\" title=\"built at: {{row.entity.$creationDate | date : \'h:mm:ss a, EEE MMM yyyy\'}}\">\n      {{row.entity.$creationDate.relative()}}\n    </div>\n  </script>\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"builds.length\">\n      <span ng-show=\"!id\">\n        <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter builds...\"></hawtio-filter>\n      </span>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"builds.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no builds currently running.</p>\n        </div>\n        <div ng-show=\"builds.length\">\n          <table class=\"table table-condensed table-striped\" ui-if=\"kubernetes.selectedNamespace\"\n                 hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
+$templateCache.put("plugins/kubernetes/html/deploymentConfigs.html","<div class=\"row\" ng-controller=\"Kubernetes.DeploymentConfigsController\">\n  <script type=\"text/ng-template\" id=\"deploymentConfigLinkTemplate.html\">\n    <div class=\"ngCellText\">\n      <a title=\"View details for this build configuration\"\n         href=\"/kubernetes/deploymentConfigs/{{row.entity.metadata.name}}\">\n<!--\n        <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n-->\n        {{row.entity.metadata.name}}</a>\n    </div>\n  </script>\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"deploymentConfigs.length\">\n      <span>\n        <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter deployment configurations...\"></hawtio-filter>\n      </span>\n      <button ng-show=\"fetched\"\n              title=\"Delete the selected build configuration\"\n              class=\"btn btn-danger pull-right\"\n              ng-disabled=\"tableConfig.selectedItems.length == 0\"\n              ng-click=\"deletePrompt(tableConfig.selectedItems)\">\n        <i class=\"fa fa-remove\"></i> Delete\n      </button>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Create a new build configuration\"\n         href=\"/kubernetes/buildConfigCreate\"><i class=\"fa fa-plus\"></i> Create</a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <button class=\"btn btn-primary pull-right\"\n         title=\"Trigger the given build\"\n         ng-disabled=\"tableConfig.selectedItems.length != 1 || !tableConfig.selectedItems[0].$triggerUrl\"\n         ng-click=\"triggerBuild(tableConfig.selectedItems[0])\"><i class=\"fa fa-play-circle-o\"></i> Trigger</button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"deploymentConfigs.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no deployment configurations available.</p>\n          <a class=\"btn btn-primary\" href=\"/kubernetes/deploymentConfigCreate\"><i class=\"fa fa-plus\"></i> Create Deployment Configuration</a>\n        </div>\n        <div ng-show=\"deploymentConfigs.length\">\n          <table class=\"table table-condensed table-striped\" ui-if=\"kubernetes.selectedNamespace\"\n                 hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/host.html","<div ng-controller=\"Kubernetes.HostController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/hosts\"><i class=\"fa fa-list\"></i></a>\n      <a class=\"btn btn-primary pull-right\"\n              title=\"View all the pods on this host\"\n              href=\"/kubernetes/pods/?q=host={{item.id}}\">\n        Pods\n      </a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"model.fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"model.fetched\">\n        <div hawtio-object=\"item\" config=\"itemConfig\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/hosts.html","<div class=\"row\" ng-controller=\"Kubernetes.HostsController\">\n  <script type=\"text/ng-template\" id=\"hostLinkTemplate.html\">\n    <div class=\"ngCellText\">\n      </div>\n  </script>\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"model.hosts.length\">\n      <span ng-show=\"!id\">\n        <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter hosts...\"></hawtio-filter>\n      </span>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"model.fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"model.fetched\">\n        <div ng-hide=\"model.hosts.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no hosts currently running.</p>\n        </div>\n        <div ng-show=\"model.hosts.length\">\n          <table class=\"table table-condensed table-striped\" ui-if=\"kubernetes.selectedNamespace\"\n                 hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
+$templateCache.put("plugins/kubernetes/html/imageRepositories.html","<div class=\"row\" ng-controller=\"Kubernetes.ImageRepositoriesController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"imageRepositories.length\">\n      <span>\n        <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter image repositories...\"></hawtio-filter>\n      </span>\n      <button ng-show=\"fetched\"\n              title=\"Delete the selected build configuration\"\n              class=\"btn btn-danger pull-right\"\n              ng-disabled=\"tableConfig.selectedItems.length == 0\"\n              ng-click=\"deletePrompt(tableConfig.selectedItems)\">\n        <i class=\"fa fa-remove\"></i> Delete\n      </button>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Create a new image repository\"\n         href=\"/kubernetes/imageRepositoryCreate\"><i class=\"fa fa-plus\"></i> Create</a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"imageRepositories.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no image repositories available.</p>\n          <a class=\"btn btn-primary\" href=\"/kubernetes/imageRepositoryCreate\"><i class=\"fa fa-plus\"></i> Create Image Repository</a>\n        </div>\n        <div ng-show=\"imageRepositories.length\">\n          <table class=\"table table-condensed table-striped\" ui-if=\"kubernetes.selectedNamespace\"\n                 hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/kubernetesJsonDirective.html","<div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div class=\"fabric-page-header row\">\n\n        <div class=\"pull-left\" ng-show=\"iconURL\">\n          <div class=\"app-logo\">\n            <img ng-src=\"{{iconURL}}\">&nbsp;\n          </div>\n        </div>\n        <div class=\"pull-left\">\n            <h2 class=\"list-inline\"><span class=\"contained c-wide3\">&nbsp;{{displayName || appTitle}}</span></h2>\n        </div>\n        <div class=\"pull-right\">\n          <button class=\"btn btn-success pull-right\"\n                  title=\"Run this application\"\n                  ng-disabled=\"!config || config.error\"\n                  ng-click=\"apply()\">\n            <i class=\"fa fa-play-circle\"></i> Run\n          </button>\n        </div>\n        <div class=\"pull-left col-md-10 profile-summary-wide\">\n          <div\n               ng-show=\"summaryHtml\"\n               ng-bind-html-unsafe=\"summaryHtml\"></div>\n        </div>\n      </div>\n\n    </div>\n  </div>\n\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/layoutKubernetes.html","<script type=\"text/ng-template\" id=\"idTemplate.html\">\n  <div class=\"ngCellText\">\n    <a href=\"\" \n       title=\"View details for {{row.entity.id}}\"\n       ng-href=\"{{row.entity | kubernetesPageLink}}\">\n      <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n      {{row.entity.id}}</a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"selectorTemplate.html\">\n  <div class=\"ngCellText\">\n    <span ng-repeat=\"(name, value) in row.entity.selector track by $index\">\n      <strong>{{name}}</strong>: {{value}}\n    </span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"podCountsAndLinkTemplate.html\">\n  <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n    <a ng-show=\"row.entity.$podCounters.podsLink\" href=\"{{row.entity.$podCounters.podsLink}}\" title=\"View pods\">\n      <span ng-show=\"row.entity.$podCounters.valid\" class=\"badge badge-success\">{{row.entity.$podCounters.valid}}</span>\n      <span ng-show=\"row.entity.$podCounters.waiting\" class=\"badge\">{{row.entity.$podCounters.waiting}}</span>\n      <span ng-show=\"row.entity.$podCounters.error\" class=\"badge badge-warning\">{{row.entity.$podCounters.error}}</span>\n    </a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"labelTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"entity=row.entity\" ng-controller=\"Kubernetes.Labels\">\n    <p ng-show=\"data\"><strong>Labels</strong></p>\n    <span ng-repeat=\"label in labels track by $index\"\n          class=\"pod-label badge\"\n          ng-class=\"labelClass(label.key)\"\n          ng-click=\"handleClick(entity, label.key, label)\"\n          title=\"{{label.key}}\">{{label.title}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"hostTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"host=row.entity.currentState.host\">\n    <span class=\"pod-label badge\"\n          class=\"background-light-grey mouse-pointer\"\n          ng-click=\"$emit(\'labelFilterUpdate\', \'host=\' + host)\">{{host}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"portalAddress.html\">\n  <div class=\"ngCellText\">\n    <a target=\"openService\" href=\"{{row.entity.proxyUrl}}\"\n       ng-show=\"row.entity.portalIP && row.entity.$podCounters.valid\" title=\"Protocol {{row.entity.protocol}}\">\n      {{row.entity.portalIP}}:{{row.entity.port}}\n    </a>\n    <span ng-hide=\"row.entity.portalIP && row.entity.$podCounters.valid\">{{row.entity.portalIP}}:{{row.entity.port}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"iconCellTemplate.html\">\n  <div class=\"ngCellText\">\n    <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"statusTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"entity=row.entity\" ng-controller=\"Kubernetes.PodStatus\" title=\"Pod {{entity.id}} is {{entity.currentState.status}}\">\n    <!-- in detail view -->\n    <p ng-show=\"data\"><strong>Status: </strong></p>\n    <i class=\"fa\" ng-class=\"statusMapping(entity.currentState.status)\"></i>\n    <span ng-show=\"data\">{{data}}</span>\n    <!-- in table -->\n    <span ng-show=\"entity.$jolokiaUrl\" ng-controller=\"Kubernetes.ConnectController\">\n      <a class=\"clickable\"\n         ng-click=\"doConnect(row.entity)\"\n         title=\"Open a new window and connect to this container\">\n        <i class=\"fa fa-sign-in\"></i>\n      </a>\n    </span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"resizeDialog.html\">\n  <div modal=\"resizeDialog.dialog.show\">\n      <form class=\"form-horizontal\" ng-submit=\"resizeDialog.onOk()\">\n          <div class=\"modal-header\"><h4>Resize {{resizeDialog.controller.id}}</h4></div>\n          <div class=\"modal-body\">\n            <div class=\"control-group\">\n              <label class=\"control-label\" for=\"replicas\">Replica count</label>\n\n              <div class=\"controls\">\n                <input type=\"number\" min=\"0\" id=\"replicas\" ng-model=\"resizeDialog.newReplicas\">\n              </div>\n            </div>\n\n          </div>\n          <div class=\"modal-footer\">\n            <input class=\"btn btn-primary\" type=\"submit\"\n                   ng-disabled=\"resizeDialog.newReplicas === resizeDialog.controller.currentState.replicas\"\n                   value=\"Resize\">\n            <button class=\"btn btn-warning cancel\" type=\"button\" ng-click=\"resizeDialog.close()\">Cancel</button>\n          </div>\n        </form>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"namespaceSelector.html\">\n    namespace: <select ng-model=\"kubernetes.selectedNamespace\" ng-options=\"namespace for namespace in kubernetes.namespaces\" title=\"choose the namespace - which is a selection of resources in kubernetes\">\n    </select>\n  </script>\n<div class=\"row\" ng-controller=\"Kubernetes.TopLevel\">\n  <div class=\"wiki-icon-view\" ng-controller=\"Kubernetes.FileDropController\" nv-file-drop nv-file-over uploader=\"uploader\" over-class=\"ready-drop\">\n    <div class=\"row kubernetes-view\" ng-view></div>\n  </div>\n</div>\n<div ng-controller=\"Kubernetes.ConnectController\">\n  <div hawtio-confirm-dialog=\"connect.dialog.show\" title=\"Connect to {{connect.containerName}}?\"\n       ok-button-text=\"Connect\" on-ok=\"onOK()\">\n    <div class=\"dialog-body\">\n      <p>Please enter the user name and password for {{connect.containerName}}:</p>\n\n      <div class=\"control-group\">\n        <label class=\"control-label\">User name: </label>\n\n        <div class=\"controls\">\n          <input name=\"userName\" ng-model=\"connect.userName\" type=\"text\" autofill>\n        </div>\n      </div>\n      <div class=\"control-group\">\n        <label class=\"control-label\">Password: </label>\n\n        <div class=\"controls\">\n          <input name=\"password\" ng-model=\"connect.password\" type=\"password\" autofill>\n        </div>\n      </div>\n      <div class=\"control-group\">\n        <div class=\"controls\">\n          <label class=\"checkbox\">\n            <input type=\"checkbox\" ng-model=\"connect.saveCredentials\"> Save these credentials as the default\n          </label>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>");
 $templateCache.put("plugins/kubernetes/html/overview.html","<div ng-controller=\"Kubernetes.OverviewController\">\n  <script type=\"text/ng-template\" id=\"serviceBoxTemplate.html\">\n    <div class=\"row\">\n      <div class=\"col-md-3 align-left node-body\">{{entity.port}}</div>\n      <div class=\"col-md-9 align-right node-header\" title=\"{{entity.id}}\">{{entity.id}}</div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"serviceTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div id=\"{{service._key}}\"\n             namespace=\"{{service.namespace}}\"\n             connect-to=\"{{service.connectTo}}\"\n             data-type=\"service\"\n             class=\"jsplumb-node kubernetes-node kubernetes-service-node\"\n             ng-controller=\"Kubernetes.OverviewBoxController\"\n             ng-init=\"entity=getEntity(\'service\', \'{{service._key}}\')\"\n             ng-mouseenter=\"mouseEnter($event)\"\n             ng-mouseleave=\"mouseLeave($event)\"\n             ng-click=\"viewDetails(entity, \'services\')\">\n          <div ng-init=\"entity=entity\" ng-include=\"\'serviceBoxTemplate.html\'\"></div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"hostTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div id=\"{{host.id}}\"\n             data-type=\"host\"\n             class=\"kubernetes-host-container\">\n          <h5><a ng-href=\"/kubernetes/hosts/{{host.id}}\">{{host.id}}</a></h5>\n          <div class=\"pod-container\"></div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"podTemplate.html\">\n    <div id=\"{{pod._key}}\"\n         data-type=\"pod\"\n         title=\"Pod ID: {{pod.id}}\"\n         class=\"jsplumb-node kubernetes-node kubernetes-pod-node\"\n         ng-mouseenter=\"mouseEnter($event)\"\n         ng-mouseleave=\"mouseLeave($event)\"\n         ng-controller=\"Kubernetes.OverviewBoxController\"\n         ng-init=\"entity=getEntity(\'pod\', \'{{pod._key}}\')\"\n         ng-click=\"viewDetails(entity, \'pods\')\">\n      <div class=\"css-table\">\n        <div class=\"css-table-row\">\n          <div class=\"pod-status-cell css-table-cell\">\n            <span ng-init=\"row={ entity: entity }\" ng-include=\"\'statusTemplate.html\'\"></span>\n          </div>\n          <div class=\"pod-label-cell css-table-cell\">\n            <span ng-init=\"row={ entity: entity }\" ng-include=\"\'labelTemplate.html\'\"></span>\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"replicationControllerTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div\n            id=\"{{replicationController._key}}\"\n            title=\"{{replicationController.id}}\"\n            data-type=\"replicationController\"\n            data-placement=\"top\"\n            connect-to=\"{{replicationController.connectTo}}\"\n            ng-mouseenter=\"mouseEnter($event)\"\n            ng-mouseleave=\"mouseLeave($event)\"\n            class=\"jsplumb-node kubernetes-replicationController-node kubernetes-node\"\n            ng-controller=\"Kubernetes.OverviewBoxController\"\n            ng-init=\"entity=getEntity(\'replicationController\', \'{{replicationController._key}}\')\"\n            ng-click=\"viewDetails(entity, \'replicationControllers\')\">\n            <img class=\"app-icon-medium\" ng-src=\"{{replicationController.$iconUrl}}\">\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"overviewTemplate.html\">\n    <div class=\"kubernetes-overview\"\n         hawtio-jsplumb\n         draggable=\"false\"\n         layout=\"false\"\n         node-sep=\"50\"\n         rank-sep=\"300\">\n      <div class=\"kubernetes-overview-row\">\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview services\">\n            <h6>Services</h6>\n          </div>\n        </div>\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview hosts\">\n            <h6>Hosts and Pods</h6>\n          </div>\n        </div>\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview replicationControllers\">\n            <h6>Replication controllers</h6>\n          </div>\n        </div>\n      </div>\n   </div>\n  </script>\n  <div class=\"align-center\" ng-include=\"\'namespaceSelector.html\'\"></div>\n  <kubernetes-overview ui-if=\"kubernetes.selectedNamespace\"></kubernetes-overview>\n</div>\n");

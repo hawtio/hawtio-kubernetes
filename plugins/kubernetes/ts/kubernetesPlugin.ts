@@ -35,6 +35,8 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
                   .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
                   .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
+                  .when(UrlHelpers.join(context, 'deploymentConfigs'), route('deploymentConfigs.html', false))
+                  .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
                   .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
@@ -204,6 +206,16 @@ module Kubernetes {
                       .title(() => 'Build Configs')
                       .build();
 
+    var deploys = builder.id('kube-deploys')
+                      .href(() => UrlHelpers.join(context, 'deploymentConfigs'))
+                      .title(() => 'Deploys')
+                      .build();
+
+    var imageRepositories = builder.id('kube-imageRepositories')
+                      .href(() => UrlHelpers.join(context, 'imageRepositories'))
+                      .title(() => 'Registries')
+                      .build();
+
     var pipelines = builder.id('kube-pipelines')
                       .href(() => UrlHelpers.join(context, 'pipelines'))
                       .title(() => 'Pipelines')
@@ -234,7 +246,7 @@ module Kubernetes {
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => isKubernetes(workspace))
-                         .tabs(apps, services, controllers, pods, hosts, overview, builds, buildConfigs, pipelines)
+                         .tabs(apps, services, controllers, pods, hosts, overview, builds, buildConfigs, deploys, imageRepositories, pipelines)
                          .build();
 
     HawtioNav.add(mainTab);

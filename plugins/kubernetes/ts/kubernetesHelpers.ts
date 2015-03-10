@@ -29,6 +29,7 @@ module Kubernetes {
   export var buildsLogsRestURL = osapiPrefix + defaultOSApiVersion + "/proxy/buildLogs";
   export var routesRestURL = osapiPrefix + defaultOSApiVersion + "/routes";
   export var deploymentConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/deploymentConfigs";
+  export var imageRepositoriesRestURL = osapiPrefix + defaultOSApiVersion + "/imageRepositories";
 
   export interface KubePod {
     id:string;
@@ -374,6 +375,14 @@ module Kubernetes {
     return UrlHelpers.join(buildConfigsRestURL, id);
   }
 
+  export function deploymentConfigRestUrl(id) {
+    return UrlHelpers.join(deploymentConfigsRestURL, id);
+  }
+
+  export function imageRepositoryRestUrl(id) {
+    return UrlHelpers.join(imageRepositoriesRestURL, id);
+  }
+
   export function buildRestUrl(id) {
     return UrlHelpers.join(buildsRestURL, id);
   }
@@ -678,6 +687,7 @@ module Kubernetes {
     if (buildConfig) {
       var triggerUrl:string = null;
       var name = Core.pathGet(buildConfig, ["metadata", "name"]);
+      buildConfig.$name = name;
       if (name) {
         angular.forEach([false, true], (flag) => {
           angular.forEach(buildConfig.triggers, (trigger) => {
@@ -748,6 +758,59 @@ module Kubernetes {
     }
     return build;
   }
+
+
+  export function enrichDeploymentConfig(deploymentConfig) {
+    if (deploymentConfig) {
+      var triggerUrl:string = null;
+      var name = Core.pathGet(deploymentConfig, ["metadata", "name"]);
+      deploymentConfig.$name = name;
+      if (name) {
+        angular.forEach([false, true], (flag) => {
+          angular.forEach(deploymentConfig.triggers, (trigger) => {
+            if (!triggerUrl) {
+/*
+              var type = trigger.type;
+              if (type === "generic" || flag) {
+                var generic = trigger[type];
+                if (type && generic) {
+                  var secret = generic.secret;
+                  if (secret) {
+                    triggerUrl = UrlHelpers.join(deploymentConfigHooksRestURL, name, secret, type);
+                    deploymentConfig.$triggerUrl = triggerUrl;
+                  }
+                }
+              }
+*/
+            }
+          });
+        });
+      }
+    }
+  }
+
+  export function enrichDeploymentConfigs(deploymentConfigs) {
+    angular.forEach(deploymentConfigs, (deploymentConfig) => {
+      enrichDeploymentConfig(deploymentConfig);
+    });
+    return deploymentConfigs;
+  }
+
+  export function enrichImageRepository(imageRepository) {
+    if (imageRepository) {
+      var triggerUrl:string = null;
+      var name = Core.pathGet(imageRepository, ["metadata", "name"]);
+      imageRepository.$name = name;
+    }
+  }
+
+  export function enrichImageRepositories(imageRepositories) {
+    angular.forEach(imageRepositories, (imageRepository) => {
+      enrichImageRepository(imageRepository);
+    });
+    return imageRepositories;
+  }
+
 
   /**
    * Configures the json schema

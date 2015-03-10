@@ -3,7 +3,7 @@
 
 module Kubernetes {
 
-  export var BuildConfigsController = controller("BuildConfigsController", ["$scope", "KubernetesModel", "KubernetesBuilds", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
+  export var DeploymentConfigsController = controller("DeploymentConfigsController", ["$scope", "KubernetesModel", "KubernetesBuilds", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
     ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesBuilds, KubernetesState, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, KubernetesApiURL) => {
 
       $scope.kubernetes = KubernetesState;
@@ -14,7 +14,7 @@ module Kubernetes {
       });
 
       $scope.tableConfig = {
-        data: 'buildConfigs',
+        data: 'deploymentConfigs',
         showSelectionCheckbox: true,
         enableRowClickSelection: false,
         multiSelect: true,
@@ -26,7 +26,7 @@ module Kubernetes {
           {
             field: 'metadata.name',
             displayName: 'Name',
-            cellTemplate: $templateCache.get("buildConfigLinkTemplate.html")
+            cellTemplate: $templateCache.get("deploymentConfigLinkTemplate.html")
           },
           {
             field: 'parameters.source.type',
@@ -72,8 +72,8 @@ module Kubernetes {
               deleteSelected(selected, selected.shift());
             }
           },
-          title: 'Delete Build Configs?',
-          action: 'The following Build Configs will be deleted:',
+          title: 'Delete Deployment?',
+          action: 'The following Deployments will be deleted:',
           okText: 'Delete',
           okClass: 'btn-danger',
           custom: "This operation is permanent once completed!",
@@ -85,7 +85,7 @@ module Kubernetes {
         var name = (selection || {}).$name;
         if (name) {
           console.log("About to delete build config: " + name);
-          var url = buildConfigRestUrl(name);
+          var url = deploymentConfigRestUrl(name);
           $http.delete(url).
             success(function (data, status, headers, config) {
               nextCallback();
@@ -99,16 +99,12 @@ module Kubernetes {
       }
 
       function updateData() {
-        console.log("loading data...");
-        var url = buildConfigsRestURL;
+        var url = deploymentConfigsRestURL;
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {
-              console.log("loaded data!");
-
               //console.log("got data " + angular.toJson(data, true));
-              var sortedBuilds = null;
-              $scope.buildConfigs = enrichBuildConfigs(data.items, sortedBuilds);
+              $scope.deploymentConfigs = enrichDeploymentConfigs(data.items);
               $scope.fetched = true;
               Core.$apply($scope);
             }
