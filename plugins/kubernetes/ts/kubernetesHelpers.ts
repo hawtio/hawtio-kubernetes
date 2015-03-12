@@ -738,6 +738,15 @@ module Kubernetes {
   export function enrichBuild(build) {
     if (build) {
       var metadata = build.metadata || {};
+      var name = metadata.name;
+      var namespace = metadata.namespace;
+      build.$name = name;
+      build.$namespace = namespace;
+
+      var nameArray = name.split("-");
+      var nameArrayLength = nameArray.length;
+      build.$shortName = (nameArrayLength > 4) ? nameArray.slice(0, nameArrayLength - 4).join("-") : name.substring(0, 30);
+
       var labels = metadata.labels || {};
       var configId = labels.buildconfig;
       build.$configId = configId;
@@ -745,8 +754,6 @@ module Kubernetes {
         build.$configLink = UrlHelpers.join("kubernetes/buildConfigs", configId);
       }
       var creationTimestamp = metadata.creationTimestamp;
-      var name = metadata.name;
-      build.$name = name;
       if (creationTimestamp) {
         var d = new Date(creationTimestamp);
         build.$creationDate = d;
@@ -754,6 +761,13 @@ module Kubernetes {
       if (name) {
         build.$viewLink = UrlHelpers.join("kubernetes/builds", name);
         build.$logsLink = UrlHelpers.join("kubernetes/buildLogs", name);
+      }
+      var podName = build.podName;
+      if (podName && namespace) {
+        var podNameArray = podName.split("-");
+        var podNameArrayLength = podNameArray.length
+        build.$podShortName = (podNameArrayLength > 5) ? podNameArray[podNameArrayLength - 5] : podName.substring(0, 30);
+        build.$podLink = UrlHelpers.join("kubernetes/namespace", namespace, "pods", podName);
       }
     }
     return build;

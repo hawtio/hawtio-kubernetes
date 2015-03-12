@@ -45,9 +45,16 @@ module Kubernetes {
             cellTemplate: $templateCache.get("buildLogsTemplate.html")
           },
           {
+            field: '$podLink',
+            displayName: 'Build Pod',
+            cellTemplate: $templateCache.get("buildPodTemplate.html")
+          },
+/*
+          {
             field: 'parameters.source.type',
             displayName: 'Source'
           },
+*/
           {
             field: 'parameters.source.git.uri',
             displayName: 'Repository',

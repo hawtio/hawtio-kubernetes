@@ -1,12 +1,20 @@
 <div class="row" ng-controller="Kubernetes.BuildsController">
   <script type="text/ng-template" id="buildLinkTemplate.html">
     <div class="ngCellText">
-      <a title="View details for this build"
+      <a title="View details for this build: {{row.entity.$name}}"
          href="/kubernetes/builds/{{row.entity.metadata.name}}">
         <!--
                 <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
         -->
-        {{row.entity.metadata.name}}</a>
+        {{row.entity.$shortName}}
+      </a>
+    </div>
+  </script>
+  <script type="text/ng-template" id="buildPodTemplate.html">
+    <div class="ngCellText">
+      <a title="View the pod for this build: {{row.entity.podName}}" ng-show="row.entity.$podLink"
+         href="{{row.entity.$podLink}}">
+        {{row.entity.$podShortName}}</a>
     </div>
   </script>
   <script type="text/ng-template" id="buildLogsTemplate.html">
