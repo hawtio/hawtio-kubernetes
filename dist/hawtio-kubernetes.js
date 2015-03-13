@@ -571,6 +571,9 @@ var Kubernetes;
             else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
                 return 'fa fa-off orange';
             }
+            else if (lower.startsWith("succeeded")) {
+                return 'fa fa-check-circle-o green';
+            }
         }
         return 'fa fa-question red';
     }
@@ -864,6 +867,104 @@ var Kubernetes;
     }
     Kubernetes.configureSchema = configureSchema;
 })(Kubernetes || (Kubernetes = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
+var Project;
+(function (Project) {
+    Project.context = '/project';
+    Project.hash = '#' + Project.context;
+    Project.pluginName = 'Project';
+    Project.log = Logger.get(Project.pluginName);
+    Project.pluginPath = 'plugins/project/';
+    Project.templatePath = Project.pluginPath + 'html/';
+    Project.gogsRestURL = "/kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/gogs-http-service/api/v1";
+    Project.gogsUserRepoRestURL = Project.gogsRestURL + "/user/repos";
+})(Project || (Project = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
+/// <reference path="projectHelpers.ts"/>
+var Project;
+(function (Project) {
+    Project._module = angular.module(Project.pluginName, [Kubernetes.pluginName]);
+    Project.controller = PluginHelpers.createControllerFunction(Project._module, Project.pluginName);
+    Project.route = PluginHelpers.createRoutingFunction(Project.templatePath);
+    Project._module.config(['$routeProvider', function ($routeProvider) {
+        $routeProvider.when(UrlHelpers.join(Project.context, '/create'), Project.route('projectCreate.html', false));
+    }]);
+    hawtioPluginLoader.addModule(Project.pluginName);
+})(Project || (Project = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="projectHelpers.ts"/>
+/// <reference path="projectPlugin.ts"/>
+var Project;
+(function (Project) {
+    Project.ProjectController = Project.controller("ProjectController", ["$scope", "KubernetesModel", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", function ($scope, KubernetesModel, $templateCache, $location, $routeParams, $http, $timeout, KubernetesApiURL) {
+        $scope.model = KubernetesModel;
+        $scope.entity = {
+            name: ""
+        };
+        $scope.$on('$routeUpdate', function ($event) {
+            updateData();
+        });
+        // TODO add actual login/pwd or OAuth
+        var authorizationHeader = "Basic TODO";
+        // TODO take this from the service host!
+        $scope.create = function () {
+            var url = Project.gogsUserRepoRestURL;
+            console.log("Creating project " + angular.toJson($scope.entity, true));
+            console.log("Posting to url: " + url);
+            var data = $scope.entity;
+            var config = {
+                headers: {
+                    'withCredentials': true,
+                    'Authorization': authorizationHeader,
+                    'Content-Type': "application/json"
+                }
+            };
+            $http.post(url, data, config).success(function (data, status, headers, config) {
+                console.log("project created! got data " + angular.toJson(data, true));
+                createProject(data);
+            }).error(function (data, status, headers, config) {
+                Project.log.warn("Failed to load " + url + " " + data + " " + status);
+                Core.notification('error', "Failed to create git repository " + name + ". Returned code: " + status + " " + data);
+            });
+        };
+        updateData();
+        function createProject(data) {
+            var full_name = data.full_name;
+            if (full_name) {
+                var gitUrl = Core.url(Project.gogsRestURL + "/" + full_name + ".git");
+                console.log("Creating a git repo for " + full_name + " at : " + gitUrl);
+            }
+            // TODO lets forward to the create project wizard...
+        }
+        function updateData() {
+            $scope.builds = [];
+            var url = Project.gogsUserRepoRestURL;
+            var config = {
+                headers: {
+                    'withCredentials': true,
+                    'Authorization': authorizationHeader
+                }
+            };
+            delete $http.defaults.headers.common["Accept"];
+            $http.get(url, config).success(function (data, status, headers, config) {
+                if (data) {
+                    console.log("got repos: " + angular.toJson(data, true));
+                    $scope.builds = data;
+                }
+                $scope.fetched = true;
+                Core.$apply($scope);
+            }).error(function (data, status, headers, config) {
+                $scope.fetched = true;
+                Project.log.warn("Failed to load " + url + " " + data + " " + status);
+            });
+        }
+    }]);
+})(Project || (Project = {}));
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
@@ -7013,104 +7114,6 @@ var Kubernetes;
         $scope.labelClass = Kubernetes.containerLabelClass;
     }]);
 })(Kubernetes || (Kubernetes = {}));
-
-/// <reference path="../../includes.ts"/>
-/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
-var Project;
-(function (Project) {
-    Project.context = '/project';
-    Project.hash = '#' + Project.context;
-    Project.pluginName = 'Project';
-    Project.log = Logger.get(Project.pluginName);
-    Project.pluginPath = 'plugins/project/';
-    Project.templatePath = Project.pluginPath + 'html/';
-    Project.gogsRestURL = "/kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/gogs-http-service/api/v1";
-    Project.gogsUserRepoRestURL = Project.gogsRestURL + "/user/repos";
-})(Project || (Project = {}));
-
-/// <reference path="../../includes.ts"/>
-/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
-/// <reference path="projectHelpers.ts"/>
-var Project;
-(function (Project) {
-    Project._module = angular.module(Project.pluginName, [Kubernetes.pluginName]);
-    Project.controller = PluginHelpers.createControllerFunction(Project._module, Project.pluginName);
-    Project.route = PluginHelpers.createRoutingFunction(Project.templatePath);
-    Project._module.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when(UrlHelpers.join(Project.context, '/create'), Project.route('projectCreate.html', false));
-    }]);
-    hawtioPluginLoader.addModule(Project.pluginName);
-})(Project || (Project = {}));
-
-/// <reference path="../../includes.ts"/>
-/// <reference path="projectHelpers.ts"/>
-/// <reference path="projectPlugin.ts"/>
-var Project;
-(function (Project) {
-    Project.ProjectController = Project.controller("ProjectController", ["$scope", "KubernetesModel", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", function ($scope, KubernetesModel, $templateCache, $location, $routeParams, $http, $timeout, KubernetesApiURL) {
-        $scope.model = KubernetesModel;
-        $scope.entity = {
-            name: ""
-        };
-        $scope.$on('$routeUpdate', function ($event) {
-            updateData();
-        });
-        // TODO add actual login/pwd or OAuth
-        var authorizationHeader = "Basic TODO";
-        // TODO take this from the service host!
-        $scope.create = function () {
-            var url = Project.gogsUserRepoRestURL;
-            console.log("Creating project " + angular.toJson($scope.entity, true));
-            console.log("Posting to url: " + url);
-            var data = $scope.entity;
-            var config = {
-                headers: {
-                    'withCredentials': true,
-                    'Authorization': authorizationHeader,
-                    'Content-Type': "application/json"
-                }
-            };
-            $http.post(url, data, config).success(function (data, status, headers, config) {
-                console.log("project created! got data " + angular.toJson(data, true));
-                createProject(data);
-            }).error(function (data, status, headers, config) {
-                Project.log.warn("Failed to load " + url + " " + data + " " + status);
-                Core.notification('error', "Failed to create git repository " + name + ". Returned code: " + status + " " + data);
-            });
-        };
-        updateData();
-        function createProject(data) {
-            var full_name = data.full_name;
-            if (full_name) {
-                var gitUrl = Core.url(Project.gogsRestURL + "/" + full_name + ".git");
-                console.log("Creating a git repo for " + full_name + " at : " + gitUrl);
-            }
-            // TODO lets forward to the create project wizard...
-        }
-        function updateData() {
-            $scope.builds = [];
-            var url = Project.gogsUserRepoRestURL;
-            var config = {
-                headers: {
-                    'withCredentials': true,
-                    'Authorization': authorizationHeader
-                }
-            };
-            delete $http.defaults.headers.common["Accept"];
-            $http.get(url, config).success(function (data, status, headers, config) {
-                if (data) {
-                    console.log("got repos: " + angular.toJson(data, true));
-                    $scope.builds = data;
-                }
-                $scope.fetched = true;
-                Core.$apply($scope);
-            }).error(function (data, status, headers, config) {
-                $scope.fetched = true;
-                Project.log.warn("Failed to load " + url + " " + data + " " + status);
-            });
-        }
-    }]);
-})(Project || (Project = {}));
 
 angular.module("hawtio-kubernetes-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/kubernetes/html/apps.html","<div ng-controller=\"Kubernetes.Apps\">\n  <script type=\"text/ng-template\" id=\"appIconTemplate.html\">\n    <div class=\"ngCellText\" title=\"{{row.entity.$info.description}}\">\n      <a ng-href=\"row.entity.$appUrl\">\n        <img ng-show=\"row.entity.$iconUrl\" class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n      </a>\n      <span class=\"app-name\">\n        <a ng-click=\"row.entity.$select()\">\n          {{row.entity.$info.name}}\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appServicesTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"service in row.entity.services\">\n          <a ng-href=\"{{service | kubernetesPageLink}}\">\n          <span>{{service.name || service.id}}</span>\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDeployedTemplate.html\">\n    <div class=\"ngCellText\" title=\"deployed at: {{row.entity.$creationDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n      {{row.entity.$creationDate.relative()}}\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appReplicationControllerTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"controller in row.entity.replicationControllers\">\n        <a ng-href=\"{{controller | kubernetesPageLink}}\">\n          <span>{{controller.id}}</span>\n        </a>\n        &nbsp;\n        <span class=\"btn btn-sm\" ng-click=\"resizeDialog.open(controller)\" title=\"Resize the number of replicas of this controller\">{{controller.replicas}}</span>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appPodCountsAndLinkTemplate.html\">\n    <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n      <div ng-repeat=\"podCounters in row.entity.$podCounters track by $index\">\n        <a ng-show=\"podCounters.podsLink\" href=\"{{podCounters.podsLink}}\" title=\"{{podCounters.labelText}}\">\n          <span ng-show=\"podCounters.valid\" class=\"badge badge-success\">{{podCounters.valid}}</span>\n          <span ng-show=\"podCounters.waiting\" class=\"badge\">{{podCounters.waiting}}</span>\n          <span ng-show=\"podCounters.error\" class=\"badge badge-warning\">{{podCounters.error}}</span>\n        </a>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDetailTemplate.html\">\n    <div class=\"service-view-rectangle\" ng-repeat=\"view in item.$serviceViews\">\n      <div class=\"service-view-header\">\n        <span class=\"service-view-icon\">\n          <img ng-show=\"item.$iconUrl\" ng-src=\"{{item.$iconUrl}}\">\n        </span>\n        <span class=\"service-view-name\" title=\"{{view.name}}\">{{view.appName}}</span>\n        <span class=\"service-view-address\" title=\"Go to the service detail page\"><a ng-href=\"{{view.service | kubernetesPageLink}}\">{{view.address}}</a></span>\n      </div>\n\n      <div class=\"service-view-detail-rectangle\">\n        <div class=\"service-view-detail-header\">\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-deployed\" ng-show=\"view.createdDate\"\n                 title=\"deployed at: {{view.createdDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n              deployed:\n              <span class=\"value\">{{view.createdDate.relative()}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-pod-template\" ng-show=\"view.controllerId\">\n              pod template:\n              <span class=\"value\" title=\"Go to the replication controller detail page\"><a ng-href=\"{{view.replicationController | kubernetesPageLink}}\">{{view.controllerId}}</a></span>\n            </div>\n          </div>\n          <div class=\"col-md-4 service-view-detail-pod-counts\">\n            <a ng-show=\"view.replicationController\" class=\"value pull-right\"\n               ng-click=\"resizeDialog.open(view.replicationController)\"\n               title=\"Resize the number of pods\">\n              {{view.podCountText}}\n            </a>\n            <span ng-hide=\"view.replicationController\" class=\"value pull-right\">\n              {{view.podCountText}}\n            </span>\n          </div>\n        </div>\n\n        <div class=\"service-view-detail-pod-box\" ng-repeat=\"pod in item.pods track by $index\">\n          <div ng-show=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary-expand\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td class=\"service-view-detail-pod-connect\" ng-show=\"pod.$jolokiaUrl\" ng-controller=\"Kubernetes.ConnectController\">\n                  <a class=\"clickable\"\n                     ng-click=\"doConnect(pod)\"\n                     title=\"Open a new window and connect to this container\">\n                    <i class=\"fa fa-sign-in\"></i>\n                  </a>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod <a title=\"Go to the pod detail page\" ng-href=\"{{pod | kubernetesPageLink}}\">{{pod.idAbbrev}}</a></span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.currentState.podIP}}</span>\n                  </div>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-ports\">\n                    ports: <span class=\"value\">{{pod.$containerPorts.join(\", \")}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-minion\">\n                    minion:\n                    <span class=\"value\">\n                      <a ng-show=\"pod.currentState.host\" ng-href=\"/kubernetes/hosts/{{pod.currentState.host}}\">{{pod.currentState.host}}</a>\n                    </span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"collapsePod(pod)\">\n                  <i class=\"fa fa-chevron-left\"></i>\n                </td>\n              </tr>\n            </table>\n            <!--\n                                      <div class=\"service-view-detail-pod-status\">\n                                        status:\n                                        <span class=\"value\">{{pod.status}}</span>\n                                      </div>\n            -->\n          </div>\n\n          <div ng-hide=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td class=\"service-view-detail-pod-connect\" ng-show=\"pod.$jolokiaUrl\" ng-controller=\"Kubernetes.ConnectController\">\n                  <a class=\"clickable\"\n                     ng-click=\"doConnect(pod)\"\n                     title=\"Open a new window and connect to this container\">\n                    <i class=\"fa fa-sign-in\"></i>\n                  </a>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod <a title=\"Go to the pod detail page\" ng-href=\"{{pod | kubernetesPageLink}}\">{{pod.idAbbrev}}</a></span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.currentState.podIP}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"expandPod(pod)\">\n                  <i class=\"fa fa-chevron-right\"></i>\n                </td>\n              </tr>\n            </table>\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n\n\n  <div ng-hide=\"appSelectorShow\">\n    <div class=\"row filter-header\">\n      <div class=\"col-md-12\">\n        <span ng-include=\"\'namespaceSelector.html\'\"></span>\n        <span ng-show=\"model.apps.length && !id\">\n          <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                         css-class=\"input-xxlarge\"\n                         placeholder=\"Filter apps...\"></hawtio-filter>\n        </span>\n        <button ng-show=\"model.apps.length\"\n                class=\"btn btn-danger pull-right\"\n                ng-disabled=\"!id && tableConfig.selectedItems.length == 0\"\n                ng-click=\"deletePrompt(id || tableConfig.selectedItems)\">\n          <i class=\"fa fa-remove\"></i> Delete\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"model.appFolders.length\"\n                class=\"btn btn-success pull-right\"\n                ng-click=\"appSelectorShow = true\"\n                title=\"Run an application\">\n          <i class=\"fa fa-play-circle\"></i> Run ...\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"id\"\n                class=\"btn btn-primary pull-right\"\n                ng-click=\"id = undefined\"><i class=\"fa fa-list\"></i></button>\n\n        <span class=\"pull-right\">&nbsp;</span>\n        <span ng-hide=\"id\" class=\"pull-right\">\n          <div class=\"btn-group\">\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'list\'\" href=\"\" ng-click=\"mode = \'list\'\">\n              <i class=\"fa fa-list\"></i></a>\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'detail\'\" href=\"\" ng-click=\"mode = \'detail\'\">\n              <i class=\"fa fa-table\"></i></a>\n          </div>\n        </span>\n      </div>\n    </div>\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div ng-hide=\"model.fetched\">\n          <div class=\"align-center\">\n            <i class=\"fa fa-spinner fa-spin\"></i>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && !id\">\n          <div ng-hide=\"model.apps.length\" class=\"align-center\">\n            <p class=\"alert alert-info\">There are no apps currently available.</p>\n          </div>\n          <div ng-show=\"model.apps.length\">\n            <div ng-show=\"mode == \'list\'\">\n              <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n            </div>\n            <div ng-show=\"mode == \'detail\'\">\n              <div class=\"app-detail\" ng-repeat=\"item in model.apps | filter:tableConfig.filterOptions.filterText\">\n                <ng-include src=\"\'appDetailTemplate.html\'\"/>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && id\">\n          <div class=\"app-detail\">\n            <ng-include src=\"\'appDetailTemplate.html\'\"/>\n          </div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n  <div ng-show=\"appSelectorShow\">\n    <div class=\"col-md-7\">\n      <div class=\"row\">\n        <hawtio-filter ng-model=\"appSelector.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter apps...\"></hawtio-filter>\n      </div>\n      <div class=\"row\">\n        <ul>\n          <li class=\"no-list profile-selector-folder\" ng-repeat=\"folder in model.appFolders\"\n              ng-show=\"appSelector.showFolder(folder)\">\n            <div class=\"expandable\" ng-class=\"appSelector.isOpen(folder)\">\n              <div title=\"{{folder.path}}\" class=\"title\">\n                <i class=\"expandable-indicator folder\"></i> <span class=\"folder-title\" ng-show=\"folder.path\">{{folder.path.capitalize(true)}}</span><span\n                      class=\"folder-title\" ng-hide=\"folder.path\">Uncategorized</span>\n              </div>\n              <div class=\"expandable-body\">\n                <ul>\n                  <li class=\"no-list profile\" ng-repeat=\"profile in folder.apps\" ng-show=\"appSelector.showApp(profile)\">\n                    <div class=\"profile-selector-item\">\n                      <div class=\"inline-block profile-selector-checkbox\">\n                        <input type=\"checkbox\" ng-model=\"profile.selected\"\n                               ng-change=\"appSelector.updateSelected()\">\n                      </div>\n                      <div class=\"inline-block profile-selector-name\" ng-class=\"appSelector.getSelectedClass(profile)\">\n                        <span class=\"contained c-max\">\n                          <a href=\"\" ng-click=\"appSelector.select(profile, !profile.selected)\"\n                             title=\"Details for {{profile.id}}\">\n                              <img ng-show=\"profile.$iconUrl\" class=\"icon-small-app\" ng-src=\"{{profile.$iconUrl}}\">\n                              <span class=\"app-name\">{{profile.name}}</span>\n                          </a>\n                        </span>\n                      </div>\n                    </div>\n\n                  </li>\n                </ul>\n              </div>\n            </div>\n          </li>\n        </ul>\n      </div>\n    </div>\n    <div class=\"col-md-5\">\n      <div class=\"row\">\n        <button class=\"btn btn-primary pull-right\"\n                ng-click=\"appSelectorShow = undefined\"><i class=\"fa fa-circle-arrow-left\"></i> Back\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                title=\"Clears the selected Apps\"\n                ng-click=\"appSelector.clearSelected()\"><i class=\"fa fa-check-empty\"></i> Clear\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn btn-success pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                ng-click=\"appSelector.runSelectedApps()\"\n                title=\"Run the selected apps\">\n          <i class=\"fa fa-play-circle\"></i>\n          <ng-pluralize count=\"appSelector.selectedApps.length\"\n                        when=\"{\'0\': \'No App Selected\',\n                                       \'1\': \'Run App\',\n                                       \'other\': \'Run {} Apps\'}\"></ng-pluralize>\n\n        </button>\n      </div>\n      <div class=\"row\">\n<!--\n        <div ng-hide=\"appSelector.selectedApps.length\">\n          <p class=\"alert pull-right\">\n            Please select an App\n          </p>\n        </div>\n-->\n\n        <div ng-show=\"appSelector.selectedApps.length\">\n\n          <ul class=\"zebra-list pull-right\">\n            <li ng-repeat=\"app in appSelector.selectedApps\">\n              <img ng-show=\"app.$iconUrl\" class=\"icon-selected-app\" ng-src=\"{{app.$iconUrl}}\">\n              <strong class=\"green selected-app-name\">{{app.name}}</strong>\n              &nbsp;\n              <i class=\"red clickable fa fa-remove\"\n                 title=\"Remove appp\"\n                 ng-click=\"appSelector.select(app, false)\"></i>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  </div>\n  <ng-include src=\"\'resizeDialog.html\'\"/>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/build.html","<div ng-controller=\"Kubernetes.BuildController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/builds\"><i class=\"fa fa-list\"></i></a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\" ng-show=\"entity.$configLink\"\n              title=\"View the build configuration\"\n              href=\"{{entity.$configLink}}\">\n        Configuration\n      </a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-primary pull-right\" ng-show=\"entity.$logsLink\"\n              title=\"View the build logs\"\n              href=\"{{entity.$logsLink}}\">\n        View Log\n      </a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-object=\"entity\" config=\"config\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");

@@ -569,6 +569,8 @@ module Kubernetes {
         return 'fa fa-download';
       } else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
         return 'fa fa-off orange';
+      } else if (lower.startsWith("succeeded")) {
+        return 'fa fa-check-circle-o green';
       }
     }
     return 'fa fa-question red';
