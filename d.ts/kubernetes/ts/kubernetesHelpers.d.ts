@@ -94,7 +94,7 @@ declare module Kubernetes {
      * Returns a link to the kibana logs web application
      */
     function kibanaLogsLink(ServiceRegistry: any): string;
-    function openLogsForPods(ServiceRegistry: any, $window: any, pods: any): void;
+    function openLogsForPods(ServiceRegistry: any, $window: any, namespace: any, pods: any): void;
     function resizeController($http: any, KubernetesApiURL: any, replicationController: any, newReplicas: any, onCompleteFn?: any): void;
     function statusTextToCssClass(text: any): string;
     function podStatus(pod: any): any;

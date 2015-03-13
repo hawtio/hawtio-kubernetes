@@ -488,22 +488,7 @@ module Kubernetes {
     }
   }
 
-  export function openLogsForPods(ServiceRegistry, $window, pods) {
-    function encodePodIdInSearch(id) {
-      // TODO until we figure out the best encoding lets just split at the "-"
-      if (id) {
-        var idx = id.indexOf("-");
-        if (idx > 0) {
-          id = id.substring(0, idx);
-        }
-      }
-      //var quoteText = "%27";
-      var quoteText = "";
-      return quoteText + id + quoteText;
-    }
-
-
-
+  export function openLogsForPods(ServiceRegistry, $window, namespace, pods) {
     var link = kibanaLogsLink(ServiceRegistry);
     if (link) {
       var query = "";
@@ -511,18 +496,19 @@ module Kubernetes {
       angular.forEach(pods, (item) => {
         var id = item.id;
         if (id) {
-          var space = query ? " || " : "";
+          var space = query ? " OR " : "";
           count++;
-          query += space + encodePodIdInSearch(id);
+          query += space + '"' + id + '"';
         }
       });
       if (query) {
         if (count > 1) {
           query = "(" + query + ")";
         }
-        link += "?_a=(query:'k8s_pod:" + query + "')";
+        query = 'pod_namespace:"' + namespace + '" AND pod:' + query;
+        link += "?_a=(query:'" + query + "')";
+        var newWindow = $window.open(link, "viewLogs");
       }
-      var newWindow = $window.open(link, "viewLogs");
     }
   }
 
