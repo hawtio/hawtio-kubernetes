@@ -4,70 +4,60 @@
     </div>
   </script>
   <div class="row">
-    <div class="col-md-12"">
+    <div class="col-md-12"
+    ">
       <span ng-show="pipelines.length">
         <hawtio-filter ng-model="filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter builds..."></hawtio-filter>
       </span>
-      <a class="btn btn-default pull-right"
-         title="Create a new project"
-         ng-show="forgeEnabled"
-         href="/forge/command/project-new"><i class="fa fa-plus"></i> Create Project</a>
-    </div>
+    <a class="btn btn-default pull-right"
+       title="Create a new project"
+       ng-show="forgeEnabled"
+       href="/forge/command/project-new"><i class="fa fa-plus"></i> Create Project</a>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div ng-hide="fetched">
-        <div class="align">
-          <i class="fa fa-spinner fa-spin"></i>
-        </div>
-      </div>
-      <div ng-show="fetched">
-        <div ng-hide="pipelines.length" class="align-center">
-          <p class="alert alert-info">There are no build pipelines available.</p>
-          <a class="btn btn-primary" href="/kubernetes/buildConfig">Create Build Configuration</a>
-        </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div ng-hide="fetched">
+      <div class="align">
+        <i class="fa fa-spinner fa-spin"></i>
       </div>
     </div>
+    <div ng-show="fetched">
+      <div ng-hide="pipelines.length" class="align-center">
+        <p class="alert alert-info">There are no build pipelines available.</p>
+        <a class="btn btn-primary" href="/kubernetes/buildConfig">Create Build Configuration</a>
+      </div>
+    </div>
   </div>
-  <div ng-show="fetched && pipelines.length">
-    <div ng-repeat="pipeline in pipelines | filter:filterText">
-      <div class="row">
-        <div class="col-md-12">
+</div>
+<div ng-show="fetched && pipelines.length">
+  <div ng-repeat="pipeline in pipelines | filter:filterText">
+    <div class="row">
 
-          <div id="container"
-               style="
-            background: lightgrey;
-            border-radius: 4px;"
-               min-margin="5">
-            <div class="ex-children {{step.$class}}"
-                 style="display: inline-block;
-              border-radius: 4px;
-              text-align: center;
-              vertical-align: middle;
-              height: 80px;
-              border: 20px;
-              margin: 5px;"
-                 ng-repeat="step in pipeline.triggersSteps">
+      <div class="pipeline-row">
+        <div class="ex-children {{step.$class}}"
+             ng-repeat="step in pipeline.triggersSteps">
               <span ng-switch="step.buildConfig.kind">
-                <span ng-switch-default="">
-                  <div class="pipeline-build-details">
+                <div ng-switch-default="" class="col-md-2 pipeline-build">
+                  <span class="pipeline-build-details">
                     <a title="View details for this build configuration"
                        href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
                       <i class="fa fa-cog"></i>
                       {{step.buildConfig.metadata.name}}
                     </a>
-                  </div>
-                  <div class="pipeline-last-build" ng-show="step.buildConfig.$lastBuild">
+                  </span>
+                  <span class="pipeline-last-build" ng-show="step.buildConfig.$lastBuild">
                     <a href="{{step.buildConfig.$lastBuild.$viewLink}}" title="view this build">
                       <i class="fa fa-info"></i>
                       build
                     </a>
-                  </div>
-                    <div class="ngCellText" class="pipeline-last-build-time"
-                         title="last build was at: {{step.buildConfig.$lastBuild.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
-                      <div ng-switch="step.buildConfig.$lastBuild.status">
+                  </span>
+
+                  <div class="ngCellText" class="pipeline-last-build-time"
+                       title="last build was at: {{step.buildConfig.$lastBuild.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
+                    <div ng-switch="step.buildConfig.$lastBuild.status">
                         <span ng-switch-when="New" class="text-primary">
                           <i class="fa fa-spin fa-spinner"></i> new: {{step.buildConfig.$lastBuild.$creationDate.relative()}}
                         </span>
@@ -86,40 +76,48 @@
                         <span ng-switch-default class="text-warning">
                           <i class="fa fa-exclamation-triangle"></i> {{step.buildConfig.$lastBuild.status}}: {{step.buildConfig.$lastBuild.$creationDate.relative()}}
                         </span>
-                      </div>
                     </div>
+                  </div>
                   <div class="pipeline-last-build-logs">
                     <a href="{{step.buildConfig.$lastBuild.$logsLink}}" title="view the logs of this build">
                       <i class="fa fa-file-text-o"></i>
                       logs
                     </a>
                   </div>
-                </span>
-                <span ng-switch-when="DeploymentConfig">
-                  <div class="pipeline-build-details">
-                    <a title="View details for this deployment configuration"
-                       href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
-                      <i class="fa fa-cogs"></i>
-                      {{step.buildConfig.metadata.name}}
-                    </a>
+                </div>
+                <div ng-switch-when="DeploymentConfig">
+                  <div class="col-md-1">
+                    <div class="pipeline-arrow">
+                      <i class="fa fa-long-arrow-right"></i>
+                    </div>
                   </div>
-                  <div class="pipline-deploy-pods">
-                  <span class="pipeline-pod-counts" ng-show="step.$podCounters">pods:
-                    <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}"
-                       title="View pods for this deployment">
-                      <span class="badge badge-success">{{step.$podCounters.valid}}</span>
-                      <span ng-show="step.$podCounters.waiting" class="badge">{{step.$podCounters.waiting}}</span>
-                      <span ng-show="step.$podCounters.error"
-                            class="badge badge-warning">{{step.$podCounters.error}}</span>
-                    </a>
-                  </span>
+
+                  <div class="col-md-2 pipeline-deploy">
+                    <div class="pipeline-build-details">
+                      <a title="View details for this deployment configuration"
+                         href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
+                        <i class="fa fa-cogs"></i>
+                        {{step.buildConfig.metadata.name}}
+                      </a>
+                    </div>
+                    <div class="pipeline-deploy-pods">
+                      <span class="pipeline-pod-counts" ng-show="step.$podCounters">pods:
+                        <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}"
+                           title="View pods for this deployment">
+                          <span class="badge badge-success">{{step.$podCounters.valid}}</span>
+                          <span ng-show="step.$podCounters.waiting" class="badge">{{step.$podCounters.waiting}}</span>
+                          <span ng-show="step.$podCounters.error"
+                                class="badge badge-warning">{{step.$podCounters.error}}</span>
+                        </a>
+                      </span>
+                    </div>
                   </div>
-                </span>
+                </div>
               </span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+</div>
 </div>

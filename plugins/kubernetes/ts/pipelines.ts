@@ -38,7 +38,8 @@ module Kubernetes {
             if (pipelineKey) {
               var pipeline = pipelineSteps[pipelineKey];
               if (!pipeline) {
-                console.log("warning no pipeline generated for buildConfig for key " + pipelineKey + " for build " + angular.toJson(build, true));
+                //console.log("warning no pipeline generated for buildConfig for key " + pipelineKey + " for build " + angular.toJson(build, true));
+                console.log("warning no pipeline generated for buildConfig for key " + pipelineKey + " for build " + build.$name);
               } else {
                 pipeline.builds.push(build);
               }

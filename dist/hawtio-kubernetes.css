@@ -320,3 +320,15 @@ img.icon-selected-app {
     padding-right: 16px;
     padding-top: 8px;
 }
+
+.pipeline-row {
+    background: lightgrey;
+    border-radius: 4px;
+    height: 80px;
+    display: inline;
+    border-radius: 4px;
+    text-align: center;
+    vertical-align: middle;
+    border: 20px;
+    margin: 5px;
+}
