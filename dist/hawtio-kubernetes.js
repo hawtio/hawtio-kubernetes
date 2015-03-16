@@ -875,107 +875,6 @@ var Kubernetes;
 })(Kubernetes || (Kubernetes = {}));
 
 /// <reference path="../../includes.ts"/>
-/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
-var Project;
-(function (Project) {
-    Project.context = '/project';
-    Project.hash = '#' + Project.context;
-    Project.pluginName = 'Project';
-    Project.log = Logger.get(Project.pluginName);
-    Project.pluginPath = 'plugins/project/';
-    Project.templatePath = Project.pluginPath + 'html/';
-    Project.gogsRestURL = "/kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/gogs-http-service/api/v1";
-    Project.gogsUserRepoRestURL = Project.gogsRestURL + "/user/repos";
-})(Project || (Project = {}));
-
-/// <reference path="../../includes.ts"/>
-/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
-/// <reference path="projectHelpers.ts"/>
-var Project;
-(function (Project) {
-    Project._module = angular.module(Project.pluginName, [Kubernetes.pluginName]);
-    Project.controller = PluginHelpers.createControllerFunction(Project._module, Project.pluginName);
-    Project.route = PluginHelpers.createRoutingFunction(Project.templatePath);
-    Project._module.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when(UrlHelpers.join(Project.context, '/create'), Project.route('projectCreate.html', false));
-    }]);
-    Project._module.factory('ForgeApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
-        return "kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/fabric8-forge/api/forge";
-    }]);
-    hawtioPluginLoader.addModule(Project.pluginName);
-})(Project || (Project = {}));
-
-/// <reference path="../../includes.ts"/>
-/// <reference path="projectHelpers.ts"/>
-/// <reference path="projectPlugin.ts"/>
-var Project;
-(function (Project) {
-    Project.ProjectController = Project.controller("ProjectController", ["$scope", "KubernetesModel", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", function ($scope, KubernetesModel, $templateCache, $location, $routeParams, $http, $timeout, KubernetesApiURL) {
-        $scope.model = KubernetesModel;
-        $scope.entity = {
-            name: ""
-        };
-        $scope.$on('$routeUpdate', function ($event) {
-            updateData();
-        });
-        // TODO add actual login/pwd or OAuth
-        var authorizationHeader = "Basic TODO";
-        // TODO take this from the service host!
-        $scope.create = function () {
-            var url = Project.gogsUserRepoRestURL;
-            console.log("Creating project " + angular.toJson($scope.entity, true));
-            console.log("Posting to url: " + url);
-            var data = $scope.entity;
-            var config = {
-                headers: {
-                    'withCredentials': true,
-                    'Authorization': authorizationHeader,
-                    'Content-Type': "application/json"
-                }
-            };
-            $http.post(url, data, config).success(function (data, status, headers, config) {
-                console.log("project created! got data " + angular.toJson(data, true));
-                createProject(data);
-            }).error(function (data, status, headers, config) {
-                Project.log.warn("Failed to load " + url + " " + data + " " + status);
-                Core.notification('error', "Failed to create git repository " + name + ". Returned code: " + status + " " + data);
-            });
-        };
-        updateData();
-        function createProject(data) {
-            var full_name = data.full_name;
-            if (full_name) {
-                var gitUrl = Core.url(Project.gogsRestURL + "/" + full_name + ".git");
-                console.log("Creating a git repo for " + full_name + " at : " + gitUrl);
-            }
-            // TODO lets forward to the create project wizard...
-        }
-        function updateData() {
-            $scope.builds = [];
-            var url = Project.gogsUserRepoRestURL;
-            var config = {
-                headers: {
-                    'withCredentials': true,
-                    'Authorization': authorizationHeader
-                }
-            };
-            delete $http.defaults.headers.common["Accept"];
-            $http.get(url, config).success(function (data, status, headers, config) {
-                if (data) {
-                    console.log("got repos: " + angular.toJson(data, true));
-                    $scope.builds = data;
-                }
-                $scope.fetched = true;
-                Core.$apply($scope);
-            }).error(function (data, status, headers, config) {
-                $scope.fetched = true;
-                Project.log.warn("Failed to load " + url + " " + data + " " + status);
-            });
-        }
-    }]);
-})(Project || (Project = {}));
-
-/// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
 var Kubernetes;
 (function (Kubernetes) {
@@ -3160,35 +3059,6 @@ var Kubernetes;
         $scope.model = KubernetesModel;
         $scope.KubernetesBuilds = KubernetesBuilds;
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-        function reloadData() {
-            var url = Kubernetes.buildsRestURL;
-            $http.get(url).success(function (data, status, headers, config) {
-                if (data) {
-                    $scope.builds = Kubernetes.enrichBuilds(data.items);
-                    updateData();
-                }
-            }).error(function (data, status, headers, config) {
-                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
-            });
-            url = Kubernetes.buildConfigsRestURL;
-            $http.get(url).success(function (data, status, headers, config) {
-                if (data) {
-                    $scope.buildConfigs = data.items;
-                    updateData();
-                }
-            }).error(function (data, status, headers, config) {
-                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
-            });
-            url = Kubernetes.deploymentConfigsRestURL;
-            $http.get(url).success(function (data, status, headers, config) {
-                if (data) {
-                    $scope.deploymentConfigs = data.items;
-                    updateData();
-                }
-            }).error(function (data, status, headers, config) {
-                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
-            });
-        }
         /**
          * Lets update the various data to join them together to a pipeline model
          */
@@ -3350,7 +3220,50 @@ var Kubernetes;
         function createPipelineKey(buildConfig) {
             return Core.pathGet(buildConfig, ["parameters", "source", "git", "uri"]);
         }
-        reloadData();
+        $scope.$keepPolling = function () { return Kubernetes.keepPollingModel; };
+        $scope.fetch = PollHelpers.setupPolling($scope, function (next) {
+            var ready = 0;
+            var numServices = 3;
+            function maybeNext() {
+                if (++ready >= numServices) {
+                    next();
+                }
+            }
+            var url = Kubernetes.buildsRestURL;
+            $http.get(url).success(function (data, status, headers, config) {
+                if (data) {
+                    $scope.builds = Kubernetes.enrichBuilds(data.items);
+                    updateData();
+                }
+                maybeNext();
+            }).error(function (data, status, headers, config) {
+                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
+                maybeNext();
+            });
+            url = Kubernetes.buildConfigsRestURL;
+            $http.get(url).success(function (data, status, headers, config) {
+                if (data) {
+                    $scope.buildConfigs = data.items;
+                    updateData();
+                }
+                maybeNext();
+            }).error(function (data, status, headers, config) {
+                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
+                maybeNext();
+            });
+            url = Kubernetes.deploymentConfigsRestURL;
+            $http.get(url).success(function (data, status, headers, config) {
+                if (data) {
+                    $scope.deploymentConfigs = data.items;
+                    updateData();
+                }
+                maybeNext();
+            }).error(function (data, status, headers, config) {
+                Kubernetes.log.warn("Failed to load " + url + " " + data + " " + status);
+                maybeNext();
+            });
+        });
+        $scope.fetch();
     }]);
 })(Kubernetes || (Kubernetes = {}));
 
@@ -7129,6 +7042,107 @@ var Kubernetes;
     }]);
 })(Kubernetes || (Kubernetes = {}));
 
+/// <reference path="../../includes.ts"/>
+/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
+var Project;
+(function (Project) {
+    Project.context = '/project';
+    Project.hash = '#' + Project.context;
+    Project.pluginName = 'Project';
+    Project.log = Logger.get(Project.pluginName);
+    Project.pluginPath = 'plugins/project/';
+    Project.templatePath = Project.pluginPath + 'html/';
+    Project.gogsRestURL = "/kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/gogs-http-service/api/v1";
+    Project.gogsUserRepoRestURL = Project.gogsRestURL + "/user/repos";
+})(Project || (Project = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
+/// <reference path="projectHelpers.ts"/>
+var Project;
+(function (Project) {
+    Project._module = angular.module(Project.pluginName, [Kubernetes.pluginName]);
+    Project.controller = PluginHelpers.createControllerFunction(Project._module, Project.pluginName);
+    Project.route = PluginHelpers.createRoutingFunction(Project.templatePath);
+    Project._module.config(['$routeProvider', function ($routeProvider) {
+        $routeProvider.when(UrlHelpers.join(Project.context, '/create'), Project.route('projectCreate.html', false));
+    }]);
+    Project._module.factory('ForgeApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
+        return "kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/fabric8-forge/api/forge";
+    }]);
+    hawtioPluginLoader.addModule(Project.pluginName);
+})(Project || (Project = {}));
+
+/// <reference path="../../includes.ts"/>
+/// <reference path="projectHelpers.ts"/>
+/// <reference path="projectPlugin.ts"/>
+var Project;
+(function (Project) {
+    Project.ProjectController = Project.controller("ProjectController", ["$scope", "KubernetesModel", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", function ($scope, KubernetesModel, $templateCache, $location, $routeParams, $http, $timeout, KubernetesApiURL) {
+        $scope.model = KubernetesModel;
+        $scope.entity = {
+            name: ""
+        };
+        $scope.$on('$routeUpdate', function ($event) {
+            updateData();
+        });
+        // TODO add actual login/pwd or OAuth
+        var authorizationHeader = "Basic TODO";
+        // TODO take this from the service host!
+        $scope.create = function () {
+            var url = Project.gogsUserRepoRestURL;
+            console.log("Creating project " + angular.toJson($scope.entity, true));
+            console.log("Posting to url: " + url);
+            var data = $scope.entity;
+            var config = {
+                headers: {
+                    'withCredentials': true,
+                    'Authorization': authorizationHeader,
+                    'Content-Type': "application/json"
+                }
+            };
+            $http.post(url, data, config).success(function (data, status, headers, config) {
+                console.log("project created! got data " + angular.toJson(data, true));
+                createProject(data);
+            }).error(function (data, status, headers, config) {
+                Project.log.warn("Failed to load " + url + " " + data + " " + status);
+                Core.notification('error', "Failed to create git repository " + name + ". Returned code: " + status + " " + data);
+            });
+        };
+        updateData();
+        function createProject(data) {
+            var full_name = data.full_name;
+            if (full_name) {
+                var gitUrl = Core.url(Project.gogsRestURL + "/" + full_name + ".git");
+                console.log("Creating a git repo for " + full_name + " at : " + gitUrl);
+            }
+            // TODO lets forward to the create project wizard...
+        }
+        function updateData() {
+            $scope.builds = [];
+            var url = Project.gogsUserRepoRestURL;
+            var config = {
+                headers: {
+                    'withCredentials': true,
+                    'Authorization': authorizationHeader
+                }
+            };
+            delete $http.defaults.headers.common["Accept"];
+            $http.get(url, config).success(function (data, status, headers, config) {
+                if (data) {
+                    console.log("got repos: " + angular.toJson(data, true));
+                    $scope.builds = data;
+                }
+                $scope.fetched = true;
+                Core.$apply($scope);
+            }).error(function (data, status, headers, config) {
+                $scope.fetched = true;
+                Project.log.warn("Failed to load " + url + " " + data + " " + status);
+            });
+        }
+    }]);
+})(Project || (Project = {}));
+
 angular.module("hawtio-kubernetes-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/kubernetes/html/apps.html","<div ng-controller=\"Kubernetes.Apps\">\n  <script type=\"text/ng-template\" id=\"appIconTemplate.html\">\n    <div class=\"ngCellText\" title=\"{{row.entity.$info.description}}\">\n      <a ng-href=\"row.entity.$appUrl\">\n        <img ng-show=\"row.entity.$iconUrl\" class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n      </a>\n      <span class=\"app-name\">\n        <a ng-click=\"row.entity.$select()\">\n          {{row.entity.$info.name}}\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appServicesTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"service in row.entity.services\">\n          <a ng-href=\"{{service | kubernetesPageLink}}\">\n          <span>{{service.name || service.id}}</span>\n        </a>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDeployedTemplate.html\">\n    <div class=\"ngCellText\" title=\"deployed at: {{row.entity.$creationDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n      {{row.entity.$creationDate.relative()}}\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appReplicationControllerTemplate.html\">\n    <div class=\"ngCellText\">\n      <span ng-repeat=\"controller in row.entity.replicationControllers\">\n        <a ng-href=\"{{controller | kubernetesPageLink}}\">\n          <span>{{controller.id}}</span>\n        </a>\n        &nbsp;\n        <span class=\"btn btn-sm\" ng-click=\"resizeDialog.open(controller)\" title=\"Resize the number of replicas of this controller\">{{controller.replicas}}</span>\n      </span>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appPodCountsAndLinkTemplate.html\">\n    <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n      <div ng-repeat=\"podCounters in row.entity.$podCounters track by $index\">\n        <a ng-show=\"podCounters.podsLink\" href=\"{{podCounters.podsLink}}\" title=\"{{podCounters.labelText}}\">\n          <span ng-show=\"podCounters.valid\" class=\"badge badge-success\">{{podCounters.valid}}</span>\n          <span ng-show=\"podCounters.waiting\" class=\"badge\">{{podCounters.waiting}}</span>\n          <span ng-show=\"podCounters.error\" class=\"badge badge-warning\">{{podCounters.error}}</span>\n        </a>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"appDetailTemplate.html\">\n    <div class=\"service-view-rectangle\" ng-repeat=\"view in item.$serviceViews\">\n      <div class=\"service-view-header\">\n        <span class=\"service-view-icon\">\n          <img ng-show=\"item.$iconUrl\" ng-src=\"{{item.$iconUrl}}\">\n        </span>\n        <span class=\"service-view-name\" title=\"{{view.name}}\">{{view.appName}}</span>\n        <span class=\"service-view-address\" title=\"Go to the service detail page\"><a ng-href=\"{{view.service | kubernetesPageLink}}\">{{view.address}}</a></span>\n      </div>\n\n      <div class=\"service-view-detail-rectangle\">\n        <div class=\"service-view-detail-header\">\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-deployed\" ng-show=\"view.createdDate\"\n                 title=\"deployed at: {{view.createdDate | date:\'yyyy-MMM-dd HH:mm:ss Z\'}}\">\n              deployed:\n              <span class=\"value\">{{view.createdDate.relative()}}</span>\n            </div>\n          </div>\n          <div class=\"col-md-4\">\n            <div class=\"service-view-detail-pod-template\" ng-show=\"view.controllerId\">\n              pod template:\n              <span class=\"value\" title=\"Go to the replication controller detail page\"><a ng-href=\"{{view.replicationController | kubernetesPageLink}}\">{{view.controllerId}}</a></span>\n            </div>\n          </div>\n          <div class=\"col-md-4 service-view-detail-pod-counts\">\n            <a ng-show=\"view.replicationController\" class=\"value pull-right\"\n               ng-click=\"resizeDialog.open(view.replicationController)\"\n               title=\"Resize the number of pods\">\n              {{view.podCountText}}\n            </a>\n            <span ng-hide=\"view.replicationController\" class=\"value pull-right\">\n              {{view.podCountText}}\n            </span>\n          </div>\n        </div>\n\n        <div class=\"service-view-detail-pod-box\" ng-repeat=\"pod in item.pods track by $index\">\n          <div ng-show=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary-expand\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td class=\"service-view-detail-pod-connect\" ng-show=\"pod.$jolokiaUrl\" ng-controller=\"Kubernetes.ConnectController\">\n                  <a class=\"clickable\"\n                     ng-click=\"doConnect(pod)\"\n                     title=\"Open a new window and connect to this container\">\n                    <i class=\"fa fa-sign-in\"></i>\n                  </a>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod <a title=\"Go to the pod detail page\" ng-href=\"{{pod | kubernetesPageLink}}\">{{pod.idAbbrev}}</a></span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.currentState.podIP}}</span>\n                  </div>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-ports\">\n                    ports: <span class=\"value\">{{pod.$containerPorts.join(\", \")}}</span>\n                  </div>\n                  <div class=\"service-view-detail-pod-minion\">\n                    minion:\n                    <span class=\"value\">\n                      <a ng-show=\"pod.currentState.host\" ng-href=\"/kubernetes/hosts/{{pod.currentState.host}}\">{{pod.currentState.host}}</a>\n                    </span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"collapsePod(pod)\">\n                  <i class=\"fa fa-chevron-left\"></i>\n                </td>\n              </tr>\n            </table>\n            <!--\n                                      <div class=\"service-view-detail-pod-status\">\n                                        status:\n                                        <span class=\"value\">{{pod.status}}</span>\n                                      </div>\n            -->\n          </div>\n\n          <div ng-hide=\"podExpanded(pod)\" class=\"service-view-detail-pod-summary\">\n            <table>\n              <tr>\n                <td class=\"service-view-detail-pod-status\">\n                  <i ng-class=\"pod.statusClass\"></i>\n                </td>\n                <td class=\"service-view-detail-pod-connect\" ng-show=\"pod.$jolokiaUrl\" ng-controller=\"Kubernetes.ConnectController\">\n                  <a class=\"clickable\"\n                     ng-click=\"doConnect(pod)\"\n                     title=\"Open a new window and connect to this container\">\n                    <i class=\"fa fa-sign-in\"></i>\n                  </a>\n                </td>\n                <td>\n                  <div class=\"service-view-detail-pod-id\" title=\"{{pod.id}}\">\n                    <span class=\"value\">Pod <a title=\"Go to the pod detail page\" ng-href=\"{{pod | kubernetesPageLink}}\">{{pod.idAbbrev}}</a></span>\n                  </div>\n                  <div class=\"service-view-detail-pod-ip\">\n                    IP:\n                    <span class=\"value\">{{pod.currentState.podIP}}</span>\n                  </div>\n                </td>\n                <td class=\"service-view-detail-pod-expand\" ng-click=\"expandPod(pod)\">\n                  <i class=\"fa fa-chevron-right\"></i>\n                </td>\n              </tr>\n            </table>\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n\n\n  <div ng-hide=\"appSelectorShow\">\n    <div class=\"row filter-header\">\n      <div class=\"col-md-12\">\n        <span ng-include=\"\'namespaceSelector.html\'\"></span>\n        <span ng-show=\"model.apps.length && !id\">\n          <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                         css-class=\"input-xxlarge\"\n                         placeholder=\"Filter apps...\"></hawtio-filter>\n        </span>\n        <button ng-show=\"model.apps.length\"\n                class=\"btn btn-danger pull-right\"\n                ng-disabled=\"!id && tableConfig.selectedItems.length == 0\"\n                ng-click=\"deletePrompt(id || tableConfig.selectedItems)\">\n          <i class=\"fa fa-remove\"></i> Delete\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"model.appFolders.length\"\n                class=\"btn btn-success pull-right\"\n                ng-click=\"appSelectorShow = true\"\n                title=\"Run an application\">\n          <i class=\"fa fa-play-circle\"></i> Run ...\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button ng-show=\"id\"\n                class=\"btn btn-primary pull-right\"\n                ng-click=\"id = undefined\"><i class=\"fa fa-list\"></i></button>\n\n        <span class=\"pull-right\">&nbsp;</span>\n        <span ng-hide=\"id\" class=\"pull-right\">\n          <div class=\"btn-group\">\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'list\'\" href=\"\" ng-click=\"mode = \'list\'\">\n              <i class=\"fa fa-list\"></i></a>\n            <a class=\"btn btn-sm\" ng-disabled=\"mode == \'detail\'\" href=\"\" ng-click=\"mode = \'detail\'\">\n              <i class=\"fa fa-table\"></i></a>\n          </div>\n        </span>\n      </div>\n    </div>\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div ng-hide=\"model.fetched\">\n          <div class=\"align-center\">\n            <i class=\"fa fa-spinner fa-spin\"></i>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && !id\">\n          <div ng-hide=\"model.apps.length\" class=\"align-center\">\n            <p class=\"alert alert-info\">There are no apps currently available.</p>\n          </div>\n          <div ng-show=\"model.apps.length\">\n            <div ng-show=\"mode == \'list\'\">\n              <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n            </div>\n            <div ng-show=\"mode == \'detail\'\">\n              <div class=\"app-detail\" ng-repeat=\"item in model.apps | filter:tableConfig.filterOptions.filterText\">\n                <ng-include src=\"\'appDetailTemplate.html\'\"/>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div ng-show=\"model.fetched && id\">\n          <div class=\"app-detail\">\n            <ng-include src=\"\'appDetailTemplate.html\'\"/>\n          </div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n  <div ng-show=\"appSelectorShow\">\n    <div class=\"col-md-7\">\n      <div class=\"row\">\n        <hawtio-filter ng-model=\"appSelector.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter apps...\"></hawtio-filter>\n      </div>\n      <div class=\"row\">\n        <ul>\n          <li class=\"no-list profile-selector-folder\" ng-repeat=\"folder in model.appFolders\"\n              ng-show=\"appSelector.showFolder(folder)\">\n            <div class=\"expandable\" ng-class=\"appSelector.isOpen(folder)\">\n              <div title=\"{{folder.path}}\" class=\"title\">\n                <i class=\"expandable-indicator folder\"></i> <span class=\"folder-title\" ng-show=\"folder.path\">{{folder.path.capitalize(true)}}</span><span\n                      class=\"folder-title\" ng-hide=\"folder.path\">Uncategorized</span>\n              </div>\n              <div class=\"expandable-body\">\n                <ul>\n                  <li class=\"no-list profile\" ng-repeat=\"profile in folder.apps\" ng-show=\"appSelector.showApp(profile)\">\n                    <div class=\"profile-selector-item\">\n                      <div class=\"inline-block profile-selector-checkbox\">\n                        <input type=\"checkbox\" ng-model=\"profile.selected\"\n                               ng-change=\"appSelector.updateSelected()\">\n                      </div>\n                      <div class=\"inline-block profile-selector-name\" ng-class=\"appSelector.getSelectedClass(profile)\">\n                        <span class=\"contained c-max\">\n                          <a href=\"\" ng-click=\"appSelector.select(profile, !profile.selected)\"\n                             title=\"Details for {{profile.id}}\">\n                              <img ng-show=\"profile.$iconUrl\" class=\"icon-small-app\" ng-src=\"{{profile.$iconUrl}}\">\n                              <span class=\"app-name\">{{profile.name}}</span>\n                          </a>\n                        </span>\n                      </div>\n                    </div>\n\n                  </li>\n                </ul>\n              </div>\n            </div>\n          </li>\n        </ul>\n      </div>\n    </div>\n    <div class=\"col-md-5\">\n      <div class=\"row\">\n        <button class=\"btn btn-primary pull-right\"\n                ng-click=\"appSelectorShow = undefined\"><i class=\"fa fa-circle-arrow-left\"></i> Back\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                title=\"Clears the selected Apps\"\n                ng-click=\"appSelector.clearSelected()\"><i class=\"fa fa-check-empty\"></i> Clear\n        </button>\n        <span class=\"pull-right\">&nbsp;</span>\n        <button class=\"btn btn-success pull-right\"\n                ng-disabled=\"!appSelector.selectedApps.length\"\n                ng-click=\"appSelector.runSelectedApps()\"\n                title=\"Run the selected apps\">\n          <i class=\"fa fa-play-circle\"></i>\n          <ng-pluralize count=\"appSelector.selectedApps.length\"\n                        when=\"{\'0\': \'No App Selected\',\n                                       \'1\': \'Run App\',\n                                       \'other\': \'Run {} Apps\'}\"></ng-pluralize>\n\n        </button>\n      </div>\n      <div class=\"row\">\n<!--\n        <div ng-hide=\"appSelector.selectedApps.length\">\n          <p class=\"alert pull-right\">\n            Please select an App\n          </p>\n        </div>\n-->\n\n        <div ng-show=\"appSelector.selectedApps.length\">\n\n          <ul class=\"zebra-list pull-right\">\n            <li ng-repeat=\"app in appSelector.selectedApps\">\n              <img ng-show=\"app.$iconUrl\" class=\"icon-selected-app\" ng-src=\"{{app.$iconUrl}}\">\n              <strong class=\"green selected-app-name\">{{app.name}}</strong>\n              &nbsp;\n              <i class=\"red clickable fa fa-remove\"\n                 title=\"Remove appp\"\n                 ng-click=\"appSelector.select(app, false)\"></i>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  </div>\n  <ng-include src=\"\'resizeDialog.html\'\"/>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/build.html","<div ng-controller=\"Kubernetes.BuildController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/builds\"><i class=\"fa fa-list\"></i></a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\" ng-show=\"entity.$configLink\"\n              title=\"View the build configuration\"\n              href=\"{{entity.$configLink}}\">\n        Configuration\n      </a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-primary pull-right\" ng-show=\"entity.$logsLink\"\n              title=\"View the build logs\"\n              href=\"{{entity.$logsLink}}\">\n        View Log\n      </a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-object=\"entity\" config=\"config\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/buildConfig.html","<div ng-controller=\"Kubernetes.BuildConfigController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/buildConfigs\"><i class=\"fa fa-list\"></i></a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <button class=\"btn btn-primary pull-right\"\n         title=\"Trigger this build\"\n         ng-disabled=\"!entity.$triggerUrl\"\n         ng-click=\"triggerBuild(entity)\"><i class=\"fa fa-play-circle-o\"></i> Trigger</button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-object=\"entity\" config=\"config\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
@@ -7145,7 +7159,7 @@ $templateCache.put("plugins/kubernetes/html/imageRepositories.html","<div class=
 $templateCache.put("plugins/kubernetes/html/kubernetesJsonDirective.html","<div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div class=\"fabric-page-header row\">\n\n        <div class=\"pull-left\" ng-show=\"iconURL\">\n          <div class=\"app-logo\">\n            <img ng-src=\"{{iconURL}}\">&nbsp;\n          </div>\n        </div>\n        <div class=\"pull-left\">\n            <h2 class=\"list-inline\"><span class=\"contained c-wide3\">&nbsp;{{displayName || appTitle}}</span></h2>\n        </div>\n        <div class=\"pull-right\">\n          <button class=\"btn btn-success pull-right\"\n                  title=\"Run this application\"\n                  ng-disabled=\"!config || config.error\"\n                  ng-click=\"apply()\">\n            <i class=\"fa fa-play-circle\"></i> Run\n          </button>\n        </div>\n        <div class=\"pull-left col-md-10 profile-summary-wide\">\n          <div\n               ng-show=\"summaryHtml\"\n               ng-bind-html-unsafe=\"summaryHtml\"></div>\n        </div>\n      </div>\n\n    </div>\n  </div>\n\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/layoutKubernetes.html","<script type=\"text/ng-template\" id=\"idTemplate.html\">\n  <div class=\"ngCellText\">\n    <a href=\"\" \n       title=\"View details for {{row.entity.id}}\"\n       ng-href=\"{{row.entity | kubernetesPageLink}}\">\n      <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n      {{row.entity.id}}</a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"selectorTemplate.html\">\n  <div class=\"ngCellText\">\n    <span ng-repeat=\"(name, value) in row.entity.selector track by $index\">\n      <strong>{{name}}</strong>: {{value}}\n    </span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"podCountsAndLinkTemplate.html\">\n  <div class=\"ngCellText\" title=\"Number of running pods for this controller\">\n    <a ng-show=\"row.entity.$podCounters.podsLink\" href=\"{{row.entity.$podCounters.podsLink}}\" title=\"View pods\">\n      <span ng-show=\"row.entity.$podCounters.valid\" class=\"badge badge-success\">{{row.entity.$podCounters.valid}}</span>\n      <span ng-show=\"row.entity.$podCounters.waiting\" class=\"badge\">{{row.entity.$podCounters.waiting}}</span>\n      <span ng-show=\"row.entity.$podCounters.error\" class=\"badge badge-warning\">{{row.entity.$podCounters.error}}</span>\n    </a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"labelTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"entity=row.entity\" ng-controller=\"Kubernetes.Labels\">\n    <p ng-show=\"data\"><strong>Labels</strong></p>\n    <span ng-repeat=\"label in labels track by $index\"\n          class=\"pod-label badge\"\n          ng-class=\"labelClass(label.key)\"\n          ng-click=\"handleClick(entity, label.key, label)\"\n          title=\"{{label.key}}\">{{label.title}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"hostTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"host=row.entity.currentState.host\">\n    <span class=\"pod-label badge\"\n          class=\"background-light-grey mouse-pointer\"\n          ng-click=\"$emit(\'labelFilterUpdate\', \'host=\' + host)\">{{host}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"portalAddress.html\">\n  <div class=\"ngCellText\">\n    <a target=\"openService\" href=\"{{row.entity.proxyUrl}}\"\n       ng-show=\"row.entity.portalIP && row.entity.$podCounters.valid\" title=\"Protocol {{row.entity.protocol}}\">\n      {{row.entity.portalIP}}:{{row.entity.port}}\n    </a>\n    <span ng-hide=\"row.entity.portalIP && row.entity.$podCounters.valid\">{{row.entity.portalIP}}:{{row.entity.port}}</span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"iconCellTemplate.html\">\n  <div class=\"ngCellText\">\n    <img class=\"app-icon-small\" ng-src=\"{{row.entity.$iconUrl}}\">\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"statusTemplate.html\">\n  <div class=\"ngCellText\" ng-init=\"entity=row.entity\" ng-controller=\"Kubernetes.PodStatus\" title=\"Pod {{entity.id}} is {{entity.currentState.status}}\">\n    <!-- in detail view -->\n    <p ng-show=\"data\"><strong>Status: </strong></p>\n    <i class=\"fa\" ng-class=\"statusMapping(entity.currentState.status)\"></i>\n    <span ng-show=\"data\">{{data}}</span>\n    <!-- in table -->\n    <span ng-show=\"entity.$jolokiaUrl\" ng-controller=\"Kubernetes.ConnectController\">\n      <a class=\"clickable\"\n         ng-click=\"doConnect(row.entity)\"\n         title=\"Open a new window and connect to this container\">\n        <i class=\"fa fa-sign-in\"></i>\n      </a>\n    </span>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"resizeDialog.html\">\n  <div modal=\"resizeDialog.dialog.show\">\n      <form class=\"form-horizontal\" ng-submit=\"resizeDialog.onOk()\">\n          <div class=\"modal-header\"><h4>Resize {{resizeDialog.controller.id}}</h4></div>\n          <div class=\"modal-body\">\n            <div class=\"control-group\">\n              <label class=\"control-label\" for=\"replicas\">Replica count</label>\n\n              <div class=\"controls\">\n                <input type=\"number\" min=\"0\" id=\"replicas\" ng-model=\"resizeDialog.newReplicas\">\n              </div>\n            </div>\n\n          </div>\n          <div class=\"modal-footer\">\n            <input class=\"btn btn-primary\" type=\"submit\"\n                   ng-disabled=\"resizeDialog.newReplicas === resizeDialog.controller.currentState.replicas\"\n                   value=\"Resize\">\n            <button class=\"btn btn-warning cancel\" type=\"button\" ng-click=\"resizeDialog.close()\">Cancel</button>\n          </div>\n        </form>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"namespaceSelector.html\">\n    namespace: <select ng-model=\"kubernetes.selectedNamespace\" ng-options=\"namespace for namespace in kubernetes.namespaces\" title=\"choose the namespace - which is a selection of resources in kubernetes\">\n    </select>\n  </script>\n<div class=\"row\" ng-controller=\"Kubernetes.TopLevel\">\n  <div class=\"wiki-icon-view\" ng-controller=\"Kubernetes.FileDropController\" nv-file-drop nv-file-over uploader=\"uploader\" over-class=\"ready-drop\">\n    <div class=\"row kubernetes-view\" ng-view></div>\n  </div>\n</div>\n<div ng-controller=\"Kubernetes.ConnectController\">\n  <div hawtio-confirm-dialog=\"connect.dialog.show\" title=\"Connect to {{connect.containerName}}?\"\n       ok-button-text=\"Connect\" on-ok=\"onOK()\">\n    <div class=\"dialog-body\">\n      <p>Please enter the user name and password for {{connect.containerName}}:</p>\n\n      <div class=\"control-group\">\n        <label class=\"control-label\">User name: </label>\n\n        <div class=\"controls\">\n          <input name=\"userName\" ng-model=\"connect.userName\" type=\"text\" autofill>\n        </div>\n      </div>\n      <div class=\"control-group\">\n        <label class=\"control-label\">Password: </label>\n\n        <div class=\"controls\">\n          <input name=\"password\" ng-model=\"connect.password\" type=\"password\" autofill>\n        </div>\n      </div>\n      <div class=\"control-group\">\n        <div class=\"controls\">\n          <label class=\"checkbox\">\n            <input type=\"checkbox\" ng-model=\"connect.saveCredentials\"> Save these credentials as the default\n          </label>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>");
 $templateCache.put("plugins/kubernetes/html/overview.html","<div ng-controller=\"Kubernetes.OverviewController\">\n  <script type=\"text/ng-template\" id=\"serviceBoxTemplate.html\">\n    <div class=\"row\">\n      <div class=\"col-md-3 align-left node-body\">{{entity.port}}</div>\n      <div class=\"col-md-9 align-right node-header\" title=\"{{entity.id}}\">{{entity.id}}</div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"serviceTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div id=\"{{service._key}}\"\n             namespace=\"{{service.namespace}}\"\n             connect-to=\"{{service.connectTo}}\"\n             data-type=\"service\"\n             class=\"jsplumb-node kubernetes-node kubernetes-service-node\"\n             ng-controller=\"Kubernetes.OverviewBoxController\"\n             ng-init=\"entity=getEntity(\'service\', \'{{service._key}}\')\"\n             ng-mouseenter=\"mouseEnter($event)\"\n             ng-mouseleave=\"mouseLeave($event)\"\n             ng-click=\"viewDetails(entity, \'services\')\">\n          <div ng-init=\"entity=entity\" ng-include=\"\'serviceBoxTemplate.html\'\"></div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"hostTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div id=\"{{host.id}}\"\n             data-type=\"host\"\n             class=\"kubernetes-host-container\">\n          <h5><a ng-href=\"/kubernetes/hosts/{{host.id}}\">{{host.id}}</a></h5>\n          <div class=\"pod-container\"></div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"podTemplate.html\">\n    <div id=\"{{pod._key}}\"\n         data-type=\"pod\"\n         title=\"Pod ID: {{pod.id}}\"\n         class=\"jsplumb-node kubernetes-node kubernetes-pod-node\"\n         ng-mouseenter=\"mouseEnter($event)\"\n         ng-mouseleave=\"mouseLeave($event)\"\n         ng-controller=\"Kubernetes.OverviewBoxController\"\n         ng-init=\"entity=getEntity(\'pod\', \'{{pod._key}}\')\"\n         ng-click=\"viewDetails(entity, \'pods\')\">\n      <div class=\"css-table\">\n        <div class=\"css-table-row\">\n          <div class=\"pod-status-cell css-table-cell\">\n            <span ng-init=\"row={ entity: entity }\" ng-include=\"\'statusTemplate.html\'\"></span>\n          </div>\n          <div class=\"pod-label-cell css-table-cell\">\n            <span ng-init=\"row={ entity: entity }\" ng-include=\"\'labelTemplate.html\'\"></span>\n          </div>\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"replicationControllerTemplate.html\">\n    <div class=\"kubernetes-overview-row\">\n      <div class=\"kubernetes-overview-cell\">\n        <div\n            id=\"{{replicationController._key}}\"\n            title=\"{{replicationController.id}}\"\n            data-type=\"replicationController\"\n            data-placement=\"top\"\n            connect-to=\"{{replicationController.connectTo}}\"\n            ng-mouseenter=\"mouseEnter($event)\"\n            ng-mouseleave=\"mouseLeave($event)\"\n            class=\"jsplumb-node kubernetes-replicationController-node kubernetes-node\"\n            ng-controller=\"Kubernetes.OverviewBoxController\"\n            ng-init=\"entity=getEntity(\'replicationController\', \'{{replicationController._key}}\')\"\n            ng-click=\"viewDetails(entity, \'replicationControllers\')\">\n            <img class=\"app-icon-medium\" ng-src=\"{{replicationController.$iconUrl}}\">\n        </div>\n      </div>\n    </div>\n  </script>\n  <script type=\"text/ng-template\" id=\"overviewTemplate.html\">\n    <div class=\"kubernetes-overview\"\n         hawtio-jsplumb\n         draggable=\"false\"\n         layout=\"false\"\n         node-sep=\"50\"\n         rank-sep=\"300\">\n      <div class=\"kubernetes-overview-row\">\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview services\">\n            <h6>Services</h6>\n          </div>\n        </div>\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview hosts\">\n            <h6>Hosts and Pods</h6>\n          </div>\n        </div>\n        <div class=\"kubernetes-overview-cell\">\n          <div class=\"kubernetes-overview replicationControllers\">\n            <h6>Replication controllers</h6>\n          </div>\n        </div>\n      </div>\n   </div>\n  </script>\n  <div class=\"align-center\" ng-include=\"\'namespaceSelector.html\'\"></div>\n  <kubernetes-overview ui-if=\"kubernetes.selectedNamespace\"></kubernetes-overview>\n</div>\n");
-$templateCache.put("plugins/kubernetes/html/pipelines.html","<div class=\"row\" ng-controller=\"Kubernetes.PipelinesController\">\n  <script type=\"text/ng-template\" id=\"hostLinkTemplate.html\">\n    <div class=\"ngCellText\">\n    </div>\n  </script>\n  <div class=\"row\">\n    <div class=\"col-md-12\"\">\n      <span ng-show=\"pipelines.length\">\n        <hawtio-filter ng-model=\"filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter builds...\"></hawtio-filter>\n      </span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Create a new project\"\n         ng-show=\"forgeEnabled\"\n         href=\"/forge/command/project-new\"><i class=\"fa fa-plus\"></i> Create Project</a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"pipelines.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no build pipelines available.</p>\n          <a class=\"btn btn-primary\" href=\"/kubernetes/buildConfig\">Create Build Configuration</a>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show=\"fetched && pipelines.length\">\n    <div ng-repeat=\"pipeline in pipelines | filter:filterText\">\n      <div class=\"row\">\n        <div class=\"col-md-12\">\n\n          <div id=\"container\"\n               style=\"\n            background: lightgrey;\n            border-radius: 4px;\"\n               hawtio-auto-columns=\".ex-children\"\n               min-margin=\"5\">\n            <div class=\"ex-children {{step.$class}}\"\n                 style=\"display: inline-block;\n              border-radius: 4px;\n              text-align: center;\n              vertical-align: middle;\n              height: 80px;\n              border: 20px;\n              margin: 5px;\"\n                 ng-repeat=\"step in pipeline.triggersSteps\">\n              <span ng-switch=\"step.buildConfig.kind\">\n                <span ng-switch-default=\"\">\n                  <div class=\"pipeline-build-details\">\n                    <a title=\"View details for this build configuration\"\n                       href=\"/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}\">\n                      <i class=\"fa fa-cog\"></i>\n                      {{step.buildConfig.metadata.name}}\n                    </a>\n                  </div>\n                  <div class=\"pipeline-last-build\" ng-show=\"step.buildConfig.$lastBuild\">\n                    <a href=\"{{step.buildConfig.$lastBuild.$viewLink}}\" title=\"view this build\">\n                      <i class=\"fa fa-info\"></i>\n                      build\n                    </a>\n                  </div>\n                    <div class=\"ngCellText\" class=\"pipeline-last-build-time\"\n                         title=\"last build was at: {{step.buildConfig.$lastBuild.$creationDate | date : \'h:mm:ss a, EEE MMM yyyy\'}}\">\n                      <div ng-switch=\"step.buildConfig.$lastBuild.status\">\n                        <span ng-switch-when=\"New\" class=\"text-primary\">\n                          <i class=\"fa fa-spin fa-spinner\"></i> new: {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Pending\" class=\"text-primary\">\n                          <i class=\"fa fa-spin fa-spinner\"></i> pending: {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Running\" class=\"text-primary\">\n                          <i class=\"fa fa-spin fa-spinner\"></i> running {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Complete\" class=\"text-success\">\n                          <i class=\"fa fa-check-circle\"></i> completed {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Failed\" class=\"text-danger\">\n                          <i class=\"fa fa-exclamation-circle\"></i> failed {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-default class=\"text-warning\">\n                          <i class=\"fa fa-exclamation-triangle\"></i> {{step.buildConfig.$lastBuild.status}}: {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                      </div>\n                    </div>\n                  <div class=\"pipeline-last-build-logs\">\n                    <a href=\"{{step.buildConfig.$lastBuild.$logsLink}}\" title=\"view the logs of this build\">\n                      <i class=\"fa fa-file-text-o\"></i>\n                      logs\n                    </a>\n                  </div>\n                </span>\n                <span ng-switch-when=\"DeploymentConfig\">\n                  <div class=\"pipeline-build-details\">\n                    <a title=\"View details for this deployment configuration\"\n                       href=\"/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}\">\n                      <i class=\"fa fa-cogs\"></i>\n                      {{step.buildConfig.metadata.name}}\n                    </a>\n                  </div>\n                  <div class=\"pipline-deploy-pods\">\n                  <span class=\"pipeline-pod-counts\" ng-show=\"step.$podCounters\">pods:\n                    <a ng-show=\"step.$podCounters.podsLink\" target=\"pods\" href=\"{{step.$podCounters.podsLink}}\"\n                       title=\"View pods for this deployment\">\n                      <span class=\"badge badge-success\">{{step.$podCounters.valid}}</span>\n                      <span ng-show=\"step.$podCounters.waiting\" class=\"badge\">{{step.$podCounters.waiting}}</span>\n                      <span ng-show=\"step.$podCounters.error\"\n                            class=\"badge badge-warning\">{{step.$podCounters.error}}</span>\n                    </a>\n                  </span>\n                  </div>\n                </span>\n              </span>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
+$templateCache.put("plugins/kubernetes/html/pipelines.html","<div class=\"row\" ng-controller=\"Kubernetes.PipelinesController\">\n  <script type=\"text/ng-template\" id=\"hostLinkTemplate.html\">\n    <div class=\"ngCellText\">\n    </div>\n  </script>\n  <div class=\"row\">\n    <div class=\"col-md-12\"\">\n      <span ng-show=\"pipelines.length\">\n        <hawtio-filter ng-model=\"filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter builds...\"></hawtio-filter>\n      </span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Create a new project\"\n         ng-show=\"forgeEnabled\"\n         href=\"/forge/command/project-new\"><i class=\"fa fa-plus\"></i> Create Project</a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"pipelines.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no build pipelines available.</p>\n          <a class=\"btn btn-primary\" href=\"/kubernetes/buildConfig\">Create Build Configuration</a>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show=\"fetched && pipelines.length\">\n    <div ng-repeat=\"pipeline in pipelines | filter:filterText\">\n      <div class=\"row\">\n        <div class=\"col-md-12\">\n\n          <div id=\"container\"\n               style=\"\n            background: lightgrey;\n            border-radius: 4px;\"\n               min-margin=\"5\">\n            <div class=\"ex-children {{step.$class}}\"\n                 style=\"display: inline-block;\n              border-radius: 4px;\n              text-align: center;\n              vertical-align: middle;\n              height: 80px;\n              border: 20px;\n              margin: 5px;\"\n                 ng-repeat=\"step in pipeline.triggersSteps\">\n              <span ng-switch=\"step.buildConfig.kind\">\n                <span ng-switch-default=\"\">\n                  <div class=\"pipeline-build-details\">\n                    <a title=\"View details for this build configuration\"\n                       href=\"/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}\">\n                      <i class=\"fa fa-cog\"></i>\n                      {{step.buildConfig.metadata.name}}\n                    </a>\n                  </div>\n                  <div class=\"pipeline-last-build\" ng-show=\"step.buildConfig.$lastBuild\">\n                    <a href=\"{{step.buildConfig.$lastBuild.$viewLink}}\" title=\"view this build\">\n                      <i class=\"fa fa-info\"></i>\n                      build\n                    </a>\n                  </div>\n                    <div class=\"ngCellText\" class=\"pipeline-last-build-time\"\n                         title=\"last build was at: {{step.buildConfig.$lastBuild.$creationDate | date : \'h:mm:ss a, EEE MMM yyyy\'}}\">\n                      <div ng-switch=\"step.buildConfig.$lastBuild.status\">\n                        <span ng-switch-when=\"New\" class=\"text-primary\">\n                          <i class=\"fa fa-spin fa-spinner\"></i> new: {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Pending\" class=\"text-primary\">\n                          <i class=\"fa fa-spin fa-spinner\"></i> pending: {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Running\" class=\"text-primary\">\n                          <i class=\"fa fa-spin fa-spinner\"></i> running {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Complete\" class=\"text-success\">\n                          <i class=\"fa fa-check-circle\"></i> completed {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-when=\"Failed\" class=\"text-danger\">\n                          <i class=\"fa fa-exclamation-circle\"></i> failed {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                        <span ng-switch-default class=\"text-warning\">\n                          <i class=\"fa fa-exclamation-triangle\"></i> {{step.buildConfig.$lastBuild.status}}: {{step.buildConfig.$lastBuild.$creationDate.relative()}}\n                        </span>\n                      </div>\n                    </div>\n                  <div class=\"pipeline-last-build-logs\">\n                    <a href=\"{{step.buildConfig.$lastBuild.$logsLink}}\" title=\"view the logs of this build\">\n                      <i class=\"fa fa-file-text-o\"></i>\n                      logs\n                    </a>\n                  </div>\n                </span>\n                <span ng-switch-when=\"DeploymentConfig\">\n                  <div class=\"pipeline-build-details\">\n                    <a title=\"View details for this deployment configuration\"\n                       href=\"/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}\">\n                      <i class=\"fa fa-cogs\"></i>\n                      {{step.buildConfig.metadata.name}}\n                    </a>\n                  </div>\n                  <div class=\"pipline-deploy-pods\">\n                  <span class=\"pipeline-pod-counts\" ng-show=\"step.$podCounters\">pods:\n                    <a ng-show=\"step.$podCounters.podsLink\" target=\"pods\" href=\"{{step.$podCounters.podsLink}}\"\n                       title=\"View pods for this deployment\">\n                      <span class=\"badge badge-success\">{{step.$podCounters.valid}}</span>\n                      <span ng-show=\"step.$podCounters.waiting\" class=\"badge\">{{step.$podCounters.waiting}}</span>\n                      <span ng-show=\"step.$podCounters.error\"\n                            class=\"badge badge-warning\">{{step.$podCounters.error}}</span>\n                    </a>\n                  </span>\n                  </div>\n                </span>\n              </span>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/pod.html","<div ng-controller=\"Kubernetes.PodController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <button class=\"btn btn-danger pull-right\"\n              title=\"Delete this Pod\"\n              ng-click=\"deleteEntity()\">\n        <i class=\"fa fa-remove\"></i> Delete\n      </button>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"/kubernetes/pods?namespace={{item.namespace}}\"><i class=\"fa fa-list\"></i></a>\n      <div ng-show=\"item.$jolokiaUrl\" ng-controller=\"Kubernetes.ConnectController\">\n        <span class=\"pull-right\">&nbsp;</span>\n        <a class=\"btn btn-primary pull-right\"\n           ng-click=\"doConnect(item)\"\n           title=\"Open a new window and connect to this container\">\n          <i class=\"fa fa-sign-in\"></i> Connect\n        </a>\n      </div>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"model.fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"model.fetched\">\n        <div hawtio-object=\"item\" config=\"itemConfig\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/podCreate.html","<div ng-controller=\"Kubernetes.PodEditController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Go back to viewing all the pods\"\n              href=\"/kubernetes/pods\"><i class=\"fa fa-list\"></i></a>\n      <button class=\"btn btn-primary pull-right\"\n              title=\"Create a new pod\"\n              ng-click=\"save()\">\n        Create Pod\n      </button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-form-2=\"config\" entity=\"entity\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/kubernetes/html/podEdit.html","<div ng-controller=\"Kubernetes.PodEditController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n         title=\"Go back to viewing all the pods\"\n              href=\"/kubernetes/pods\"><i class=\"fa fa-list\"></i></a>\n      <button class=\"btn btn-primary pull-right\"\n              title=\"Saves changes to this pod\"\n              ng-click=\"save()\">\n        Save\n      </button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-form-2=\"config\" entity=\"entity\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");

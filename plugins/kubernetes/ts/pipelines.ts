@@ -12,42 +12,6 @@ module Kubernetes {
 
       Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
-      function reloadData() {
-        var url = buildsRestURL;
-        $http.get(url).
-          success(function (data, status, headers, config) {
-            if (data) {
-              $scope.builds = enrichBuilds(data.items);
-              updateData();
-            }
-          }).
-          error(function (data, status, headers, config) {
-            log.warn("Failed to load " + url + " " + data + " " + status);
-          });
-        url = buildConfigsRestURL;
-        $http.get(url).
-          success(function (data, status, headers, config) {
-            if (data) {
-              $scope.buildConfigs = data.items;
-              updateData();
-            }
-          }).
-          error(function (data, status, headers, config) {
-            log.warn("Failed to load " + url + " " + data + " " + status);
-          });
-        url = deploymentConfigsRestURL;
-        $http.get(url).
-          success(function (data, status, headers, config) {
-            if (data) {
-              $scope.deploymentConfigs = data.items;
-              updateData();
-            }
-          }).
-          error(function (data, status, headers, config) {
-            log.warn("Failed to load " + url + " " + data + " " + status);
-          });
-      }
-
       /**
        * Lets update the various data to join them together to a pipeline model
        */
@@ -220,6 +184,60 @@ module Kubernetes {
         return Core.pathGet(buildConfig, ["parameters", "source", "git", "uri"]);
       }
 
-      reloadData();
+      $scope.$keepPolling = () => keepPollingModel;
+      $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
+        var ready = 0;
+        var numServices = 3;
+
+        function maybeNext() {
+          if (++ready >= numServices) {
+            next();
+          }
+        }
+
+        var url = buildsRestURL;
+        $http.get(url).
+          success(function (data, status, headers, config) {
+            if (data) {
+              $scope.builds = enrichBuilds(data.items);
+              updateData();
+            }
+            maybeNext();
+          }).
+          error(function (data, status, headers, config) {
+            log.warn("Failed to load " + url + " " + data + " " + status);
+            maybeNext();
+
+          });
+        url = buildConfigsRestURL;
+        $http.get(url).
+          success(function (data, status, headers, config) {
+            if (data) {
+              $scope.buildConfigs = data.items;
+              updateData();
+            }
+            maybeNext();
+          }).
+          error(function (data, status, headers, config) {
+            log.warn("Failed to load " + url + " " + data + " " + status);
+            maybeNext();
+          });
+        url = deploymentConfigsRestURL;
+        $http.get(url).
+          success(function (data, status, headers, config) {
+            if (data) {
+              $scope.deploymentConfigs = data.items;
+              updateData();
+            }
+            maybeNext();
+          }).
+          error(function (data, status, headers, config) {
+            log.warn("Failed to load " + url + " " + data + " " + status);
+            maybeNext();
+          });
+      });
+
+      $scope.fetch();
     }]);
+
 }
