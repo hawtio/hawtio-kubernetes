@@ -5,9 +5,9 @@
 module Kubernetes {
 
   export var PodController = controller("PodController",
-    ["$scope", "KubernetesModel", "KubernetesState", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
-      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesState,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
+    ["$scope", "KubernetesModel", "KubernetesState", "ServiceRegistry", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "$window", "KubernetesApiURL",
+      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesState, ServiceRegistry,
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, $window, KubernetesApiURL) => {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
@@ -41,6 +41,11 @@ module Kubernetes {
     $scope.$on('$routeUpdate', ($event) => {
       updateData();
     });
+
+    $scope.openLogs = () => {
+      var pods = [$scope.item];
+      openLogsForPods(ServiceRegistry, $window, KubernetesModel.currentNamespace(), pods);
+    };
 
     updateData();
 

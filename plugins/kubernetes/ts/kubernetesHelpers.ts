@@ -129,6 +129,13 @@ module Kubernetes {
         KubernetesState.selectedNamespace = KubernetesState.namespaces[0];
       }
     }
+    var injector = HawtioCore.injector;
+    if (injector) {
+      var ServiceRegistry = injector.get("ServiceRegistry");
+      if (ServiceRegistry) {
+        $scope.hasService = (name) => ServiceRegistry.hasService(name);
+      }
+    }
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
     $scope.forgeEnabled = isForgeEnabled();
     $scope.resizeDialog = {

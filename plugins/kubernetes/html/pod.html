@@ -17,6 +17,13 @@
           <i class="fa fa-sign-in"></i> Connect
         </a>
       </div>
+      <button ng-show="hasService('kibana-service')"
+              class="btn btn-primary pull-right"
+              title="View the logs for this pod"
+              ng-click="openLogs()">
+        <i class="fa fa-file-text-o"></i> Logs
+      </button>
+      <span ng-show="hasService('kibana-service')" class="pull-right">&nbsp;</span>
     </div>
   </div>
   <div class="row">

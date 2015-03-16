@@ -21,8 +21,6 @@ module Kubernetes {
 
     $scope.itemSchema = Forms.createFormConfiguration();
 
-    $scope.hasService = (name) => ServiceRegistry.hasService(name);
-
     $scope.tableConfig = {
       data: 'model.pods',
       showSelectionCheckbox: true,
