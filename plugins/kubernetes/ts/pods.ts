@@ -84,7 +84,7 @@ module Kubernetes {
           }
         }
       }
-      openLogsForPods(ServiceRegistry, $window, pods);
+      openLogsForPods(ServiceRegistry, $window, KubernetesModel.currentNamespace(), pods);
     };
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);

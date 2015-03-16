@@ -2,3 +2,7 @@ node_modules/
 libs/
 site/
 .idea
+*.cer
+*.req
+*.key
+serial

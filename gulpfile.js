@@ -54,6 +54,7 @@ gulp.task('clean-defs', function() {
 gulp.task('tsc', ['clean-defs'], function() {
   var cwd = process.cwd();
   var tsResult = gulp.src(config.ts)
+    .pipe(plugins.sourcemaps.init())
     .pipe(plugins.typescript(config.tsProject))
     .on('error', plugins.notify.onError({
       message: '#{ error.message }',
@@ -63,6 +64,7 @@ gulp.task('tsc', ['clean-defs'], function() {
     return eventStream.merge(
       tsResult.js
         .pipe(plugins.concat('compiled.js'))
+        .pipe(plugins.sourcemaps.write())
         .pipe(gulp.dest('.')),
       tsResult.dts
         .pipe(gulp.dest('d.ts')))
