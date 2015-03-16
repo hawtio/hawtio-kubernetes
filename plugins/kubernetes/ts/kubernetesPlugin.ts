@@ -264,6 +264,12 @@ module Kubernetes {
       dockerRegistry.isValid = () => false;
     }
 
+    // disable the forge plugin tab
+    var forge = navItems.find((item) => item.id === "forge");
+    if (forge) {
+      forge.isValid = () => false;
+    }
+
     workspace.topLevelTabs.push({
       id: 'library',
       content: 'Library',

@@ -12,5 +12,10 @@ module Project {
     $routeProvider.when(UrlHelpers.join(context, '/create'), route('projectCreate.html', false));
   }]);
 
+  _module.factory('ForgeApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
+    return "kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/fabric8-forge/api/forge";
+  }]);
+
+
   hawtioPluginLoader.addModule(pluginName);
 }

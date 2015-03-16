@@ -114,6 +114,10 @@ declare module Kubernetes {
     function enrichImageRepositories(imageRepositories: any): any;
     function containerLabelClass(labelType: string): string;
     /**
+     * Returns true if the fabric8 forge plugin is enabled
+     */
+    function isForgeEnabled(): boolean;
+    /**
      * Configures the json schema
      */
     function configureSchema(): void;

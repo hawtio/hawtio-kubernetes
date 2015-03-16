@@ -145,15 +145,15 @@ gulp.task('connect', ['watch'], function() {
       });
     console.log("because of $LOCAL_APP_LIBRARY being true we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/app-library" );
   }
-  if (process.env.LOCAL_JBOSS_FORGE === "true") {
+  if (process.env.LOCAL_FABRIC8_FORGE === "true") {
     localProxies.push({
         proto: "http",
         port: "8599",
         hostname: "localhost",
-        path: '/kubernetes/api/v1beta2/proxy/services/jboss-forge',
+        path: '/kubernetes/api/v1beta2/proxy/services/fabric8-forge',
         targetPath: "/"
       });
-    console.log("because of LOCAL_JBOSS_FORGE being true we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/jboss-forge" );
+    console.log("because of LOCAL_FABRIC8_FORGE being true we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/fabric8-forge" );
   }
   if (process.env.LOCAL_GOGS_HOST) {
     var gogsPort = process.env.LOCAL_GOGS_PORT || "3000";

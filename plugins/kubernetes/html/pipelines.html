@@ -4,12 +4,16 @@
     </div>
   </script>
   <div class="row">
-    <div class="col-md-12" ng-show="pipelines.length">
-      <span ng-show="!id">
+    <div class="col-md-12"">
+      <span ng-show="pipelines.length">
         <hawtio-filter ng-model="filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter builds..."></hawtio-filter>
       </span>
+      <a class="btn btn-default pull-right"
+         title="Create a new project"
+         ng-show="forgeEnabled"
+         href="/forge/command/project-new"><i class="fa fa-plus"></i> Create Project</a>
     </div>
   </div>
   <div class="row">

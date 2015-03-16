@@ -130,6 +130,7 @@ module Kubernetes {
       }
     }
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
+    $scope.forgeEnabled = isForgeEnabled();
     $scope.resizeDialog = {
       controller: null,
       newReplicas: 0,
@@ -828,6 +829,15 @@ module Kubernetes {
       return 'mouse-pointer';
     }
     else return labelColors[labelType] + ' mouse-pointer';
+  }
+
+
+  /**
+   * Returns true if the fabric8 forge plugin is enabled
+   */
+  export function isForgeEnabled() {
+    // TODO should return true if the service "fabric8-forge" is valid
+    return true;
   }
 
   /**
