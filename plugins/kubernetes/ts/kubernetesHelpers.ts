@@ -490,7 +490,7 @@ module Kubernetes {
       if (!link.endsWith("/")) {
         link += "/";
       }
-      return link + "#/discover/Fabric8";
+      return link + "#/dashboard/Fabric8";
     } else {
       return null;
     }
@@ -514,7 +514,7 @@ module Kubernetes {
           query = "(" + query + ")";
         }
         query = 'pod_namespace:"' + namespace + '" AND pod:' + query;
-        link += "?_a=(query:'" + query + "')";
+        link += "?_a=(query:(query_string:(query:'" + query + "')))";
         var newWindow = $window.open(link, "viewLogs");
       }
     }
