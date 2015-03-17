@@ -232,21 +232,16 @@ module Kubernetes {
                          .defaultPage({
                            rank: 200,
                            isValid: (yes, no) => {
-                             // TODO not sure if we need the tree loaded for this
-                             var name = 'KubernetesDefaultPage';
-                             workspace.addNamedTreePostProcessor(name, (tree) => {
-                               workspace.removeNamedTreePostProcessor(name);
-                               if (!Core.isRemoteConnection() && isKubernetes(workspace)) {
-                                 yes();
-                               } else {
-                                 no();
-                               }
-                             });
+                             if (!Core.isRemoteConnection()) {
+                               yes();
+                             } else {
+                               no();
+                             }
                            }
                          }) 
                          .href(() => context)
                          .title(() => 'Kubernetes')
-                         .isValid(() => isKubernetes(workspace))
+                         .isValid(() => !Core.isRemoteConnection())
                          .tabs(apps, services, controllers, pods, hosts, overview, builds, buildConfigs, deploys, imageRepositories, pipelines)
                          .build();
 
@@ -269,12 +264,16 @@ module Kubernetes {
     if (forge) {
       forge.isValid = () => false;
     }
+    var wiki = navItems.find((item) => item.id === "wiki");
+    if (wiki) {
+      wiki.isValid = () => false;
+    }
 
     workspace.topLevelTabs.push({
       id: 'library',
       content: 'Library',
       title: 'View the library of applications',
-      isValid: (workspace) => ServiceRegistry.hasService("app-library") && ServiceRegistry.hasService("app-library-jolokia"),
+      isValid: (workspace) => ServiceRegistry.hasService("app-library") && ServiceRegistry.hasService("app-library-jolokia") && !Core.isRemoteConnection(),
       href: () => "/wiki/view",
       isActive: (workspace) => false
     });
@@ -283,7 +282,7 @@ module Kubernetes {
       id: 'kibana',
       content: 'Logs',
       title: 'View and search all logs across all containers using Kibana and ElasticSearch',
-      isValid: (workspace) => ServiceRegistry.hasService("kibana-service"),
+      isValid: (workspace) => ServiceRegistry.hasService("kibana-service") && !Core.isRemoteConnection(),
       href: () => kibanaLogsLink(ServiceRegistry),
       isActive: (workspace) => false
     });
@@ -292,7 +291,7 @@ module Kubernetes {
       id: 'grafana',
       content: 'Metrics',
       title: 'Views metrics across all containers using Grafana and InfluxDB',
-      isValid: (workspace) => ServiceRegistry.hasService("grafana-service"),
+      isValid: (workspace) => ServiceRegistry.hasService("grafana-service") && !Core.isRemoteConnection(),
       href: () => ServiceRegistry.serviceLink("grafana-service"),
       isActive: (workspace) => false
     });
