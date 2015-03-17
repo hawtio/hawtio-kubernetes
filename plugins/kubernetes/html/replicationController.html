@@ -7,14 +7,23 @@
         <i class="fa fa-remove"></i> Delete
       </button>
       <span class="pull-right">&nbsp;</span>
+
       <a class="btn btn-default pull-right"
          title="Return to table of controllers"
               href="/kubernetes/replicationControllers?namespace={{item.namespace}}"><i class="fa fa-list"></i></a>
       <span class="pull-right">&nbsp;</span>
+
+      <a class="btn pull-right"
+         ng-click="flipRaw()"
+         title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'From' : 'Raw'}}</a>
+      <span class="pull-right">&nbsp;</span>
+      <span class="pull-right">&nbsp;</span>
+
       <a class="btn btn-primary pull-right"
               ng-click="resizeDialog.open(item)"
               title="Resize the number of replicas of this controller">Resize</a>
       <span class="pull-right">&nbsp;</span>
+
       <span class="pull-right controller-pod-counts" ng-show="item.$podCounters">Pods:
         <a ng-show="item.$podCounters.podsLink" href="{{item.$podCounters.podsLink}}" title="View pods">
           <span ng-show="item.$podCounters.valid" class="badge badge-success">{{item.$podCounters.valid}}</span>
@@ -24,6 +33,7 @@
       </span>
     </div>
   </div>
+
   <div class="row">
     <div class="col-md-12">
       <div ng-hide="model.fetched">
@@ -31,10 +41,26 @@
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
-      <div ng-show="model.fetched">
+      <div ng-show="model.fetched && !rawMode">
         <div hawtio-object="item" config="itemConfig"></div>
       </div>
     </div>
   </div>
+
+  <div class="span12">
+    <div ng-hide="model.fetched">
+      <div class="align-center">
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </div>
+    <div ng-show="model.fetched && rawMode">
+      <div class="row-fluid wiki-fixed form-horizontal">
+        <div class="control-group editor-autoresize">
+          <textarea id="source" ui-codemirror="codeMirrorOptions" readonly="true" ng-model="rawModel" style="width: 90%; height: 700px"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <ng-include src="'resizeDialog.html'"/>
 </div>
