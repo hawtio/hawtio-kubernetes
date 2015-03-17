@@ -228,9 +228,9 @@ module Kubernetes {
                           .build();
 
     var mainTab = builder.id('kubernetes')
-                         .rank(100)
+                         .rank(200)
                          .defaultPage({
-                           rank: 100,
+                           rank: 200,
                            isValid: (yes, no) => {
                              // TODO not sure if we need the tree loaded for this
                              var name = 'KubernetesDefaultPage';
