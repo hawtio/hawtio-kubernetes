@@ -490,7 +490,7 @@ module Kubernetes {
       if (!link.endsWith("/")) {
         link += "/";
       }
-      return link + "#/discover/Fabric8";
+      return link + "#/dashboard/Fabric8";
     } else {
       return null;
     }
