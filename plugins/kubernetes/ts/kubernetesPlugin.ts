@@ -230,7 +230,7 @@ module Kubernetes {
     var mainTab = builder.id('kubernetes')
                          .rank(200)
                          .defaultPage({
-                           rank: 200,
+                           rank: 20,
                            isValid: (yes, no) => {
                              if (!Core.isRemoteConnection()) {
                                yes();
@@ -297,6 +297,7 @@ module Kubernetes {
     });
 
     // TODO we should move this to a nicer link inside the Library soon - also lets hide until it works...
+/*
     workspace.topLevelTabs.push({
       id: 'createProject',
       content: 'Create',
@@ -304,6 +305,7 @@ module Kubernetes {
       isValid: (workspace) => ServiceRegistry.hasService("app-library") && false,
       href: () => "/project/create"
     });
+*/
 
 
   }]);
