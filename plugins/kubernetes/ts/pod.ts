@@ -11,6 +11,8 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
+    $scope.rawMode = false;
+    $scope.rawModel = null;
 
     $scope.itemConfig = {
       properties: {
@@ -42,6 +44,11 @@ module Kubernetes {
       updateData();
     });
 
+    $scope.flipRaw = () => {
+      $scope.rawMode = !$scope.rawMode;
+      Core.$apply($scope);
+    };
+
     $scope.openLogs = () => {
       var pods = [$scope.item];
       openLogsForPods(ServiceRegistry, $window, KubernetesModel.currentNamespace(), pods);
@@ -52,6 +59,9 @@ module Kubernetes {
     function updateData() {
       $scope.id = $routeParams["id"];
       $scope.item = $scope.model.getPod(KubernetesState.selectedNamespace, $scope.id);
+      if ($scope.item) {
+        $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
+      }
       Core.$apply($scope);
     }
   }]);
