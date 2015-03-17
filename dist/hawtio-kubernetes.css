@@ -323,6 +323,14 @@ img.icon-selected-app {
     padding-top: 5px;
     padding-bottom: 5px;
     margin-top: 6px;
+    color: black;
+}
+
+.pipeline-build a {
+    color: black;
+}
+.pipeline-deploy a {
+    color: black;
 }
 
 .pipeline-pod-counts {
