@@ -310,10 +310,19 @@ img.icon-selected-app {
 
 .pipeline-build {
     background: lightgreen;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .pipeline-deploy {
     background: goldenrod;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 6px;
 }
 
 .pipeline-pod-counts {
@@ -331,4 +340,9 @@ img.icon-selected-app {
     vertical-align: middle;
     border: 20px;
     margin: 5px;
+}
+
+.pipeline-arrow {
+    font-size: 3em;
+    margin-top: 6px;
 }

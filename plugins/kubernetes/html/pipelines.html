@@ -10,36 +10,42 @@
                        css-class="input-xxlarge"
                        placeholder="Filter builds..."></hawtio-filter>
       </span>
-    <a class="btn btn-default pull-right"
-       title="Create a new project"
-       ng-show="forgeEnabled"
-       href="/forge/command/project-new"><i class="fa fa-plus"></i> Create Project</a>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <div ng-hide="fetched">
-      <div class="align">
-        <i class="fa fa-spinner fa-spin"></i>
-      </div>
-    </div>
-    <div ng-show="fetched">
-      <div ng-hide="pipelines.length" class="align-center">
-        <p class="alert alert-info">There are no build pipelines available.</p>
-        <a class="btn btn-primary" href="/kubernetes/buildConfig">Create Build Configuration</a>
-      </div>
+      <a class="btn btn-default pull-right"
+         title="Create a new project"
+         ng-show="forgeEnabled"
+         href="/forge/command/project-new"><i class="fa fa-plus"></i> Create Project</a>
     </div>
   </div>
-</div>
-<div ng-show="fetched && pipelines.length">
-  <div ng-repeat="pipeline in pipelines | filter:filterText">
-    <div class="row">
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="fetched">
+        <div class="align">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="fetched">
+        <div ng-hide="pipelines.length" class="align-center">
+          <p class="alert alert-info">There are no build pipelines available.</p>
+          <a class="btn btn-primary" href="/kubernetes/buildConfig">Create Build Configuration</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-show="fetched && pipelines.length">
+    <div ng-repeat="pipeline in pipelines | filter:filterText">
+      <div class="row">
 
-      <div class="pipeline-row">
-        <div class="ex-children {{step.$class}}"
-             ng-repeat="step in pipeline.triggersSteps">
-              <span ng-switch="step.buildConfig.kind">
-                <div ng-switch-default="" class="col-md-2 pipeline-build">
+        <div class="pipeline-row">
+          <div ng-repeat="step in pipeline.triggersSteps">
+            <div ng-switch="step.buildConfig.kind">
+              <div ng-switch-default="">
+                <div class="col-md-1" ng-hide="$first">
+                  <div class="pipeline-arrow">
+                    <i class="fa fa-long-arrow-right"></i>
+                  </div>
+                </div>
+
+                <div class="col-md-2 pipeline-build" title="Build configuration">
                   <span class="pipeline-build-details">
                     <a title="View details for this build configuration"
                        href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
@@ -47,6 +53,7 @@
                       {{step.buildConfig.metadata.name}}
                     </a>
                   </span>
+                  &nbsp;&nbsp;&nbsp;
                   <span class="pipeline-last-build" ng-show="step.buildConfig.$lastBuild">
                     <a href="{{step.buildConfig.$lastBuild.$viewLink}}" title="view this build">
                       <i class="fa fa-info"></i>
@@ -84,39 +91,39 @@
                     </a>
                   </div>
                 </div>
-                <div ng-switch-when="DeploymentConfig">
-                  <div class="col-md-1">
-                    <div class="pipeline-arrow">
-                      <i class="fa fa-long-arrow-right"></i>
-                    </div>
+              </div>
+              <div ng-switch-when="DeploymentConfig">
+                <div class="col-md-1">
+                  <div class="pipeline-arrow">
+                    <i class="fa fa-long-arrow-right"></i>
                   </div>
+                </div>
 
-                  <div class="col-md-2 pipeline-deploy">
-                    <div class="pipeline-build-details">
-                      <a title="View details for this deployment configuration"
-                         href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
-                        <i class="fa fa-cogs"></i>
-                        {{step.buildConfig.metadata.name}}
+                <div class="col-md-2 pipeline-deploy" title="Deployment Configuration">
+                  <div class="pipeline-build-details">
+                    <a title="View details for this deployment configuration"
+                       href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
+                      <i class="fa fa-cogs"></i>
+                      {{step.buildConfig.metadata.name}}
+                    </a>
+                  </div>
+                  <div class="pipeline-deploy-pods">
+                    <div class="pipeline-pod-counts" ng-show="step.$podCounters">pods:
+                      <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}"
+                         title="View pods for this deployment">
+                        <span class="badge badge-success">{{step.$podCounters.valid}}</span>
+                        <span ng-show="step.$podCounters.waiting" class="badge">{{step.$podCounters.waiting}}</span>
+                        <span ng-show="step.$podCounters.error"
+                              class="badge badge-warning">{{step.$podCounters.error}}</span>
                       </a>
-                    </div>
-                    <div class="pipeline-deploy-pods">
-                      <span class="pipeline-pod-counts" ng-show="step.$podCounters">pods:
-                        <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}"
-                           title="View pods for this deployment">
-                          <span class="badge badge-success">{{step.$podCounters.valid}}</span>
-                          <span ng-show="step.$podCounters.waiting" class="badge">{{step.$podCounters.waiting}}</span>
-                          <span ng-show="step.$podCounters.error"
-                                class="badge badge-warning">{{step.$podCounters.error}}</span>
-                        </a>
-                      </span>
                     </div>
                   </div>
                 </div>
-              </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-</div>
 </div>
