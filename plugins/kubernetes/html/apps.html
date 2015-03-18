@@ -219,7 +219,7 @@
               <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
             </div>
             <div ng-show="mode == 'detail'">
-              <div class="app-detail" ng-repeat="item in apps | filter:tableConfig.filterOptions.filterText">
+              <div class="app-detail" ng-repeat="item in model.apps | filter:tableConfig.filterOptions.filterText">
                 <ng-include src="'appDetailTemplate.html'"/>
               </div>
             </div>

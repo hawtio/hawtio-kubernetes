@@ -37,16 +37,12 @@ module Kubernetes {
       }
     }
 
-    $scope.$watch('model', (model) => {
-      ArrayHelpers.sync($scope.apps, model.apps);
-    }, true);
-
     function appRunning(app) {
       return $scope.model.apps.any((running) => running.appPath === app.appPath);
     }
 
     $scope.tableConfig = {
-      data: 'apps',
+      data: 'model.apps',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,

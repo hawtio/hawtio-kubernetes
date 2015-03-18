@@ -155,7 +155,10 @@ module Kubernetes {
           this.servicesByKey[service._key] = service;
           var selector = service.selector;
           service.$pods = [];
-          service.$podCounters = selector ? createPodCounters(selector, this.pods, service.$pods) : null;
+          if (!service.$podCounters) {
+            service.$podCounters = {};
+          }
+          _.assign(service.$podCounters, selector ? createPodCounters(selector, this.pods, service.$pods) : {});
           var selectedPods = service.$pods;
           service.connectTo = selectedPods.map((pod) => {
             return pod._key;
@@ -312,8 +315,9 @@ module Kubernetes {
           }
         });
 
+        appViews = populateKeys(appViews).sortBy((appView) => appView._key);
 
-        this.appViews = appViews;
+        ArrayHelpers.sync(this.appViews, appViews, '$name');
 
         if (this.appInfos && this.appViews) {
           var folderMap = {};
@@ -462,20 +466,24 @@ module Kubernetes {
               if (ready >= numServices) {
                 // log.debug("Fetching another round");
                 if (dataChanged) {
-                  log.debug("kube model changed: resourceVersion: " + changedResourceVersion);
                   $scope.maybeInit();
+                  log.debug("kube model changed resourceVersion: " + changedResourceVersion);
                   // lets check if things really changed.
 
-                  var trimmedScope = angular.copy($scope);
+                  var trimmedScope = _.cloneDeep($scope);
                   // it looks like the resource versions change a lot whereas the data often doesn't ;)
                   delete trimmedScope["resourceVersions"];
                   var newJson = angular.toJson(trimmedScope, true);
                   if (lastJson !== newJson) {
+                    //log.debug("Kube model changed, old: ", lastJson, " new: ", newJson);
                     lastJson = newJson;
-                    //console.log("model actually updated: " + newJson);
-                    console.log("model actually updated");
-                    angular.copy($scope, stableScope);
-                    $rootScope.$broadcast('kubernetesModelUpdated');
+                    _.forIn(trimmedScope, (value, prop) => {
+                      if (_.isArray(value)) {
+                        ArrayHelpers.sync(stableScope[prop], trimmedScope[prop], '_key');
+                      } else {
+                        stableScope[prop] = trimmedScope[prop];
+                      }
+                    });
                   }
                 }
                 next();
@@ -504,9 +512,7 @@ module Kubernetes {
                     item.proxyUrl = url;
                   });
                 });
-
                 $scope.services = items;
-                //$scope.orRedraw(ArrayHelpers.sync($scope.services, items, "_key"));
               }
               maybeNext(ready + 1);
             });
@@ -514,7 +520,6 @@ module Kubernetes {
               if (response && hasChanged(response, "replicationControllers")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
                 $scope.replicationControllers = items;
-                //$scope.orRedraw(ArrayHelpers.sync($scope.replicationControllers, items, "_key"));
               }
               maybeNext(ready + 1);
             });
@@ -522,7 +527,6 @@ module Kubernetes {
               if (response && hasChanged(response, "pods")) {
                 var items = populateKeys((response.items || []).sortBy(byId));
                 $scope.pods = items;
-                //$scope.orRedraw(ArrayHelpers.sync($scope.pods, items, "_key"));
               }
               maybeNext(ready + 1);
             });

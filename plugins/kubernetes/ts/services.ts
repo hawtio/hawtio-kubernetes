@@ -33,10 +33,6 @@ module Kubernetes {
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
-    $scope.$on('kubernetesModelUpdated', function () {
-      Core.$apply($scope);
-    });
-
     KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {
       KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
         $scope.deletePrompt = (selected) => {
@@ -61,7 +57,7 @@ module Kubernetes {
                     }, (error) => {
                       log.debug("Error deleting: ", error);
                       deleteSelected(selected, selected.shift());
-                    });
+                      });
                   }
                 }
                 deleteSelected(selected, selected.shift());
