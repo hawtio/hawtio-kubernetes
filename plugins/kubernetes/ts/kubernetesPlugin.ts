@@ -1,6 +1,7 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
 /// <reference path="kubernetesModel.ts"/>
+declare var OSOAuthConfig:any;
 
 module Kubernetes {
 
@@ -309,6 +310,22 @@ module Kubernetes {
 
 
   }]);
+
+
+  hawtioPluginLoader.registerPreBootstrapTask((next) => {
+    $.getScript('osconsole/config.js')
+      .done((script, textStatus) => {
+        var config = window['OPENSHIFT_CONFIG'];
+        log.debug("Fetched openshift config: ", config);
+        OSOAuthConfig = config['auth'];
+      })
+      .fail((response) => {
+        log.debug("Error fetching OAUTH config: ", response);
+      })
+      .always(() => {
+        next();
+      });
+  }, true);
 
   hawtioPluginLoader.addModule(pluginName);
 }

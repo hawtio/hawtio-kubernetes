@@ -27,7 +27,8 @@
     "hawtio-utilities": "~2.0.20",
     "hawtio-wiki": "~2.0.25",
     "hawtio-template-cache": "*",
-    "angular-restmod": "~1.1.8"
+    "angular-restmod": "~1.1.8",
+    "hawtio-oauth": "~2.0.0"
   },
   "devDependencies": {
     "bootstrap": "~3.3.1",
