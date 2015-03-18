@@ -295,6 +295,5 @@ module Kubernetes {
       }
     };
 
-;
   }]);
 }
