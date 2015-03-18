@@ -2,7 +2,7 @@
 /// <reference path="kubernetesPlugin.ts"/>
 
 module Kubernetes {
-
+  
   export var Apps = controller("Apps",
     ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia",
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.IPromise<ng.resource.IResourceClass>, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, KubernetesApiURL,
@@ -37,12 +37,16 @@ module Kubernetes {
       }
     }
 
+    $scope.$watch('model', (model) => {
+      ArrayHelpers.sync($scope.apps, model.apps);
+    }, true);
+
     function appRunning(app) {
       return $scope.model.apps.any((running) => running.appPath === app.appPath);
     }
 
     $scope.tableConfig = {
-      data: 'model.apps',
+      data: 'apps',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
