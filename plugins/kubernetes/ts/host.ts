@@ -11,6 +11,8 @@ module Kubernetes {
 
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
+        $scope.rawMode = false;
+        $scope.rawModel = null;
 
         $scope.itemConfig = {
           properties: {}
@@ -26,6 +28,11 @@ module Kubernetes {
           updateData();
         });
 
+        $scope.flipRaw = () => {
+          $scope.rawMode = !$scope.rawMode;
+          Core.$apply($scope);
+        };
+
         updateData();
 
         function updateData() {
@@ -39,6 +46,9 @@ module Kubernetes {
                   if (data) {
                     $scope.item = data;
                   }
+                  if ($scope.item) {
+                    $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
+                  }
                   Core.$apply($scope);
                 }).
                 error(function (data, status, headers, config) {
@@ -46,6 +56,7 @@ module Kubernetes {
                 });
             });
           } else {
+            $scope.rawModel = null;
             Core.$apply($scope);
           }
         }
