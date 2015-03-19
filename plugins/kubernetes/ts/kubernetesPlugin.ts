@@ -248,28 +248,21 @@ module Kubernetes {
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => !Core.isRemoteConnection())
-/*
-      TODO switch to smaller list of tabs when the 2 tab thingy works ;)
                          .tabs(apps, services, controllers, pods, hosts, overview)
- */
-                        .tabs(apps, services, controllers, pods, hosts, overview, repos, pipelines, builds, buildConfigs, deploys, imageRepositories)
                          .build();
     HawtioNav.add(mainTab);
 
 
-/*
     var projectsTab = builder.id('openshift')
                          .rank(100)
                          //.href(() => "/forge/repos")
                          .href(() => UrlHelpers.join(context, 'pipelines'))
                          .title(() => 'Projects')
                          .isValid(() => !Core.isRemoteConnection())
-                         //.tabs(repos, pipelines, builds, buildConfigs, deploys, imageRepositories)
                          .tabs(pipelines, builds, buildConfigs, deploys, imageRepositories)
                          .build();
 
     HawtioNav.add(projectsTab);
-*/
 
     // lets disable connect
     var navItems = HawtioNav.items || [];
