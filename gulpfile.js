@@ -114,8 +114,10 @@ gulp.task('connect', ['watch'], function() {
   // lets disable unauthorised TLS issues with kube REST API
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+  var osConsole = uri((process.env.OPENSHIFT_CONSOLE || 'https://localhost:8444'));
   var kube = uri((process.env.KUBERNETES_MASTER || 'https://localhost:8443') + '/api');
   var osapi = uri((process.env.KUBERNETES_MASTER || 'https://localhost:8443') + '/osapi');
+  console.log("Openshift console at: " + osConsole);
   console.log("Connecting to Kubernetes on: " + kube);
 
   var staticAssets = [{
@@ -173,6 +175,12 @@ gulp.task('connect', ['watch'], function() {
     + process.env.LOCAL_GOGS_HOST + ":" + gogsPort);
   }
   var defaultProxies = [{
+    proto: osConsole.protocol(),
+    port: osConsole.port(),
+    hostname: osConsole.hostname(),
+    path: '/osconsole',
+    targetPath: osConsole.path()
+  }, {
     proto: kube.protocol(),
     port: kube.port(),
     hostname: kube.hostname(),
@@ -201,7 +209,7 @@ gulp.task('connect', ['watch'], function() {
   var staticProxies = localProxies.concat(defaultProxies);
 
   hawtio.setConfig({
-    port: 2772,
+    port: 9000,
     staticProxies: staticProxies,
     staticAssets: staticAssets,
     fallback: 'index.html',
