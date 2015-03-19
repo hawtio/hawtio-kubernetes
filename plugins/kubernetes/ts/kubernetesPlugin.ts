@@ -197,6 +197,11 @@ module Kubernetes {
                       .title(() => 'Hosts')
                       .build();
 
+    var overview = builder.id('kube-overview')
+                          .href(() => UrlHelpers.join(context, 'overview'))
+                          .title(() => 'Diagram')
+                          .build();
+
     var builds = builder.id('kube-builds')
                       .href(() => UrlHelpers.join(context, 'builds'))
                       .title(() => 'Builds')
@@ -222,10 +227,10 @@ module Kubernetes {
                       .title(() => 'Pipelines')
                       .build();
 
-    var overview = builder.id('kube-overview')
-                          .href(() => UrlHelpers.join(context, 'overview'))
-                          .title(() => 'Diagram')
-                          .build();
+    var repos = builder.id('kube-repos')
+                      .href(() => "/forge/repos")
+                      .title(() => 'Repositories')
+                      .build();
 
     var mainTab = builder.id('kubernetes')
                          .rank(200)
@@ -238,14 +243,32 @@ module Kubernetes {
                                no();
                              }
                            }
-                         }) 
+                         })
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => !Core.isRemoteConnection())
-                         .tabs(apps, services, controllers, pods, hosts, overview, builds, buildConfigs, deploys, imageRepositories, pipelines)
+/*
+      TODO switch to smaller list of tabs when the 2 tab thingy works ;)
+                         .tabs(apps, services, controllers, pods, hosts, overview)
+ */
+                        .tabs(apps, services, controllers, pods, hosts, overview, repos, pipelines, builds, buildConfigs, deploys, imageRepositories)
+                         .build();
+    HawtioNav.add(mainTab);
+
+
+/*
+    var projectsTab = builder.id('openshift')
+                         .rank(100)
+                         //.href(() => "/forge/repos")
+                         .href(() => UrlHelpers.join(context, 'pipelines'))
+                         .title(() => 'Projects')
+                         .isValid(() => !Core.isRemoteConnection())
+                         //.tabs(repos, pipelines, builds, buildConfigs, deploys, imageRepositories)
+                         .tabs(pipelines, builds, buildConfigs, deploys, imageRepositories)
                          .build();
 
-    HawtioNav.add(mainTab);
+    HawtioNav.add(projectsTab);
+*/
 
     // lets disable connect
     var navItems = HawtioNav.items || [];
