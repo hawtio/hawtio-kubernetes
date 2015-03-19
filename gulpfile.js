@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     path = require('path'),
     url = require('url'),
     uri = require('URIjs'),
+    urljoin = require('url-join'),
     s = require('underscore.string'),
     hawtio = require('hawtio-node-backend');
 
@@ -114,10 +115,9 @@ gulp.task('connect', ['watch'], function() {
   // lets disable unauthorised TLS issues with kube REST API
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-  var osConsole = uri((process.env.OPENSHIFT_CONSOLE || 'https://localhost:8444'));
-  var kube = uri((process.env.KUBERNETES_MASTER || 'https://localhost:8443') + '/api');
-  var osapi = uri((process.env.KUBERNETES_MASTER || 'https://localhost:8443') + '/osapi');
-  console.log("Openshift console at: " + osConsole);
+  var kubeBase = process.env.KUBERNETES_MASTER || 'https://localhost:8443';
+  var kube = uri(urljoin(kubeBase, 'api'));
+  var osapi = uri(urljoin(kubeBase, 'osapi'));
   console.log("Connecting to Kubernetes on: " + kube);
 
   var staticAssets = [{
@@ -175,12 +175,6 @@ gulp.task('connect', ['watch'], function() {
     + process.env.LOCAL_GOGS_HOST + ":" + gogsPort);
   }
   var defaultProxies = [{
-    proto: osConsole.protocol(),
-    port: osConsole.port(),
-    hostname: osConsole.hostname(),
-    path: '/osconsole',
-    targetPath: osConsole.path()
-  }, {
     proto: kube.protocol(),
     port: kube.port(),
     hostname: kube.hostname(),
@@ -218,6 +212,16 @@ gulp.task('connect', ['watch'], function() {
     }
   });
   var debugLoggingOfProxy = process.env.DEBUG_PROXY === "true";
+  hawtio.use('/osconsole/config.js', function(req, res, next) {
+    var configJs = 'window.OPENSHIFT_CONFIG = {' +
+      ' auth: {' +
+      '   oauth_authorize_uri: "' + urljoin(kubeBase, '/oauth/authorize')  + '",' +
+      '   oauth_client_id: "fabric8-console",' +
+      ' }' +
+      '};';
+    res.set('Content-Type', 'application/javascript');
+    res.send(configJs);
+  });
   hawtio.use('/', function(req, res, next) {
           var path = req.originalUrl;
           // avoid returning these files, they should get pulled from js
