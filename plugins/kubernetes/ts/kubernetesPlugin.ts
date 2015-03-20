@@ -230,6 +230,7 @@ module Kubernetes {
 
     var repos = builder.id('kube-repos')
                       .href(() => "/forge/repos")
+                      .isValid(() => ServiceRegistry.hasService("fabric8-forge") && ServiceRegistry.hasService("gogs-http-service") && !Core.isRemoteConnection())
                       .title(() => 'Repositories')
                       .build();
 
@@ -259,7 +260,7 @@ module Kubernetes {
                          .href(() => UrlHelpers.join(context, 'pipelines'))
                          .title(() => 'Projects')
                          .isValid(() => !Core.isRemoteConnection())
-                         .tabs(pipelines, builds, buildConfigs, deploys, imageRepositories)
+                         .tabs(repos, pipelines, builds, buildConfigs, deploys, imageRepositories)
                          .build();
 
     HawtioNav.add(projectsTab);
