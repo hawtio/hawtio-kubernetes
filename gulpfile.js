@@ -251,7 +251,7 @@ gulp.task('reload', function() {
 gulp.task('build', ['bower', 'path-adjust', 'tsc', 'template', 'concat', 'clean']);
 
 gulp.task('site', ['clean', 'build'], function() {
-  gulp.src(['index.html', 'css/**', 'images/**', 'img/**', 'libs/**', 'dist/**'], {base: '.'}).pipe(gulp.dest('site'));
+  gulp.src(['index.html', 'osconsole/config.js.tmpl', 'css/**', 'images/**', 'img/**', 'libs/**', 'dist/**'], {base: '.'}).pipe(gulp.dest('site'));
 
   var dirs = fs.readdirSync('./libs');
   dirs.forEach(function(dir) {

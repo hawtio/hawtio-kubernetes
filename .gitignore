@@ -6,3 +6,4 @@ site/
 *.req
 *.key
 serial
+osconsole/config.js
