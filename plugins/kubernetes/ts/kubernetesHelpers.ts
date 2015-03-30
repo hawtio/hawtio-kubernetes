@@ -836,6 +836,18 @@ module Kubernetes {
   }
 
   /**
+   * Returns the current kubernetes selected namespace or the default one
+   */
+  export function currentKubernetesNamespace() {
+    var injector = HawtioCore.injector;
+    if (injector) {
+      var KubernetesState = injector.get("KubernetesState") || {};
+      return KubernetesState.selectedNamespace || defaultNamespace;
+    }
+    return defaultNamespace;
+  }
+
+  /**
    * Configures the json schema
    */
   export function configureSchema() {

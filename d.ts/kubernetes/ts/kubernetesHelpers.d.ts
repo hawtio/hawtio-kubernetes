@@ -118,6 +118,10 @@ declare module Kubernetes {
      */
     function isForgeEnabled(): boolean;
     /**
+     * Returns the current kubernetes selected namespace or the default one
+     */
+    function currentKubernetesNamespace(): any;
+    /**
      * Configures the json schema
      */
     function configureSchema(): void;

@@ -314,6 +314,30 @@ module Kubernetes {
       isActive: (workspace) => false
     });
 
+    workspace.topLevelTabs.push({
+      id: 'kiwiirc',
+      content: 'Chat',
+      title: 'Chat room for discussing this namespace',
+      isValid: (workspace) => ServiceRegistry.hasService("kiwiirc") && !Core.isRemoteConnection(),
+      href: () => {
+        var answer = ServiceRegistry.serviceLink("kiwiirc");
+        if (answer) {
+          var ircHost = "";
+          var ircService = ServiceRegistry.findService("hubot");
+          if (ircService) {
+            ircHost = ircService.portalIP;
+          }
+          if (ircHost) {
+            var nick = localStorage["gogsUser"] || localStorage["ircNick"] || "myname";
+            var room = "#fabric8-" +  currentKubernetesNamespace();
+            answer = UrlHelpers.join(answer, "/kiwi", ircHost, "?&nick=" + nick + room);
+          }
+        }
+        return answer;
+      },
+      isActive: (workspace) => false
+    });
+
     // TODO we should move this to a nicer link inside the Library soon - also lets hide until it works...
 /*
     workspace.topLevelTabs.push({
