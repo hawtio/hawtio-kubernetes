@@ -7,8 +7,7 @@ CMD [ "-p", "9090", \
       "-s", "/kubernetes/osapi/=https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/osapi/", \
       "--skip-cert-validation", \
       "--default-page=/index.html", \
-      "--max-age=24h", \
-      "--compress" ]
+      "--max-age=24h" ]
 EXPOSE 9000
 
 ENV KUISP_VERSION 0.8
