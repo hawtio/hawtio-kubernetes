@@ -141,6 +141,25 @@ module Kubernetes {
           this.discoverPodConnections(pod);
           pod.$containerPorts = [];
           angular.forEach(Core.pathGet(pod, ["desiredState", "manifest", "containers"]), (container) => {
+            var image = container.image;
+            if (image) {
+              var idx = image.lastIndexOf(":");
+              if (idx > 0) {
+                image = image.substring(0, idx);
+              }
+              var paths = image.split("/", 3);
+              if (paths.length) {
+                var answer = null;
+                if (paths.length == 3) {
+                  answer = paths[1] + "/" + paths[2];
+                } else if (paths.length == 2) {
+                  answer = paths[0] + "/" + paths[1];
+                } else {
+                  answer = paths[0] + "/" + paths[1];
+                }
+                container.$imageLink = UrlHelpers.join("https://registry.hub.docker.com/u/", answer);
+              }
+            }
             angular.forEach(container.ports, (port) => {
               var containerPort = port.containerPort;
               if (containerPort) {

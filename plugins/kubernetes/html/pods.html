@@ -4,7 +4,8 @@
       <!-- in table -->
       <span ng-hide="data">
         <span ng-repeat="container in row.entity.desiredState.manifest.containers">
-          <a target="dockerRegistry" href="https://registry.hub.docker.com/u/{{container.image}}" title="{{container.name}}">{{container.image}}</a>
+          <span ng-hide="container.$imageLink">{{container.image}}</span>
+          <a ng-show="container.$imageLink" target="dockerRegistry" href="{{container.$imageLink}}" title="{{container.name}}">{{container.image}}</a>
         </span>
       </span>
       <!-- in detail view -->
