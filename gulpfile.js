@@ -152,7 +152,7 @@ gulp.task('connect', ['watch'], function() {
   if (process.env.LOCAL_FABRIC8_FORGE === "true") {
     localProxies.push({
         proto: "http",
-        port: "8599",
+        port: "8080",
         hostname: "localhost",
         path: '/kubernetes/api/v1beta2/proxy/services/fabric8-forge',
         targetPath: "/"
