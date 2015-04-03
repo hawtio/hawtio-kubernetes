@@ -352,7 +352,6 @@ module Kubernetes {
 
   }]);
 
-
   hawtioPluginLoader.registerPreBootstrapTask((next) => {
     $.getScript('osconsole/config.js')
       .done((script, textStatus) => {
