@@ -11,7 +11,7 @@ CMD [ "-p", "9090", \
       "--default-page=/index.html", \
       "--max-age=24h", \
       "--compress" ]
-EXPOSE 9000
+EXPOSE 9090
 
 ENV KUISP_VERSION 0.10
 
