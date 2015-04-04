@@ -1,24 +1,24 @@
-FROM gliderlabs/alpine:3.1
+FROM centos:centos7
 MAINTAINER Jimmi Dyson <jimmidyson@gmail.com>
 ENTRYPOINT ["/kuisp"]
 CMD [ "-p", "9090", \
       "-c", "/site/osconsole/config.js.tmpl=/site/osconsole/config.js", \
-      "-s", "/kubernetes/api/v1beta2/proxy/services/app-library/=http://${APP_LIBRARY_SERVICE_HOST}:${APP_LIBRARY_SERVICE_PORT}/", \
-      "-s", "/kubernetes/api/v1beta2/proxy/services/app-library-jolokia/=http://${APP_LIBRARY_JOLOKIA_SERVICE_HOST}:${APP_LIBRARY_JOLOKIA_SERVICE_PORT}/", \
-      "-s", "/kubernetes/api/=https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/", \
-      "-s", "/kubernetes/osapi/=https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/osapi/", \
+      "-s", "/kubernetes/api/v1beta2/proxy/services/app-library/=http://app-library:9494/", \
+      "-s", "/kubernetes/api/v1beta2/proxy/services/app-library-jolokia/=http://app-library-jolokia:8778/", \
+      "-s", "/kubernetes/api/=https://kubernetes/api/", \
+      "-s", "/kubernetes/osapi/=https://kubernetes/osapi/", \
       "--skip-cert-validation", \
       "--default-page=/index.html", \
       "--max-age=24h", \
       "--compress" ]
 EXPOSE 9090
 
-ENV KUISP_VERSION 0.9
+ENV KUISP_VERSION 0.10
 
-RUN apk-install ca-certificates curl tar && \
+RUN yum install -y tar && \
+    yum clean all && \
     curl -L https://github.com/jimmidyson/kuisp/releases/download/v${KUISP_VERSION}/kuisp-${KUISP_VERSION}-linux-amd64.tar.gz | \
-      tar xzv && \
-    apk del curl tar
+      tar xzv
 
 COPY site /site/
 RUN chown nobody:nobody /site/osconsole/
