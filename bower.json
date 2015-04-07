@@ -23,7 +23,7 @@
     "hawtio-core-navigation": "~2.0.0",
     "hawtio-forge": "~2.0.12",
     "hawtio-forms": "~2.0.6",
-    "hawtio-ui": "~2.0.0",
+    "hawtio-ui": "~2.0.39",
     "hawtio-utilities": "~2.0.20",
     "hawtio-wiki": "~2.0.25",
     "hawtio-template-cache": "*",
