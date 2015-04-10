@@ -65,6 +65,7 @@ module Kubernetes {
 
     $scope.expandedPods = [];
 
+        
     $scope.podExpanded = (pod) => {
       var id = (pod || {}).id;
       return id && ($scope.expandedPods || []).indexOf(id) >= 0;
