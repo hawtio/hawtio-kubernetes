@@ -83,7 +83,7 @@ module Kubernetes {
                       // now lets find a pipeline step which fires from this
                       angular.forEach(pipelineSteps, (pipelineStep, key) => {
                         var to = Core.pathGet(pipelineStep, ["buildConfig", "parameters", "output", "to"]);
-                        if (to && to.kind === "ImageRepository") {
+                        if (to && (to.kind === "ImageRepository" || to.kind === "ImageStream")) {
                           var toName = to.name;
                           if (toName === name) {
                             var selector = Core.pathGet(deploymentConfig, ["template", "controllerTemplate", "replicaSelector"]);
