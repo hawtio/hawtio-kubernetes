@@ -314,14 +314,19 @@ module Kubernetes {
       isActive: (workspace) => false
     });
 
+    //var chatService = "kiwiirc";
+    var chatService = "letschat";
     workspace.topLevelTabs.push({
-      id: 'kiwiirc',
+      id: "chat",
       content: 'Chat',
       title: 'Chat room for discussing this namespace',
-      isValid: (workspace) => ServiceRegistry.hasService("kiwiirc") && !Core.isRemoteConnection(),
+      isValid: (workspace) => ServiceRegistry.hasService(chatService) && !Core.isRemoteConnection(),
       href: () => {
-        var answer = ServiceRegistry.serviceLink("kiwiirc");
+        var answer = ServiceRegistry.serviceLink(chatService);
         if (answer) {
+/*
+          TODO add a custom link to the correct room for the current namespace?
+
           var ircHost = "";
           var ircService = ServiceRegistry.findService("hubot");
           if (ircService) {
@@ -332,6 +337,7 @@ module Kubernetes {
             var room = "#fabric8-" +  currentKubernetesNamespace();
             answer = UrlHelpers.join(answer, "/kiwi", ircHost, "?&nick=" + nick + room);
           }
+*/
         }
         return answer;
       },
