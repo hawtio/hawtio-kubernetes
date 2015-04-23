@@ -11,12 +11,21 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
+    $scope.replicationControllers = [];
+
+    /*
     $scope.$on('kubernetesModelUpdated', function () {
       Core.$apply($scope);
     });
+    */
+    $scope.$watch('model.replicationControllers', (newValue, oldValue) => {
+      if (newValue && newValue.length > 0 && _.first(newValue)['$podCounters']) {
+        ArrayHelpers.sync($scope.replicationControllers, newValue);
+      } 
+    }, true);
 
     $scope.tableConfig = {
-      data: 'model.replicationControllers',
+      data: 'replicationControllers',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,

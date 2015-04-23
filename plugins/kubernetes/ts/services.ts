@@ -11,9 +11,16 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
+    $scope.services = [];
+
+    $scope.$watch('model.services', (newValue, oldValue) => {
+      if (newValue && newValue.length > 0 && _.first(newValue)['$podCounters']) {
+        ArrayHelpers.sync($scope.services, newValue);
+      } 
+    }, true);
 
     $scope.tableConfig = {
-      data: 'model.services',
+      data: 'services',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
