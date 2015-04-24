@@ -1,8 +1,7 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
 /// <reference path="kubernetesModel.ts"/>
-declare var OSOAuthConfig:any;
-
+/// <reference path="schema.ts"/>
 module Kubernetes {
 
   export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'wiki', 'restmod']);
@@ -170,9 +169,7 @@ module Kubernetes {
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
     log.debug("Running");
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
-
     var builder = HawtioNav.builder();
-
     var apps = builder.id('kube-apps')
                       .href(() => UrlHelpers.join(context, 'apps'))
                       .title(() => 'Apps')
@@ -257,121 +254,14 @@ module Kubernetes {
     var projectsTab = builder.id('openshift')
                          .rank(100)
                          //.href(() => "/forge/repos")
-                         .href(() => UrlHelpers.join(context, 'pipelines'))
+                         .href(() => UrlHelpers.join(context, 'pipelines') + '?sub-tab=kube-pipelines')
                          .title(() => 'Projects')
                          .isValid(() => !Core.isRemoteConnection())
                          .tabs(repos, pipelines, builds, buildConfigs, deploys, imageRepositories)
                          .build();
 
     HawtioNav.add(projectsTab);
-
-    // lets disable connect
-    var navItems = HawtioNav.items || [];
-    var connect = navItems.find((item) => item.id === "jvm");
-    if (connect) {
-      connect.isValid = () => false;
-    }
-    // images plugin doesn't work yet...
-    var dockerRegistry = navItems.find((item) => item.id === "docker-registry");
-    if (dockerRegistry) {
-      dockerRegistry.isValid = () => false;
-    }
-
-    // disable the forge plugin tab
-    var forge = navItems.find((item) => item.id === "forge");
-    if (forge) {
-      forge.isValid = () => false;
-    }
-    var wiki = navItems.find((item) => item.id === "wiki");
-    if (wiki) {
-      wiki.isValid = () => false;
-    }
-
-    workspace.topLevelTabs.push({
-      id: 'library',
-      content: 'Library',
-      title: 'View the library of applications',
-      isValid: (workspace) => ServiceRegistry.hasService("app-library") && ServiceRegistry.hasService("app-library-jolokia") && !Core.isRemoteConnection(),
-      href: () => "/wiki/view",
-      isActive: (workspace) => false
-    });
-
-    workspace.topLevelTabs.push({
-      id: 'kibana',
-      content: 'Logs',
-      title: 'View and search all logs across all containers using Kibana and ElasticSearch',
-      isValid: (workspace) => ServiceRegistry.hasService("kibana-service") && !Core.isRemoteConnection(),
-      href: () => kibanaLogsLink(ServiceRegistry),
-      isActive: (workspace) => false
-    });
-
-    workspace.topLevelTabs.push({
-      id: 'grafana',
-      content: 'Metrics',
-      title: 'Views metrics across all containers using Grafana and InfluxDB',
-      isValid: (workspace) => ServiceRegistry.hasService("grafana-service") && !Core.isRemoteConnection(),
-      href: () => ServiceRegistry.serviceLink("grafana-service"),
-      isActive: (workspace) => false
-    });
-
-    //var chatService = "kiwiirc";
-    var chatService = "letschat";
-    workspace.topLevelTabs.push({
-      id: "chat",
-      content: 'Chat',
-      title: 'Chat room for discussing this namespace',
-      isValid: (workspace) => ServiceRegistry.hasService(chatService) && !Core.isRemoteConnection(),
-      href: () => {
-        var answer = ServiceRegistry.serviceLink(chatService);
-        if (answer) {
-/*
-          TODO add a custom link to the correct room for the current namespace?
-
-          var ircHost = "";
-          var ircService = ServiceRegistry.findService("hubot");
-          if (ircService) {
-            ircHost = ircService.portalIP;
-          }
-          if (ircHost) {
-            var nick = localStorage["gogsUser"] || localStorage["ircNick"] || "myname";
-            var room = "#fabric8-" +  currentKubernetesNamespace();
-            answer = UrlHelpers.join(answer, "/kiwi", ircHost, "?&nick=" + nick + room);
-          }
-*/
-        }
-        return answer;
-      },
-      isActive: (workspace) => false
-    });
-
-    // TODO we should move this to a nicer link inside the Library soon - also lets hide until it works...
-/*
-    workspace.topLevelTabs.push({
-      id: 'createProject',
-      content: 'Create',
-      title: 'Creates a new project',
-      isValid: (workspace) => ServiceRegistry.hasService("app-library") && false,
-      href: () => "/project/create"
-    });
-*/
-
-
   }]);
-
-  hawtioPluginLoader.registerPreBootstrapTask((next) => {
-    $.getScript('osconsole/config.js')
-      .done((script, textStatus) => {
-        var config = window['OPENSHIFT_CONFIG'];
-        log.debug("Fetched openshift config: ", config);
-        OSOAuthConfig = config['auth'];
-      })
-      .fail((response) => {
-        log.debug("Error fetching OAUTH config: ", response);
-      })
-      .always(() => {
-        next();
-      });
-  }, true);
 
   hawtioPluginLoader.addModule(pluginName);
 }
