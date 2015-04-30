@@ -104,7 +104,7 @@
 </div>
 <div ng-controller="Kubernetes.ConnectController">
   <div hawtio-confirm-dialog="connect.dialog.show" title="Connect to {{connect.containerName}}?"
-       ok-button-text="Connect" on-ok="onOK()">
+       ok-button-text="Connect" cancel-button-text="Cancel" on-ok="onOK()">
     <div class="dialog-body">
       <p>Please enter the user name and password for {{connect.containerName}}:</p>
 

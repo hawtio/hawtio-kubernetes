@@ -1,8 +1,5 @@
 /// <reference path="d.ts/includes.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesHelpers.d.ts"/>
-/// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
-/// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
-/// <reference path="d.ts/project/ts/project.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesModel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/schema.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesPlugin.d.ts"/>
@@ -34,3 +31,6 @@
 /// <reference path="d.ts/kubernetes/ts/serviceRegistry.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/services.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
+/// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
+/// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
+/// <reference path="d.ts/project/ts/project.d.ts"/>
