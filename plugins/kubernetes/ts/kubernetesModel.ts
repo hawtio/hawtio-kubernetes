@@ -329,7 +329,7 @@ module Kubernetes {
             if (service) {
               service.$host = host;
             } else {
-              console.log("Could not find service " + serviceName + " namespace " + namespace + " for route: " + metadata.name);
+              log.debug("Could not find service " + serviceName + " namespace " + namespace + " for route: " + metadata.name);
             }
           }
         });
