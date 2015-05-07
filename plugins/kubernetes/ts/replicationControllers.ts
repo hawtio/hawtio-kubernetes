@@ -19,7 +19,7 @@ module Kubernetes {
     });
     */
     $scope.$watch('model.replicationControllers', (newValue, oldValue) => {
-      var newValue = KubernetesModel.replicationControllers;
+      //var newValue = KubernetesModel.replicationControllers;
 /*
       TODO on v1beta3 this seems to only show 1 RC :)
 
@@ -29,7 +29,7 @@ module Kubernetes {
         console.log("Not updating model for " + newValue.length);
       }
 */
-      $scope.replicationControllers = newValue;
+      $scope.replicationControllers = KubernetesModel.replicationControllers;;
     }, true);
 
     $scope.tableConfig = {

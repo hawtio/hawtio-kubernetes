@@ -28,6 +28,7 @@ declare module Kubernetes {
     function getLabels(entity: any): any;
     function getName(entity: any): any;
     function getKind(entity: any): any;
+    function getSelector(entity: any): any;
     interface KubePod {
         id: string;
         namespace: string;
