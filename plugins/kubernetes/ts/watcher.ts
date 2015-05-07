@@ -70,7 +70,10 @@ module Kubernetes {
 				access_token: userDetails.token 
 			});
 			
+			var retries = 0;
+			
 			var onOpen = (event) => {
+				retries = 0;
 				log.debug("Started watch on ", watch.url);
 			}
 			
@@ -104,11 +107,14 @@ module Kubernetes {
 			}
 			
 			var onClose = (event) => {
+				watch.ws = undefined;
 				log.debug("Stopped watching ", watch.url, " retrying");
-				var ws = watch.ws = new WebSocket(uri.toString());
-				ws.onopen = onOpen;
-				ws.onmessage = onMessage;
-				ws.onclose = onClose;
+				if (retries < 3) {
+					var ws = watch.ws = new WebSocket(uri.toString());
+					ws.onopen = onOpen;
+					ws.onmessage = onMessage;
+					ws.onclose = onClose;
+				}
 			}
 			
 			var ws = watch.ws = new WebSocket(uri.toString());
