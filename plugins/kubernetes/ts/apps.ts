@@ -55,8 +55,7 @@ module Kubernetes {
         { field: 'services', displayName: 'Services', cellTemplate: $templateCache.get("appServicesTemplate.html") },
         { field: 'replicationControllers', displayName: 'Controllers', cellTemplate: $templateCache.get("appReplicationControllerTemplate.html") },
         { field: '$podsLink', displayName: 'Pods', cellTemplate: $templateCache.get("appPodCountsAndLinkTemplate.html") },
-        { field: '$deployedText', displayName: 'Deployed', cellTemplate: $templateCache.get("appDeployedTemplate.html") },
-        { field: 'namespace', displayName: 'Namespace' }
+        { field: '$deployedText', displayName: 'Deployed', cellTemplate: $templateCache.get("appDeployedTemplate.html") }
       ]
     };
 

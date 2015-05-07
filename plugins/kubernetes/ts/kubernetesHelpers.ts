@@ -91,6 +91,11 @@ module Kubernetes {
     return Core.pathGet(pod, ["status", "phase"]);
   }
 
+  export function getCreationTimestamp(entity) {
+    return Core.pathGet(entity, ["metadata", "creationTimestamp"]);
+  };
+
+
   export interface KubePod {
     id:string;
     namespace:string;
@@ -661,7 +666,7 @@ module Kubernetes {
       } else {
         answer.error += 1;
       }
-      var creationTimestamp = pod.creationTimestamp;
+      var creationTimestamp = getCreationTimestamp(pod);
       if (creationTimestamp) {
         var d = new Date(creationTimestamp);
         if (!lowestDate || d < lowestDate) {
@@ -807,7 +812,7 @@ module Kubernetes {
       if (configId) {
         build.$configLink = UrlHelpers.join("kubernetes/buildConfigs", configId);
       }
-      var creationTimestamp = metadata.creationTimestamp;
+      var creationTimestamp = getCreationTimestamp(build);
       if (creationTimestamp) {
         var d = new Date(creationTimestamp);
         build.$creationDate = d;

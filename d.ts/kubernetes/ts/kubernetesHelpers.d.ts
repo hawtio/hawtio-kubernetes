@@ -31,6 +31,7 @@ declare module Kubernetes {
     function getSelector(entity: any): any;
     function getHost(pod: any): any;
     function getStatus(pod: any): any;
+    function getCreationTimestamp(entity: any): any;
     interface KubePod {
         id: string;
         namespace: string;

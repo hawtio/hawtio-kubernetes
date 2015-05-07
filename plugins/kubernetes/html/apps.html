@@ -15,8 +15,8 @@
     <div class="ngCellText">
       <span ng-repeat="service in row.entity.services">
           <a ng-href="{{service | kubernetesPageLink}}">
-          <span>{{service.name || service.id}}</span>
-        </a>
+            <span>{{service.metadata.name ||service.name || service.id}}</span>
+          </a>
       </span>
     </div>
   </script>
@@ -29,10 +29,11 @@
     <div class="ngCellText">
       <span ng-repeat="controller in row.entity.replicationControllers">
         <a ng-href="{{controller | kubernetesPageLink}}">
-          <span>{{controller.id}}</span>
+          <span>{{controller.metadata.name || controller.id}}</span>
         </a>
         &nbsp;
-        <span class="btn btn-sm" ng-click="resizeDialog.open(controller)" title="Resize the number of replicas of this controller">{{controller.replicas}}</span>
+        <span class="btn btn-sm" ng-click="resizeDialog.open(controller)"
+              title="Resize the number of replicas of this controller">{{controller.replicas}}</span>
       </span>
     </div>
   </script>
@@ -54,7 +55,8 @@
           <img ng-show="item.$iconUrl" ng-src="{{item.$iconUrl}}">
         </span>
         <span class="service-view-name" title="{{view.name}}">{{view.appName}}</span>
-        <span class="service-view-address" title="Go to the service detail page"><a ng-href="{{view.service | kubernetesPageLink}}">{{view.address}}</a></span>
+        <span class="service-view-address" title="Go to the service detail page"><a
+                ng-href="{{view.service | kubernetesPageLink}}">{{view.address}}</a></span>
       </div>
 
       <div class="service-view-detail-rectangle">
@@ -65,11 +67,18 @@
               deployed:
               <span class="value">{{view.createdDate.relative()}}</span>
             </div>
+            <div class="service-view-detail-deployed" ng-hide="view.createdDate">
+              not deployed
+            </div>
           </div>
           <div class="col-md-4">
             <div class="service-view-detail-pod-template" ng-show="view.controllerId">
               pod template:
-              <span class="value" title="Go to the replication controller detail page"><a ng-href="{{view.replicationController | kubernetesPageLink}}">{{view.controllerId}}</a></span>
+              <span class="value" title="Go to the replication controller detail page"><a
+                      ng-href="{{view.replicationController | kubernetesPageLink}}">{{view.controllerId}}</a></span>
+            </div>
+            <div class="service-view-detail-pod-template" ng-hide="view.controllerId">
+              no pod template
             </div>
           </div>
           <div class="col-md-4 service-view-detail-pod-counts">
@@ -91,7 +100,8 @@
                 <td class="service-view-detail-pod-status">
                   <i ng-class="pod.statusClass"></i>
                 </td>
-                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
+                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl"
+                    ng-controller="Kubernetes.ConnectController">
                   <a class="clickable"
                      ng-click="doConnect(pod)"
                      title="Open a new window and connect to this container">
@@ -137,7 +147,8 @@
                 <td class="service-view-detail-pod-status">
                   <i ng-class="pod.statusClass"></i>
                 </td>
-                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
+                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl"
+                    ng-controller="Kubernetes.ConnectController">
                   <a class="clickable"
                      ng-click="doConnect(pod)"
                      title="Open a new window and connect to this container">
@@ -262,8 +273,8 @@
                         <span class="contained c-max">
                           <a href="" ng-click="appSelector.select(profile, !profile.selected)"
                              title="Details for {{profile.id}}">
-                              <img ng-show="profile.$iconUrl" class="icon-small-app" ng-src="{{profile.$iconUrl}}">
-                              <span class="app-name">{{profile.name}}</span>
+                            <img ng-show="profile.$iconUrl" class="icon-small-app" ng-src="{{profile.$iconUrl}}">
+                            <span class="app-name">{{profile.name}}</span>
                           </a>
                         </span>
                       </div>
@@ -302,13 +313,13 @@
         </button>
       </div>
       <div class="row">
-<!--
-        <div ng-hide="appSelector.selectedApps.length">
-          <p class="alert pull-right">
-            Please select an App
-          </p>
-        </div>
--->
+        <!--
+                <div ng-hide="appSelector.selectedApps.length">
+                  <p class="alert pull-right">
+                    Please select an App
+                  </p>
+                </div>
+        -->
 
         <div ng-show="appSelector.selectedApps.length">
 
