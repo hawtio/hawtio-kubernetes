@@ -79,6 +79,10 @@ module Kubernetes {
     return Core.pathGet(entity, ["metadata", "kind"]) || Core.pathGet(entity, "kind");
   }
 
+  export function getSelector(entity) {
+    return Core.pathGet(entity, ["spec", "selector"]);
+  }
+
   export interface KubePod {
     id:string;
     namespace:string;

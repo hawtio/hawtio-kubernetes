@@ -42,11 +42,11 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-        { field: 'id', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
+        { field: 'metadata.name', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
         { field: '$podsLink', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
         { field: 'desiredState.replicas', displayName: 'Replicas', cellTemplate:$templateCache.get("desiredReplicas.html") },
         { field: 'labelsText', displayName: 'Labels', cellTemplate: $templateCache.get("labelTemplate.html") },
-        { field: 'namespace', displayName: 'Namespace' }
+        { field: 'metadata.namespace', displayName: 'Namespace' }
       ]
     };
 
