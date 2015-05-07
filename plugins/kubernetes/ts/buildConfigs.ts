@@ -99,7 +99,7 @@ module Kubernetes {
       }
 
       function updateData() {
-        var url = buildConfigsRestURL;
+        var url = buildConfigsRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {

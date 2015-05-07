@@ -103,7 +103,7 @@ module Kubernetes {
       }
 
       function updateData() {
-        var url = imageRepositoriesRestURL;
+        var url = imageRepositoriesRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {

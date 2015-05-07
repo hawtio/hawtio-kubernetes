@@ -24,7 +24,7 @@ module Kubernetes {
         // log.debug("labels: ", newValue);
         // massage the labels a bit
         $scope.labels = [];
-        angular.forEach($scope.entity.labels, (value, key) => {
+        angular.forEach(Core.pathGet($scope.entity, ["metadata", "labels"]), (value, key) => {
           if (key === 'fabric8') {
             // TODO not sure what this is for, the container type?
             return;

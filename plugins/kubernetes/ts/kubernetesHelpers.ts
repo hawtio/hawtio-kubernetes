@@ -14,8 +14,8 @@ module Kubernetes {
   export var defaultIconUrl = Core.url("/img/kubernetes.svg");
   export var hostIconUrl = Core.url("/img/host.svg");
 
-  export var defaultApiVersion = "v1beta2";
-  export var defaultOSApiVersion = "v1beta1";
+  export var defaultApiVersion = "v1beta3";
+  export var defaultOSApiVersion = "v1beta3";
   export var labelFilterTextSeparator = ",";
 
   export var defaultNamespace = "default";
@@ -23,13 +23,43 @@ module Kubernetes {
   export var appSuffix = ".app";
 
   export var osapiPrefix = "/kubernetes/osapi/";
-  export var buildConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigs";
-  export var buildConfigHooksRestURL = osapiPrefix + defaultOSApiVersion + "/buildConfigHooks";
-  export var buildsRestURL = osapiPrefix + defaultOSApiVersion + "/builds";
-  export var buildsLogsRestURL = osapiPrefix + defaultOSApiVersion + "/proxy/buildLogs";
-  export var routesRestURL = osapiPrefix + defaultOSApiVersion + "/routes";
-  export var deploymentConfigsRestURL = osapiPrefix + defaultOSApiVersion + "/deploymentConfigs";
-  export var imageRepositoriesRestURL = osapiPrefix + defaultOSApiVersion + "/imageRepositories";
+
+  export function kubernetesNamespacePath() {
+    var ns = currentKubernetesNamespace();
+    if (ns) {
+      return "/namespaces/" + ns;
+    } else {
+      return "";
+    }
+  }
+
+  export function imageRepositoriesRestURL() {
+    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/imagestreams";
+  }
+
+  export function deploymentConfigsRestURL() {
+    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/deploymentconfigs";
+  }
+
+  export function buildsLogsRestURL() {
+    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/proxy/buildlogs";
+  }
+
+  export function buildsRestURL() {
+    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/builds";
+  }
+
+  export function buildConfigHooksRestURL() {
+    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfighooks";
+  }
+
+  export function buildConfigsRestURL() {
+    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfigs";
+  }
+
+  export function routesRestURL() {
+    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/routes";
+  }
 
   export interface KubePod {
     id:string;
@@ -147,14 +177,14 @@ module Kubernetes {
         resizeDialog.dialog.close();
         resizeController($http, KubernetesApiURL, resizeDialog.controller, resizeDialog.newReplicas, () => {
           // lets immediately update the replica count to avoid waiting for the next poll
-          ($scope.resizeDialog.controller.currentState || {}).replicas = $scope.resizeDialog.newReplicas;
+          ($scope.resizeDialog.controller.status || {}).replicas = $scope.resizeDialog.newReplicas;
           Core.$apply($scope);
         })
       },
       open: (controller) => {
         var resizeDialog = $scope.resizeDialog;
         resizeDialog.controller = controller;
-        resizeDialog.newReplicas = Core.pathGet(controller, ["currentState", "replicas"]);
+        resizeDialog.newReplicas = Core.pathGet(controller, ["status", "replicas"]);
         resizeDialog.dialog.open();
 
         $timeout(() => {
@@ -241,7 +271,7 @@ module Kubernetes {
       angular.forEach(pods, pod => {
         if (filterFn(pod)) {
           outputPods.push(pod);
-          var status = (pod.currentState || {}).status;
+          var status = (pod.status || {}).status;
 
           if (status) {
             var lower = status.toLowerCase();
@@ -316,7 +346,7 @@ module Kubernetes {
   export function resourceKindToUriPath(kind) {
     var kindPath = kind.toLowerCase() + "s";
     if (kindPath === "replicationcontrollers" && isV1beta1Or2()) {
-      kindPath = "replicationControllers";
+      kindPath = "replicationcontrollers";
     }
     return kindPath;
   }
@@ -380,23 +410,23 @@ module Kubernetes {
   }
 
   export function buildConfigRestUrl(id) {
-    return UrlHelpers.join(buildConfigsRestURL, id);
+    return UrlHelpers.join(buildConfigsRestURL(), id);
   }
 
   export function deploymentConfigRestUrl(id) {
-    return UrlHelpers.join(deploymentConfigsRestURL, id);
+    return UrlHelpers.join(deploymentConfigsRestURL(), id);
   }
 
   export function imageRepositoryRestUrl(id) {
-    return UrlHelpers.join(imageRepositoriesRestURL, id);
+    return UrlHelpers.join(imageRepositoriesRestURL(), id);
   }
 
   export function buildRestUrl(id) {
-    return UrlHelpers.join(buildsRestURL, id);
+    return UrlHelpers.join(buildsRestURL(), id);
   }
 
   export function buildLogsRestUrl(id) {
-    return UrlHelpers.join(buildsLogsRestURL, id);
+    return UrlHelpers.join(buildsLogsRestURL(), id);
   }
 
   /**
@@ -528,10 +558,10 @@ module Kubernetes {
       $http.get(url).
         success(function (data, status, headers, config) {
           if (data) {
-            var desiredState = data.desiredState;
+            var desiredState = data.spec;
             if (!desiredState) {
               desiredState = {};
-              data.desiredState = desiredState;
+              data.spec = desiredState;
             }
             desiredState.replicas = newReplicas;
             $http.put(url, data).
@@ -571,7 +601,7 @@ module Kubernetes {
   }
 
   export function podStatus(pod) {
-    var currentStatus = (pod || {}).currentState || {};
+    var currentStatus = (pod || {}).status || {};
     return currentStatus.status;
   }
 
@@ -694,7 +724,7 @@ module Kubernetes {
                 if (type && generic) {
                   var secret = generic.secret;
                   if (secret) {
-                    triggerUrl = UrlHelpers.join(buildConfigHooksRestURL, name, secret, type);
+                    triggerUrl = UrlHelpers.join(buildConfigHooksRestURL(), name, secret, type);
                     buildConfig.$triggerUrl = triggerUrl;
                   }
                 }

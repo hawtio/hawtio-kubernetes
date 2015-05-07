@@ -127,7 +127,7 @@ module Kubernetes {
           }
         }
 
-        var url = buildsRestURL;
+        var url = buildsRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {
@@ -141,7 +141,7 @@ module Kubernetes {
             maybeNext();
 
           });
-        url = buildConfigsRestURL;
+        url = buildConfigsRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {
@@ -154,7 +154,7 @@ module Kubernetes {
             log.warn("Failed to load " + url + " " + data + " " + status);
             maybeNext();
           });
-        url = deploymentConfigsRestURL;
+        url = deploymentConfigsRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {

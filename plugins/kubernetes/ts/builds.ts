@@ -78,7 +78,7 @@ module Kubernetes {
 
       $scope.$keepPolling = () => keepPollingModel;
       $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-        var url = buildsRestURL;
+        var url = buildsRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {

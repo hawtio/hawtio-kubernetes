@@ -104,7 +104,7 @@
                   </div>
                   <div class="service-view-detail-pod-ip">
                     IP:
-                    <span class="value">{{pod.currentState.podIP}}</span>
+                    <span class="value">{{pod.status.podIP}}</span>
                   </div>
                 </td>
                 <td>
@@ -114,7 +114,7 @@
                   <div class="service-view-detail-pod-minion">
                     minion:
                     <span class="value">
-                      <a ng-show="pod.currentState.host" ng-href="/kubernetes/hosts/{{pod.currentState.host}}">{{pod.currentState.host}}</a>
+                      <a ng-show="pod.status.host" ng-href="/kubernetes/hosts/{{pod.status.host}}">{{pod.status.host}}</a>
                     </span>
                   </div>
                 </td>
@@ -150,7 +150,7 @@
                   </div>
                   <div class="service-view-detail-pod-ip">
                     IP:
-                    <span class="value">{{pod.currentState.podIP}}</span>
+                    <span class="value">{{pod.status.podIP}}</span>
                   </div>
                 </td>
                 <td class="service-view-detail-pod-expand" ng-click="expandPod(pod)">

@@ -2,14 +2,14 @@
   <script type="text/ng-template" id="currentReplicasTemplate.html">
     <div class="ngCellText" title="Number of running pods for this controller">
       <a ng-show="row.entity.podsLink" href="{{row.entity.podsLink}}">
-        <span class="badge {{row.entity.currentState.replicas > 0 ? 'badge-success' : 'badge-warning'}}">{{row.entity.currentState.replicas}}</span>
+        <span class="badge {{row.entity.status.replicas > 0 ? 'badge-success' : 'badge-warning'}}">{{row.entity.status.replicas}}</span>
       </a>
-      <span ng-hide="row.entity.podsLink" class="badge">{{row.entity.currentState.replicas}}</span>
+      <span ng-hide="row.entity.podsLink" class="badge">{{row.entity.status.replicas}}</span>
     </div>
   </script>
   <script type="text/ng-template" id="desiredReplicas.html">
     <div class="ngCellText">
-      <span class="btn btn-sm" ng-click="$parent.$parent.resizeDialog.open(row.entity)" title="Edit the number of replicas of this controller">{{row.entity.desiredState.replicas}}</span>
+      <span class="btn btn-sm" ng-click="$parent.$parent.resizeDialog.open(row.entity)" title="Edit the number of replicas of this controller">{{row.entity.spec.replicas}}</span>
     </div>
   </script>
   <div class="row filter-header">

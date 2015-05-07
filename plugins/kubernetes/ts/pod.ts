@@ -19,7 +19,7 @@ module Kubernetes {
         'manifest/containers/image$': {
           template: $templateCache.get('imageTemplate.html')
         },
-        'currentState/status': {
+        'status/status': {
           template: $templateCache.get('statusTemplate.html')
         },
         '\\/Env\\/': {

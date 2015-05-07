@@ -121,24 +121,24 @@ module Kubernetes {
 
   _module.factory('KubernetesPods', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
     var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'pods', '/api/' + defaultApiVersion + '/pods/:id', $rootScope, $resource, KubernetesApiURL);
+    createResource(answer, 'pods', '/api/' + defaultApiVersion + kubernetesNamespacePath() + '/pods/:id', $rootScope, $resource, KubernetesApiURL);
     return answer.promise;
   }]);
 
   _module.factory('KubernetesReplicationControllers', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
     var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'replication controllers', '/api/' + defaultApiVersion + '/replicationControllers/:id', $rootScope, $resource, KubernetesApiURL);
+    createResource(answer, 'replication controllers', '/api/' + defaultApiVersion + kubernetesNamespacePath() + '/replicationcontrollers/:id', $rootScope, $resource, KubernetesApiURL);
     return answer.promise;
   }]);
 
   _module.factory('KubernetesServices', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
     var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'services', '/api/' + defaultApiVersion + '/services/:id', $rootScope, $resource, KubernetesApiURL);
+    createResource(answer, 'services', '/api/' + defaultApiVersion + kubernetesNamespacePath() + '/services/:id', $rootScope, $resource, KubernetesApiURL);
     return answer.promise;
   }]);
 
   _module.factory('KubernetesBuilds', ['restmod', (restmod) => {
-    return restmod.model(buildConfigsRestURL);
+    return restmod.model(buildConfigsRestURL());
   }]);
 
   _module.factory('KubernetesSchema', ['SchemaRegistry', (SchemaRegistry) => {

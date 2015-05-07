@@ -1,15 +1,15 @@
 <script type="text/ng-template" id="idTemplate.html">
   <div class="ngCellText">
     <a href="" 
-       title="View details for {{row.entity.id}}"
+       title="View details for {{row.entity.metadata.name}}"
        ng-href="{{row.entity | kubernetesPageLink}}">
       <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
-      {{row.entity.id}}</a>
+      {{row.entity.metadata.name}}</a>
   </div>
 </script>
 <script type="text/ng-template" id="selectorTemplate.html">
   <div class="ngCellText">
-    <span ng-repeat="(name, value) in row.entity.selector track by $index">
+    <span ng-repeat="(name, value) in row.entity.spec.selector track by $index">
       <strong>{{name}}</strong>: {{value}}
     </span>
   </div>
@@ -34,7 +34,7 @@
   </div>
 </script>
 <script type="text/ng-template" id="hostTemplate.html">
-  <div class="ngCellText" ng-init="host=row.entity.currentState.host">
+  <div class="ngCellText" ng-init="host=row.entity.status.host">
     <span class="pod-label badge"
           class="background-light-grey mouse-pointer"
           ng-click="$emit('labelFilterUpdate', 'host=' + host)">{{host}}</span>
@@ -55,10 +55,10 @@
   </div>
 </script>
 <script type="text/ng-template" id="statusTemplate.html">
-  <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.id}} is {{entity.currentState.status}}">
+  <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.id}} is {{entity.status.status}}">
     <!-- in detail view -->
     <p ng-show="data"><strong>Status: </strong></p>
-    <i class="fa" ng-class="statusMapping(entity.currentState.status)"></i>
+    <i class="fa" ng-class="statusMapping(entity.status.status)"></i>
     <span ng-show="data">{{data}}</span>
     <!-- in table -->
     <span ng-show="entity.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
@@ -86,7 +86,7 @@
           </div>
           <div class="modal-footer">
             <input class="btn btn-primary" type="submit"
-                   ng-disabled="resizeDialog.newReplicas === resizeDialog.controller.currentState.replicas"
+                   ng-disabled="resizeDialog.newReplicas === resizeDialog.controller.status.replicas"
                    value="Resize">
             <button class="btn btn-warning cancel" type="button" ng-click="resizeDialog.close()">Cancel</button>
           </div>

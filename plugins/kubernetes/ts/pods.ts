@@ -38,7 +38,7 @@ module Kubernetes {
           cellTemplate: $templateCache.get("idTemplate.html")
         },
         {
-          field: 'currentState.status',
+          field: 'status.status',
           displayName: 'Status',
           cellTemplate: $templateCache.get("statusTemplate.html")
         },
@@ -48,7 +48,7 @@ module Kubernetes {
           cellTemplate: $templateCache.get("imageTemplate.html")
         },
         {
-          field: 'currentState.host',
+          field: 'status.host',
           displayName: 'Host',
           cellTemplate: $templateCache.get("hostTemplate.html")
         },
@@ -58,7 +58,7 @@ module Kubernetes {
           cellTemplate: $templateCache.get("labelTemplate.html")
         },
         {
-          field: 'currentState.podIP',
+          field: 'status.podIP',
           displayName: 'Pod IP'
         }
         /*

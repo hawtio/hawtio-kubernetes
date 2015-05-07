@@ -132,7 +132,7 @@ module Kubernetes {
         this.pods.forEach((pod) => {
           if (!pod.kind) pod.kind = "Pod";
           this.podsByKey[pod._key] = pod;
-          var host = pod.currentState.host;
+          var host = pod.status.host;
           pod.$labelsText = Kubernetes.labelsToString(pod.labels);
           if (host) {
             pod.$labelsText += labelFilterTextSeparator + "host=" + host;
@@ -140,7 +140,7 @@ module Kubernetes {
           pod.$iconUrl = defaultIconUrl;
           this.discoverPodConnections(pod);
           pod.$containerPorts = [];
-          angular.forEach(Core.pathGet(pod, ["desiredState", "manifest", "containers"]), (container) => {
+          angular.forEach(Core.pathGet(pod, ["spec", "manifest", "containers"]), (container) => {
             var image = container.image;
             if (image) {
               var idx = image.lastIndexOf(":");
@@ -195,7 +195,7 @@ module Kubernetes {
         this.replicationControllers.forEach((replicationController) => {
           if (!replicationController.kind) replicationController.kind = "ReplicationController";
           this.replicationControllersByKey[replicationController._key] = replicationController
-          var selector = replicationController.desiredState.replicaSelector;
+          var selector = replicationController.spec.replicaSelector;
           replicationController.$pods = [];
           replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
           var selectedPods = replicationController.$pods;
@@ -218,7 +218,7 @@ module Kubernetes {
 
         var podsByHost = {};
         this.pods.forEach((pod) => {
-          var host = pod.currentState.host;
+          var host = pod.status.host;
           var podsForHost = podsByHost[host];
           if (!podsForHost) {
             podsForHost = [];
@@ -231,11 +231,11 @@ module Kubernetes {
         var tmpHosts = [];
         for (var hostKey in podsByHost) {
           var hostPods = [];
-          var podCounters = createPodCounters((pod) => (pod.currentState || {}).host === hostKey, this.pods, hostPods, "host=" + hostKey);
+          var podCounters = createPodCounters((pod) => (pod.status || {}).host === hostKey, this.pods, hostPods, "host=" + hostKey);
           var hostIP = null;
           if (hostPods.length) {
             var pod = hostPods[0];
-            var currentState = pod.currentState;
+            var currentState = pod.status;
             if (currentState) {
               hostIP = currentState.hostIP;
             }
@@ -294,7 +294,7 @@ module Kubernetes {
           var matchesApp = null;
           appViews.forEach((appView) => {
             appView.replicationControllers.forEach((replicationController) => {
-              var repSelector = Core.pathGet(replicationController, ["desiredState", "replicaSelector"]);
+              var repSelector = Core.pathGet(replicationController, ["spec", "replicaSelector"]);
               if (repSelector && selectorMatches(repSelector, service.selector) && service.namespace == replicationController.namespace) {
                 matchesApp = appView;
               }
@@ -417,10 +417,10 @@ module Kubernetes {
     }
 
     protected discoverPodConnections(entity) {
-      var info = Core.pathGet(entity, ["currentState", "info"]);
+      var info = Core.pathGet(entity, ["status", "info"]);
       var hostPort = null;
-      var currentState = entity.currentState || {};
-      var desiredState = entity.desiredState || {};
+      var currentState = entity.status || {};
+      var desiredState = entity.spec || {};
       var podId = entity.id || entity.name;
       var host = currentState["host"];
       var podIP = currentState["podIP"];
@@ -550,31 +550,47 @@ module Kubernetes {
               maybeNext(ready + 1);
             });
 
-            var appsUrl = AppLibraryURL + "/apps";
-            var etags = $scope.resourceVersions["appLibrary"];
-            $http.get(appsUrl, {
-              headers: {
-                "If-None-Match": etags
-              }
-            }).
-              success(function(data, status, headers, config) {
-                if (angular.isArray(data) && status === 200) {
-                  var newETags = headers("etag") || headers("ETag");
-                  if (!newETags || newETags !== etags) {
-                    if (newETags) {
-                      $scope.resourceVersions["appLibrary"] = newETags;
-                    }
-                    $scope.appInfos = data;
-                    dataChanged = true;
-                  }
+            // lets see if we can find the app-library service
+            var hasAppLibrary = false;
+            angular.forEach($scope.services, (service) => {
+              var metadata = service.metadata;
+              if (metadata) {
+                var name = metadata.name;
+                if (name && name === "app-library") {
+                  hasAppLibrary = true;
                 }
-                maybeNext(ready + 1);
+              }
+            });
+            if (hasAppLibrary) {
+              var appsUrl = AppLibraryURL + "/apps";
+              console.log("has app library so lets query: " + appsUrl);
+              var etags = $scope.resourceVersions["appLibrary"];
+              $http.get(appsUrl, {
+                headers: {
+                  "If-None-Match": etags
+                }
               }).
-              error(function(data, status, headers, config) {
-                maybeNext(ready + 1);
-              });
+                success(function (data, status, headers, config) {
+                  if (angular.isArray(data) && status === 200) {
+                    var newETags = headers("etag") || headers("ETag");
+                    if (!newETags || newETags !== etags) {
+                      if (newETags) {
+                        $scope.resourceVersions["appLibrary"] = newETags;
+                      }
+                      $scope.appInfos = data;
+                      dataChanged = true;
+                    }
+                  }
+                  maybeNext(ready + 1);
+                }).
+                error(function (data, status, headers, config) {
+                  maybeNext(ready + 1);
+                });
+            } else {
+              maybeNext(ready + 1);
+            }
 
-            var url = routesRestURL;
+            var url = routesRestURL();
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {

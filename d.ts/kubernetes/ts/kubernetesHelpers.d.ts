@@ -16,13 +16,14 @@ declare module Kubernetes {
     var defaultNamespace: string;
     var appSuffix: string;
     var osapiPrefix: string;
-    var buildConfigsRestURL: string;
-    var buildConfigHooksRestURL: string;
-    var buildsRestURL: string;
-    var buildsLogsRestURL: string;
-    var routesRestURL: string;
-    var deploymentConfigsRestURL: string;
-    var imageRepositoriesRestURL: string;
+    function kubernetesNamespacePath(): string;
+    function imageRepositoriesRestURL(): string;
+    function deploymentConfigsRestURL(): string;
+    function buildsLogsRestURL(): string;
+    function buildsRestURL(): string;
+    function buildConfigHooksRestURL(): string;
+    function buildConfigsRestURL(): string;
+    function routesRestURL(): string;
     interface KubePod {
         id: string;
         namespace: string;
