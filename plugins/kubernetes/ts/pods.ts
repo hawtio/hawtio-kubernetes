@@ -38,7 +38,7 @@ module Kubernetes {
           cellTemplate: $templateCache.get("idTemplate.html")
         },
         {
-          field: 'status.status',
+          field: 'status.phase',
           displayName: 'Status',
           cellTemplate: $templateCache.get("statusTemplate.html")
         },

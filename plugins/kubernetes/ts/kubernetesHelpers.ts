@@ -87,6 +87,10 @@ module Kubernetes {
     return Core.pathGet(pod, ["spec", "host"]);
   }
 
+  export function getStatus(pod) {
+    return Core.pathGet(pod, ["status", "phase"]);
+  }
+
   export interface KubePod {
     id:string;
     namespace:string;
@@ -297,13 +301,12 @@ module Kubernetes {
       angular.forEach(pods, pod => {
         if (filterFn(pod)) {
           outputPods.push(pod);
-          var status = (pod.status || {}).status;
-
+          var status = getStatus(pod);
           if (status) {
             var lower = status.toLowerCase();
             if (lower.startsWith("run")) {
               answer.valid += 1;
-            } else if (lower.startsWith("wait")) {
+            } else if (lower.startsWith("wait") || lower.startsWith("pend")) {
               answer.waiting += 1;
             } else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
               answer.error += 1;
@@ -615,7 +618,7 @@ module Kubernetes {
       var lower = text.toLowerCase();
       if (lower.startsWith("run") || lower.startsWith("ok")) {
         return 'fa fa-play-circle green';
-      } else if (lower.startsWith("wait")) {
+      } else if (lower.startsWith("wait") || lower.startsWith("pend")) {
         return 'fa fa-download';
       } else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
         return 'fa fa-off orange';
@@ -627,8 +630,7 @@ module Kubernetes {
   }
 
   export function podStatus(pod) {
-    var currentStatus = (pod || {}).status || {};
-    return currentStatus.status;
+    return getStatus(pod);
   }
 
   export function createAppViewPodCounters(appView) {
@@ -654,7 +656,7 @@ module Kubernetes {
       var status = (podStatus(pod) || "Error").toLowerCase();
       if (status.startsWith("run") || status.startsWith("ok")) {
         answer.valid += 1;
-      } else if (status.startsWith("wait")) {
+      } else if (status.startsWith("wait") || status.startsWith("pwnd")) {
         answer.waiting += 1;
       } else {
         answer.error += 1;

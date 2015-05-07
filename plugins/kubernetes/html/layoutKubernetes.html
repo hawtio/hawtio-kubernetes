@@ -55,10 +55,10 @@
   </div>
 </script>
 <script type="text/ng-template" id="statusTemplate.html">
-  <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.id}} is {{entity.status.status}}">
+  <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.id}} is {{entity.status.phase}}">
     <!-- in detail view -->
     <p ng-show="data"><strong>Status: </strong></p>
-    <i class="fa" ng-class="statusMapping(entity.status.status)"></i>
+    <i class="fa" ng-class="statusMapping(entity.status.phase)"></i>
     <span ng-show="data">{{data}}</span>
     <!-- in table -->
     <span ng-show="entity.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
