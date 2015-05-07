@@ -13,7 +13,7 @@ module Kubernetes {
 
   function populateKey(item) {
     var result = item;
-    result['_key'] = createKey(item.namespace, item.id);
+    result['_key'] = createKey(getNamespace(item), getName(item));
     return result;
   }
 
@@ -27,7 +27,7 @@ module Kubernetes {
 
   function selectPods(pods, namespace, labels) {
     return pods.filter((pod) => {
-      return pod.namespace === namespace && selectorMatches(labels, pod.labels);
+      return getNamespace(pod) === namespace && selectorMatches(labels, getLabels(pod));
     });
   }
 
@@ -100,7 +100,7 @@ module Kubernetes {
 
     protected updateIconUrlAndAppInfo(entity, nameField: string) {
       var answer = null;
-      var id = entity.id;
+      var id = getName(entity);
       if (id && nameField) {
         (this.appInfos || []).forEach((appInfo) => {
           var iconPath = appInfo.iconPath;
@@ -133,7 +133,7 @@ module Kubernetes {
           if (!pod.kind) pod.kind = "Pod";
           this.podsByKey[pod._key] = pod;
           var host = pod.status.host;
-          pod.$labelsText = Kubernetes.labelsToString(pod.labels);
+          pod.$labelsText = Kubernetes.labelsToString(getLabels(pod));
           if (host) {
             pod.$labelsText += labelFilterTextSeparator + "host=" + host;
           }
@@ -182,7 +182,7 @@ module Kubernetes {
           service.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
-          service.$labelsText = Kubernetes.labelsToString(service.labels);
+          service.$labelsText = Kubernetes.labelsToString(getLabels(service));
           this.updateIconUrlAndAppInfo(service, "serviceNames");
           var iconUrl = service.$iconUrl;
           if (iconUrl && selectedPods) {
@@ -202,7 +202,7 @@ module Kubernetes {
           replicationController.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
-          replicationController.$labelsText = Kubernetes.labelsToString(replicationController.labels);
+          replicationController.$labelsText = Kubernetes.labelsToString(getLabels(replicationController));
           this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
           var iconUrl =  replicationController.$iconUrl;
           if (iconUrl && selectedPods) {
@@ -274,7 +274,7 @@ module Kubernetes {
         var appViews = [];
 
         this.replicationControllers.forEach((replicationController) => {
-          var name = replicationController.name || replicationController.id;
+          var name = getName(replicationController);
           var $iconUrl = replicationController.$iconUrl;
           appViews.push({
             appPath: "/dummyPath/" + name,
@@ -295,7 +295,7 @@ module Kubernetes {
           appViews.forEach((appView) => {
             appView.replicationControllers.forEach((replicationController) => {
               var repSelector = Core.pathGet(replicationController, ["spec", "replicaSelector"]);
-              if (repSelector && selectorMatches(repSelector, service.selector) && service.namespace == replicationController.namespace) {
+              if (repSelector && selectorMatches(repSelector, service.selector) && getNamespace(service) == getNamespace(replicationController)) {
                 matchesApp = appView;
               }
             });
@@ -304,7 +304,7 @@ module Kubernetes {
           if (matchesApp) {
             matchesApp.services.push(service);
           } else {
-            var name = service.name || service.id;
+            var name = getName(service);
             var $iconUrl = service.$iconUrl;
             appViews.push({
               appPath: "/dummyPath/" + name,
@@ -323,7 +323,7 @@ module Kubernetes {
           var metadata = route.metadata || {};
           var serviceName = route.serviceName;
           var host = route.host;
-          var namespace = metadata.namespace || defaultNamespace;
+          var namespace = getNamespace(route);
           if (serviceName && host) {
             var service = this.getService(namespace, serviceName);
             if (service) {
@@ -421,7 +421,7 @@ module Kubernetes {
       var hostPort = null;
       var currentState = entity.status || {};
       var desiredState = entity.spec || {};
-      var podId = entity.id || entity.name;
+      var podId = getName(entity);
       var host = currentState["host"];
       var podIP = currentState["podIP"];
       var hasDocker = false;
@@ -613,7 +613,7 @@ module Kubernetes {
 
     function selectPods(pods, namespace, labels) {
       return pods.filter((pod) => {
-        return pod.namespace === namespace && selectorMatches(labels, pod.labels);
+        return getNamespace(pod) === namespace && selectorMatches(labels, getLabels(pod));
       });
     }
     return $scope;

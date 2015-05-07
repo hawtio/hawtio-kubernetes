@@ -29,12 +29,12 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-        { field: 'id', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
+        { field: 'metadata.name', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
         { field: '$podsLink', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
-        { field: 'selector', displayName: 'Selector', cellTemplate: $templateCache.get("selectorTemplate.html") },
-        { field: 'portalIP', displayName: 'Address', cellTemplate: $templateCache.get("portalAddress.html") },
+        { field: 'spec.selector', displayName: 'Selector', cellTemplate: $templateCache.get("selectorTemplate.html") },
+        { field: 'spec.portalIP', displayName: 'Address', cellTemplate: $templateCache.get("portalAddress.html") },
         { field: 'labelsText', displayName: 'Labels', cellTemplate: $templateCache.get("labelTemplate.html") },
-        { field: 'namespace', displayName: 'Namespace' }
+        { field: 'metadata.namespace', displayName: 'Namespace' }
       ]
     };
 
@@ -55,11 +55,11 @@ module Kubernetes {
               if (result) {
                 function deleteSelected(selected:Array<KubePod>, next:KubePod) {
                   if (next) {
-                    log.debug("deleting: ", next.id);
+                    log.debug("deleting: ", getName(next));
                     KubernetesServices.delete({
-                      id: next.id
+                      id: getName(next)
                     }, undefined, () => {
-                      log.debug("deleted: ", next.id);
+                      log.debug("deleted: ", getName(next));
                       deleteSelected(selected, selected.shift());
                     }, (error) => {
                       log.debug("Error deleting: ", error);

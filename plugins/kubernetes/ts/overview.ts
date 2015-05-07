@@ -137,7 +137,7 @@ module Kubernetes {
           });
         }
         function namespaceFilter(item) {
-            return item.namespace === scope.kubernetes.selectedNamespace;
+            return getNamespace(item) === scope.kubernetes.selectedNamespace;
         }
         function firstDraw() {
           log.debug("First draw");
@@ -188,7 +188,7 @@ module Kubernetes {
                   }
                   break;
                 case 'service':
-                  if (key in scope.model.servicesByKey && scope.model.servicesByKey[key].namespace == scope.kubernetes.selectedNamespace) {
+                  if (key in scope.model.servicesByKey && getNamespace(scope.model.servicesByKey[key]) == scope.kubernetes.selectedNamespace) {
                     var service = scope.model.servicesByKey[key];
                     child.attr('connect-to', service.connectTo);
                     return;
@@ -200,12 +200,12 @@ module Kubernetes {
                     return;
                   }
                   */
-                  if (key in scope.model.podsByKey && scope.model.podsByKey[key].namespace == scope.kubernetes.selectedNamespace) {
+                  if (key in scope.model.podsByKey && getNamespace(scope.model.podsByKey[key]) == scope.kubernetes.selectedNamespace) {
                     return;
                   }
                   break;
                 case 'replicationController':
-                  if (key in scope.model.replicationControllersByKey && scope.model.replicationControllersByKey[key].namespace == scope.kubernetes.selectedNamespace) {
+                  if (key in scope.model.replicationControllersByKey && getNamespace(scope.model.replicationControllersByKey[key]) == scope.kubernetes.selectedNamespace) {
                     var replicationController = scope.model.replicationControllersByKey[key];
                     child.attr('connect-to', replicationController.connectTo);
                     return;
@@ -253,8 +253,8 @@ module Kubernetes {
   var OverviewBoxController = controller("OverviewBoxController", ["$scope", "$location", ($scope, $location:ng.ILocationService) => {
     $scope.viewDetails = (entity, path:string) => {
       if (entity) {
-        var namespace = entity.namespace;
-        var id = entity.id;
+        var namespace = getNamespace(entity);
+        var id = getName(entity);
         $location.path(UrlHelpers.join('/kubernetes/namespace', namespace, path, id));
       } else {
         log.warn("No entity for viewDetails!");

@@ -67,19 +67,19 @@ module Kubernetes {
 
         
     $scope.podExpanded = (pod) => {
-      var id = (pod || {}).id;
+      var id = getName(pod)
       return id && ($scope.expandedPods || []).indexOf(id) >= 0;
     };
 
     $scope.expandPod = (pod) => {
-      var id = pod.id;
+      var id = getName(pod);
       if (id) {
         $scope.expandedPods.push(id);
       }
     };
 
     $scope.collapsePod = (pod) => {
-      var id = pod.id;
+      var id = getName(pod);
       if (id) {
         $scope.expandedPods = $scope.expandedPods.remove((v) => id === v);
       }
@@ -94,7 +94,7 @@ module Kubernetes {
         if (!service || !services) {
           return onCompletedFn();
         }
-        var id = service.id;
+        var id = getName(service);
         if (!id) {
           log.warn("No ID for service " + angular.toJson(service));
         } else {
@@ -116,7 +116,7 @@ module Kubernetes {
         if (!replicationController || !replicationControllers) {
           return onCompletedFn();
         }
-        var id = replicationController.id;
+        var id = getName(replicationController);
         if (!id) {
           log.warn("No ID for replicationController " + angular.toJson(replicationController));
         } else {
@@ -138,7 +138,7 @@ module Kubernetes {
         if (!pod || !pods) {
           return onCompletedFn();
         }
-        var id = pod.id;
+        var id = getName(pod);
         if (!id) {
           log.warn("No ID for pod " + angular.toJson(pod));
         } else {

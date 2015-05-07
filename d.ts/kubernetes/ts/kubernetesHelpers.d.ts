@@ -24,6 +24,10 @@ declare module Kubernetes {
     function buildConfigHooksRestURL(): string;
     function buildConfigsRestURL(): string;
     function routesRestURL(): string;
+    function getNamespace(entity: any): any;
+    function getLabels(entity: any): any;
+    function getName(entity: any): any;
+    function getKind(entity: any): any;
     interface KubePod {
         id: string;
         namespace: string;

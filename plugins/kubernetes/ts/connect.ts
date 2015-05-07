@@ -49,7 +49,7 @@ module Kubernetes {
           $scope.connect.password = userDetails.password;
         }
         $scope.connect.jolokiaUrl = entity.$jolokiaUrl;
-        $scope.connect.containerName = entity.id;
+        $scope.connect.containerName = getName(entity);
         //$scope.connect.view = "#/openlogs";
 
         var alwaysPrompt = localStorage['fabricAlwaysPrompt'];

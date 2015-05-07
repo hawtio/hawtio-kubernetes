@@ -9,7 +9,7 @@
     <div class="kubernetes-overview-row">
       <div class="kubernetes-overview-cell">
         <div id="{{service._key}}"
-             namespace="{{service.namespace}}"
+             namespace="{{service.metadata.namespace}}"
              connect-to="{{service.connectTo}}"
              data-type="service"
              class="jsplumb-node kubernetes-node kubernetes-service-node"

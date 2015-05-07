@@ -35,7 +35,7 @@ module Kubernetes {
 /*
         TODO lets only look in the current namespace
         angular.forEach(model.services, (service) => {
-          if (serviceName === service.id) {
+          if (serviceName === getName(service)) {
             answer = service;
           }
         });

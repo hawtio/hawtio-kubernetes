@@ -61,6 +61,24 @@ module Kubernetes {
     return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/routes";
   }
 
+  export function getNamespace(entity) {
+    var answer = Core.pathGet(entity, ["metadata", "namespace"]);
+    return answer ? answer : defaultNamespace;
+  }
+
+  export function getLabels(entity) {
+    var answer = Core.pathGet(entity, ["metadata", "labels"]);
+    return answer ? answer : {};
+  }
+
+  export function getName(entity) {
+    return Core.pathGet(entity, ["metadata", "name"]) || Core.pathGet(entity, "name") || Core.pathGet(entity, "id");
+  }
+
+  export function getKind(entity) {
+    return Core.pathGet(entity, ["metadata", "kind"]) || Core.pathGet(entity, "kind");
+  }
+
   export interface KubePod {
     id:string;
     namespace:string;
@@ -91,7 +109,7 @@ module Kubernetes {
    * Updates the namespaces value in the kubernetes object from the namespace values in the pods, controllers, services
    */
   export function updateNamespaces(kubernetes, pods = [], replicationControllers = [], services = []) {
-    var byNamespace = (thing) => { return thing.namespace; };
+    var byNamespace = (thing) => { return getNamespace(thing); };
 
     function pushIfNotExists(array, items) {
         angular.forEach(items, (value) => {
@@ -124,7 +142,7 @@ module Kubernetes {
     if (!collection) {
       return;
     }
-    var item = collection.find((item) => { return item.id === id; });
+    var item = collection.find((item) => { return getName(item) === id; });
     if (item) {
       $scope.json = angular.toJson(item, true);
       $scope.item = item;
@@ -255,7 +273,7 @@ module Kubernetes {
     if (angular.isFunction(selector)) {
       filterFn = selector;
     } else {
-      filterFn = (pod) => selectorMatches(selector, pod.labels);
+      filterFn = (pod) => selectorMatches(selector, getLabels(pod));
     }
     var answer = {
       podsLink: "",
@@ -327,11 +345,11 @@ module Kubernetes {
    */
   export function entityPageLink(entity) {
     if (entity) {
-      var id = entity.id;
-      var kind = entity.kind;
+      var id = getName(entity);
+      var kind = getKind(entity);
       if (kind && id) {
         var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
-        var namespace = entity.namespace;
+        var namespace = getNamespace(entity);
         if (namespace && !isIgnoreNamespaceKind(kind)) {
           return UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
         } else {
@@ -396,15 +414,15 @@ module Kubernetes {
     } else {
       pathSegment = "/";
     }
-    var namespace = service.namespace;
+    var namespace = getNamespace(service);
     if (isV1beta1Or2()) {
       var postfix = "?namespace=" + namespace;
       return KubernetesApiURL.then((KubernetesApiURL) => {
-        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/services/" + service.id + pathSegment + postfix);
+        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/services/" + getName(service) + pathSegment + postfix);
       });
     } else {
       return KubernetesApiURL.then((KubernetesApiURL) => {
-        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/services/" + service.name + pathSegment);
+        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/services/" + getName(service) + pathSegment);
       });
     }
   }
@@ -532,7 +550,7 @@ module Kubernetes {
       var query = "";
       var count = 0;
       angular.forEach(pods, (item) => {
-        var id = item.id;
+        var id = getName(item);
         if (id) {
           var space = query ? " OR " : "";
           count++;
@@ -551,8 +569,8 @@ module Kubernetes {
   }
 
   export function resizeController($http, KubernetesApiURL, replicationController, newReplicas, onCompleteFn = null) {
-    var id = replicationController.id;
-    var namespace = replicationController.namespace || "";
+    var id = getName(replicationController);
+    var namespace = getNamespace(replicationController) || "";
     KubernetesApiURL.then((KubernetesApiURL) => {
       var url = kubernetesUrlForKind(KubernetesApiURL, "ReplicationController", namespace, id);
       $http.get(url).
@@ -611,7 +629,7 @@ module Kubernetes {
     var pods = appView.pods;
     var lowestDate = null;
     angular.forEach(pods, pod => {
-      var selector = pod.labels;
+      var selector = getLabels(pod);
       var selectorText = Kubernetes.labelsToString(selector, " ");
       var answer = map[selector];
       if (!answer) {
@@ -649,7 +667,7 @@ module Kubernetes {
     var array = [];
     var pods = appView.pods;
     angular.forEach(pods, pod => {
-      var id = pod.id;
+      var id = getName(pod);
       if (id) {
         var abbrev = id;
         var idx = id.indexOf("-");
@@ -668,9 +686,9 @@ module Kubernetes {
     for (var i = 0; i < size; i++) {
       var service = services[i];
       var replicationController = replicationControllers[i];
-      var controllerId = (replicationController || {}).id;
-      var name = (service || {}).id || controllerId;
-      var address = (service || {}).portalIP;
+      var controllerId = getName(replicationController);
+      var name = getName(service) || controllerId;
+      var address = Core.pathGet(service, ["spec", "portalIP"]);
       if (!name && pods.length) {
         name = pods[0].idAbbrev;
       }
@@ -678,7 +696,7 @@ module Kubernetes {
         appView.$info.name = name;
       }
       if (!appView.id && pods.length) {
-        appView.id = pods[0].id;
+        appView.id = getName(pods[0]);
       }
       if (i > 0) {
         appName = name;
@@ -764,8 +782,8 @@ module Kubernetes {
   export function enrichBuild(build) {
     if (build) {
       var metadata = build.metadata || {};
-      var name = metadata.name;
-      var namespace = metadata.namespace;
+      var name = getName(build);
+      var namespace = getNamespace(build);
       build.$name = name;
       build.$namespace = namespace;
 
@@ -773,7 +791,7 @@ module Kubernetes {
       var nameArrayLength = nameArray.length;
       build.$shortName = (nameArrayLength > 4) ? nameArray.slice(0, nameArrayLength - 4).join("-") : name.substring(0, 30);
 
-      var labels = metadata.labels || {};
+      var labels = getLabels(route);
       var configId = labels.buildconfig;
       build.$configId = configId;
       if (configId) {

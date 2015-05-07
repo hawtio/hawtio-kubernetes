@@ -11,7 +11,7 @@
   </script>
   <script type="text/ng-template" id="deploymentConfigLabelTemplate.html">
     <div class="ngCellText">
-      <span ng-repeat="(key, label) in row.entity.template.controllerTemplate.podTemplate.labels track by $index"
+      <span ng-repeat="(key, label) in row.entity.template.controllerTemplate.template.metadata.labels track by $index"
             class="pod-label badge"
             ng-class="labelClass(key)"
             ng-click="clickTag(entity, key, label)"

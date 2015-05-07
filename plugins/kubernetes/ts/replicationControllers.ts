@@ -59,11 +59,11 @@ module Kubernetes {
               if (result) {
                 function deleteSelected(selected:Array<KubePod>, next:KubePod) {
                   if (next) {
-                    log.debug("deleting: ", next.id);
+                    log.debug("deleting: ", getName(next));
                     KubernetesReplicationControllers.delete({
-                      id: next.id
+                      id: getName(next)
                     }, undefined, () => {
-                      log.debug("deleted: ", next.id);
+                      log.debug("deleted: ", getName(next));
                       deleteSelected(selected, selected.shift());
                     }, (error) => {
                       log.debug("Error deleting: ", error);
