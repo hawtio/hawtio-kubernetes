@@ -16,10 +16,10 @@ module Kubernetes {
 
     $scope.itemConfig = {
       properties: {
-        'manifest/containers/image$': {
+        'containers/image$': {
           template: $templateCache.get('imageTemplate.html')
         },
-        'status/status': {
+        'status/phase': {
           template: $templateCache.get('statusTemplate.html')
         },
         '\\/Env\\/': {

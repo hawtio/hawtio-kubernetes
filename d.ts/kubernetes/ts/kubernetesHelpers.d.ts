@@ -30,6 +30,7 @@ declare module Kubernetes {
     function getKind(entity: any): any;
     function getSelector(entity: any): any;
     function getHost(pod: any): any;
+    function getStatus(pod: any): any;
     interface KubePod {
         id: string;
         namespace: string;
