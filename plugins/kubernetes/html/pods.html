@@ -3,7 +3,7 @@
     <div class="ngCellText">
       <!-- in table -->
       <span ng-hide="data">
-        <span ng-repeat="container in row.entity.speccontainers">
+        <span ng-repeat="container in row.entity.spec.containers">
           <span ng-hide="container.$imageLink">{{container.image}}</span>
           <a ng-show="container.$imageLink" target="dockerRegistry" href="{{container.$imageLink}}" title="{{container.name}}">{{container.image}}</a>
         </span>

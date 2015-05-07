@@ -140,7 +140,7 @@ module Kubernetes {
           pod.$iconUrl = defaultIconUrl;
           this.discoverPodConnections(pod);
           pod.$containerPorts = [];
-          angular.forEach(Core.pathGet(pod, ["spec", "manifest", "containers"]), (container) => {
+          angular.forEach(Core.pathGet(pod, ["spec", "containers"]), (container) => {
             var image = container.image;
             if (image) {
               var idx = image.lastIndexOf(":");
