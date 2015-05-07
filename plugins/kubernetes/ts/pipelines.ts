@@ -86,7 +86,7 @@ module Kubernetes {
                         if (to && (to.kind === "ImageRepository" || to.kind === "ImageStream")) {
                           var toName = to.name;
                           if (toName === name) {
-                            var selector = Core.pathGet(deploymentConfig, ["template", "controllerTemplate", "replicaSelector"]);
+                            var selector = Core.pathGet(deploymentConfig, ["template", "controllerTemplate", "selector"]);
                             var pods = [];
                             var $podCounters = selector ? createPodCounters(selector, KubernetesModel.podsForNamespace(), pods) : null;
                             var deployPipelineStep = {

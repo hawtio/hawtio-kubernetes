@@ -195,7 +195,7 @@ module Kubernetes {
         this.replicationControllers.forEach((replicationController) => {
           if (!replicationController.kind) replicationController.kind = "ReplicationController";
           this.replicationControllersByKey[replicationController._key] = replicationController
-          var selector = replicationController.spec.replicaSelector;
+          var selector = replicationController.spec.selector;
           replicationController.$pods = [];
           replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
           var selectedPods = replicationController.$pods;
@@ -294,7 +294,7 @@ module Kubernetes {
           var matchesApp = null;
           appViews.forEach((appView) => {
             appView.replicationControllers.forEach((replicationController) => {
-              var repSelector = Core.pathGet(replicationController, ["spec", "replicaSelector"]);
+              var repSelector = Core.pathGet(replicationController, ["spec", "selector"]);
               if (repSelector && selectorMatches(repSelector, service.selector) && getNamespace(service) == getNamespace(replicationController)) {
                 matchesApp = appView;
               }
