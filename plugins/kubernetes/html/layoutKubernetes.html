@@ -42,11 +42,13 @@
 </script>
 <script type="text/ng-template" id="portalAddress.html">
   <div class="ngCellText">
-    <a target="openService" href="{{row.entity.proxyUrl}}"
-       ng-show="row.entity.portalIP && row.entity.$podCounters.valid" title="Protocol {{row.entity.protocol}}">
-      {{row.entity.portalIP}}:{{row.entity.port}}
-    </a>
-    <span ng-hide="row.entity.portalIP && row.entity.$podCounters.valid">{{row.entity.portalIP}}:{{row.entity.port}}</span>
+    <div ng-repeat="port in row.entity.$ports">
+      <a target="openService" href="{{row.entity.proxyUrl}}"
+         ng-show="row.entity.spec.portalIP && row.entity.$podCounters.valid" title="Protocol {{row.entity.spec.protocol}}">
+        {{row.entity.spec.portalIP}}:{{port}}
+      </a>
+      <span ng-hide="row.entity.spec.portalIP && row.entity.$podCounters.valid">{{row.entity.spec.portalIP}}:{{port}}</span>
+    </div>
   </div>
 </script>
 <script type="text/ng-template" id="iconCellTemplate.html">
