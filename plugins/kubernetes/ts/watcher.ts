@@ -23,8 +23,9 @@ module Kubernetes {
 		}
 	});
 	
-	_module.run(['WatcherService', '$rootScope', (WatcherService:WatcherService, $rootScope) => {
-		log.debug("Started watcher service");
+	
+	//_module.run(['WatcherService', '$rootScope', (WatcherService:WatcherService, $rootScope) => {
+	//	log.debug("Started watcher service");
 		
 		/*
 		// some usage examples
@@ -42,7 +43,7 @@ module Kubernetes {
 		  log.debug("pod map changed: ", newValue);
 		}, true);
 		*/
-	}]);
+	//}]);
 	
 	_module.service('WatcherService', ['userDetails', '$rootScope', (userDetails, $rootScope) => {
 		var self = <any> {
@@ -109,12 +110,14 @@ module Kubernetes {
 			var onClose = (event) => {
 				watch.ws = undefined;
 				log.debug("Stopped watching ", watch.url, " retrying");
+				/*
 				if (retries < 3) {
 					var ws = watch.ws = new WebSocket(uri.toString());
 					ws.onopen = onOpen;
 					ws.onmessage = onMessage;
 					ws.onclose = onClose;
 				}
+				*/
 			}
 			
 			var ws = watch.ws = new WebSocket(uri.toString());
