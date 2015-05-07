@@ -184,6 +184,12 @@ module Kubernetes {
           }).join(',');
           service.$labelsText = Kubernetes.labelsToString(getLabels(service));
           this.updateIconUrlAndAppInfo(service, "serviceNames");
+          var spec = service.spec;
+          if (spec) {
+            var ports = _.map(spec.ports, "port");
+            service.$ports = ports;
+            service.$portsText = ports.join(", ");
+          }
           var iconUrl = service.$iconUrl;
           if (iconUrl && selectedPods) {
             selectedPods.forEach((pod) => {
