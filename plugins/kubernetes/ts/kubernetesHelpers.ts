@@ -374,7 +374,7 @@ module Kubernetes {
 
   export function resourceKindToUriPath(kind) {
     var kindPath = kind.toLowerCase() + "s";
-    if (kindPath === "replicationcontrollers" && isV1beta1Or2()) {
+    if (kindPath === "replicationControllers" && !isV1beta1Or2()) {
       kindPath = "replicationcontrollers";
     }
     return kindPath;
@@ -401,7 +401,7 @@ module Kubernetes {
       }
       return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + kindPath + pathSegment + postfix);
     } else {
-      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/" + kindPath + pathSegment + postfix);
+      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/namespaces/" + namespace + "/" + kindPath + pathSegment);
     }
   };
 
@@ -429,11 +429,11 @@ module Kubernetes {
     if (isV1beta1Or2()) {
       var postfix = "?namespace=" + namespace;
       return KubernetesApiURL.then((KubernetesApiURL) => {
-        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/services/" + getName(service) + pathSegment + postfix);
+        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/services/" + getName(service) + pathSegment + postfix);
       });
     } else {
       return KubernetesApiURL.then((KubernetesApiURL) => {
-        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/ns/" + namespace + "/services/" + getName(service) + pathSegment);
+        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/namespaces/" + namespace + "/services/" + getName(service) + pathSegment);
       });
     }
   }

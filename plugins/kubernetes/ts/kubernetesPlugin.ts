@@ -55,17 +55,17 @@ module Kubernetes {
   }]);
 
   _module.factory('AppLibraryURL', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
-    return "/kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library";
+    return "/kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/services/app-library";
   }]);
 
   _module.factory('WikiGitUrlPrefix', () => {
-    return "kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library";
+    return "kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "services/app-library";
   });
 
   _module.factory('wikiRepository', ["$location", "localStorage", ($location, localStorage) => {
     // TODO lets switch to using REST rather than jolokia soon for the wiki
 
-    var url = "/kubernetes/api/" + defaultApiVersion + "/proxy/services/app-library-jolokia/jolokia";
+    var url = "/kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "services/app-library-jolokia/jolokia";
     // TODO what to use here...
     var user = "admin";
     var password = "admin";

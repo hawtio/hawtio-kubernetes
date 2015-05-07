@@ -452,7 +452,7 @@ module Kubernetes {
         });
       }
       if (isRunning(currentState) && podId && foundContainerPort) {
-        entity.$jolokiaUrl = "/kubernetes/api/" + defaultApiVersion + "/proxy/pods/"
+        entity.$jolokiaUrl = "/kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/pods/"
         + podId + ":" + foundContainerPort + "/jolokia/";
       }
     }
