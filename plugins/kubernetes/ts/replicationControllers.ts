@@ -19,9 +19,17 @@ module Kubernetes {
     });
     */
     $scope.$watch('model.replicationControllers', (newValue, oldValue) => {
+      var newValue = KubernetesModel.replicationControllers;
+/*
+      TODO on v1beta3 this seems to only show 1 RC :)
+
       if (newValue && newValue.length > 0 && _.first(newValue)['$podCounters']) {
         ArrayHelpers.sync($scope.replicationControllers, newValue);
-      } 
+      } else {
+        console.log("Not updating model for " + newValue.length);
+      }
+*/
+      $scope.replicationControllers = newValue;
     }, true);
 
     $scope.tableConfig = {

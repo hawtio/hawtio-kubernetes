@@ -14,9 +14,14 @@ module Kubernetes {
     $scope.services = [];
 
     $scope.$watch('model.services', (newValue, oldValue) => {
+/*
+      TODO on v1beta3 this seems to only show 1 service :)
+
       if (newValue && newValue.length > 0 && _.first(newValue)['$podCounters']) {
         ArrayHelpers.sync($scope.services, newValue);
       } 
+*/
+      $scope.services = newValue;
     }, true);
 
     $scope.tableConfig = {
