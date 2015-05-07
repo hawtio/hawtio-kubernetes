@@ -48,7 +48,7 @@ module Kubernetes {
           cellTemplate: $templateCache.get("imageTemplate.html")
         },
         {
-          field: 'status.host',
+          field: 'spec.host',
           displayName: 'Host',
           cellTemplate: $templateCache.get("hostTemplate.html")
         },

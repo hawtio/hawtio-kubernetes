@@ -34,7 +34,7 @@
   </div>
 </script>
 <script type="text/ng-template" id="hostTemplate.html">
-  <div class="ngCellText" ng-init="host=row.entity.status.host">
+  <div class="ngCellText" ng-init="host=row.entity.spec.host">
     <span class="pod-label badge"
           class="background-light-grey mouse-pointer"
           ng-click="$emit('labelFilterUpdate', 'host=' + host)">{{host}}</span>

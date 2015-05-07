@@ -132,7 +132,7 @@ module Kubernetes {
         this.pods.forEach((pod) => {
           if (!pod.kind) pod.kind = "Pod";
           this.podsByKey[pod._key] = pod;
-          var host = pod.status.host;
+          var host = getHost(pod);
           pod.$labelsText = Kubernetes.labelsToString(getLabels(pod));
           if (host) {
             pod.$labelsText += labelFilterTextSeparator + "host=" + host;
@@ -218,7 +218,7 @@ module Kubernetes {
 
         var podsByHost = {};
         this.pods.forEach((pod) => {
-          var host = pod.status.host;
+          var host = getHost(pod);
           var podsForHost = podsByHost[host];
           if (!podsForHost) {
             podsForHost = [];
@@ -231,7 +231,7 @@ module Kubernetes {
         var tmpHosts = [];
         for (var hostKey in podsByHost) {
           var hostPods = [];
-          var podCounters = createPodCounters((pod) => (pod.status || {}).host === hostKey, this.pods, hostPods, "host=" + hostKey);
+          var podCounters = createPodCounters((pod) => getHost(pod) === hostKey, this.pods, hostPods, "host=" + hostKey);
           var hostIP = null;
           if (hostPods.length) {
             var pod = hostPods[0];

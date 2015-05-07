@@ -83,6 +83,10 @@ module Kubernetes {
     return Core.pathGet(entity, ["spec", "selector"]);
   }
 
+  export function getHost(pod) {
+    return Core.pathGet(pod, ["spec", "host"]);
+  }
+
   export interface KubePod {
     id:string;
     namespace:string;

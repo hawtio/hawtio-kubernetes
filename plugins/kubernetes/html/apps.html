@@ -114,7 +114,7 @@
                   <div class="service-view-detail-pod-minion">
                     minion:
                     <span class="value">
-                      <a ng-show="pod.status.host" ng-href="/kubernetes/hosts/{{pod.status.host}}">{{pod.status.host}}</a>
+                      <a ng-show="pod.spec.host" ng-href="/kubernetes/hosts/{{pod.spec.host}}">{{pod.spec.host}}</a>
                     </span>
                   </div>
                 </td>
