@@ -6,59 +6,37 @@ module Kubernetes {
 	var apiPrefix = '/kubernetes';
 	var apiUrl = UrlHelpers.join(apiPrefix, 'api', 'v1beta3');
 	
+	var namespaceType = 'namespaces';
+	
 	var types = ['endpoints', 
-	             'namespaces', 
 							 'pods', 
-							 'nodes', 
+//							 'nodes',  // can't seem to look at these with normal privs 
 							 'replicationcontrollers', 
 							 'services'];
+							 
+	var namespaceWatch = <any> {
+		selected: undefined,
+		connectTime: <Number> undefined,
+		url: UrlHelpers.join(apiUrl, 'namespaces'),
+		objects: <ObjectMap> {},
+		objectArray: <Array<any>> [],
+		customizers: <Array<(obj:any) => void>> [],
+		socket: <WebSocket> undefined
+	}						
 							 
 	var watches = <any> {};
 	_.forEach(types, (type) => {
 		watches[type] = {
-			url: UrlHelpers.join(apiUrl, type),
+			url: <string> undefined,
+			connectTime: <Number> undefined,
 			objects: <ObjectMap> {},
 			objectArray: <Array<any>> [],
-			customizers: <Array<(obj:any) => void>>[]
+			customizers: <Array<(obj:any) => void>>[],
+			socket: <WebSocket> undefined
 		}
 	});
-	
-	
-	//_module.run(['WatcherService', '$rootScope', (WatcherService:WatcherService, $rootScope) => {
-	//	log.debug("Started watcher service");
-		
-		/*
-		// some usage examples
-		WatcherService.addCustomizer('pods', (pod) => {
-			pod.SomeValue = 'foobar';
-		});
-		$rootScope.pods = WatcherService.getObjects('pods');
-		$rootScope.podMap = WatcherService.getObjectMap('pods');
-		
-		$rootScope.$watchCollection('pods', (newValue) => {
-		  log.debug("pods changed: ", newValue);
-		});
-		
-		$rootScope.$watch('podMap', (newValue) => {
-		  log.debug("pod map changed: ", newValue);
-		}, true);
-		*/
-	//}]);
-	
-	_module.service('WatcherService', ['userDetails', '$rootScope', (userDetails, $rootScope) => {
-		var self = <any> {
-			hasWebSocket: false
-		};
-		
-		try {
-			if (!WebSocket)  {
-				return self;
-			}
-		} catch (err) {
-			return self;
-		}
-		
-		_.forIn(watches, (watch, type) => {
+
+	function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
 			var uri = new URI();
 			uri.path(watch.url);
 			if (uri.protocol() === "https") {
@@ -70,15 +48,13 @@ module Kubernetes {
 				watch: true,
 				access_token: userDetails.token 
 			});
-			
-			var retries = 0;
-			
-			var onOpen = (event) => {
-				retries = 0;
-				log.debug("Started watch on ", watch.url);
-			}
-			
-			var onMessage = (event) => {
+			watch.retries = 0;
+			var onOpenInternal = (event) => {
+				watch.retries = 0;
+				watch.connectTime = new Date().getTime();
+				onOpen(event);
+			};
+			var onMessageInternal = (event) => {
 				// log.debug(type, " onmessage: ", event);
 				var data = angular.fromJson(event.data);
 				// log.debug(type, " data: ", data);
@@ -104,28 +80,125 @@ module Kubernetes {
 				_.forIn(watch.objects, (object, uid) => {
 					watch.objectArray.push(object);
 				});
-				Core.$apply($rootScope);
-			}
-			
-			var onClose = (event) => {
-				watch.ws = undefined;
-				log.debug("Stopped watching ", watch.url, " retrying");
-				/*
-				if (retries < 3) {
-					var ws = watch.ws = new WebSocket(uri.toString());
-					ws.onopen = onOpen;
-					ws.onmessage = onMessage;
-					ws.onclose = onClose;
+				onMessage(data);
+				Core.$apply($scope);				
+			};
+			var onCloseInternal = (event) => {
+				if (watch.retries < 3 && watch.connectTime && new Date().getTime() - watch.connectTime > 5000) {
+					setTimeout(() => {
+						watch.retries = watch.retries + 1;
+						log.debug("watch ", type, " disconnected, retry #", watch.retries);
+						var ws = watch.socket = new WebSocket(uri.toString());
+						ws.onopen = onOpenInternal;
+						ws.onmessage = onMessageInternal;
+						ws.onclose = onCloseInternal;
+					}, 5000);
+				} else {
+					onClose(event);
 				}
-				*/
 			}
-			
-			var ws = watch.ws = new WebSocket(uri.toString());
-			ws.onopen = onOpen;
-			ws.onmessage = onMessage;
-			ws.onclose = onClose;
+			var ws = watch.socket = new WebSocket(uri.toString());
+			ws.onopen = onOpenInternal;
+			ws.onmessage = onMessageInternal;
+			ws.onclose = onCloseInternal;
+	}
+
+	/*	
+	_module.run(['WatcherService', '$rootScope', (WatcherService:WatcherService, $rootScope) => {
+		log.debug("Started watcher service");
+		
+//		Kubernetes.keepPollingModel = false;
+		
+		// some usage examples
+//		WatcherService.addCustomizer('pods', (pod) => {
+//			pod.SomeValue = 'foobar';
+//		});
+//		$rootScope.pods = WatcherService.getObjects('pods');
+//		$rootScope.podMap = WatcherService.getObjectMap('pods');
+//		
+//		$rootScope.$watchCollection('pods', (newValue) => {
+//		  log.debug("pods changed: ", newValue);
+//		});
+//		
+//		$rootScope.$watch('podMap', (newValue) => {
+//		  log.debug("pod map changed: ", newValue);
+//		}, true);
+	}]);
+	*/
+	
+	_module.service('WatcherService', ['userDetails', '$rootScope', (userDetails, $rootScope) => {
+		var self = <any> {
+			hasWebSocket: false
+		};
+		
+		try {
+			if (!WebSocket)  {
+				return self;
+			}
+		} catch (err) {
+			return self;
+		}
+		
+		self.setNamespace = (namespace: string) => {
+			if (namespace !== namespaceWatch.selected) {
+				log.debug("Namespace changed, shutting down existing watches");
+				_.forIn(watches, (watch, type) => {
+					if (watch.socket) {
+						watch.socket.close();
+					}
+				});
+			  log.debug("Setting namespace watch to: ", namespace);
+				namespaceWatch.selected = namespace;
+				$rootScope.$broadcast("WatcherNamespaceChanged", namespace);
+				if (namespace) {
+					_.forEach(types, (type) => {
+						// reset the object rather than re-assigning them
+						// ensures that any watches in controllers won't
+						// be watching a stale object
+						watches[type].url = UrlHelpers.join(apiUrl, 'namespaces', namespace, type);
+						watches[type].connectTime = <Number> undefined;
+						_.forEach(_.keys(watches[type].objects), (uid) => {
+							delete watches[type].objects[uid];
+						});
+						watches[type].objectArray.length = 0;
+						watches[type].socket = <WebSocket> undefined;
+					});
+					_.forIn(watches, (watch, type) => {
+						createWatch(type, watch, userDetails, $rootScope);
+					});
+				}
+			}
+		}
+		
+		createWatch('namespaces', namespaceWatch, userDetails, $rootScope, (event) => {
+			// log.debug("Got event: ", event);
+			switch (event.type) {
+				case 'ADDED':
+				case 'MODIFIED':
+						if (!namespaceWatch.selected) {
+							self.setNamespace(event.object.metadata.name);
+						}
+					break;
+				case 'DELETED':
+					var next = <any> _.first(namespaceWatch.objectArray);
+					if (next) {
+						self.setNamespace(next.metadata.name);						
+					} else {
+						self.setNamespace(undefined);						
+					}
+					break;
+				default:
+					log.debug("Unknown namespace event type: ", event.type);
+					return;
+			}
+		}, (event) => {
+			log.debug("Namespace watch closed");
+			self.setNamespace(undefined);
 		});
+		
 		self.hasWebSocket = true;
+		
+		self.getNamespace = () => namespaceWatch.selected;
 		
 		self.addCustomizer = (type: string, customizer: (obj:any) => void) => {
 			if (type in watches) {
@@ -134,6 +207,9 @@ module Kubernetes {
 		}
 		
 		self.getObjectMap = (type: string) => {
+			if (type === 'namespace') {
+				return namespaceWatch.objects;
+			}
 			if (type in watches) {
 				return watches[type].objects;
 			} else {
@@ -142,6 +218,9 @@ module Kubernetes {
 		}
 		
 		self.getObjects = (type:string) => {
+			if (type === 'namespace') {
+				return namespaceWatch.objectArray;
+			}
 			if (type in watches) {
 				return watches[type].objectArray;
 			} else {
