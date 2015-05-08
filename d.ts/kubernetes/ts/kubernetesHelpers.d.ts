@@ -1,4 +1,5 @@
 /// <reference path="../../includes.d.ts" />
+/// <reference path="kubernetesInterfaces.d.ts" />
 declare module Kubernetes {
     var context: string;
     var hash: string;

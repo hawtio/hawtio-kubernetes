@@ -1,4 +1,5 @@
 /// <reference path="../../includes.ts"/>
+/// <reference path="kubernetesInterfaces.ts"/>
 module Kubernetes {
 
   export var context = '/kubernetes';

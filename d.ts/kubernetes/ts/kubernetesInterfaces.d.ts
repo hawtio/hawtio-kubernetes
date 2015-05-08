@@ -1,14 +1,28 @@
 declare module Kubernetes {
+    class WatchTypes {
+        static NAMESPACES: string;
+        static ENDPOINTS: string;
+        static PODS: string;
+        static NODES: string;
+        static REPLICATION_CONTROLLERS: string;
+        static SERVICES: string;
+    }
+    class WatchActions {
+        static ADDED: string;
+        static MODIFIED: string;
+        static DELETED: string;
+    }
     interface ObjectMap {
         [uid: string]: any;
     }
     interface WatcherService {
         hasWebSocket: boolean;
         addCustomizer: (type: string, customizer: (obj: any) => void) => void;
-        getNamespaces: () => Array<string>;
+        getTypes: () => Array<string>;
         getNamespace: () => string;
         setNamespace: (namespace: string) => void;
         getObjects: (type: string) => Array<any>;
         getObjectMap: (type: string) => ObjectMap;
+        addAction: (type: string, action: string, fn: (obj: any) => void) => void;
     }
 }

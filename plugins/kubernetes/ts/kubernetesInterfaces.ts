@@ -1,5 +1,21 @@
 module Kubernetes {
 	
+	
+	export class WatchTypes {
+		public static get NAMESPACES():string { return "namespaces"; }
+		public static get ENDPOINTS():string { return "endpoints"; }
+		public static get PODS():string { return "pods"; }
+		public static get NODES():string { return "nodes"; }
+		public static get REPLICATION_CONTROLLERS():string { return "replicationcontrollers"; }
+		public static get SERVICES():string { return "services"; }
+	}
+	
+	export class WatchActions {
+		public static get ADDED():string { return "ADDED"; }
+		public static get MODIFIED():string { return "MODIFIED"; }
+		public static get DELETED():string { return "DELETED"; }
+	}
+	
 	export interface ObjectMap {
 		[uid:string]: any;		
 	}
@@ -7,11 +23,12 @@ module Kubernetes {
 	export interface WatcherService {
 		hasWebSocket: boolean;
 		addCustomizer: (type: string, customizer: (obj:any) => void) => void;
-		getNamespaces: () => Array<string>;
+		getTypes: () => Array<string>;
 		getNamespace: () => string;
 		setNamespace: (namespace: string) => void;
 		getObjects: (type: string) => Array<any>;
 		getObjectMap: (type: string) => ObjectMap;
+		addAction: (type: string, action: string, fn: (obj:any) => void) => void;
 	}
 	
 }

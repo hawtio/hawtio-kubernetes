@@ -97,7 +97,13 @@
   </script>
   <script type="text/ng-template" id="namespaceSelector.html">
     namespace: <select ng-model="kubernetes.selectedNamespace" ng-options="namespace for namespace in kubernetes.namespaces" title="choose the namespace - which is a selection of resources in kubernetes">
+    </select>		
+		<!--
+		<span ng-controller="Kubernetes.NamespaceController">
+    namespace: <select ng-model="namespace" ng-options="namespace for namespace in namespaces" title="choose the namespace - which is a selection of resources in kubernetes">
     </select>
+		</span>
+		-->
   </script>
 <div class="row" ng-controller="Kubernetes.TopLevel">
   <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over uploader="uploader" over-class="ready-drop">

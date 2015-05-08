@@ -1,26 +1,28 @@
 /// <reference path="kubernetesPlugin.ts"/>
-/// <reference path="kubernetesInterfaces.ts"/>
 
 module Kubernetes {
 	var log = Logger.get('kubernetes-watcher');
 	var apiPrefix = '/kubernetes';
 	var apiUrl = UrlHelpers.join(apiPrefix, 'api', 'v1beta3');
 	
-	var namespaceType = 'namespaces';
+	var namespaceType = WatchTypes.NAMESPACES;
 	
-	var types = ['endpoints', 
-							 'pods', 
-//							 'nodes',  // can't seem to look at these with normal privs 
-							 'replicationcontrollers', 
-							 'services'];
+	var types = [WatchTypes.ENDPOINTS,
+							 WatchTypes.PODS,
+							 WatchTypes.REPLICATION_CONTROLLERS,
+							 WatchTypes.SERVICES,
+							 WatchTypes.NODES];
 							 
 	var namespaceWatch = <any> {
 		selected: undefined,
 		connectTime: <Number> undefined,
-		url: UrlHelpers.join(apiUrl, 'namespaces'),
+		url: UrlHelpers.join(apiUrl, WatchTypes.NAMESPACES),
 		objects: <ObjectMap> {},
 		objectArray: <Array<any>> [],
 		customizers: <Array<(obj:any) => void>> [],
+		onAddActions: <Array<(obj:any) => void>> [],
+		onModifiedActions: <Array<(obj:any) => void>> [],
+		onDeletedActions: <Array<(obj:any) => void>> [],
 		socket: <WebSocket> undefined
 	}						
 							 
@@ -32,6 +34,9 @@ module Kubernetes {
 			objects: <ObjectMap> {},
 			objectArray: <Array<any>> [],
 			customizers: <Array<(obj:any) => void>>[],
+			onAddActions: <Array<(obj:any) => void>> [],
+			onModifiedActions: <Array<(obj:any) => void>> [],
+			onDeletedActions: <Array<(obj:any) => void>> [],
 			socket: <WebSocket> undefined
 		}
 	});
@@ -59,8 +64,8 @@ module Kubernetes {
 				var data = angular.fromJson(event.data);
 				// log.debug(type, " data: ", data);
 				switch (data.type) {
-					case 'ADDED':
-					case 'MODIFIED':
+					case WatchActions.ADDED:
+					case WatchActions.MODIFIED:
 						var obj = data.object;
 						if (watch.customizers.length > 0) {
 							_.forEach(watch.customizers, (customizer:(obj:any) => void) => {
@@ -69,7 +74,7 @@ module Kubernetes {
 						}
 						watch.objects[data.object.metadata.uid] = data.object;
 						break;
-					case 'DELETED':
+					case WatchActions.DELETED:
 						delete watch.objects[data.object.metadata.uid];
 						break;
 					default:
@@ -81,6 +86,18 @@ module Kubernetes {
 					watch.objectArray.push(object);
 				});
 				onMessage(data);
+				// execute any watch actions
+				switch (data.type) {
+					case WatchActions.ADDED:
+						_.forEach(watch.onAddActions, (action:any) => action(data.object));
+						break;
+					case WatchActions.MODIFIED:
+						_.forEach(watch.onModifiedActions, (action:any) => action(data.object));
+						break;
+					case WatchActions.DELETED:
+						_.forEach(watch.onDeletedActions, (action:any) => action(data.object));
+						break;
+				}
 				Core.$apply($scope);				
 			};
 			var onCloseInternal = (event) => {
@@ -155,9 +172,10 @@ module Kubernetes {
 						// reset the object rather than re-assigning them
 						// ensures that any watches in controllers won't
 						// be watching a stale object
-						watches[type].url = UrlHelpers.join(apiUrl, 'namespaces', namespace, type);
+						watches[type].url = UrlHelpers.join(apiUrl, WatchTypes.NAMESPACES, namespace, type);
 						watches[type].connectTime = <Number> undefined;
 						_.forEach(_.keys(watches[type].objects), (uid) => {
+							_.forEach(watches[type].onDeletedActions, (action:any) => action(watches[type].objects[uid]));
 							delete watches[type].objects[uid];
 						});
 						watches[type].objectArray.length = 0;
@@ -170,16 +188,16 @@ module Kubernetes {
 			}
 		}
 		
-		createWatch('namespaces', namespaceWatch, userDetails, $rootScope, (event) => {
+		createWatch(WatchTypes.NAMESPACES, namespaceWatch, userDetails, $rootScope, (event) => {
 			// log.debug("Got event: ", event);
 			switch (event.type) {
-				case 'ADDED':
-				case 'MODIFIED':
+				case WatchActions.ADDED:
+				case WatchActions.MODIFIED:
 						if (!namespaceWatch.selected) {
 							self.setNamespace(event.object.metadata.name);
 						}
 					break;
-				case 'DELETED':
+				case WatchActions.DELETED:
 					var next = <any> _.first(namespaceWatch.objectArray);
 					if (next) {
 						self.setNamespace(next.metadata.name);						
@@ -203,11 +221,16 @@ module Kubernetes {
 		self.addCustomizer = (type: string, customizer: (obj:any) => void) => {
 			if (type in watches) {
 				watches[type].customizers.push(customizer);
+				_.forEach(watches[type].objectArray, (obj) => customizer(obj));
 			}
 		}
 		
+		self.getTypes = () => {
+			return types.concat([WatchTypes.NAMESPACES]);
+		}
+		
 		self.getObjectMap = (type: string) => {
-			if (type === 'namespace') {
+			if (type === WatchTypes.NAMESPACES) {
 				return namespaceWatch.objects;
 			}
 			if (type in watches) {
@@ -218,7 +241,7 @@ module Kubernetes {
 		}
 		
 		self.getObjects = (type:string) => {
-			if (type === 'namespace') {
+			if (type === WatchTypes.NAMESPACES) {
 				return namespaceWatch.objectArray;
 			}
 			if (type in watches) {
@@ -226,6 +249,31 @@ module Kubernetes {
 			} else {
 				return undefined;
 			}
+		}
+		
+		self.addAction = (type: string, action: string, fn: (obj:any) => void) => {
+			var watch = <any> undefined;
+			if (type === WatchTypes.NAMESPACES) {
+				watch = namespaceWatch;
+			} else {
+				watch = watches[type];
+			}
+			if (watch) {
+				switch (action) {
+					case WatchActions.ADDED:
+						_.forEach(watch.objectArray, (obj) => fn(obj));
+						watch.onAddActions.push(fn);
+						break;
+					case WatchActions.MODIFIED:
+						watch.onModifiedActions.push(fn);
+						break;
+					case WatchActions.DELETED:
+						watch.onDeletedActions.push(fn);
+						break;
+					default:
+						log.debug("Attempting to add unknown action: ", action);
+				}
+			}			
 		}
 		
 		return self;
