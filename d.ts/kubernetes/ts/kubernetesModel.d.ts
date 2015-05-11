@@ -44,5 +44,5 @@ declare module Kubernetes {
      * Creates a model service which keeps track of all the pods, replication controllers and services along
      * with their associations and status
      */
-    function createKubernetesModel($rootScope: any, $http: any, AppLibraryURL: any, KubernetesApiURL: any, KubernetesState: any, KubernetesServices: any, KubernetesReplicationControllers: any, KubernetesPods: any): KubernetesModelService;
+    function createKubernetesModel($rootScope: any, $http: any, AppLibraryURL: any, KubernetesApiURL: any, KubernetesState: any, KubernetesServices: any, KubernetesReplicationControllers: any, KubernetesPods: any, watcher: WatcherService): KubernetesModelService;
 }

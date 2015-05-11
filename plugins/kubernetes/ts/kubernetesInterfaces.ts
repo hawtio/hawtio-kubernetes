@@ -11,6 +11,7 @@ module Kubernetes {
 	}
 	
 	export class WatchActions {
+		public static get ANY():string { return "*"; }
 		public static get ADDED():string { return "ADDED"; }
 		public static get MODIFIED():string { return "MODIFIED"; }
 		public static get DELETED():string { return "DELETED"; }
@@ -29,6 +30,7 @@ module Kubernetes {
 		getObjects: (type: string) => Array<any>;
 		getObjectMap: (type: string) => ObjectMap;
 		addAction: (type: string, action: string, fn: (obj:any) => void) => void;
+		registerListener: (fn:(objects:ObjectMap) => void) => void;
 	}
 	
 }

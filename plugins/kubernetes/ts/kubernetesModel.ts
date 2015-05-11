@@ -469,153 +469,83 @@ module Kubernetes {
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
    */
-  export function createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods) {
+  export function createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, watcher:WatcherService) {
     var stableScope = new KubernetesModelService();
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
     var lastJson = "";
-
-
-    KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {
-      KubernetesReplicationControllers.then((KubernetesReplicationControllers:ng.resource.IResourceClass) => {
-        KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
-          $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-            var ready = 0;
-            var numServices = 5;
-            var dataChanged = false;
-            var changedResourceVersion = null;
-
-            function maybeNext(count) {
-              ready = count;
-              // log.debug("Completed: ", ready);
-              if (ready >= numServices) {
-                // log.debug("Fetching another round");
-                if (dataChanged) {
-                  $scope.maybeInit();
-                  log.debug("kube model changed resourceVersion: " + changedResourceVersion);
-                  // lets check if things really changed.
-
-                  var trimmedScope = _.cloneDeep($scope);
-                  // it looks like the resource versions change a lot whereas the data often doesn't ;)
-                  delete trimmedScope["resourceVersions"];
-                  var newJson = angular.toJson(trimmedScope, true);
-                  if (lastJson !== newJson) {
-                    //log.debug("Kube model changed, old: ", lastJson, " new: ", newJson);
-                    lastJson = newJson;
-                    _.forIn(trimmedScope, (value, prop) => {
-                      if (_.isArray(value)) {
-                        ArrayHelpers.sync(stableScope[prop], trimmedScope[prop], '_key');
-                      } else {
-                        stableScope[prop] = trimmedScope[prop];
-                      }
-                    });
-                  }
-                }
-                next();
-              }
-            }
-
-            function hasChanged(response, name) {
-              var resourceVersion = response.resourceVersion;
-              var lastResourceVersion = $scope.resourceVersions[name] || 0;
-              if (!resourceVersion || resourceVersion > lastResourceVersion) {
-                if (resourceVersion) {
-                  $scope.resourceVersions[name] = resourceVersion;
-                  changedResourceVersion = resourceVersion;
-                }
-                dataChanged = true;
-                return true;
-              }
-              return false;
-            }
-
-            KubernetesServices.query((response) => {
-              if (response && hasChanged(response, "services")) {
-                var items = populateKeys((response.items || []).sortBy(byId));
-                angular.forEach(items, (item) => {
-                  kubernetesProxyUrlForService(KubernetesApiURL, item).then((url) => {
-                    item.proxyUrl = url;
-                  });
-                });
-                $scope.services = items;
-              }
-              maybeNext(ready + 1);
-            });
-            KubernetesReplicationControllers.query((response) => {
-              if (response && hasChanged(response, "replicationControllers")) {
-                var items = populateKeys((response.items || []).sortBy(byId));
-                $scope.replicationControllers = items;
-              }
-              maybeNext(ready + 1);
-            });
-            KubernetesPods.query((response) => {
-              if (response && hasChanged(response, "pods")) {
-                var items = populateKeys((response.items || []).sortBy(byId));
-                $scope.pods = items;
-              }
-              maybeNext(ready + 1);
-            });
-
-            // lets see if we can find the app-library service
-            var hasAppLibrary = false;
-            angular.forEach($scope.services, (service) => {
-              var metadata = service.metadata;
-              if (metadata) {
-                var name = metadata.name;
-                if (name && name === "app-library") {
-                  hasAppLibrary = true;
-                }
-              }
-            });
-            if (hasAppLibrary) {
-              var appsUrl = AppLibraryURL + "/apps";
-              console.log("has app library so lets query: " + appsUrl);
-              var etags = $scope.resourceVersions["appLibrary"];
-              $http.get(appsUrl, {
-                headers: {
-                  "If-None-Match": etags
-                }
-              }).
-                success(function (data, status, headers, config) {
-                  if (angular.isArray(data) && status === 200) {
-                    var newETags = headers("etag") || headers("ETag");
-                    if (!newETags || newETags !== etags) {
-                      if (newETags) {
-                        $scope.resourceVersions["appLibrary"] = newETags;
-                      }
-                      $scope.appInfos = data;
-                      dataChanged = true;
-                    }
-                  }
-                  maybeNext(ready + 1);
-                }).
-                error(function (data, status, headers, config) {
-                  maybeNext(ready + 1);
-                });
-            } else {
-              maybeNext(ready + 1);
-            }
-
-            var url = routesRestURL();
-            $http.get(url).
-              success(function (data, status, headers, config) {
-                if (data) {
-                  $scope.routes = data.items;
-                  $scope.isOpenShift = true;
-                  maybeNext(ready + 1);
-                }
-              }).
-              error(function (data, status, headers, config) {
-                log.warn("Failed to load " + url + " " + data + " " + status);
-                maybeNext(ready + 1);
+		
+		watcher.registerListener((objects:ObjectMap) => {
+			var types = watcher.getTypes();
+			_.forEach(types, (type:string) => {
+				switch (type) {
+					case "replicationcontrollers":
+						$scope.replicationControllers = populateKeys(objects['replicationcontrollers']);
+					break;
+					case "services":
+						var items = populateKeys(objects[type]);
+						angular.forEach(items, (item) => {
+              kubernetesProxyUrlForService(KubernetesApiURL, item).then((url) => {
+                item.proxyUrl = url;
               });
-
-          });
-          $scope.fetch();
-        });
+            });
+						$scope[type] = items;						
+						break;
+					default:
+						$scope[type] = populateKeys(objects[type]);
+				}
+			});
+			$scope.maybeInit();			
+      // lets see if we can find the app-library service
+      var hasAppLibrary = false;
+      angular.forEach($scope.services, (service) => {
+        var metadata = service.metadata;
+        if (metadata) {
+          var name = metadata.name;
+          if (name && name === "app-library") {
+            hasAppLibrary = true;
+          }
+        }
       });
-      return stableScope;
-    });
+      if (hasAppLibrary) {
+        var appsUrl = AppLibraryURL + "/apps";
+        console.log("has app library so lets query: " + appsUrl);
+        var etags = $scope.resourceVersions["appLibrary"];
+        $http.get(appsUrl, {
+          headers: {
+            "If-None-Match": etags
+          }
+        }).
+          success(function (data, status, headers, config) {
+            if (angular.isArray(data) && status === 200) {
+              var newETags = headers("etag") || headers("ETag");
+              if (!newETags || newETags !== etags) {
+                if (newETags) {
+                  $scope.resourceVersions["appLibrary"] = newETags;
+                }
+                $scope.appInfos = data;
+              }
+            }
+          }).
+          error(function (data, status, headers, config) {
+          });
+      }
+
+      var url = routesRestURL();
+      $http.get(url).
+        success(function (data, status, headers, config) {
+          if (data) {
+            $scope.routes = data.items;
+            $scope.isOpenShift = true;
+          }
+        }).
+        error(function (data, status, headers, config) {
+          log.warn("Failed to load " + url + " " + data + " " + status);
+        });
+			Core.$apply($rootScope);
+		});
+		
+		watcher.setNamespace($scope.currentNamespace());
 
     function selectPods(pods, namespace, labels) {
       return pods.filter((pod) => {

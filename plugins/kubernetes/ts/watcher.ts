@@ -98,7 +98,7 @@ module Kubernetes {
 						_.forEach(watch.onDeletedActions, (action:any) => action(data.object));
 						break;
 				}
-				Core.$apply($scope);				
+				//Core.$apply($scope);				
 			};
 			var onCloseInternal = (event) => {
 				if (watch.retries < 3 && watch.connectTime && new Date().getTime() - watch.connectTime > 5000) {
@@ -251,6 +251,30 @@ module Kubernetes {
 			}
 		}
 		
+		self.listeners = <Array<(ObjectMap) => void>> [];
+		
+		var updateFunction = () => {
+				log.debug("Objects changed, firing listeners");
+			var objects = <ObjectMap>{};
+			_.forEach(self.getTypes(), (type:string) => {
+				objects[type] = self.getObjects(type);
+			});
+			_.forEach(self.listeners, (listener:(ObjectMap) => void) => {
+				listener(objects);
+			});
+		};
+		
+		var debouncedUpdate = _.debounce(updateFunction, 50, { trailing: true });
+		
+		// listener gets notified after a bunch of changes have occurred
+		self.registerListener = (fn:(objects:ObjectMap) => void) => {
+			self.listeners.push(fn);
+			_.forEach(self.getTypes(), (type) => {
+				self.addAction(type, WatchActions.ANY, debouncedUpdate)
+			});
+		}
+		
+		// function to watch individual actions on the k8s objects
 		self.addAction = (type: string, action: string, fn: (obj:any) => void) => {
 			var watch = <any> undefined;
 			if (type === WatchTypes.NAMESPACES) {
@@ -260,6 +284,12 @@ module Kubernetes {
 			}
 			if (watch) {
 				switch (action) {
+					case WatchActions.ANY:
+						_.forEach(watch.objectArray, (obj) => fn(obj));
+						watch.onAddActions.push(fn);
+						watch.onDeletedActions.push(fn);
+						watch.onModifiedActions.push(fn);
+						break;
 					case WatchActions.ADDED:
 						_.forEach(watch.objectArray, (obj) => fn(obj));
 						watch.onAddActions.push(fn);

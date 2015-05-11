@@ -8,6 +8,7 @@ declare module Kubernetes {
         static SERVICES: string;
     }
     class WatchActions {
+        static ANY: string;
         static ADDED: string;
         static MODIFIED: string;
         static DELETED: string;
@@ -24,5 +25,6 @@ declare module Kubernetes {
         getObjects: (type: string) => Array<any>;
         getObjectMap: (type: string) => ObjectMap;
         addAction: (type: string, action: string, fn: (obj: any) => void) => void;
+        registerListener: (fn: (objects: ObjectMap) => void) => void;
     }
 }
