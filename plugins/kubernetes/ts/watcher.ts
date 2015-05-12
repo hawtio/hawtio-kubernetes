@@ -264,7 +264,7 @@ module Kubernetes {
 			});
 		};
 		
-		var debouncedUpdate = _.debounce(updateFunction, 50, { trailing: true });
+		var debouncedUpdate = _.debounce(updateFunction, 250, { trailing: true });
 		
 		// listener gets notified after a bunch of changes have occurred
 		self.registerListener = (fn:(objects:ObjectMap) => void) => {
