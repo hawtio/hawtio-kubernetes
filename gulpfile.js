@@ -216,7 +216,7 @@ gulp.task('connect', ['watch'], function() {
     var configJs = 'window.OPENSHIFT_CONFIG = {' +
       ' auth: {' +
       '   oauth_authorize_uri: "' + urljoin(kubeBase, '/oauth/authorize')  + '",' +
-      '   oauth_client_id: "fabric8-console",' +
+      '   oauth_client_id: "fabric8",' +
       ' }' +
       '};';
     res.set('Content-Type', 'application/javascript');
