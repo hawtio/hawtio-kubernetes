@@ -3,5 +3,6 @@
 /// <reference path="kubernetesPlugin.d.ts" />
 declare module Kubernetes {
     var FileDropController: ng.IModule;
+    var NamespaceController: ng.IModule;
     var TopLevel: ng.IModule;
 }

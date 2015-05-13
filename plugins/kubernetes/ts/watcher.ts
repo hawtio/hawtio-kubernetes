@@ -98,7 +98,7 @@ module Kubernetes {
 						_.forEach(watch.onDeletedActions, (action:any) => action(data.object));
 						break;
 				}
-				//Core.$apply($scope);				
+				Core.$apply($scope);				
 			};
 			var onCloseInternal = (event) => {
 				if (watch.retries < 3 && watch.connectTime && new Date().getTime() - watch.connectTime > 5000) {

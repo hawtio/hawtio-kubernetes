@@ -35,6 +35,22 @@ module Kubernetes {
       }
 
   }]);
+	
+	export var NamespaceController = controller('NamespaceController', ['$scope', 'WatcherService', ($scope, watcher:WatcherService) => {
+		$scope.namespaces = watcher.getObjects('namespaces');
+		$scope.$watchCollection('namespaces', (newValue, oldValue) => {
+			if (newValue !== oldValue) {
+				$scope.namespace = watcher.getNamespace();
+			}
+		});
+		$scope.$watch('namespace', (newValue, oldValue) => {
+			if (newValue !== oldValue) {
+				if (newValue !== oldValue) {
+					watcher.setNamespace(newValue);
+				}
+			}
+		});
+	}]);
 
   export var TopLevel = controller("TopLevel", ["$scope", "workspace", "KubernetesVersion", "KubernetesState", ($scope, workspace:Core.Workspace, KubernetesVersion:ng.IPromise<ng.resource.IResourceClass>, KubernetesState) => {
 
