@@ -141,17 +141,6 @@ module Kubernetes {
     return restmod.model(buildConfigsRestURL());
   }]);
 
-  _module.factory('KubernetesSchema', ['SchemaRegistry', (SchemaRegistry) => {
-    configureSchema();
-    SchemaRegistry.addSchema('kubernetes', schema);
-    // now lets iterate and add all the definitions too
-    angular.forEach(schema.definitions, (definition, typeName) => {
-      SchemaRegistry.addSchema(typeName, definition);
-      SchemaRegistry.addSchema("#/definitions/" + typeName, definition);
-    });
-    return schema;
-  }]);
-
   _module.factory('KubernetesState', [() => {
     return {
       namespaces: [],

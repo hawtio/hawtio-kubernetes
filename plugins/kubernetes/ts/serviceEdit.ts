@@ -5,15 +5,16 @@
 module Kubernetes {
 
   export var ServiceEditController = controller("ServiceEditController",
-    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
+    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "SchemaRegistry",
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL, schemas:HawtioForms.SchemaRegistry) => {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
     $scope.id = $routeParams["id"];
     $scope.schema = KubernetesSchema;
-    $scope.config = KubernetesSchema.definitions.kubernetes_v1beta2_Service;
+    $scope.config = schemas.cloneSchema("io.fabric8.kubernetes.api.model.Service");
+    //$scope.config = KubernetesSchema.definitions.kubernetes_v1beta2_Service;
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 

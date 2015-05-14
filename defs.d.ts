@@ -18,6 +18,7 @@
 /// <reference path="d.ts/kubernetes/ts/hosts.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/imageRepositories.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesJsonDirective.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/kubernetesSchema.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesTopLevel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/namespace.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/overview.d.ts"/>
