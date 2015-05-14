@@ -4,12 +4,18 @@ module Kubernetes {
   
   
   var hiddenProperties = ['status', 'deletionTimestamp'];
+
+  function withProperty(schema:any, name:string, action:(any) => void) {
+    if (schema.properties[name]) {
+      action(schema.properties[name]);
+    }
+  }
   
   function hideProperties(schema) {
     _.forEach(hiddenProperties, (property) => {
-      if (schema.properties[property]) {
-        schema.properties[property].hidden = true;
-      }
+      withProperty(schema, property, (property) => {
+        property.hidden = true;
+      })
     });
   }
   
@@ -21,10 +27,36 @@ module Kubernetes {
         if (schema.properties.name) {
           schema.controls = ['name', '*'];
         }
+        withProperty(schema, 'portalIP', (property) => {
+          property.label = "Portal IP"
+        });
+        withProperty(schema, 'publicIPs', (property) => {
+          property.label = "Public IPs"
+        });
+        withProperty(schema, 'Spec', (property) => {
+          property.label = 'false';
+        });
+        withProperty(schema, 'Metadata', (property) => {
+          property.label = 'false';
+        });
         hideProperties(schema);
       }
       
+      if (_.endsWith(name, "ServiceSpec")) {
+        schema.controls = ["portalIP", "createExternalLoadBalancer", "sessionAffinity", "publicIPs", "ports", "selector", "*"];
+        withProperty(schema, 'sessionAffinity', (property) => {
+          log.debug("Schema: ", schema);
+          property.enum = ['None', 'ClientIP'];
+          property.default = 'None';
+        });
+      }
+      
       if (_.endsWith(name, "Service")) {
+        schema.controls = undefined;
+        schema.tabs = {
+          'Basic Information': ['metadata'],
+          'Details': ['*']
+        }
         log.debug("Name: ", name, " Schema: ", schema);
       }
      
