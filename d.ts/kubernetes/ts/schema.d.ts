@@ -1,181 +1,72 @@
 /// <reference path="../../includes.d.ts" />
-/// <reference path="kubernetesHelpers.d.ts" />
-/// <reference path="kubernetesPlugin.d.ts" />
 declare module Kubernetes {
     var schema: {
+        "id": string;
         "$schema": string;
-        "additionalProperties": boolean;
         "definitions": {
-            "docker_Config": {
-                "additionalProperties": boolean;
-                "javaType": string;
+            "kubernetes_Capabilities": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "AttachStderr": {
+                    "add": {
                         "type": string;
-                    };
-                    "AttachStdin": {
-                        "type": string;
-                    };
-                    "AttachStdout": {
-                        "type": string;
-                    };
-                    "Cmd": {
+                        "description": string;
                         "items": {
                             "type": string;
+                            "description": string;
                         };
-                        "type": string;
                     };
-                    "CpuSet": {
+                    "drop": {
                         "type": string;
-                    };
-                    "CpuShares": {
-                        "type": string;
-                    };
-                    "Dns": {
+                        "description": string;
                         "items": {
                             "type": string;
+                            "description": string;
                         };
-                        "type": string;
-                    };
-                    "Domainname": {
-                        "type": string;
-                    };
-                    "Entrypoint": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                    "Env": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                    "ExposedPorts": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "Hostname": {
-                        "type": string;
-                    };
-                    "Image": {
-                        "type": string;
-                    };
-                    "Memory": {
-                        "type": string;
-                    };
-                    "MemorySwap": {
-                        "type": string;
-                    };
-                    "NetworkDisabled": {
-                        "type": string;
-                    };
-                    "OpenStdin": {
-                        "type": string;
-                    };
-                    "PortSpecs": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                    "StdinOnce": {
-                        "type": string;
-                    };
-                    "Tty": {
-                        "type": string;
-                    };
-                    "User": {
-                        "type": string;
-                    };
-                    "Volumes": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "VolumesFrom": {
-                        "type": string;
-                    };
-                    "WorkingDir": {
-                        "type": string;
                     };
                 };
-                "type": string;
-            };
-            "docker_Image": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_Container": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "Architecture": {
+                    "args": {
                         "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
                     };
-                    "Author": {
-                        "type": string;
-                    };
-                    "Comment": {
-                        "type": string;
-                    };
-                    "Config": {
+                    "capabilities": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "Container": {
-                        "type": string;
-                    };
-                    "ContainerConfig": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "Created": {
-                        "type": string;
-                    };
-                    "DockerVersion": {
-                        "type": string;
-                    };
-                    "Id": {
-                        "type": string;
-                    };
-                    "Parent": {
-                        "type": string;
-                    };
-                    "Size": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_Container": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
                     "command": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "type": string;
+                            "description": string;
                         };
-                        "type": string;
-                    };
-                    "cpu": {
-                        "$ref": string;
-                        "javaType": string;
                     };
                     "env": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "image": {
                         "type": string;
+                        "description": string;
                     };
                     "imagePullPolicy": {
                         "type": string;
+                        "description": string;
                     };
                     "lifecycle": {
                         "$ref": string;
@@ -185,734 +76,83 @@ declare module Kubernetes {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "memory": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
                     "name": {
                         "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
                     };
                     "ports": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "privileged": {
                         "type": string;
+                        "description": string;
+                    };
+                    "readinessProbe": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "resources": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                     "terminationMessagePath": {
                         "type": string;
+                        "description": string;
                     };
                     "volumeMounts": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "workingDir": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_base_EmptyDir": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "type": string;
             };
-            "kubernetes_base_EnvVar": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "name": {
-                        "type": string;
-                    };
-                    "value": {
-                        "type": string;
-                    };
-                };
+            "kubernetes_ContainerPort": {
                 "type": string;
-            };
-            "kubernetes_base_ExecAction": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "command": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_GCEPersistentDisk": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "fsType": {
-                        "type": string;
-                    };
-                    "partition": {
-                        "type": string;
-                    };
-                    "pdName": {
-                        "type": string;
-                    };
-                    "readOnly": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_GitRepo": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "repository": {
-                        "type": string;
-                    };
-                    "revision": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_HTTPGetAction": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "host": {
-                        "type": string;
-                    };
-                    "path": {
-                        "type": string;
-                    };
-                    "port": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_Handler": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "exec": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "httpGet": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_HostDir": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "path": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_Lifecycle": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "postStart": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "preStop": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_ListMeta": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_LivenessProbe": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "exec": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "httpGet": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "initialDelaySeconds": {
-                        "type": string;
-                    };
-                    "tcpSocket": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_ObjectMeta": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_ObjectReference": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "fieldPath": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_PodSpec": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "containers": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "dnsPolicy": {
-                        "type": string;
-                    };
-                    "host": {
-                        "type": string;
-                    };
-                    "nodeSelector": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "restartPolicy": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "volumes": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_PodTemplateSpec": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "spec": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_Port": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "description": string;
                 "properties": {
                     "containerPort": {
                         "type": string;
+                        "description": string;
                     };
                     "hostIP": {
                         "type": string;
+                        "description": string;
                     };
                     "hostPort": {
                         "type": string;
+                        "description": string;
                     };
                     "name": {
                         "type": string;
+                        "description": string;
                     };
                     "protocol": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_base_ReplicationControllerSpec": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "properties": {
-                    "replicas": {
-                        "type": string;
-                    };
-                    "selector": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "template": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "templateRef": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
             };
-            "kubernetes_base_RestartPolicy": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "always": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "never": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "onFailure": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
+            "kubernetes_ContainerState": {
                 "type": string;
-            };
-            "kubernetes_base_RestartPolicyAlways": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "type": string;
-            };
-            "kubernetes_base_RestartPolicyNever": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "type": string;
-            };
-            "kubernetes_base_RestartPolicyOnFailure": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "type": string;
-            };
-            "kubernetes_base_Status": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "code": {
-                        "type": string;
-                    };
-                    "details": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "message": {
-                        "type": string;
-                    };
-                    "reason": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "status": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_StatusCause": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "field": {
-                        "type": string;
-                    };
-                    "message": {
-                        "type": string;
-                    };
-                    "reason": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_StatusDetails": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "causes": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_TCPSocketAction": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "port": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_TypeMeta": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_Volume": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "name": {
-                        "type": string;
-                    };
-                    "source": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_VolumeMount": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "mountPath": {
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "readOnly": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_base_VolumeSource": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "emptyDir": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "gitRepo": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "hostDir": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "persistentDisk": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_errors_StatusError": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "ErrStatus": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_resource_Quantity": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "Amount": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "Format": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_runtime_RawExtension": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "RawJSON": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_util_IntOrString": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "IntVal": {
-                        "type": string;
-                    };
-                    "Kind": {
-                        "type": string;
-                    };
-                    "StrVal": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_Container": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "command": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                    "cpu": {
-                        "type": string;
-                    };
-                    "env": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "image": {
-                        "type": string;
-                    };
-                    "imagePullPolicy": {
-                        "type": string;
-                    };
-                    "lifecycle": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "livenessProbe": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "memory": {
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "ports": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "privileged": {
-                        "type": string;
-                    };
-                    "terminationMessagePath": {
-                        "type": string;
-                    };
-                    "volumeMounts": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "workingDir": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ContainerManifest": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "containers": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "dnsPolicy": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "restartPolicy": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "uuid": {
-                        "type": string;
-                    };
-                    "version": {
-                        "type": string;
-                    };
-                    "volumes": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ContainerState": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "description": string;
                 "properties": {
                     "running": {
                         "$ref": string;
@@ -927,250 +167,367 @@ declare module Kubernetes {
                         "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ContainerStateRunning": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_ContainerStateRunning": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "startedAt": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ContainerStateTerminated": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "properties": {
-                    "exitCode": {
-                        "type": string;
-                    };
-                    "finishedAt": {
-                        "type": string;
-                    };
-                    "message": {
-                        "type": string;
-                    };
-                    "reason": {
-                        "type": string;
-                    };
-                    "signal": {
-                        "type": string;
-                    };
-                    "startedAt": {
-                        "type": string;
-                    };
-                };
-                "type": string;
             };
-            "kubernetes_v1beta2_ContainerStateWaiting": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "reason": {
-                        "type": string;
-                    };
-                };
+            "kubernetes_ContainerStateTerminated": {
                 "type": string;
-            };
-            "kubernetes_v1beta2_ContainerStatus": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "description": string;
                 "properties": {
                     "containerID": {
                         "type": string;
+                        "description": string;
+                    };
+                    "exitCode": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "finishedAt": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "message": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "reason": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "signal": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "startedAt": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ContainerStateWaiting": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "reason": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ContainerStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "containerID": {
+                        "type": string;
+                        "description": string;
                     };
                     "image": {
                         "type": string;
+                        "description": string;
                     };
-                    "podIP": {
+                    "imageID": {
                         "type": string;
+                        "description": string;
+                    };
+                    "lastState": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
+                    };
+                    "ready": {
+                        "type": string;
+                        "description": string;
                     };
                     "restartCount": {
                         "type": string;
+                        "description": string;
                     };
                     "state": {
                         "$ref": string;
                         "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_EmptyDir": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "type": string;
             };
-            "kubernetes_v1beta2_Endpoints": {
-                "additionalProperties": boolean;
-                "javaType": string;
+            "kubernetes_EmptyDirVolumeSource": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
+                    "medium": {
                         "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "endpoints": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_EndpointsList": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_EndpointAddress": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
+                    "IP": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "targetRef": {
+                        "$ref": string;
                         "javaType": string;
-                        "type": string;
                     };
-                    "apiVersion": {
-                        "default": string;
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_EndpointPort": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "name": {
                         "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
                     };
-                    "creationTimestamp": {
+                    "port": {
                         "type": string;
+                        "description": string;
                     };
-                    "id": {
+                    "protocol": {
                         "type": string;
+                        "description": string;
                     };
-                    "items": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_EndpointSubset": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "addresses": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
+                    };
+                    "ports": {
                         "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Endpoints": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "namespace": {
-                        "type": string;
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
                     };
-                    "resourceVersion": {
+                    "subsets": {
                         "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_EnvVar": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_EndpointsList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_EnvVar": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "name": {
                         "type": string;
+                        "description": string;
+                        "pattern": string;
                     };
                     "value": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ExecAction": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_ExecAction": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "command": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "type": string;
+                            "description": string;
                         };
-                        "type": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_GCEPersistentDisk": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_GCEPersistentDiskVolumeSource": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "fsType": {
                         "type": string;
+                        "description": string;
                     };
                     "partition": {
                         "type": string;
+                        "description": string;
                     };
                     "pdName": {
                         "type": string;
+                        "description": string;
                     };
                     "readOnly": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_GitRepo": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_GitRepoVolumeSource": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "repository": {
                         "type": string;
+                        "description": string;
                     };
                     "revision": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_HTTPGetAction": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_GlusterfsVolumeSource": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "host": {
+                    "endpoints": {
                         "type": string;
+                        "description": string;
                     };
                     "path": {
                         "type": string;
+                        "description": string;
+                    };
+                    "readOnly": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_HTTPGetAction": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "host": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "path": {
+                        "type": string;
+                        "description": string;
                     };
                     "port": {
                         "$ref": string;
                         "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_Handler": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_Handler": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "exec": {
                         "$ref": string;
@@ -1180,22 +537,57 @@ declare module Kubernetes {
                         "$ref": string;
                         "javaType": string;
                     };
+                    "tcpSocket": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_HostDir": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_HostPathVolumeSource": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "path": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_Lifecycle": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_ISCSIVolumeSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "fsType": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "iqn": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "lun": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "readOnly": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "targetPortal": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Lifecycle": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "postStart": {
                         "$ref": string;
@@ -1206,57 +598,581 @@ declare module Kubernetes {
                         "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_List": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_List": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
                     "apiVersion": {
+                        "type": string;
+                        "description": string;
                         "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "items": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "namespace": {
-                        "type": string;
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
                     };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ListMeta": {
+                "type": string;
+                "description": string;
+                "properties": {
                     "resourceVersion": {
                         "type": string;
+                        "description": string;
                     };
                     "selfLink": {
                         "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NFSVolumeSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "path": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "readOnly": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "server": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Node": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NodeAddress": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "address": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NodeCondition": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "lastHeartbeatTime": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "lastTransitionTime": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "message": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "reason": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "status": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NodeList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NodeSpec": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "externalID": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "podCIDR": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "unschedulable": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NodeStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "addresses": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "capacity": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                        "javaType": string;
+                    };
+                    "conditions": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "nodeInfo": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "phase": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NodeSystemInfo": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "KubeProxyVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "bootID": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "containerRuntimeVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "kernelVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "kubeletVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "machineID": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "osImage": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "systemUUID": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ObjectMeta": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "annotations": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
+                    };
+                    "creationTimestamp": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "deletionTimestamp": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "generateName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "labels": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
+                    };
+                    "namespace": {
+                        "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
+                    };
+                    "resourceVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "selfLink": {
+                        "type": string;
+                        "description": string;
                     };
                     "uid": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_LivenessProbe": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_ObjectReference": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "fieldPath": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "namespace": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "resourceVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "uid": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Pod": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_PodCondition": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "status": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_PodList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_PodSpec": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "containers": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "dnsPolicy": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "host": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "hostNetwork": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "nodeSelector": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
+                    };
+                    "restartPolicy": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "volumes": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_PodStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "Condition": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "containerStatuses": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "hostIP": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "message": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "phase": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "podIP": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_PodTemplateSpec": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Probe": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "exec": {
                         "$ref": string;
@@ -1268,719 +1184,347 @@ declare module Kubernetes {
                     };
                     "initialDelaySeconds": {
                         "type": string;
+                        "description": string;
+                        "javaType": string;
                     };
                     "tcpSocket": {
                         "$ref": string;
                         "javaType": string;
                     };
+                    "timeoutSeconds": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_Minion": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_ReplicationController": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
                     "apiVersion": {
+                        "type": string;
+                        "description": string;
                         "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "hostIP": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "resources": {
+                    "metadata": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "selfLink": {
-                        "type": string;
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                     "status": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "uid": {
-                        "type": string;
-                    };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_MinionList": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_ReplicationControllerList": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
                     "apiVersion": {
+                        "type": string;
+                        "description": string;
                         "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "items": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "kind": {
                         "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_NodeCondition": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "kind": {
-                        "type": string;
-                    };
-                    "lastTransitionTime": {
-                        "type": string;
-                    };
-                    "message": {
-                        "type": string;
-                    };
-                    "reason": {
-                        "type": string;
-                    };
-                    "status": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_NodeResources": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "capacity": {
-                        "additionalProperties": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_NodeStatus": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "conditions": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "phase": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_Pod": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "apiVersion": {
+                        "description": string;
                         "default": string;
-                        "type": string;
+                        "required": boolean;
                     };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "currentState": {
+                    "metadata": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "desiredState": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "nodeSelector": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_PodList": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "items": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
             };
-            "kubernetes_v1beta2_PodState": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "host": {
-                        "type": string;
-                    };
-                    "hostIP": {
-                        "type": string;
-                    };
-                    "info": {
-                        "additionalProperties": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "manifest": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "message": {
-                        "type": string;
-                    };
-                    "podIP": {
-                        "type": string;
-                    };
-                    "status": {
-                        "type": string;
-                    };
-                };
+            "kubernetes_ReplicationControllerSpec": {
                 "type": string;
-            };
-            "kubernetes_v1beta2_PodTemplate": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "description": string;
                 "properties": {
-                    "desiredState": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_Port": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "containerPort": {
-                        "type": string;
-                    };
-                    "hostIP": {
-                        "type": string;
-                    };
-                    "hostPort": {
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "protocol": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ReplicationController": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "currentState": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "desiredState": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ReplicationControllerList": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "items": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ReplicationControllerState": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "podTemplate": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "replicaSelector": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
                     "replicas": {
                         "type": string;
+                        "description": string;
                     };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_RestartPolicy": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "always": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "never": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "onFailure": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_RestartPolicyAlways": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "type": string;
-            };
-            "kubernetes_v1beta2_RestartPolicyNever": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "type": string;
-            };
-            "kubernetes_v1beta2_RestartPolicyOnFailure": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "type": string;
-            };
-            "kubernetes_v1beta2_Service": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "annotations": {
+                    "selector": {
+                        "type": string;
+                        "description": string;
                         "additionalProperties": {
                             "type": string;
+                            "description": string;
                         };
                         "javaType": string;
-                        "type": string;
                     };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "containerPort": {
+                    "template": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "createExternalLoadBalancer": {
-                        "type": string;
+                    "templateRef": {
+                        "$ref": string;
+                        "javaType": string;
                     };
-                    "creationTimestamp": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ReplicationControllerStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "replicas": {
                         "type": string;
+                        "description": string;
                     };
-                    "id": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ResourceRequirements": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "limits": {
                         "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                        "javaType": string;
+                    };
+                    "requests": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_SecretVolumeSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "secretName": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Service": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
+                    "metadata": {
+                        "$ref": string;
                         "javaType": string;
-                        "type": string;
                     };
-                    "namespace": {
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ServiceList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ServicePort": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "name": {
+                        "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
                     };
                     "port": {
                         "type": string;
+                        "description": string;
+                    };
+                    "protocol": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "targetPort": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ServiceSpec": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "createExternalLoadBalancer": {
+                        "type": string;
+                        "description": string;
                     };
                     "portalIP": {
                         "type": string;
+                        "description": string;
                     };
-                    "protocol": {
+                    "ports": {
                         "type": string;
-                    };
-                    "proxyPort": {
-                        "type": string;
-                    };
-                    "publicIPs": {
-                        "items": {
-                            "type": string;
-                        };
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selector": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "sessionAffinity": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_ServiceList": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
-                    };
-                    "items": {
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
-                    "kind": {
+                    "publicIPs": {
                         "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
                     };
-                    "namespace": {
+                    "selector": {
                         "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
                     };
-                    "resourceVersion": {
+                    "sessionAffinity": {
                         "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_TCPSocketAction": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_ServiceStatus": {
+                "type": string;
+                "description": string;
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_TCPSocketAction": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "port": {
                         "$ref": string;
                         "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_TypeMeta": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_TypeMeta": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
                     "apiVersion": {
-                        "default": string;
                         "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "id": {
-                        "type": string;
+                        "description": string;
                     };
                     "kind": {
                         "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "kubernetes_v1beta2_Volume": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_Volume": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "name": {
-                        "type": string;
-                    };
-                    "source": {
+                    "emptyDir": {
                         "$ref": string;
                         "javaType": string;
                     };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_VolumeMount": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "mountPath": {
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "readOnly": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "kubernetes_v1beta2_VolumeSource": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "emptyDir": {
+                    "gcePersistentDisk": {
                         "$ref": string;
                         "javaType": string;
                     };
@@ -1988,205 +1532,608 @@ declare module Kubernetes {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "hostDir": {
+                    "glusterfs": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "persistentDisk": {
+                    "hostPath": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "iscsi": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
+                    };
+                    "nfs": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "secret": {
                         "$ref": string;
                         "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_Build": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_VolumeMount": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
+                    "mountPath": {
                         "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "cancelled": {
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
+                        "description": string;
                     };
                     "name": {
                         "type": string;
+                        "description": string;
                     };
-                    "namespace": {
+                    "readOnly": {
                         "type": string;
+                        "description": string;
                     };
-                    "parameters": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_VolumeSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "emptyDir": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "podName": {
-                        "type": string;
+                    "gcePersistentDisk": {
+                        "$ref": string;
+                        "javaType": string;
                     };
+                    "gitRepo": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "glusterfs": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "hostPath": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "iscsi": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "nfs": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "secret": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_base_ListMeta": {
+                "type": string;
+                "description": string;
+                "properties": {
                     "resourceVersion": {
                         "type": string;
+                        "description": string;
                     };
                     "selfLink": {
                         "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_base_ObjectMeta": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "annotations": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
+                    };
+                    "creationTimestamp": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "deletionTimestamp": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "generateName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "labels": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
+                    };
+                    "namespace": {
+                        "type": string;
+                        "description": string;
+                        "maxLength": number;
+                        "pattern": string;
+                    };
+                    "resourceVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "selfLink": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "uid": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_base_ObjectReference": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "fieldPath": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "namespace": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "resourceVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "uid": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_base_Status": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "code": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "details": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "message": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "reason": {
+                        "type": string;
+                        "description": string;
                     };
                     "status": {
                         "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_BuildConfig": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "kubernetes_base_StatusCause": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
+                    "field": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "message": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "reason": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_base_StatusDetails": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "causes": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
                         };
-                        "javaType": string;
-                        "type": string;
                     };
-                    "apiVersion": {
-                        "default": string;
+                    "id": {
                         "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
+                        "description": string;
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
                     };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
+                    "retryAfterSeconds": {
                         "type": string;
+                        "description": string;
                     };
-                    "name": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_base_TypeMeta": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
                         "type": string;
+                        "description": string;
                     };
-                    "namespace": {
+                    "kind": {
                         "type": string;
+                        "description": string;
                     };
-                    "parameters": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_errors_StatusError": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "ErrStatus": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "resourceVersion": {
-                        "type": string;
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_resource_Quantity": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "Amount": {
+                        "$ref": string;
+                        "javaType": string;
                     };
-                    "selfLink": {
+                    "Format": {
                         "type": string;
-                    };
-                    "triggers": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                        "description": string;
                     };
                 };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_runtime_RawExtension": {
                 "type": string;
+                "description": string;
+                "properties": {
+                    "RawJSON": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_util_IntOrString": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "IntVal": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "Kind": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "StrVal": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_Build": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_BuildConfig": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
             };
             "os_build_BuildConfigList": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "type": string;
+                "description": string;
                 "properties": {
                     "apiVersion": {
-                        "default": string;
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "items": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "kind": {
                         "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "os_build_BuildList": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "apiVersion": {
+                        "description": string;
                         "default": string;
-                        "type": string;
+                        "required": boolean;
                     };
-                    "items": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_BuildOutput": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "properties": {
-                    "imageTag": {
-                        "type": string;
-                    };
-                    "registry": {
-                        "type": string;
-                    };
-                };
-                "type": string;
             };
-            "os_build_BuildParameters": {
-                "additionalProperties": boolean;
-                "javaType": string;
+            "os_build_BuildConfigSpec": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "output": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "resources": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "revision": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "source": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "strategy": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "triggers": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_BuildConfigStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "lastVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_BuildList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_BuildOutput": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "pushSecretName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "to": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_BuildSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "contextDir": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "git": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_BuildSpec": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "output": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "resources": {
                         "$ref": string;
                         "javaType": string;
                     };
@@ -2203,25 +2150,49 @@ declare module Kubernetes {
                         "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_BuildSource": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_BuildStatus": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "git": {
+                    "cancelled": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "completionTimestamp": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "config": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "type": {
+                    "duration": {
                         "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
+                    "message": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "phase": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "startTimestamp": {
+                        "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_BuildStrategy": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_BuildStrategy": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "customStrategy": {
                         "$ref": string;
@@ -2237,13 +2208,15 @@ declare module Kubernetes {
                     };
                     "type": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_BuildTriggerPolicy": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_BuildTriggerPolicy": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "generic": {
                         "$ref": string;
@@ -2253,61 +2226,77 @@ declare module Kubernetes {
                         "$ref": string;
                         "javaType": string;
                     };
+                    "imageChange": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
                     "type": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_CustomBuildStrategy": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_CustomBuildStrategy": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "env": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "exposeDockerSocket": {
                         "type": string;
+                        "description": string;
                     };
-                    "image": {
-                        "type": string;
+                    "from": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_DockerBuildStrategy": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_DockerBuildStrategy": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "contextDir": {
-                        "type": string;
+                    "from": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                     "noCache": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_GitBuildSource": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_GitBuildSource": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "ref": {
                         "type": string;
+                        "description": string;
                     };
                     "uri": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_GitSourceRevision": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_GitSourceRevision": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "author": {
                         "$ref": string;
@@ -2315,6 +2304,7 @@ declare module Kubernetes {
                     };
                     "commit": {
                         "type": string;
+                        "description": string;
                     };
                     "committer": {
                         "$ref": string;
@@ -2322,42 +2312,71 @@ declare module Kubernetes {
                     };
                     "message": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_STIBuildStrategy": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_ImageChangeTrigger": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "clean": {
+                    "lastTriggeredImageID": {
                         "type": string;
+                        "description": string;
                     };
-                    "image": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_build_STIBuildStrategy": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "env": {
                         "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "from": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "incremental": {
+                        "type": string;
+                        "description": string;
                     };
                     "scripts": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_SourceControlUser": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_SourceControlUser": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "email": {
                         "type": string;
+                        "description": string;
                     };
                     "name": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_SourceRevision": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_SourceRevision": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "git": {
                         "$ref": string;
@@ -2365,131 +2384,55 @@ declare module Kubernetes {
                     };
                     "type": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_build_WebHookTrigger": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_WebHookTrigger": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "secret": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_config_Config": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "properties": {
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "items": {
-                        "items": {};
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                };
-                "type": string;
             };
             "os_deploy_CustomDeploymentStrategyParams": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "type": string;
+                "description": string;
                 "properties": {
                     "command": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "type": string;
+                            "description": string;
                         };
-                        "type": string;
                     };
                     "environment": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "image": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_deploy_Deployment": {
                 "additionalProperties": boolean;
                 "javaType": string;
-                "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "controllerTemplate": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "details": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "status": {
-                        "type": string;
-                    };
-                    "strategy": {
-                        "$ref": string;
-                        "javaType": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
-                };
-                "type": string;
             };
             "os_deploy_DeploymentCause": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "type": string;
+                "description": string;
                 "properties": {
                     "imageTrigger": {
                         "$ref": string;
@@ -2497,212 +2440,222 @@ declare module Kubernetes {
                     };
                     "type": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
+                "additionalProperties": boolean;
+                "javaType": string;
             };
             "os_deploy_DeploymentCauseImageTrigger": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "type": string;
+                "description": string;
                 "properties": {
-                    "repositoryName": {
-                        "type": string;
-                    };
-                    "tag": {
-                        "type": string;
+                    "from": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
-                "type": string;
+                "additionalProperties": boolean;
+                "javaType": string;
             };
             "os_deploy_DeploymentConfig": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
                     "apiVersion": {
+                        "type": string;
+                        "description": string;
                         "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "details": {
-                        "$ref": string;
-                        "javaType": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "latestVersion": {
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "template": {
+                    "metadata": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "triggers": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
                     };
-                    "uid": {
-                        "type": string;
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
-                "type": string;
+                "additionalProperties": boolean;
+                "javaType": string;
             };
             "os_deploy_DeploymentConfigList": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "type": string;
+                "description": string;
                 "properties": {
                     "apiVersion": {
-                        "default": string;
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "items": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "kind": {
                         "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "os_deploy_DeploymentDetails": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "causes": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "message": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "os_deploy_DeploymentList": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "apiVersion": {
+                        "description": string;
                         "default": string;
-                        "type": string;
+                        "required": boolean;
                     };
-                    "items": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                };
-                "type": string;
-            };
-            "os_deploy_DeploymentStrategy": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "customParams": {
+                    "metadata": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "type": {
-                        "type": string;
-                    };
                 };
-                "type": string;
-            };
-            "os_deploy_DeploymentTemplate": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_deploy_DeploymentConfigSpec": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "controllerTemplate": {
-                        "$ref": string;
+                    "replicas": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "selector": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
                         "javaType": string;
                     };
                     "strategy": {
                         "$ref": string;
                         "javaType": string;
                     };
+                    "template": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "templateRef": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "triggers": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
                 };
-                "type": string;
-            };
-            "os_deploy_DeploymentTriggerImageChangeParams": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_deploy_DeploymentConfigStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "details": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "latestVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_deploy_DeploymentDetails": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "causes": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "message": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_deploy_DeploymentStrategy": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "customParams": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "recreateParams": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "resources": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_deploy_DeploymentTriggerImageChangeParams": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "automatic": {
                         "type": string;
+                        "description": string;
                     };
                     "containerNames": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "type": string;
+                            "description": string;
                         };
-                        "type": string;
                     };
-                    "repositoryName": {
-                        "type": string;
+                    "from": {
+                        "$ref": string;
+                        "javaType": string;
                     };
-                    "tag": {
+                    "lastTriggeredImage": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_deploy_DeploymentTriggerPolicy": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_deploy_DeploymentTriggerPolicy": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "imageChangeParams": {
                         "$ref": string;
@@ -2710,363 +2663,870 @@ declare module Kubernetes {
                     };
                     "type": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "os_image_Image": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_deploy_ExecNewPodHook": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
+                    "command": {
+                        "type": string;
+                        "description": string;
+                        "items": {
                             "type": string;
+                            "description": string;
                         };
+                    };
+                    "containerName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "env": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_deploy_LifecycleHook": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "execNewPod": {
+                        "$ref": string;
                         "javaType": string;
-                        "type": string;
                     };
+                    "failurePolicy": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_deploy_RecreateDeploymentStrategyParams": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "post": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "pre": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_image_Image": {
+                "type": string;
+                "description": string;
+                "properties": {
                     "apiVersion": {
+                        "type": string;
+                        "description": string;
                         "default": string;
-                        "type": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
-                    "creationTimestamp": {
+                    "dockerImageManifest": {
                         "type": string;
+                        "description": string;
                     };
                     "dockerImageMetadata": {
                         "$ref": string;
                         "javaType": string;
                     };
+                    "dockerImageMetadataVersion": {
+                        "type": string;
+                        "description": string;
+                    };
                     "dockerImageReference": {
                         "type": string;
+                        "description": string;
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
+                    "metadata": {
+                        "$ref": string;
                         "javaType": string;
-                        "type": string;
-                    };
-                    "name": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
                     };
                 };
-                "type": string;
-            };
-            "os_image_ImageList": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_image_ImageList": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "apiVersion": {
-                        "default": string;
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "items": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "os_image_ImageRepository": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_image_ImageStream": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
                     "apiVersion": {
+                        "type": string;
+                        "description": string;
                         "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "dockerImageRepository": {
-                        "type": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
+                    "metadata": {
+                        "$ref": string;
                         "javaType": string;
-                        "type": string;
                     };
-                    "name": {
-                        "type": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                     "status": {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "tags": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
-                    };
                 };
-                "type": string;
-            };
-            "os_image_ImageRepositoryList": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_image_ImageStreamList": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "apiVersion": {
-                        "default": string;
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
                     };
                     "items": {
+                        "type": string;
+                        "description": string;
                         "items": {
                             "$ref": string;
                             "javaType": string;
                         };
-                        "type": string;
                     };
                     "kind": {
                         "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
                     };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "os_image_ImageRepositoryStatus": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_image_ImageStreamSpec": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "dockerImageRepository": {
                         "type": string;
+                        "description": string;
+                    };
+                    "tags": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
                     };
                 };
-                "type": string;
-            };
-            "os_route_Route": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_image_ImageStreamStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "dockerImageRepository": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "tags": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_image_NamedTagEventList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "tag": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_image_NamedTagReference": {
+                "type": string;
+                "description": string;
                 "properties": {
                     "annotations": {
+                        "type": string;
+                        "description": string;
                         "additionalProperties": {
                             "type": string;
+                            "description": string;
                         };
                         "javaType": string;
-                        "type": string;
                     };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "host": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
+                    "from": {
+                        "$ref": string;
                         "javaType": string;
-                        "type": string;
                     };
                     "name": {
                         "type": string;
+                        "description": string;
                     };
-                    "namespace": {
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_image_TagEvent": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "created": {
                         "type": string;
+                        "description": string;
+                    };
+                    "dockerImageReference": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "image": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthAccessToken": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "authorizeToken": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "clientName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "expiresIn": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "redirectURI": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "refreshToken": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "scopes": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
+                    };
+                    "userName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "userUID": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthAccessTokenList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthAuthorizeToken": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "clientName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "expiresIn": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "redirectURI": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "scopes": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
+                    };
+                    "state": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "userName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "userUID": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthAuthorizeTokenList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthClient": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "redirectURIs": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
+                    };
+                    "respondWithChallenges": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "secret": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthClientAuthorization": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "clientName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "scopes": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
+                    };
+                    "userName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "userUID": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthClientAuthorizationList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_oauth_OAuthClientList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_route_Route": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_route_RouteList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_route_RouteSpec": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "host": {
+                        "type": string;
+                        "description": string;
                     };
                     "path": {
                         "type": string;
+                        "description": string;
                     };
-                    "resourceVersion": {
-                        "type": string;
+                    "tls": {
+                        "$ref": string;
+                        "javaType": string;
                     };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "serviceName": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                    "to": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
-                "type": string;
-            };
-            "os_route_RouteList": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_route_RouteStatus": {
+                "type": string;
+                "description": string;
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "os_route_TLSConfig": {
+                "type": string;
+                "description": string;
                 "properties": {
-                    "apiVersion": {
-                        "default": string;
+                    "caCertificate": {
                         "type": string;
+                        "description": string;
                     };
-                    "items": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
+                    "certificate": {
                         "type": string;
+                        "description": string;
                     };
-                    "kind": {
+                    "destinationCACertificate": {
                         "type": string;
+                        "description": string;
                     };
-                    "resourceVersion": {
+                    "key": {
                         "type": string;
+                        "description": string;
                     };
-                    "selfLink": {
+                    "termination": {
                         "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
+                "additionalProperties": boolean;
+                "javaType": string;
             };
             "os_template_Parameter": {
-                "additionalProperties": boolean;
-                "javaType": string;
-                "properties": {
-                    "Description": {
-                        "type": string;
-                    };
-                    "From": {
-                        "type": string;
-                    };
-                    "Generate": {
-                        "type": string;
-                    };
-                    "Name": {
-                        "type": string;
-                    };
-                    "Value": {
-                        "type": string;
-                    };
-                };
                 "type": string;
-            };
-            "os_template_Template": {
-                "additionalProperties": boolean;
-                "javaType": string;
+                "description": string;
                 "properties": {
-                    "ObjectLabels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
+                    "description": {
                         "type": string;
+                        "description": string;
                     };
-                    "Objects": {
-                        "items": {};
+                    "from": {
                         "type": string;
+                        "description": string;
                     };
-                    "Parameters": {
-                        "items": {
-                            "$ref": string;
-                            "javaType": string;
-                        };
+                    "generate": {
                         "type": string;
-                    };
-                    "annotations": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
-                    };
-                    "apiVersion": {
-                        "default": string;
-                        "type": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                    };
-                    "kind": {
-                        "type": string;
-                    };
-                    "labels": {
-                        "additionalProperties": {
-                            "type": string;
-                        };
-                        "javaType": string;
-                        "type": string;
+                        "description": string;
                     };
                     "name": {
                         "type": string;
+                        "description": string;
                     };
-                    "namespace": {
+                    "value": {
                         "type": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                    };
-                    "uid": {
-                        "type": string;
+                        "description": string;
                     };
                 };
-                "type": string;
-            };
-            "speter_inf_Dec": {
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_template_Template": {
                 "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "labels": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "objects": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "parameters": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "speter_inf_Dec": {
+                "type": string;
+                "description": string;
+                "additionalProperties": boolean;
+                "javaType": string;
             };
         };
-        "id": string;
+        "type": string;
         "properties": {
+            "BaseKubernetesList": {
+                "$ref": string;
+                "javaType": string;
+            };
             "BuildConfigList": {
                 "$ref": string;
                 "javaType": string;
@@ -3075,19 +3535,11 @@ declare module Kubernetes {
                 "$ref": string;
                 "javaType": string;
             };
-            "Config": {
-                "$ref": string;
-                "javaType": string;
-            };
             "ContainerStatus": {
                 "$ref": string;
                 "javaType": string;
             };
             "DeploymentConfigList": {
-                "$ref": string;
-                "javaType": string;
-            };
-            "DeploymentList": {
                 "$ref": string;
                 "javaType": string;
             };
@@ -3107,23 +3559,59 @@ declare module Kubernetes {
                 "$ref": string;
                 "javaType": string;
             };
-            "ImageRepositoryList": {
+            "ImageStreamList": {
                 "$ref": string;
                 "javaType": string;
             };
-            "KubernetesList": {
+            "Node": {
                 "$ref": string;
                 "javaType": string;
             };
-            "Minion": {
+            "NodeList": {
                 "$ref": string;
                 "javaType": string;
             };
-            "MinionList": {
+            "OAuthAccessToken": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "OAuthAccessTokenList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "OAuthAuthorizeToken": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "OAuthAuthorizeTokenList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "OAuthClient": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "OAuthClientAuthorization": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "OAuthClientAuthorizationList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "OAuthClientList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "ObjectMeta": {
                 "$ref": string;
                 "javaType": string;
             };
             "PodList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "Quantity": {
                 "$ref": string;
                 "javaType": string;
             };
@@ -3143,11 +3631,15 @@ declare module Kubernetes {
                 "$ref": string;
                 "javaType": string;
             };
+            "TagEvent": {
+                "$ref": string;
+                "javaType": string;
+            };
             "Template": {
                 "$ref": string;
                 "javaType": string;
             };
         };
-        "type": string;
+        "additionalProperties": boolean;
     };
 }
