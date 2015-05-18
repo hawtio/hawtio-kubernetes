@@ -212,16 +212,20 @@ gulp.task('connect', ['watch'], function() {
     }
   });
   var debugLoggingOfProxy = process.env.DEBUG_PROXY === "true";
-  hawtio.use('/osconsole/config.js', function(req, res, next) {
-    var configJs = 'window.OPENSHIFT_CONFIG = {' +
-      ' auth: {' +
-      '   oauth_authorize_uri: "' + urljoin(kubeBase, '/oauth/authorize')  + '",' +
-      '   oauth_client_id: "fabric8",' +
-      ' }' +
-      '};';
-    res.set('Content-Type', 'application/javascript');
-    res.send(configJs);
-  });
+  var useAuthentication = process.env.DISABLE_OAUTH !== "true";
+
+  if (useAuthentication) {
+    hawtio.use('/osconsole/config.js', function(req, res, next) {
+      var configJs = 'window.OPENSHIFT_CONFIG = {' +
+        ' auth: {' +
+        '   oauth_authorize_uri: "' + urljoin(kubeBase, '/oauth/authorize')  + '",' +
+        '   oauth_client_id: "fabric8",' +
+        ' }' +
+        '};';
+      res.set('Content-Type', 'application/javascript');
+      res.send(configJs);
+    });
+  }
   hawtio.use('/', function(req, res, next) {
           var path = req.originalUrl;
           // avoid returning these files, they should get pulled from js

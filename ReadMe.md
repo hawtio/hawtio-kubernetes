@@ -39,6 +39,10 @@ Next you need to setup the **KUBERNETES_MASTER** environment variable to point t
 
 Where **DOCKER_IP** is the IP address or host running the kubernetes master.
 
+If you need to disable OAUTH authentication in development try use **DISABLE_OAUTH**:
+
+    export DISABLE_OAUTH=true
+
 Then to run the web application:
 
     gulp
