@@ -25,8 +25,6 @@ module Kubernetes {
 
   export var appSuffix = ".app";
 
-  export var osapiPrefix = "/osapi/";
-
   export function kubernetesNamespacePath() {
     var ns = currentKubernetesNamespace();
     if (ns) {
@@ -41,35 +39,39 @@ module Kubernetes {
   }
 
   export function kubernetesApiUrl() {
-    return masterApiUrl() + "/api/";
+    return UrlHelpers.join(masterApiUrl(), "api", defaultApiVersion);
+  }
+
+  export function openshiftApiUrl() {
+    return UrlHelpers.join(masterApiUrl(), "osapi", defaultOSApiVersion);
   }
 
   export function imageRepositoriesRestURL() {
-    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/imagestreams");
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/imagestreams");
   }
 
   export function deploymentConfigsRestURL() {
-    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/deploymentconfigs");
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/deploymentconfigs");
   }
 
   export function buildsLogsRestURL() {
-    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/proxy/buildlogs");
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/proxy/buildlogs");
   }
 
   export function buildsRestURL() {
-    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/builds");
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/builds");
   }
 
   export function buildConfigHooksRestURL() {
-    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfighooks");
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/buildconfighooks");
   }
 
   export function buildConfigsRestURL() {
-    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfigs");
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/buildconfigs");
   }
 
   export function routesRestURL() {
-    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/routes");
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/routes");
   }
 
   export function getNamespace(entity) {

@@ -2,17 +2,16 @@
 
 module Kubernetes {
 	var log = Logger.get('kubernetes-watcher');
-	var apiPrefix = '/kubernetes';
-	var apiUrl = UrlHelpers.join(apiPrefix, 'api', 'v1beta3');
-	
+	var apiUrl = UrlHelpers.join('api', 'v1beta3');
+
 	var namespaceType = WatchTypes.NAMESPACES;
-	
+
 	var types = [WatchTypes.ENDPOINTS,
 							 WatchTypes.PODS,
 							 WatchTypes.REPLICATION_CONTROLLERS,
 							 WatchTypes.SERVICES,
 							 WatchTypes.NODES];
-							 
+
 	var namespaceWatch = <any> {
 		selected: undefined,
 		connectTime: <Number> undefined,
@@ -24,8 +23,8 @@ module Kubernetes {
 		onModifiedActions: <Array<(obj:any) => void>> [],
 		onDeletedActions: <Array<(obj:any) => void>> [],
 		socket: <WebSocket> undefined
-	}						
-							 
+	}
+
 	var watches = <any> {};
 	_.forEach(types, (type) => {
 		watches[type] = {
@@ -42,16 +41,16 @@ module Kubernetes {
 	});
 
 	function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
-			var uri = new URI();
+			var uri = new URI(masterApiUrl());
 			uri.path(watch.url);
 			if (uri.protocol() === "https") {
 				uri.protocol('wss');
 			} else {
 				uri.protocol('ws');
 			}
-			uri.query(<any> { 
+			uri.query(<any> {
 				watch: true,
-				access_token: userDetails.token 
+				access_token: userDetails.token
 			});
 			watch.retries = 0;
 			var onOpenInternal = (event) => {
@@ -98,7 +97,7 @@ module Kubernetes {
 						_.forEach(watch.onDeletedActions, (action:any) => action(data.object));
 						break;
 				}
-				Core.$apply($scope);				
+				Core.$apply($scope);
 			};
 			var onCloseInternal = (event) => {
 				if (watch.retries < 3 && watch.connectTime && new Date().getTime() - watch.connectTime > 5000) {
@@ -120,34 +119,34 @@ module Kubernetes {
 			ws.onclose = onCloseInternal;
 	}
 
-	/*	
+	/*
 	_module.run(['WatcherService', '$rootScope', (WatcherService:WatcherService, $rootScope) => {
 		log.debug("Started watcher service");
-		
+
 //		Kubernetes.keepPollingModel = false;
-		
+
 		// some usage examples
 //		WatcherService.addCustomizer('pods', (pod) => {
 //			pod.SomeValue = 'foobar';
 //		});
 //		$rootScope.pods = WatcherService.getObjects('pods');
 //		$rootScope.podMap = WatcherService.getObjectMap('pods');
-//		
+//
 //		$rootScope.$watchCollection('pods', (newValue) => {
 //		  log.debug("pods changed: ", newValue);
 //		});
-//		
+//
 //		$rootScope.$watch('podMap', (newValue) => {
 //		  log.debug("pod map changed: ", newValue);
 //		}, true);
 	}]);
 	*/
-	
+
 	_module.service('WatcherService', ['userDetails', '$rootScope', (userDetails, $rootScope) => {
 		var self = <any> {
 			hasWebSocket: false
 		};
-		
+
 		try {
 			if (!WebSocket)  {
 				return self;
@@ -155,7 +154,7 @@ module Kubernetes {
 		} catch (err) {
 			return self;
 		}
-		
+
 		self.setNamespace = (namespace: string) => {
 			if (namespace !== namespaceWatch.selected) {
 				log.debug("Namespace changed, shutting down existing watches");
@@ -187,7 +186,7 @@ module Kubernetes {
 				}
 			}
 		}
-		
+
 		createWatch(WatchTypes.NAMESPACES, namespaceWatch, userDetails, $rootScope, (event) => {
 			// log.debug("Got event: ", event);
 			switch (event.type) {
@@ -200,9 +199,9 @@ module Kubernetes {
 				case WatchActions.DELETED:
 					var next = <any> _.first(namespaceWatch.objectArray);
 					if (next) {
-						self.setNamespace(next.metadata.name);						
+						self.setNamespace(next.metadata.name);
 					} else {
-						self.setNamespace(undefined);						
+						self.setNamespace(undefined);
 					}
 					break;
 				default:
@@ -213,22 +212,22 @@ module Kubernetes {
 			log.debug("Namespace watch closed");
 			self.setNamespace(undefined);
 		});
-		
+
 		self.hasWebSocket = true;
-		
+
 		self.getNamespace = () => namespaceWatch.selected;
-		
+
 		self.addCustomizer = (type: string, customizer: (obj:any) => void) => {
 			if (type in watches) {
 				watches[type].customizers.push(customizer);
 				_.forEach(watches[type].objectArray, (obj) => customizer(obj));
 			}
 		}
-		
+
 		self.getTypes = () => {
 			return types.concat([WatchTypes.NAMESPACES]);
 		}
-		
+
 		self.getObjectMap = (type: string) => {
 			if (type === WatchTypes.NAMESPACES) {
 				return namespaceWatch.objects;
@@ -239,7 +238,7 @@ module Kubernetes {
 				return undefined;
 			}
 		}
-		
+
 		self.getObjects = (type:string) => {
 			if (type === WatchTypes.NAMESPACES) {
 				return namespaceWatch.objectArray;
@@ -250,9 +249,9 @@ module Kubernetes {
 				return undefined;
 			}
 		}
-		
+
 		self.listeners = <Array<(ObjectMap) => void>> [];
-		
+
 		var updateFunction = () => {
 				log.debug("Objects changed, firing listeners");
 			var objects = <ObjectMap>{};
@@ -263,9 +262,9 @@ module Kubernetes {
 				listener(objects);
 			});
 		};
-		
+
 		var debouncedUpdate = _.debounce(updateFunction, 250, { trailing: true });
-		
+
 		// listener gets notified after a bunch of changes have occurred
 		self.registerListener = (fn:(objects:ObjectMap) => void) => {
 			self.listeners.push(fn);
@@ -273,7 +272,7 @@ module Kubernetes {
 				self.addAction(type, WatchActions.ANY, debouncedUpdate)
 			});
 		}
-		
+
 		// function to watch individual actions on the k8s objects
 		self.addAction = (type: string, action: string, fn: (obj:any) => void) => {
 			var watch = <any> undefined;
@@ -303,11 +302,11 @@ module Kubernetes {
 					default:
 						log.debug("Attempting to add unknown action: ", action);
 				}
-			}			
+			}
 		}
-		
+
 		return self;
-	}]);	
-	
-	
+	}]);
+
+
 }

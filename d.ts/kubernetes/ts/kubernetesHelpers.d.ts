@@ -17,10 +17,10 @@ declare module Kubernetes {
     var labelFilterTextSeparator: string;
     var defaultNamespace: string;
     var appSuffix: string;
-    var osapiPrefix: string;
     function kubernetesNamespacePath(): string;
     function masterApiUrl(): string;
     function kubernetesApiUrl(): string;
+    function openshiftApiUrl(): string;
     function imageRepositoriesRestURL(): string;
     function deploymentConfigsRestURL(): string;
     function buildsLogsRestURL(): string;
