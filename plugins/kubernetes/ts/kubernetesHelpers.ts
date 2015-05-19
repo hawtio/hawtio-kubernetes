@@ -37,7 +37,7 @@ module Kubernetes {
   }
 
   export function masterApiUrl() {
-    return masterUrl || "/kubernetes";
+    return masterUrl || "";
   }
 
   export function kubernetesApiUrl() {
