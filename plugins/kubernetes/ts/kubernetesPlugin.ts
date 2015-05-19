@@ -48,24 +48,24 @@ module Kubernetes {
 
   // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
   _module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
-    var url = "/kubernetes/";
+    var url = masterApiUrl();
     var answer = <ng.IDeferred<string>>$q.defer();
     answer.resolve(url);
     return answer.promise;
   }]);
 
   _module.factory('AppLibraryURL', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
-    return "/kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/services/app-library";
+    return kubernetesApiUrl() + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/services/app-library";
   }]);
 
   _module.factory('WikiGitUrlPrefix', () => {
-    return "kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "services/app-library";
+    return kubernetesApiUrl() + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "services/app-library";
   });
 
   _module.factory('wikiRepository', ["$location", "localStorage", ($location, localStorage) => {
     // TODO lets switch to using REST rather than jolokia soon for the wiki
 
-    var url = "/kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "services/app-library-jolokia/jolokia";
+    var url = kubernetesApiUrl() + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "services/app-library-jolokia/jolokia";
     // TODO what to use here...
     var user = "admin";
     var password = "admin";
@@ -261,6 +261,24 @@ module Kubernetes {
         var config = window['OPENSHIFT_CONFIG'];
         log.debug("Fetched openshift config: ", config);
         OSOAuthConfig = config['auth'];
+        var master = OSOAuthConfig.master_uri;
+        if (!master) {
+          var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;
+          if (oauth_authorize_uri) {
+            var text = oauth_authorize_uri;
+            var idx = text.indexOf("://");
+            if (idx > 0) {
+              idx += 3;
+              idx = text.indexOf("/", idx);
+              if (idx > 0) {
+                master = text.substring(0, ++idx);
+              }
+            }
+          }
+        }
+        if (master) {
+          Kubernetes.masterUrl = master;
+        }
       })
       .fail((response) => {
         log.debug("Error fetching OAUTH config: ", response);

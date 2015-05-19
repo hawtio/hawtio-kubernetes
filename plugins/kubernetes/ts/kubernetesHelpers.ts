@@ -15,6 +15,8 @@ module Kubernetes {
   export var defaultIconUrl = Core.url("/img/kubernetes.svg");
   export var hostIconUrl = Core.url("/img/host.svg");
 
+  export var masterUrl = "";
+
   export var defaultApiVersion = "v1beta3";
   export var defaultOSApiVersion = "v1beta3";
   export var labelFilterTextSeparator = ",";
@@ -23,7 +25,7 @@ module Kubernetes {
 
   export var appSuffix = ".app";
 
-  export var osapiPrefix = "/kubernetes/osapi/";
+  export var osapiPrefix = "/osapi/";
 
   export function kubernetesNamespacePath() {
     var ns = currentKubernetesNamespace();
@@ -34,32 +36,40 @@ module Kubernetes {
     }
   }
 
+  export function masterApiUrl() {
+    return masterUrl || "/kubernetes";
+  }
+
+  export function kubernetesApiUrl() {
+    return masterApiUrl() + "/api/";
+  }
+
   export function imageRepositoriesRestURL() {
-    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/imagestreams";
+    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/imagestreams");
   }
 
   export function deploymentConfigsRestURL() {
-    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/deploymentconfigs";
+    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/deploymentconfigs");
   }
 
   export function buildsLogsRestURL() {
-    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/proxy/buildlogs";
+    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/proxy/buildlogs");
   }
 
   export function buildsRestURL() {
-    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/builds";
+    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/builds");
   }
 
   export function buildConfigHooksRestURL() {
-    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfighooks";
+    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfighooks");
   }
 
   export function buildConfigsRestURL() {
-    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfigs";
+    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/buildconfigs");
   }
 
   export function routesRestURL() {
-    return osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/routes";
+    return UrlHelpers.join(masterApiUrl(), osapiPrefix + defaultOSApiVersion + kubernetesNamespacePath() + "/routes");
   }
 
   export function getNamespace(entity) {

@@ -11,6 +11,7 @@ declare module Kubernetes {
     var keepPollingModel: boolean;
     var defaultIconUrl: string;
     var hostIconUrl: string;
+    var masterUrl: string;
     var defaultApiVersion: string;
     var defaultOSApiVersion: string;
     var labelFilterTextSeparator: string;
@@ -18,6 +19,8 @@ declare module Kubernetes {
     var appSuffix: string;
     var osapiPrefix: string;
     function kubernetesNamespacePath(): string;
+    function masterApiUrl(): string;
+    function kubernetesApiUrl(): string;
     function imageRepositoriesRestURL(): string;
     function deploymentConfigsRestURL(): string;
     function buildsLogsRestURL(): string;
