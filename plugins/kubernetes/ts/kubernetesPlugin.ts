@@ -261,6 +261,10 @@ module Kubernetes {
         var config = window['OPENSHIFT_CONFIG'];
         log.debug("Fetched openshift config: ", config);
         OSOAuthConfig = config['auth'];
+        if (!OSOAuthConfig) {
+          next();
+          return;
+        }
         var master = OSOAuthConfig.master_uri;
         if (!master) {
           var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;

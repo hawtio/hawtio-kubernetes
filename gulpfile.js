@@ -9,6 +9,7 @@ var gulp = require('gulp'),
     uri = require('URIjs'),
     urljoin = require('url-join'),
     s = require('underscore.string'),
+    stringifyObject = require('stringify-object'),
     hawtio = require('hawtio-node-backend');
 
 var plugins = gulpLoadPlugins({});
@@ -214,18 +215,30 @@ gulp.task('connect', ['watch'], function() {
   var debugLoggingOfProxy = process.env.DEBUG_PROXY === "true";
   var useAuthentication = process.env.DISABLE_OAUTH !== "true";
 
-  if (useAuthentication) {
-    hawtio.use('/osconsole/config.js', function(req, res, next) {
-      var configJs = 'window.OPENSHIFT_CONFIG = {' +
-        ' auth: {' +
-        '   oauth_authorize_uri: "' + urljoin(kubeBase, '/oauth/authorize')  + '",' +
-        '   oauth_client_id: "fabric8",' +
-        ' }' +
-        '};';
-      res.set('Content-Type', 'application/javascript');
-      res.send(configJs);
-    });
-  }
+  hawtio.use('/osconsole/config.js', function(req, res, next) {
+    var config = {
+      api: {
+        openshift: {
+          hostPort: osapi.host(),
+          prefix: osapi.path()
+        },
+        k8s: {
+          hostPort: kube.host(),
+          prefix: kube.path()
+        }
+      }
+    }
+    if (useAuthentication) {
+      config.auth = {
+        oauth_authorize_uri: urljoin(kubeBase, '/oauth/authorize'),
+        oauth_client_id: 'fabric8'
+      }
+    }
+    var answer = "window.OPENSHIFT_CONFIG = " + stringifyObject(config);
+    res.set('Content-Type', 'application/javascript');
+    res.send(answer);
+  });
+
   hawtio.use('/', function(req, res, next) {
           var path = req.originalUrl;
           // avoid returning these files, they should get pulled from js
