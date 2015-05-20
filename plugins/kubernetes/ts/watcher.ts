@@ -61,7 +61,7 @@ module Kubernetes {
 			var onMessageInternal = (event) => {
 				// log.debug(type, " onmessage: ", event);
 				var data = angular.fromJson(event.data);
-				// log.debug(type, " data: ", data);
+				log.debug(type, " data: ", data);
 				switch (data.type) {
 					case WatchActions.ADDED:
 					case WatchActions.MODIFIED:
@@ -304,9 +304,6 @@ module Kubernetes {
 				}
 			}
 		}
-
 		return self;
-	}]);
-
-
+	}]);	
 }
