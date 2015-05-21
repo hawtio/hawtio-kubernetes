@@ -529,7 +529,7 @@ module Kubernetes {
    * Returns true if the current status of the pod is running
    */
   export function isRunning(podCurrentState) {
-    var status = (podCurrentState || {}).status;
+    var status = (podCurrentState || {}).phase;
     if (status) {
       var lower = status.toLowerCase();
       return lower.startsWith("run");

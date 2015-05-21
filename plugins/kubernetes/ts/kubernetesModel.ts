@@ -428,12 +428,12 @@ module Kubernetes {
       var currentState = entity.status || {};
       var desiredState = entity.spec || {};
       var podId = getName(entity);
-      var host = currentState["host"];
+      var host = currentState["hostIP"];
       var podIP = currentState["podIP"];
       var hasDocker = false;
       var foundContainerPort = null;
       if (desiredState) {
-        var containers = Core.pathGet(desiredState, ["manifest", "containers"]);
+        var containers = desiredState.containers;
         angular.forEach(containers, (container) => {
           if (!hostPort) {
             var ports = container.ports;
@@ -457,9 +457,9 @@ module Kubernetes {
           }
         });
       }
-      if (isRunning(currentState) && podId && foundContainerPort) {
-        entity.$jolokiaUrl = "/kubernetes/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/pods/"
-        + podId + ":" + foundContainerPort + "/jolokia/";
+      if (foundContainerPort && podId && isRunning(currentState)) {
+        entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(), "/api/", Kubernetes.defaultApiVersion, "/proxy", "namespaces", entity.metadata.namespace , "/pods/",
+                                              podId + ":" + foundContainerPort, "/jolokia/");
       }
     }
   }
@@ -474,7 +474,7 @@ module Kubernetes {
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
     var lastJson = "";
-		
+
 		watcher.registerListener((objects:ObjectMap) => {
 			var types = watcher.getTypes();
 			_.forEach(types, (type:string) => {
@@ -489,13 +489,13 @@ module Kubernetes {
                 item.proxyUrl = url;
               });
             });
-						$scope[type] = items;						
+						$scope[type] = items;
 						break;
 					default:
 						$scope[type] = populateKeys(objects[type]);
 				}
 			});
-			$scope.maybeInit();			
+			$scope.maybeInit();
       // lets see if we can find the app-library service
       var hasAppLibrary = false;
       angular.forEach($scope.services, (service) => {
@@ -544,7 +544,7 @@ module Kubernetes {
         });
 			Core.$apply($rootScope);
 		});
-		
+
 		watcher.setNamespace($scope.currentNamespace());
 
     function selectPods(pods, namespace, labels) {
