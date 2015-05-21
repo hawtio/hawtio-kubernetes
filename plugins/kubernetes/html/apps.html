@@ -56,7 +56,7 @@
         </span>
         <span class="service-view-name" title="{{view.name}}">{{view.appName}}</span>
         <span class="service-view-address" title="Go to the service detail page"><a
-                ng-href="{{view.service | kubernetesPageLink}}">{{view.address}}</a></span>
+                ng-href="{{view.service | kubernetesPageLink}}">{{view.service.$host}}</a></span>
       </div>
 
       <div class="service-view-detail-rectangle">

@@ -16,6 +16,11 @@
          title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'From' : 'Raw'}}</a>
       <span class="pull-right">&nbsp;</span>
 
+      <a class="btn btn-primary pull-right"
+         title="Open this service in your browser"
+         ng-show="item.$connectUrl" href="{{item.$connectUrl}}">
+        <i class="fa fa-sign-in"></i> Connect
+      </a>
     </div>
   </div>
 

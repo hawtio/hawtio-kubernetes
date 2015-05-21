@@ -58,6 +58,7 @@ declare module Kubernetes {
      */
     function labelsToString(labels: any, seperatorText?: string): string;
     function initShared($scope: any, $location: any, $http: any, $timeout: any, $routeParams: any, KubernetesModel: any, KubernetesState: any, KubernetesApiURL: any): void;
+    function serviceLinkUrl(service: any): string;
     /**
      * Given the list of pods lets iterate through them and find all pods matching the selector
      * and return counters based on the status of the pod

@@ -213,6 +213,7 @@ module Kubernetes {
               pod.$iconUrl = iconUrl;
             });
           }
+          service.$serviceUrl = serviceLinkUrl(service);
         });
 
         this.replicationControllers.forEach((replicationController) => {
@@ -344,13 +345,25 @@ module Kubernetes {
         });
         angular.forEach(this.routes, (route) => {
           var metadata = route.metadata || {};
-          var serviceName = route.serviceName;
-          var host = route.host;
+          var spec = route.spec || {};
+          var serviceName = Core.pathGet(spec, ["to", "name"]);
+          var host = spec.host;
           var namespace = getNamespace(route);
           if (serviceName && host) {
             var service = this.getService(namespace, serviceName);
             if (service) {
               service.$host = host;
+
+              // TODO we could use some annotations / metadata to deduce what URL we should use to open this
+              // service in the console. For now just assume its http:
+
+              if (host) {
+                var hostUrl =  host;
+                if (hostUrl.indexOf("://") < 0) {
+                  hostUrl = "http://" + host;
+                }
+                service.$connectUrl = UrlHelpers.join(hostUrl,  "/");
+              }
             } else {
               log.debug("Could not find service " + serviceName + " namespace " + namespace + " for route: " + metadata.name);
             }
@@ -551,9 +564,12 @@ module Kubernetes {
       var url = routesRestURL();
       $http.get(url).
         success(function (data, status, headers, config) {
-          if (data) {
+          if (data && data.items) {
             $scope.routes = data.items;
             $scope.isOpenShift = true;
+            $scope.maybeInit();
+          } else {
+            log.warn("No routes loaded: " + angular.toJson(data, true));
           }
         }).
         error(function (data, status, headers, config) {

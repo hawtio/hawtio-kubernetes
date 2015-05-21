@@ -53,45 +53,7 @@ module Kubernetes {
      */
     public serviceLink(serviceName: string): string {
       var service = this.findService(serviceName);
-      if (service) {
-        var portalIP = service.$host;
-        // lets assume no custom port for now for external routes
-        var port = null;
-        var protocol = "http://";
-        var spec = service.spec;
-        if (spec) {
-          if (!portalIP) {
-            portalIP = spec.portalIP;
-          }
-          var hasHttps = false;
-          var hasHttp = false;
-          angular.forEach(spec.ports, (portSpec) => {
-            var p = portSpec.port;
-            if (p) {
-              if (p === 443) {
-                hasHttps = true;
-              } else if (p === 80) {
-                hasHttp = true;
-              }
-              if (!port) {
-                port = p;
-              }
-            }
-          });
-        }
-        if (portalIP) {
-          if (hasHttps) {
-            return "https://" + portalIP;
-          } else if (hasHttp) {
-            return "http://" + portalIP;
-          } else if (port) {
-            return protocol + portalIP + ":" + port + "/";
-          } else {
-            return protocol + portalIP;
-          }
-        }
-      }
-      return "";
+      return serviceLinkUrl(service);
     }
 
     protected getModel():KubernetesModelService {
