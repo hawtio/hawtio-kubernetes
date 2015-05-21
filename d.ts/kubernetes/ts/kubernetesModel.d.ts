@@ -13,6 +13,7 @@ declare module Kubernetes {
         hosts: any[];
         namespaces: any[];
         routes: any[];
+        templates: any[];
         redraw: boolean;
         resourceVersions: {};
         podsByHost: {};

@@ -44,6 +44,7 @@ module Kubernetes {
     public hosts = [];
     public namespaces = [];
     public routes = [];
+    public templates = [];
     public redraw = false;
     public resourceVersions = {};
 
@@ -102,6 +103,22 @@ module Kubernetes {
       var answer = null;
       var id = getName(entity);
       if (id && nameField) {
+        (this.templates || []).forEach((template) => {
+          var metadata = template.metadata;
+          if (metadata) {
+            var annotations = metadata.annotations;
+            var iconUrl = annotations["fabric8/iconUrl"];
+            if (iconUrl) {
+
+              (template.objects || []).forEach((item) => {
+                var entityName = getName(item);
+                if (id === entityName) {
+                  entity.$iconUrl = iconUrl;
+                }
+              });
+            }
+          }
+        });
         (this.appInfos || []).forEach((appInfo) => {
           var iconPath = appInfo.iconPath;
           if (iconPath && !answer && iconPath !== "null") {
@@ -537,6 +554,19 @@ module Kubernetes {
           if (data) {
             $scope.routes = data.items;
             $scope.isOpenShift = true;
+          }
+        }).
+        error(function (data, status, headers, config) {
+          log.warn("Failed to load " + url + " " + data + " " + status);
+        });
+
+      url = templatesRestURL();
+      $http.get(url).
+        success(function (data, status, headers, config) {
+          if (data) {
+            $scope.templates = data.items;
+            $scope.isOpenShift = true;
+            $scope.maybeInit();
           }
         }).
         error(function (data, status, headers, config) {

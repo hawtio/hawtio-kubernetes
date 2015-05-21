@@ -74,6 +74,10 @@ module Kubernetes {
     return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/routes");
   }
 
+  export function templatesRestURL() {
+    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/templates");
+  }
+
   export function getNamespace(entity) {
     var answer = Core.pathGet(entity, ["metadata", "namespace"]);
     return answer ? answer : defaultNamespace;
