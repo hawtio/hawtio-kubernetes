@@ -71,6 +71,9 @@ module Kubernetes {
 								customizer(obj);
 							});
 						}
+            if (!data.object.metadata.uid) {
+              data.object.metadata.uid = data.object.metadata.namespace + '/' + data.object.metadata.name;
+            }
 						watch.objects[data.object.metadata.uid] = data.object;
 						break;
 					case WatchActions.DELETED:
