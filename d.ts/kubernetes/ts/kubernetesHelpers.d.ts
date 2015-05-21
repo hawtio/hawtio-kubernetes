@@ -11,6 +11,7 @@ declare module Kubernetes {
     var keepPollingModel: boolean;
     var defaultIconUrl: string;
     var hostIconUrl: string;
+    var osConfig: OpenshiftConfig;
     var masterUrl: string;
     var defaultApiVersion: string;
     var defaultOSApiVersion: string;

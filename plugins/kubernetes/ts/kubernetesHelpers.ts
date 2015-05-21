@@ -15,6 +15,7 @@ module Kubernetes {
   export var defaultIconUrl = Core.url("/img/kubernetes.svg");
   export var hostIconUrl = Core.url("/img/host.svg");
 
+  export var osConfig:OpenshiftConfig = undefined;
   export var masterUrl = "";
 
   export var defaultApiVersion = "v1beta3";

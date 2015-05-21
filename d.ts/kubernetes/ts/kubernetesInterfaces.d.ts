@@ -1,4 +1,21 @@
 declare module Kubernetes {
+    interface ApiLocation {
+        proto?: string;
+        hostPort: string;
+        prefix: string;
+    }
+    interface ApiLocations {
+        openshift?: ApiLocation;
+        k8s?: ApiLocation;
+    }
+    interface OAuthConfig {
+        oauth_authorize_uri: string;
+        oauth_client_id: string;
+    }
+    interface OpenshiftConfig {
+        api?: ApiLocations;
+        auth?: OAuthConfig;
+    }
     class WatchTypes {
         static NAMESPACES: string;
         static ENDPOINTS: string;

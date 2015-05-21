@@ -219,20 +219,22 @@ gulp.task('connect', ['watch'], function() {
     var config = {
       api: {
         openshift: {
+          proto: osapi.protocol(),
           hostPort: osapi.host(),
           prefix: osapi.path()
         },
         k8s: {
+          proto: kube.protocol(),
           hostPort: kube.host(),
           prefix: kube.path()
         }
       }
-    }
+    };
     if (useAuthentication) {
       config.auth = {
         oauth_authorize_uri: urljoin(kubeBase, '/oauth/authorize'),
         oauth_client_id: 'fabric8'
-      }
+      };
     }
     var answer = "window.OPENSHIFT_CONFIG = " + stringifyObject(config);
     res.set('Content-Type', 'application/javascript');

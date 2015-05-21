@@ -258,14 +258,25 @@ module Kubernetes {
   hawtioPluginLoader.registerPreBootstrapTask((next) => {
     $.getScript('osconsole/config.js')
       .done((script, textStatus) => {
-        var config = window['OPENSHIFT_CONFIG'];
+        var config:OpenshiftConfig = Kubernetes.osConfig = window['OPENSHIFT_CONFIG'];
         log.debug("Fetched openshift config: ", config);
+        var master:string = undefined;
+        if (config.api && config.api.k8s) {
+          var masterUri = new URI().host(config.api.k8s.hostPort).path(config.api.k8s.prefix);
+          if (config.api.k8s.proto) {
+            masterUri.protocol(config.api.k8s.proto);
+          }
+          master = masterUri.toString();
+        }
         OSOAuthConfig = config['auth'];
         if (!OSOAuthConfig) {
+          Kubernetes.masterUrl = master;
           next();
           return;
         }
-        var master = OSOAuthConfig.master_uri;
+        if (!master) {
+          master = OSOAuthConfig.master_uri;
+        }
         if (!master) {
           var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;
           if (oauth_authorize_uri) {

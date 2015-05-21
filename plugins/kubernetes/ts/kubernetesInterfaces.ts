@@ -1,6 +1,26 @@
 module Kubernetes {
 	
-	
+  export interface ApiLocation {
+    proto?:string;
+    hostPort:string;
+    prefix:string;
+  }
+  
+  export interface ApiLocations {
+    openshift?: ApiLocation;
+    k8s?: ApiLocation;
+  }
+  
+  export interface OAuthConfig {
+    oauth_authorize_uri:string;
+    oauth_client_id:string;
+  }
+  
+  export interface OpenshiftConfig {
+    api?: ApiLocations;
+    auth?: OAuthConfig;
+  }
+
 	export class WatchTypes {
 		public static get NAMESPACES():string { return "namespaces"; }
 		public static get ENDPOINTS():string { return "endpoints"; }
