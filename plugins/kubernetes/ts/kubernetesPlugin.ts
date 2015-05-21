@@ -274,9 +274,7 @@ module Kubernetes {
           next();
           return;
         }
-        if (!master) {
-          master = OSOAuthConfig.master_uri;
-        }
+        master = OSOAuthConfig.master_uri;
         if (!master) {
           var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;
           if (oauth_authorize_uri) {
