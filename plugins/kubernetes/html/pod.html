@@ -27,8 +27,8 @@
          title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'From' : 'Raw'}}</a>
       <span class="pull-right">&nbsp;</span>
 
-      <div ng-show="item.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
-        <span class="pull-right">&nbsp;</span>
+      <div ng-show="item.$jolokiaUrl" ng-controller="Kubernetes.ConnectController" class="pull-right">
+        <span>&nbsp;</span>
         <a class="btn btn-primary pull-right"
            ng-click="doConnect(item)"
            title="Open a new window and connect to this container">
