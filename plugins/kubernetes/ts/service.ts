@@ -28,6 +28,10 @@ module Kubernetes {
       updateData();
     });
 
+    $scope.$watch('model.services', (newValue, oldValue) => {
+      updateData();
+    }, true);
+
     $scope.$on('$routeUpdate', ($event) => {
       updateData();
     });
@@ -41,7 +45,8 @@ module Kubernetes {
 
     function updateData() {
       $scope.id = $routeParams["id"];
-      $scope.item = $scope.model.getService(KubernetesState.selectedNamespace, $scope.id);
+      $scope.namespace = $routeParams["namespace"] || KubernetesState.selectedNamespace;
+      $scope.item = $scope.model.getService($scope.namespace, $scope.id);
       if ($scope.item) {
         $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
       }

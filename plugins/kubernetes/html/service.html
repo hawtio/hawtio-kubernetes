@@ -1,6 +1,10 @@
 <div ng-controller="Kubernetes.ServiceController">
-  <div class="row">
+  <div class="row row-header">
     <div class="col-md-12">
+      <span ng-show="model.fetched && !rawMode" class="icon-heading">
+          <img ng-show="item.$iconUrl" class="icon-selected-app" ng-src="{{item.$iconUrl}}">&nbsp;{{item.metadata.name}}
+      </span>
+
       <button class="btn btn-danger pull-right"
               title="Delete this Service"
               ng-click="deleteEntity()">
@@ -24,14 +28,19 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div ng-hide="model.fetched">
+  <div ng-hide="model.fetched">
+    <div class="row">
+      <div class="col-md-12">
         <div class="align-center">
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
-      <div ng-show="model.fetched && !rawMode">
+    </div>
+  </div>
+
+  <div ng-show="model.fetched && !rawMode">
+    <div class="row">
+      <div class="col-md-12">
         <div hawtio-object="item" config="itemConfig"></div>
       </div>
     </div>

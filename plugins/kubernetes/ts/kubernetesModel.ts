@@ -441,7 +441,7 @@ module Kubernetes {
               appView.$podCounters = createAppViewPodCounters(appView);
               appView.$serviceViews = createAppViewServiceViews(appView);
             } catch (e) {
-              log.warn("FAiled to update appViews: " + e);
+              log.warn("Failed to update appViews: " + e);
             }
           });
           //this.apps = apps;

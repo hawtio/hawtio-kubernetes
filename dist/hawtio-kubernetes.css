@@ -354,3 +354,11 @@ img.icon-selected-app {
     font-size: 3em;
     margin-top: 6px;
 }
+
+.icon-heading {
+    font-size: 24px;
+}
+
+.row-header {
+    padding-bottom: 20px;
+}

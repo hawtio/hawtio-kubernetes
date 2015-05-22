@@ -1,6 +1,10 @@
 <div ng-controller="Kubernetes.PodController">
-  <div class="row">
+  <div class="row row-header">
     <div class="col-md-12">
+      <span ng-show="model.fetched && !rawMode" class="icon-heading">
+          <img ng-show="item.$iconUrl" class="icon-selected-app" ng-src="{{item.$iconUrl}}">&nbsp;{{item.metadata.name}}
+      </span>
+
       <button class="btn btn-danger pull-right"
               title="Delete this Pod"
               ng-click="deleteEntity()">

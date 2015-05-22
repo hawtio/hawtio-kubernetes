@@ -44,6 +44,10 @@ module Kubernetes {
       updateData();
     });
 
+    $scope.$watch('model.pods', (newValue, oldValue) => {
+      updateData();
+    }, true);
+
     $scope.flipRaw = () => {
       $scope.rawMode = !$scope.rawMode;
       Core.$apply($scope);
