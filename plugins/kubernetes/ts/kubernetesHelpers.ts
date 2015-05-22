@@ -1007,4 +1007,17 @@ module Kubernetes {
     })
   }
 
+  /**
+   * Lets remove any enriched data to leave the original json intact
+   */
+  export function toRawJson(item) {
+    var o = angular.copy(item);
+    angular.forEach(o, (value, key) => {
+      if (key.startsWith("$") || key.startsWith("_")) {
+        delete o[key];
+      }
+    });
+    return JSON.stringify(o, null, 2); // spacing level = 2
+  }
+
 }

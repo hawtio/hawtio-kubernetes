@@ -48,7 +48,7 @@ module Kubernetes {
       $scope.namespace = $routeParams["namespace"] || KubernetesState.selectedNamespace;
       $scope.item = $scope.model.getService($scope.namespace, $scope.id);
       if ($scope.item) {
-        $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
+        $scope.rawModel = toRawJson($scope.item);
       }
       Core.$apply($scope);
     }

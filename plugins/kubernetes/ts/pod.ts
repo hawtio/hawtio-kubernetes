@@ -64,7 +64,7 @@ module Kubernetes {
       $scope.id = $routeParams["id"];
       $scope.item = $scope.model.getPod(KubernetesState.selectedNamespace, $scope.id);
       if ($scope.item) {
-        $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
+        $scope.rawModel = toRawJson($scope.item);
       }
       Core.$apply($scope);
     }

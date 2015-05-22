@@ -141,4 +141,8 @@ declare module Kubernetes {
      * Configures the json schema
      */
     function configureSchema(): void;
+    /**
+     * Lets remove any enriched data to leave the original json intact
+     */
+    function toRawJson(item: any): string;
 }
