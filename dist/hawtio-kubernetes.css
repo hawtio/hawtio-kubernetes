@@ -362,3 +362,13 @@ img.icon-selected-app {
 .row-header {
     padding-bottom: 20px;
 }
+/*
+
+.raw-json-view {
+    width: 90%; height: 700px;
+}
+*/
+
+.raw-json-view .CodeMirror {
+    height: 90%;
+}

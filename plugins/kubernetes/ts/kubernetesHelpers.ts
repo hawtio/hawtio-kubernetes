@@ -221,6 +221,14 @@ module Kubernetes {
     }
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
     $scope.forgeEnabled = isForgeEnabled();
+
+    $scope.codeMirrorOptions = {
+      lineWrapping : true,
+      lineNumbers: true,
+      readOnly: 'nocursor',
+      mode: {name: "javascript", json: true}
+    };
+
     $scope.resizeDialog = {
       controller: null,
       newReplicas: 0,
