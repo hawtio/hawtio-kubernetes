@@ -15,6 +15,7 @@ module Kubernetes {
   export var defaultIconUrl = Core.url("/img/kubernetes.svg");
   export var hostIconUrl = Core.url("/img/host.svg");
 
+  // this gets set as a pre-bootstrap task
   export var osConfig:OpenshiftConfig = undefined;
   export var masterUrl = "";
 
@@ -40,11 +41,19 @@ module Kubernetes {
   }
 
   export function kubernetesApiUrl() {
-    return UrlHelpers.join(masterApiUrl(), "api", defaultApiVersion);
+    var prefix = Core.pathGet(osConfig, ['api', 'k8s', 'prefix']);
+    if (!prefix) {
+      prefix = 'api';
+    }    
+    return UrlHelpers.join(masterApiUrl(), prefix, defaultApiVersion);
   }
 
   export function openshiftApiUrl() {
-    return UrlHelpers.join(masterApiUrl(), "osapi", defaultOSApiVersion);
+    var prefix = Core.pathGet(osConfig, ['api', 'openshift', 'prefix']);
+    if (!prefix) {
+      prefix = 'osapi';
+    }    
+    return UrlHelpers.join(masterApiUrl(), prefix, defaultOSApiVersion);
   }
 
   export function imageRepositoriesRestURL() {

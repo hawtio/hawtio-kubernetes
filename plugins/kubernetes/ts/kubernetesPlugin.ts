@@ -45,7 +45,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
   }]);
-
+  
   // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
   _module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
     var url = masterApiUrl();
