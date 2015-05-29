@@ -106,33 +106,3 @@
     <div class="row kubernetes-view" ng-view></div>
   </div>
 </div>
-<div ng-controller="Kubernetes.ConnectController">
-  <div hawtio-confirm-dialog="connect.dialog.show" title="Connect to {{connect.containerName}}?"
-       ok-button-text="Connect" cancel-button-text="Cancel" on-ok="onOK()">
-    <div class="dialog-body">
-      <p>Please enter the user name and password for {{connect.containerName}}:</p>
-
-      <div class="control-group">
-        <label class="control-label">User name: </label>
-
-        <div class="controls">
-          <input name="userName" ng-model="connect.userName" type="text" autofill>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label">Password: </label>
-
-        <div class="controls">
-          <input name="password" ng-model="connect.password" type="password" autofill>
-        </div>
-      </div>
-      <div class="control-group">
-        <div class="controls">
-          <label class="checkbox">
-            <input type="checkbox" ng-model="connect.saveCredentials"> Save these credentials as the default
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
