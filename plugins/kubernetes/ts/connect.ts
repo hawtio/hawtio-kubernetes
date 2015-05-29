@@ -6,58 +6,24 @@ module Kubernetes {
 
   // controller for connecting to a remote container via jolokia
   export var ConnectController = controller("ConnectController", [
-    "$scope", "localStorage", "userDetails", "ConnectDialogService",
-    ($scope, localStorage, userDetails, ConnectDialogService) => {
+    "$scope", "localStorage", "userDetails", "ConnectDialogService", "$browser",
+    ($scope, localStorage, userDetails, ConnectDialogService, $browser:ng.IBrowserService) => {
 
-      $scope.connect = ConnectDialogService;
-
-      $scope.onOK = () => {
-        var userName = $scope.connect.userName;
-        var password = $scope.connect.password;
-        if (!userDetails.password) {
-          // this can get unset if the user happens to refresh and hasn't checked rememberMe
-          userDetails.password = password;
-        }
-        if ($scope.connect.saveCredentials) {
-          $scope.connect.saveCredentials = false;
-          if (userName) {
-            localStorage['kuberentes.userName'] = userName;
-          }
-          if (password) {
-            localStorage['kuberentes.password'] = password;
-          }
-        }
-        log.info("Connecting to " + $scope.connect.jolokiaUrl + " for container: " + $scope.connect.containerName + " user: " + $scope.connect.userName);
-        var options = Core.createConnectOptions({
-          jolokiaUrl: $scope.connect.jolokiaUrl,
-          userName: userName,
-          password: password,
-          useProxy: true,
-          view: $scope.connect.view,
-          name: $scope.connect.containerName
-        });
-        Core.connectToServer(localStorage, options);
-        setTimeout(() => {
-          $scope.connect.dialog.close();
-          Core.$apply($scope);
-        }, 100);
-      };
+      var base:any = document.querySelector('base');
+      var baseHref = base && base.href || '';
 
       $scope.doConnect = (entity) => {
-        if (userDetails) {
-          $scope.connect.userName = userDetails.username;
-          $scope.connect.password = userDetails.password;
-        }
-        $scope.connect.jolokiaUrl = entity.$jolokiaUrl;
-        $scope.connect.containerName = getName(entity);
-        //$scope.connect.view = "#/openlogs";
-
-        var alwaysPrompt = localStorage['fabricAlwaysPrompt'];
-        if ((alwaysPrompt && alwaysPrompt !== "false") || !$scope.connect.userName || !$scope.connect.password) {
-          $scope.connect.dialog.open();
-        } else {
-          $scope.connect.onOK();
-        }
+        var connectUrl:any = new URI(baseHref);
+        var returnTo = new URI().toString();
+        var title = entity.metadata.name || 'Untitled Container';
+        var token = userDetails.token || '';
+        connectUrl.hash(token).query({
+          jolokiaUrl: entity.$jolokiaUrl,
+          title: title,
+          returnTo: returnTo
+        });
+        log.debug("Connect URI: ", connectUrl.toString());
+        window.location.href = connectUrl.toString();
       };
 
     }]);

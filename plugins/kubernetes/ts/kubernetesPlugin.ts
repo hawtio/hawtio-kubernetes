@@ -160,6 +160,9 @@ module Kubernetes {
 
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
     log.debug("Running");
+
+    
+
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
     var builder = HawtioNav.builder();
     var apps = builder.id('kube-apps')
