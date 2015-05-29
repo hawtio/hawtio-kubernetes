@@ -96,7 +96,7 @@ module Kubernetes {
         }
         UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
           collection: selected,
-          index: 'id',
+          index: 'metadata.name',
           onClose: (result:boolean) => {
             if (result) {
               function deleteSelected(selected:Array<KubePod>, next:KubePod) {
