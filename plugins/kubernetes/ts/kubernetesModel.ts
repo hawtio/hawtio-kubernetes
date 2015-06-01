@@ -107,9 +107,8 @@ module Kubernetes {
           var metadata = template.metadata;
           if (metadata) {
             var annotations = metadata.annotations;
-            var iconUrl = annotations["fabric8/iconUrl"];
+            var iconUrl = annotations["fabric8." + id + "/iconUrl"] || annotations["fabric8/iconUrl"];
             if (iconUrl) {
-
               (template.objects || []).forEach((item) => {
                 var entityName = getName(item);
                 if (id === entityName) {
