@@ -235,6 +235,26 @@ module Kubernetes {
           }
         });
 
+        // services may not map to an icon but their pods may do via the RC
+        // so lets default it...
+        this.services.forEach((service) => {
+          var iconUrl = service.$iconUrl;
+          var selectedPods = service.$pods;
+          if (selectedPods) {
+            if (!iconUrl || iconUrl === defaultIconUrl) {
+              iconUrl = null;
+              selectedPods.forEach((pod) => {
+                if (!iconUrl) {
+                  iconUrl = pod.$iconUrl;
+                  if (iconUrl) {
+                    service.$iconUrl = iconUrl;
+                  }
+                }
+              });
+            }
+          }
+        });
+
         this.updateApps();
 
         updateNamespaces(this.kubernetes, this.pods, this.replicationControllers, this.services);
