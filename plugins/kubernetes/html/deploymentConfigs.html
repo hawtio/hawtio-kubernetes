@@ -18,14 +18,16 @@
             title="{{key}}">{{label}}</span>
     </div>
   </script>
-  <div class="row">
-    <div class="col-md-12" ng-show="deploymentConfigs.length">
+  <div class="row filter-header">
+    <div class="col-md-12">
       <span>
-        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+        <span ng-include="'namespaceSelector.html'"></span>
+        <hawtio-filter ng-show="deploymentConfigs.length"
+                       ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter deployment configurations..."></hawtio-filter>
       </span>
-      <button ng-show="fetched"
+      <button ng-show="fetched && deploymentConfigs.length"
               title="Delete the selected build configuration"
               class="btn btn-danger pull-right"
               ng-disabled="tableConfig.selectedItems.length == 0"
@@ -38,6 +40,7 @@
          href="/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create</a>
       <span class="pull-right">&nbsp;</span>
       <button class="btn btn-primary pull-right"
+         ng-show="fetched && deploymentConfigs.length"
          title="Trigger the given build"
          ng-disabled="tableConfig.selectedItems.length != 1 || !tableConfig.selectedItems[0].$triggerUrl"
          ng-click="triggerBuild(tableConfig.selectedItems[0])"><i class="fa fa-play-circle-o"></i> Trigger</button>

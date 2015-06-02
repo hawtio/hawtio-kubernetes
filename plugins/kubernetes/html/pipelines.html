@@ -3,10 +3,12 @@
     <div class="ngCellText">
     </div>
   </script>
-  <div class="row">
+  <div class="row filter-header">
     <div class="col-md-12">
-      <span ng-show="pipelines.length">
-        <hawtio-filter ng-model="filterText"
+      <span>
+        <span ng-include="'namespaceSelector.html'"></span>
+        <hawtio-filter ng-show="pipelines.length" 
+                       ng-model="filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter builds..."></hawtio-filter>
       </span>
