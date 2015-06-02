@@ -37,7 +37,7 @@
         <span class="pull-right">
           <a class="badge badge-info" href="" ng-click="$emit('do-resize', controller)"
             title="Resize the number of replicas of this controller">
-             {{controller.spec.replicas}}</a>
+             {{controller.spec.replicas || 0}}</a>
         </span>
       </span>
     </div>
@@ -86,7 +86,7 @@
               no pod template
             </div>
           </div>
-          <div ng-show="view.podCount" class="col-md-4 service-view-detail-pod-counts">
+          <div class="col-md-4 service-view-detail-pod-counts">
             <span class="pull-right">
               pods:
               <a href="" ng-show="view.replicationController" class="badge badge-info"

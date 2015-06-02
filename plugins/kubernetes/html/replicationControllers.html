@@ -11,7 +11,7 @@
     <div class="ngCellText">
       <a href="" class="badge badge-info" 
          ng-click="$parent.$parent.resizeDialog.open(row.entity)" 
-         title="Edit the number of replicas of this controller">{{row.entity.spec.replicas}}</a>
+         title="Edit the number of replicas of this controller">{{row.entity.spec.replicas || 0}}</a>
     </div>
   </script>
   <div class="row filter-header">
