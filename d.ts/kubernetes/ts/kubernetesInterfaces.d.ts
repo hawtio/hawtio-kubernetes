@@ -1,4 +1,8 @@
 declare module Kubernetes {
+    class consts {
+        NAMESPACE_STORAGE_KEY: string;
+    }
+    var Constants: consts;
     interface ApiLocation {
         proto?: string;
         hostPort: string;

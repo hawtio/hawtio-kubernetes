@@ -9,8 +9,8 @@ module Kubernetes {
 	var types = [WatchTypes.ENDPOINTS,
 							 WatchTypes.PODS,
 							 WatchTypes.REPLICATION_CONTROLLERS,
-							 WatchTypes.SERVICES,
-							 WatchTypes.NODES];
+							 WatchTypes.SERVICES];
+							 //WatchTypes.NODES];
 
 	var namespaceWatch = <any> {
 		selected: undefined,
@@ -40,6 +40,27 @@ module Kubernetes {
 		}
 	});
 
+  hawtioPluginLoader.registerPreBootstrapTask((next) => {
+    var uri = new URI(masterApiUrl());
+    uri.path(namespaceWatch.url);
+    var url = uri.toString();
+
+    // can't use $http here
+    $.get(uri.toString())
+      .done((data) => {
+        _.forEach(data.items, (namespace:any) => {
+          if (!namespace.metadata.uid) {
+            namespace.metadata.uid = namespace.metadata.namespace + '/' + namespace.metadata.name;
+          }
+          namespaceWatch.objects[namespace.metadata.uid] = namespace;
+        });
+        namespaceWatch.objectArray.length = 0;
+        _.forIn(namespaceWatch.objects, (object, key) => {
+          namespaceWatch.objectArray.push(object);
+        });
+      }).always(next);
+  });
+
 	function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
 			var uri = new URI(masterApiUrl());
 			uri.path(watch.url);
@@ -61,7 +82,7 @@ module Kubernetes {
 			var onMessageInternal = (event) => {
 				// log.debug(type, " onmessage: ", event);
 				var data = angular.fromJson(event.data);
-				log.debug(type, " data: ", data);
+				//log.debug(type, " data: ", data);
 				switch (data.type) {
 					case WatchActions.ADDED:
 					case WatchActions.MODIFIED:
@@ -145,7 +166,7 @@ module Kubernetes {
 	}]);
 	*/
 
-	_module.service('WatcherService', ['userDetails', '$rootScope', (userDetails, $rootScope) => {
+	_module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (userDetails, $rootScope, $timeout) => {
 		var self = <any> {
 			hasWebSocket: false
 		};
@@ -168,6 +189,11 @@ module Kubernetes {
 				});
 			  log.debug("Setting namespace watch to: ", namespace);
 				namespaceWatch.selected = namespace;
+        if (!namespace) {
+          delete localStorage[Constants.NAMESPACE_STORAGE_KEY];
+        } else {
+          localStorage[Constants.NAMESPACE_STORAGE_KEY] = namespace;
+        }
 				$rootScope.$broadcast("WatcherNamespaceChanged", namespace);
 				if (namespace) {
 					_.forEach(types, (type) => {
@@ -195,9 +221,9 @@ module Kubernetes {
 			switch (event.type) {
 				case WatchActions.ADDED:
 				case WatchActions.MODIFIED:
-						if (!namespaceWatch.selected) {
-							self.setNamespace(event.object.metadata.name);
-						}
+          if (!namespaceWatch.selected) {
+              self.setNamespace(event.object.metadata.name);
+          }
 					break;
 				case WatchActions.DELETED:
 					var next = <any> _.first(namespaceWatch.objectArray);
@@ -215,6 +241,8 @@ module Kubernetes {
 			log.debug("Namespace watch closed");
 			self.setNamespace(undefined);
 		});
+
+    self.setNamespace(localStorage[Constants.NAMESPACE_STORAGE_KEY]);
 
 		self.hasWebSocket = true;
 

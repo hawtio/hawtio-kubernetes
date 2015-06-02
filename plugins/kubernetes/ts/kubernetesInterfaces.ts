@@ -1,4 +1,10 @@
 module Kubernetes {
+
+  export class consts {
+    get NAMESPACE_STORAGE_KEY():string { return "k8sSelectedNamespace"; }
+  }
+
+  export var Constants = new consts();
 	
   export interface ApiLocation {
     proto?:string;

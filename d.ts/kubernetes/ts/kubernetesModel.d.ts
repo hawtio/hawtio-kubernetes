@@ -11,7 +11,7 @@ declare module Kubernetes {
         replicationControllers: any[];
         pods: any[];
         hosts: any[];
-        namespaces: any[];
+        namespaces: Array<string>;
         routes: any[];
         templates: any[];
         redraw: boolean;

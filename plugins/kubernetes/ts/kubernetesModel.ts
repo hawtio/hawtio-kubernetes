@@ -42,7 +42,10 @@ module Kubernetes {
     public replicationControllers = [];
     public pods = [];
     public hosts = [];
-    public namespaces = [];
+    public get namespaces():Array<string> {
+      return this.kubernetes.namespaces;
+    }
+    //public namespaces = [];
     public routes = [];
     public templates = [];
     public redraw = false;
@@ -257,7 +260,7 @@ module Kubernetes {
 
         this.updateApps();
 
-        updateNamespaces(this.kubernetes, this.pods, this.replicationControllers, this.services);
+        //updateNamespaces(this.kubernetes, this.pods, this.replicationControllers, this.services);
 
         var podsByHost = {};
         this.pods.forEach((pod) => {
@@ -519,7 +522,6 @@ module Kubernetes {
    * with their associations and status
    */
   export function createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, watcher:WatcherService) {
-    var stableScope = new KubernetesModelService();
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
     var lastJson = "";
@@ -610,7 +612,17 @@ module Kubernetes {
 			Core.$apply($rootScope);
 		});
 
-		watcher.setNamespace($scope.currentNamespace());
+    // set the selected namespace if set in the location bar
+    // otherwise use whatever previously selected namespace is
+    // available
+    var injector = HawtioCore.injector;
+    if (injector) {
+      var $location = injector.get('$location');
+      var search = $location.search();
+      if ('namespace' in search) {
+        watcher.setNamespace(search['namespace']);
+      }
+    }
 
     function selectPods(pods, namespace, labels) {
       return pods.filter((pod) => {

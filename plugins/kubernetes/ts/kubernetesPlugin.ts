@@ -141,11 +141,33 @@ module Kubernetes {
     return restmod.model(buildConfigsRestURL());
   }]);
 
-  _module.factory('KubernetesState', [() => {
+  // facade this to the watcher service
+  class KubernetesState {
+    constructor(private watcher:WatcherService) {
+    }
+    get namespaces():Array<string> {
+      return _.map(this.watcher.getObjects(WatchTypes.NAMESPACES), (namespace) => {
+        return namespace.metadata.name;
+      });
+    }
+    get selectedNamespace():string {
+      return this.watcher.getNamespace();
+    }
+    set selectedNamespace(namespace:string) {
+      this.watcher.setNamespace(namespace);
+    }
+  }
+
+  _module.factory('KubernetesState', ['WatcherService', (watcher:WatcherService) => {
+    return new KubernetesState(watcher);
+    /*
     return {
-      namespaces: [],
+      get namespaces: () => {
+        return watcher.getNamespaces();
+      },
       selectedNamespace: null
     };
+    */
   }]);
 
   _module.factory('ServiceRegistry', [() => {
