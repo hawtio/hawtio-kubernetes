@@ -231,9 +231,11 @@ img.icon-selected-app {
     max-height: 20px;
 }
 
+/*
 .service-view-detail-header a {
     color: black;
 }
+*/
 
 .service-view-detail-rectangle {
     background-color: #eeeeee;

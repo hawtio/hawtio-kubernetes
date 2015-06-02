@@ -245,11 +245,7 @@ module Kubernetes {
       onOk: () => {
         var resizeDialog = $scope.resizeDialog;
         resizeDialog.dialog.close();
-        resizeController($http, KubernetesApiURL, resizeDialog.controller, resizeDialog.newReplicas, () => {
-          // lets immediately update the replica count to avoid waiting for the next poll
-          ($scope.resizeDialog.controller.status || {}).replicas = $scope.resizeDialog.newReplicas;
-          Core.$apply($scope);
-        })
+        resizeController($http, KubernetesApiURL, resizeDialog.controller, resizeDialog.newReplicas, () => { log.debug("updated number of replicas"); })
       },
       open: (controller) => {
         var resizeDialog = $scope.resizeDialog;
@@ -799,6 +795,7 @@ module Kubernetes {
         appName: appName || name,
         name: name,
         createdDate: appView.$creationDate,
+        podCount: podCount,
         podCountText: podCountText,
         address: address,
         controllerId: controllerId,

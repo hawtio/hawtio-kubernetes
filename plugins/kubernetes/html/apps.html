@@ -14,7 +14,8 @@
   <script type="text/ng-template" id="appServicesTemplate.html">
     <div class="ngCellText">
       <span ng-repeat="service in row.entity.services">
-          <a ng-href="{{service | kubernetesPageLink}}">
+          <a ng-href="{{service | kubernetesPageLink}}"
+             title="View service details">
             <span>{{service.metadata.name ||service.name || service.id}}</span>
           </a>
       </span>
@@ -28,12 +29,16 @@
   <script type="text/ng-template" id="appReplicationControllerTemplate.html">
     <div class="ngCellText">
       <span ng-repeat="controller in row.entity.replicationControllers">
-        <a ng-href="{{controller | kubernetesPageLink}}">
+        <a ng-href="{{controller | kubernetesPageLink}}"
+           title="View controller details">
           <span>{{controller.metadata.name || controller.id}}</span>
         </a>
         &nbsp;
-        <span class="btn btn-sm" ng-click="resizeDialog.open(controller)"
-              title="Resize the number of replicas of this controller">{{controller.replicas}}</span>
+        <span class="pull-right">
+          <a class="badge badge-info" href="" ng-click="$emit('do-resize', controller)"
+            title="Resize the number of replicas of this controller">
+             {{controller.spec.replicas}}</a>
+        </span>
       </span>
     </div>
   </script>
@@ -81,14 +86,17 @@
               no pod template
             </div>
           </div>
-          <div class="col-md-4 service-view-detail-pod-counts">
-            <a href="" ng-show="view.replicationController" class="value pull-right"
-               ng-click="resizeDialog.open(view.replicationController)"
-               title="Resize the number of pods">
-              {{view.podCountText}}
-            </a>
-            <span ng-hide="view.replicationController" class="value pull-right">
-              {{view.podCountText}}
+          <div ng-show="view.podCount" class="col-md-4 service-view-detail-pod-counts">
+            <span class="pull-right">
+              pods:
+              <a href="" ng-show="view.replicationController" class="badge badge-info"
+                ng-click="resizeDialog.open(view.replicationController)"
+                title="Resize the number of pods">
+                {{view.podCount}}
+              </a>
+              <span ng-hide="view.replicationController" class="badge badge-success">
+                {{view.podCount}}
+              </span>
             </span>
           </div>
         </div>

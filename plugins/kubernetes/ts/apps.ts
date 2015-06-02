@@ -9,9 +9,6 @@ module Kubernetes {
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $dialog, $timeout, workspace, jolokia:Jolokia.IJolokia) => {
 
     $scope.model = KubernetesModel;
-    $scope.$on('kubernetesModelUpdated', function () {
-      Core.$apply($scope);
-    });
 
     $scope.apps = [];
     $scope.allApps = [];
@@ -63,6 +60,10 @@ module Kubernetes {
 
 
     $scope.expandedPods = [];
+
+    $scope.$on('do-resize', ($event, controller) => {
+      $scope.resizeDialog.open(controller);
+    });
 
         
     $scope.podExpanded = (pod) => {

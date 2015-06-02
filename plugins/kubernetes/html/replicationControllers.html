@@ -9,7 +9,9 @@
   </script>
   <script type="text/ng-template" id="desiredReplicas.html">
     <div class="ngCellText">
-      <span class="btn btn-sm" ng-click="$parent.$parent.resizeDialog.open(row.entity)" title="Edit the number of replicas of this controller">{{row.entity.spec.replicas}}</span>
+      <a href="" class="badge badge-info" 
+         ng-click="$parent.$parent.resizeDialog.open(row.entity)" 
+         title="Edit the number of replicas of this controller">{{row.entity.spec.replicas}}</a>
     </div>
   </script>
   <div class="row filter-header">
