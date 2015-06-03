@@ -102,7 +102,7 @@ module Kubernetes {
 		});
 	}]);
 
-  export var TopLevel = controller("TopLevel", ["$scope", "workspace", "KubernetesVersion", "KubernetesState", ($scope, workspace:Core.Workspace, KubernetesVersion:ng.IPromise<ng.resource.IResourceClass>, KubernetesState) => {
+  export var TopLevel = controller("TopLevel", ["$scope", "workspace", "KubernetesVersion", "KubernetesState", ($scope, workspace:Core.Workspace, KubernetesVersion:ng.resource.IResourceClass, KubernetesState) => {
 
     $scope.version = undefined;
 
@@ -114,10 +114,8 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
 
-    KubernetesVersion.then((KubernetesVersion:ng.resource.IResourceClass) => {
-      KubernetesVersion.query((response) => {
-        $scope.version = response;
-      });
+    KubernetesVersion.query((response) => {
+      $scope.version = response;
     });
 
   }]);

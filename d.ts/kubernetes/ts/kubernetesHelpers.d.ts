@@ -49,10 +49,6 @@ declare module Kubernetes {
     function isKubernetes(workspace: any): boolean;
     function isKubernetesTemplateManager(workspace: any): boolean;
     function isAppView(workspace: any): boolean;
-    /**
-     * Updates the namespaces value in the kubernetes object from the namespace values in the pods, controllers, services
-     */
-    function updateNamespaces(kubernetes: any, pods?: any[], replicationControllers?: any[], services?: any[]): void;
     function setJson($scope: any, id: any, collection: any): void;
     /**
      * Returns the labels text string using the <code>key1=value1,key2=value2,....</code> format
@@ -89,7 +85,7 @@ declare module Kubernetes {
      * Returns the base URL for the kind of kubernetes resource or null if it cannot be found
      */
     function kubernetesUrlForItemKind(KubernetesApiURL: any, json: any): string;
-    function kubernetesProxyUrlForService(KubernetesApiURL: any, service: any, path?: any): any;
+    function kubernetesProxyUrlForService(KubernetesApiURL: any, service: any, path?: any): string;
     function buildConfigRestUrl(id: any): string;
     function deploymentConfigRestUrl(id: any): string;
     function imageRepositoryRestUrl(id: any): string;

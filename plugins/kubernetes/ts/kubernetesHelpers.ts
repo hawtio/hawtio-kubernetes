@@ -153,31 +153,6 @@ module Kubernetes {
     return true;
   }
 
-  /**
-   * Updates the namespaces value in the kubernetes object from the namespace values in the pods, controllers, services
-   */
-  export function updateNamespaces(kubernetes, pods = [], replicationControllers = [], services = []) {
-    var byNamespace = (thing) => { return getNamespace(thing); };
-
-    function pushIfNotExists(array, items) {
-        angular.forEach(items, (value) => {
-            if ($.inArray(value, array) < 0) {
-              array.push(value);
-            }
-        });
-    }
-    var namespaces = [];
-
-    pushIfNotExists(namespaces, pods.map(byNamespace));
-    pushIfNotExists(namespaces, services.map(byNamespace));
-    pushIfNotExists(namespaces, replicationControllers.map(byNamespace));
-
-    namespaces = namespaces.sort();
-
-    kubernetes.namespaces = namespaces;
-    kubernetes.selectedNamespace = kubernetes.selectedNamespace || namespaces[0];
-  }
-
   export function setJson($scope, id, collection) {
     $scope.id = id;
     if (!$scope.fetched) {
@@ -200,8 +175,6 @@ module Kubernetes {
       $scope.item = undefined;
     }
   }
-
-
 
   /**
    * Returns the labels text string using the <code>key1=value1,key2=value2,....</code> format
@@ -503,13 +476,9 @@ module Kubernetes {
     var namespace = getNamespace(service);
     if (isV1beta1Or2()) {
       var postfix = "?namespace=" + namespace;
-      return KubernetesApiURL.then((KubernetesApiURL) => {
-        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/services/" + getName(service) + pathSegment + postfix);
-      });
+      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/services/" + getName(service) + pathSegment + postfix);
     } else {
-      return KubernetesApiURL.then((KubernetesApiURL) => {
-        return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/namespaces/" + namespace + "/services/" + getName(service) + pathSegment);
-      });
+      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/namespaces/" + namespace + "/services/" + getName(service) + pathSegment);
     }
   }
 
@@ -545,38 +514,36 @@ module Kubernetes {
       var postfix = namespace ? " in namespace " + namespace : "";
       Core.notification('info', "Running " + name + postfix);
 
-      KubernetesApiURL.then((KubernetesApiURL) => {
-        var items = convertKubernetesJsonToItems(json);
-        angular.forEach(items, (item) => {
-          var url = kubernetesUrlForItemKind(KubernetesApiURL, item);
-          if (url) {
-            $http.post(url, item).
-              success(function (data, status, headers, config) {
-                log.debug("Got status: " + status + " on url: " + url + " data: " + data + " after posting: " + angular.toJson(item));
-                if (angular.isFunction(onCompleteFn)) {
-                  onCompleteFn();
-                }
-                Core.$apply($scope);
-              }).
-              error(function (data, status, headers, config) {
-                var message = null;
-                if (angular.isObject(data)) {
-                  message = data.message;
-                  var reason = data.reason;
-                  if (reason === "AlreadyExists") {
-                    // lets ignore duplicates
-                    log.debug("entity already exists at " + url);
-                    return;
-                  }
-                }
-                if (!message) {
-                  message = "Failed to POST to " + url + " got status: " + status;
-                }
-                log.warn("Failed to save " + url + " status: " + status + " response: " + angular.toJson(data, true));
-                Core.notification('error', message);
-              });
-          }
-        });
+      var items = convertKubernetesJsonToItems(json);
+      angular.forEach(items, (item) => {
+        var url = kubernetesUrlForItemKind(KubernetesApiURL, item);
+        if (url) {
+          $http.post(url, item).
+            success(function (data, status, headers, config) {
+              log.debug("Got status: " + status + " on url: " + url + " data: " + data + " after posting: " + angular.toJson(item));
+              if (angular.isFunction(onCompleteFn)) {
+                onCompleteFn();
+              }
+              Core.$apply($scope);
+            }).
+          error(function (data, status, headers, config) {
+            var message = null;
+            if (angular.isObject(data)) {
+              message = data.message;
+              var reason = data.reason;
+              if (reason === "AlreadyExists") {
+                // lets ignore duplicates
+                log.debug("entity already exists at " + url);
+                return;
+              }
+            }
+            if (!message) {
+              message = "Failed to POST to " + url + " got status: " + status;
+            }
+            log.warn("Failed to save " + url + " status: " + status + " response: " + angular.toJson(data, true));
+            Core.notification('error', message);
+          });
+        }
       });
     }
   }
@@ -657,35 +624,31 @@ module Kubernetes {
   export function resizeController($http, KubernetesApiURL, replicationController, newReplicas, onCompleteFn = null) {
     var id = getName(replicationController);
     var namespace = getNamespace(replicationController) || "";
-    KubernetesApiURL.then((KubernetesApiURL) => {
-      var url = kubernetesUrlForKind(KubernetesApiURL, "ReplicationController", namespace, id);
-      $http.get(url).
-        success(function (data, status, headers, config) {
-          if (data) {
-            var desiredState = data.spec;
-            if (!desiredState) {
-              desiredState = {};
-              data.spec = desiredState;
-            }
-            desiredState.replicas = newReplicas;
-            $http.put(url, data).
-              success(function (data, status, headers, config) {
-                log.debug("updated controller " + url);
-                if (angular.isFunction(onCompleteFn)) {
-                  onCompleteFn();
-                }
-              }).
-              error(function (data, status, headers, config) {
-                log.warn("Failed to save " + url + " " + data + " " + status);
-              });
+    var url = kubernetesUrlForKind(KubernetesApiURL, "ReplicationController", namespace, id);
+    $http.get(url).
+      success(function (data, status, headers, config) {
+        if (data) {
+          var desiredState = data.spec;
+          if (!desiredState) {
+            desiredState = {};
+            data.spec = desiredState;
           }
-        }).
-        error(function (data, status, headers, config) {
-          log.warn("Failed to load " + url + " " + data + " " + status);
-        });
-    }, (response) => {
-      log.debug("Failed to get rest API URL, can't resize controller " + id + " resource: ", response);
-    });
+          desiredState.replicas = newReplicas;
+          $http.put(url, data).
+            success(function (data, status, headers, config) {
+              log.debug("updated controller " + url);
+              if (angular.isFunction(onCompleteFn)) {
+                onCompleteFn();
+              }
+            }).
+          error(function (data, status, headers, config) {
+            log.warn("Failed to save " + url + " " + data + " " + status);
+          });
+        }
+      }).
+      error(function (data, status, headers, config) {
+        log.warn("Failed to load " + url + " " + data + " " + status);
+      });
   }
 
   export function statusTextToCssClass(text) {

@@ -39,21 +39,19 @@ module Kubernetes {
           $scope.id = $routeParams["id"];
           $scope.item = null;
           if ($scope.id) {
-            KubernetesApiURL.then((KubernetesApiURL) => {
-              var url = UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + "minions", $scope.id);
-              $http.get(url).
-                success(function (data, status, headers, config) {
-                  if (data) {
-                    $scope.item = data;
-                  }
-                  if ($scope.item) {
-                    $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
-                  }
-                  Core.$apply($scope);
-                }).
-                error(function (data, status, headers, config) {
-                  log.warn("Failed to load " + url + " " + data + " " + status);
-                });
+            var url = UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + "minions", $scope.id);
+            $http.get(url).
+              success(function (data, status, headers, config) {
+                if (data) {
+                  $scope.item = data;
+                }
+                if ($scope.item) {
+                  $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
+                }
+                Core.$apply($scope);
+              }).
+            error(function (data, status, headers, config) {
+              log.warn("Failed to load " + url + " " + data + " " + status);
             });
           } else {
             $scope.rawModel = null;

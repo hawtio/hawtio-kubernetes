@@ -23,9 +23,9 @@ module Kubernetes {
     return new KubernetesState(watcher);
   }]);
 
-  _module.constant('KubernetesApiURL', kubernetesApiUrl());
+  _module.factory('KubernetesApiURL', () => kubernetesApiUrl());
 
-  function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: string) {
+  function createResource(thing:string, urlTemplate:string, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: string) {
     var url = UrlHelpers.join(kubernetesApiUrl(), urlTemplate);
     log.debug("Url for ", thing, ": ", url);
     var resource = $resource(url, null, {
@@ -44,32 +44,23 @@ module Kubernetes {
         version: defaultApiVersion 
       }}
     });
-    deferred.resolve(resource);
-    Core.$apply($rootScope);
+    return resource;
   }
 
   _module.factory('KubernetesVersion', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>> $q.defer();
-    createResource(answer, 'pods', '/version', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
+    return createResource('pods', '/version', $rootScope, $resource, KubernetesApiURL);
   }]);
 
   _module.factory('KubernetesPods', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'pods', 'namespaces/:namespace/pods/:id', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
+    return createResource('pods', 'namespaces/:namespace/pods/:id', $rootScope, $resource, KubernetesApiURL);
   }]);
 
   _module.factory('KubernetesReplicationControllers', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'replication controllers', 'namespaces/:namespace/replicationcontrollers/:id', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
+    return createResource('replication controllers', 'namespaces/:namespace/replicationcontrollers/:id', $rootScope, $resource, KubernetesApiURL);
   }]);
 
   _module.factory('KubernetesServices', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'services', 'namespaces/:namespace/services/:id', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
+    return createResource('services', 'namespaces/:namespace/services/:id', $rootScope, $resource, KubernetesApiURL);
   }]);
 
   _module.factory('KubernetesBuilds', ['restmod', (restmod) => {

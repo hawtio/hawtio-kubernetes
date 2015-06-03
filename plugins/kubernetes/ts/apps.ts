@@ -5,7 +5,7 @@ module Kubernetes {
   
   export var Apps = controller("Apps",
     ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia",
-      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.IPromise<ng.resource.IResourceClass>, KubernetesReplicationControllers:ng.IPromise<ng.resource.IResourceClass>, KubernetesPods:ng.IPromise<ng.resource.IResourceClass>, KubernetesState, KubernetesApiURL,
+      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.resource.IResourceClass, KubernetesReplicationControllers:ng.resource.IResourceClass, KubernetesPods:ng.resource.IResourceClass, KubernetesState, KubernetesApiURL,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $dialog, $timeout, workspace, jolokia:Jolokia.IJolokia) => {
 
     $scope.model = KubernetesModel;
@@ -98,16 +98,14 @@ module Kubernetes {
         if (!id) {
           log.warn("No ID for service " + angular.toJson(service));
         } else {
-          KubernetesServices.then((KubernetesServices:ng.resource.IResourceClass) => {
-            KubernetesServices.delete({
-              id: id
-            }, undefined, () => {
-              log.debug("Deleted service: ", id);
-              deleteServices(services, services.shift(), onCompletedFn);
-            }, (error) => {
-              log.debug("Error deleting service: ", error);
-              deleteServices(services, services.shift(), onCompletedFn);
-            });
+          KubernetesServices.delete({
+            id: id
+          }, undefined, () => {
+            log.debug("Deleted service: ", id);
+            deleteServices(services, services.shift(), onCompletedFn);
+          }, (error) => {
+            log.debug("Error deleting service: ", error);
+            deleteServices(services, services.shift(), onCompletedFn);
           });
         }
       }
@@ -120,16 +118,14 @@ module Kubernetes {
         if (!id) {
           log.warn("No ID for replicationController " + angular.toJson(replicationController));
         } else {
-          KubernetesReplicationControllers.then((KubernetesReplicationControllers:ng.resource.IResourceClass) => {
-            KubernetesReplicationControllers.delete({
-              id: id
-            }, undefined, () => {
-              log.debug("Deleted replicationController: ", id);
-              deleteReplicationControllers(replicationControllers, replicationControllers.shift(), onCompletedFn);
-            }, (error) => {
-              log.debug("Error deleting replicationController: ", error);
-              deleteReplicationControllers(replicationControllers, replicationControllers.shift(), onCompletedFn);
-            });
+          KubernetesReplicationControllers.delete({
+            id: id
+          }, undefined, () => {
+            log.debug("Deleted replicationController: ", id);
+            deleteReplicationControllers(replicationControllers, replicationControllers.shift(), onCompletedFn);
+          }, (error) => {
+            log.debug("Error deleting replicationController: ", error);
+            deleteReplicationControllers(replicationControllers, replicationControllers.shift(), onCompletedFn);
           });
         }
       }
@@ -142,16 +138,14 @@ module Kubernetes {
         if (!id) {
           log.warn("No ID for pod " + angular.toJson(pod));
         } else {
-          KubernetesPods.then((KubernetesPods:ng.resource.IResourceClass) => {
-            KubernetesPods.delete({
-              id: id
-            }, undefined, () => {
-              log.debug("Deleted pod: ", id);
-              deletePods(pods, pods.shift(), onCompletedFn);
-            }, (error) => {
-              log.debug("Error deleting pod: ", error);
-              deletePods(pods, pods.shift(), onCompletedFn);
-            });
+          KubernetesPods.delete({
+            id: id
+          }, undefined, () => {
+            log.debug("Deleted pod: ", id);
+            deletePods(pods, pods.shift(), onCompletedFn);
+          }, (error) => {
+            log.debug("Error deleting pod: ", error);
+            deletePods(pods, pods.shift(), onCompletedFn);
           });
         }
       }
