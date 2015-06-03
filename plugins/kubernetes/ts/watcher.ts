@@ -12,22 +12,12 @@ module Kubernetes {
 							 WatchTypes.SERVICES];
 							 //WatchTypes.NODES];
 
-	var namespaceWatch = <any> {
-		selected: undefined,
-		connectTime: <Number> undefined,
-		url: UrlHelpers.join(apiUrl, WatchTypes.NAMESPACES),
-		objects: <ObjectMap> {},
-		objectArray: <Array<any>> [],
-		customizers: <Array<(obj:any) => void>> [],
-		onAddActions: <Array<(obj:any) => void>> [],
-		onModifiedActions: <Array<(obj:any) => void>> [],
-		onDeletedActions: <Array<(obj:any) => void>> [],
-		socket: <WebSocket> undefined
-	}
+  var osTypes  = [
+    // TODO Dpesn't seem like openshift supports UPGRADEing to websockets currently
+    // WatchTypes.TEMPLATES
+  ];
 
-	var watches = <any> {};
-	_.forEach(types, (type) => {
-		watches[type] = {
+  var baseWatch = <any> {
 			url: <string> undefined,
 			connectTime: <Number> undefined,
 			objects: <ObjectMap> {},
@@ -37,8 +27,25 @@ module Kubernetes {
 			onModifiedActions: <Array<(obj:any) => void>> [],
 			onDeletedActions: <Array<(obj:any) => void>> [],
 			socket: <WebSocket> undefined
-		}
+  }
+
+	var namespaceWatch = <any> _.assign(_.cloneDeep(baseWatch), {
+		selected: undefined,
+		connectTime: <Number> undefined,
+		url: UrlHelpers.join(apiUrl, WatchTypes.NAMESPACES),
 	});
+
+	var watches = <any> {};
+	_.forEach(types, (type) => {
+		watches[type] = _.assign(_.cloneDeep(baseWatch), {
+      prefix: kubernetesApiPrefix()
+    });	
+  });
+	_.forEach(osTypes, (type) => {
+		watches[type] = _.assign(_.cloneDeep(baseWatch), {
+      prefix: UrlHelpers.join(openshiftApiPrefix())
+    });	
+  });
 
   hawtioPluginLoader.registerPreBootstrapTask((next) => {
     var uri = new URI(masterApiUrl());
@@ -196,19 +203,20 @@ module Kubernetes {
         }
 				$rootScope.$broadcast("WatcherNamespaceChanged", namespace);
 				if (namespace) {
-					_.forEach(types, (type) => {
+
+          _.forIn(watches, (watch, type) => {
 						// reset the object rather than re-assigning them
 						// ensures that any watches in controllers won't
 						// be watching a stale object
-						watches[type].url = UrlHelpers.join(apiUrl, WatchTypes.NAMESPACES, namespace, type);
-						watches[type].connectTime = <Number> undefined;
-						_.forEach(_.keys(watches[type].objects), (uid) => {
-							_.forEach(watches[type].onDeletedActions, (action:any) => action(watches[type].objects[uid]));
-							delete watches[type].objects[uid];
+						watch.url = UrlHelpers.join(watch.prefix, WatchTypes.NAMESPACES, namespace, type);
+						watch.connectTime = <Number> undefined;
+						_.forEach(_.keys(watch.objects), (uid) => {
+							_.forEach(watch.onDeletedActions, (action:any) => action(watch.objects[uid]));
+							delete watch.objects[uid];
 						});
-						watches[type].objectArray.length = 0;
-						watches[type].socket = <WebSocket> undefined;
-					});
+						watch.objectArray.length = 0;
+						watch.socket = <WebSocket> undefined;
+          });
 					_.forIn(watches, (watch, type) => {
 						createWatch(type, watch, userDetails, $rootScope);
 					});

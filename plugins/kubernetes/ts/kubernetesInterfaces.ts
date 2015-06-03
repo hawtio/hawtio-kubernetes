@@ -34,6 +34,7 @@ module Kubernetes {
 		public static get NODES():string { return "nodes"; }
 		public static get REPLICATION_CONTROLLERS():string { return "replicationcontrollers"; }
 		public static get SERVICES():string { return "services"; }
+		public static get TEMPLATES():string { return "templates"; }
 	}
 	
 	export class WatchActions {
@@ -58,5 +59,11 @@ module Kubernetes {
 		addAction: (type: string, action: string, fn: (obj:any) => void) => void;
 		registerListener: (fn:(objects:ObjectMap) => void) => void;
 	}
+
+  export interface KubePod {
+    id:string;
+    namespace:string;
+  }
+
 	
 }

@@ -44,20 +44,32 @@ module Kubernetes {
     return Core.trimLeading(prefix, '/');
   }
 
-  export function masterApiUrl() {
-    return masterUrl || "";
-  }
-
-  export function kubernetesApiUrl() {
-    return UrlHelpers.join(masterApiUrl(), apiPrefix(), defaultApiVersion);
-  }
-
-  export function openshiftApiUrl() {
+  export function osApiPrefix() {
     var prefix = Core.pathGet(osConfig, ['api', 'openshift', 'prefix']);
     if (!prefix) {
       prefix = 'osapi';
     }    
-    return UrlHelpers.join(masterApiUrl(), prefix, defaultOSApiVersion);
+    return Core.trimLeading(prefix, '/');
+  }
+
+  export function masterApiUrl() {
+    return masterUrl || "";
+  }
+
+  export function kubernetesApiPrefix() {
+    return UrlHelpers.join(apiPrefix(), defaultApiVersion);
+  }
+
+  export function openshiftApiPrefix() {
+    return UrlHelpers.join(osApiPrefix(), defaultOSApiVersion);
+  }
+
+  export function kubernetesApiUrl() {
+    return UrlHelpers.join(masterApiUrl(), kubernetesApiPrefix());
+  }
+
+  export function openshiftApiUrl() {
+    return UrlHelpers.join(masterApiUrl(), openshiftApiPrefix());
   }
 
   export function imageRepositoriesRestURL() {
@@ -125,12 +137,6 @@ module Kubernetes {
   export function getCreationTimestamp(entity) {
     return Core.pathGet(entity, ["metadata", "creationTimestamp"]);
   };
-
-
-  export interface KubePod {
-    id:string;
-    namespace:string;
-  }
 
   //var fabricDomain = Fabric.jmxDomain;
   var fabricDomain = "io.fabric8";

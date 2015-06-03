@@ -20,7 +20,10 @@ declare module Kubernetes {
     var appSuffix: string;
     function kubernetesNamespacePath(): string;
     function apiPrefix(): string;
+    function osApiPrefix(): string;
     function masterApiUrl(): string;
+    function kubernetesApiPrefix(): string;
+    function openshiftApiPrefix(): string;
     function kubernetesApiUrl(): string;
     function openshiftApiUrl(): string;
     function imageRepositoriesRestURL(): string;
@@ -39,10 +42,6 @@ declare module Kubernetes {
     function getHost(pod: any): any;
     function getStatus(pod: any): any;
     function getCreationTimestamp(entity: any): any;
-    interface KubePod {
-        id: string;
-        namespace: string;
-    }
     var mbean: string;
     var managerMBean: string;
     var appViewMBean: string;

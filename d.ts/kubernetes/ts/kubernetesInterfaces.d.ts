@@ -27,6 +27,7 @@ declare module Kubernetes {
         static NODES: string;
         static REPLICATION_CONTROLLERS: string;
         static SERVICES: string;
+        static TEMPLATES: string;
     }
     class WatchActions {
         static ANY: string;
@@ -47,5 +48,9 @@ declare module Kubernetes {
         getObjectMap: (type: string) => ObjectMap;
         addAction: (type: string, action: string, fn: (obj: any) => void) => void;
         registerListener: (fn: (objects: ObjectMap) => void) => void;
+    }
+    interface KubePod {
+        id: string;
+        namespace: string;
     }
 }

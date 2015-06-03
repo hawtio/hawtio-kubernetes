@@ -12,18 +12,6 @@ module Kubernetes {
         url: kubernetesApiUrl()
       });
 
-      /*
-      FileUpload.useJolokiaTransport($scope, $scope.uploader, jolokia, (json) => {
-        log.debug("Json: ", json);
-        return {
-          'type': 'exec',
-          mbean: Kubernetes.managerMBean,
-          operation: 'apply',
-          arguments: [json]
-        };
-      });
-      */
-      
       $scope.uploader.onAfterAddingFile = (file) => {
         var reader = new FileReader();
         reader.onload = () => {
