@@ -447,9 +447,9 @@ module Kubernetes {
       if (namespace && !ignoreNamespace) {
         postfix = "?namespace=" + namespace;
       }
-      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + kindPath + pathSegment + postfix);
+      return UrlHelpers.join(KubernetesApiURL, kindPath, pathSegment, postfix);
     } else {
-      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/namespaces/" + namespace + "/" + kindPath + pathSegment);
+      return UrlHelpers.join(KubernetesApiURL, "/namespaces/", namespace , kindPath, pathSegment);
     }
   };
 

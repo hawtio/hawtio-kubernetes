@@ -31,17 +31,14 @@ module Kubernetes {
     var resource = $resource(url, null, {
       query: { method: 'GET', isArray: false, params: {
         namespace: currentKubernetesNamespace(), 
-        version: defaultApiVersion 
       }},
       save: { method: 'PUT', params: { 
         id: '@id', 
         namespace: currentKubernetesNamespace(), 
-        version: defaultApiVersion 
       }},
       delete: { method: 'DELETE', params: {
         id: '@id', 
         namespace: currentKubernetesNamespace(), 
-        version: defaultApiVersion 
       }}
     });
     return resource;
