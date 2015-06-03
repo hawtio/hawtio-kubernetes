@@ -1,5 +1,5 @@
 /// <reference path="../../includes.ts"/>
-/// <reference path="kubernetesHelpers.ts"/>
+/// <reference path="kubernetesPlugin.ts"/>
 
 module Kubernetes {
 
@@ -30,7 +30,6 @@ module Kubernetes {
       return getNamespace(pod) === namespace && selectorMatches(labels, getLabels(pod));
     });
   }
-
 
   /**
    * The object which keeps track of all the pods, replication controllers, services and their associations
@@ -516,12 +515,12 @@ module Kubernetes {
     }
   }
 
-
   /**
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
    */
-  export function createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, watcher:WatcherService) {
+  _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', 'WatcherService', ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, watcher:WatcherService) => {
+
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
     var lastJson = "";
@@ -630,6 +629,6 @@ module Kubernetes {
       });
     }
     return $scope;
-  }
+  }]);
 
 }

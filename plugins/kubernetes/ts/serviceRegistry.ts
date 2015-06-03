@@ -5,6 +5,10 @@
 
 module Kubernetes {
 
+  _module.factory('ServiceRegistry', [() => {
+    return new ServiceRegistryService();
+  }]);
+
   /**
    * Represents a simple interface to service discovery that can be used early on in the application lifecycle before the
    * underlying model has been created via dependency injection

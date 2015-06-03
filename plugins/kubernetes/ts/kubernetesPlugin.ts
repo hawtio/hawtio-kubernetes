@@ -1,7 +1,5 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
-/// <reference path="kubernetesModel.ts"/>
-/// <reference path="schema.ts"/>
 
 declare var OSOAuthConfig;
 
@@ -46,13 +44,6 @@ module Kubernetes {
                   .when(context, { redirectTo: UrlHelpers.join(context, 'apps') });
   }]);
   
-  // set up a promise that supplies the API URL for Kubernetes, proxied if necessary
-  _module.factory('KubernetesApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
-    var url = masterApiUrl();
-    var answer = <ng.IDeferred<string>>$q.defer();
-    answer.resolve(url);
-    return answer.promise;
-  }]);
 
   _module.factory('AppLibraryURL', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
     return UrlHelpers.join(kubernetesApiUrl(), "/proxy", kubernetesNamespacePath(), "/services/app-library");
@@ -94,97 +85,8 @@ module Kubernetes {
 
   _module.filter('kubernetesPageLink', () => entityPageLink);
 
-
-  function createResource(deferred:ng.IDeferred<ng.resource.IResourceClass>, thing:string, urlTemplate:string,
-                          $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) {
-    KubernetesApiURL.then((KubernetesApiURL) => {
-      var url = UrlHelpers.escapeColons(KubernetesApiURL);
-      log.debug("Url for ", thing, ": ", url);
-      var resource = $resource(UrlHelpers.join(url, urlTemplate), null, {
-        query: { method: 'GET', isArray: false },
-        save: { method: 'PUT', params: { id: '@id' } }
-      });
-      deferred.resolve(resource);
-      Core.$apply($rootScope);
-    }, (response) => {
-      log.debug("Failed to get rest API URL, can't create " + thing + " resource: ", response);
-      deferred.reject(response);
-      Core.$apply($rootScope);
-    });
-  }
-
-  _module.factory('KubernetesVersion', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>> $q.defer();
-    createResource(answer, 'pods', '/version', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
-  }]);
-
-  _module.factory('KubernetesPods', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'pods', '/api/' + defaultApiVersion + kubernetesNamespacePath() + '/pods/:id', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
-  }]);
-
-  _module.factory('KubernetesReplicationControllers', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'replication controllers', '/api/' + defaultApiVersion + kubernetesNamespacePath() + '/replicationcontrollers/:id', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
-  }]);
-
-  _module.factory('KubernetesServices', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: ng.IPromise<string>) => {
-    var answer = <ng.IDeferred<ng.resource.IResourceClass>>$q.defer();
-    createResource(answer, 'services', '/api/' + defaultApiVersion + kubernetesNamespacePath() + '/services/:id', $rootScope, $resource, KubernetesApiURL);
-    return answer.promise;
-  }]);
-
-  _module.factory('KubernetesBuilds', ['restmod', (restmod) => {
-    return restmod.model(buildConfigsRestURL());
-  }]);
-
-  // facade this to the watcher service
-  class KubernetesState {
-    constructor(private watcher:WatcherService) {
-    }
-    get namespaces():Array<string> {
-      return _.map(this.watcher.getObjects(WatchTypes.NAMESPACES), (namespace) => {
-        return namespace.metadata.name;
-      });
-    }
-    get selectedNamespace():string {
-      return this.watcher.getNamespace();
-    }
-    set selectedNamespace(namespace:string) {
-      this.watcher.setNamespace(namespace);
-    }
-  }
-
-  _module.factory('KubernetesState', ['WatcherService', (watcher:WatcherService) => {
-    return new KubernetesState(watcher);
-    /*
-    return {
-      get namespaces: () => {
-        return watcher.getNamespaces();
-      },
-      selectedNamespace: null
-    };
-    */
-  }]);
-
-  _module.factory('ServiceRegistry', [() => {
-    return new ServiceRegistryService();
-  }]);
-
-  _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', 'WatcherService', ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, watcher:WatcherService) => {
-    return createKubernetesModel($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, watcher);
-  }]);
-
-
-
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
     log.debug("Running");
-
-    
-
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
     var builder = HawtioNav.builder();
     var apps = builder.id('kube-apps')

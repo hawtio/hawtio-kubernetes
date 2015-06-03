@@ -1,5 +1,5 @@
 /// <reference path="../../includes.d.ts" />
-/// <reference path="kubernetesHelpers.d.ts" />
+/// <reference path="kubernetesPlugin.d.ts" />
 declare module Kubernetes {
     /**
      * The object which keeps track of all the pods, replication controllers, services and their associations
@@ -41,9 +41,4 @@ declare module Kubernetes {
         protected updateApps(): void;
         protected discoverPodConnections(entity: any): void;
     }
-    /**
-     * Creates a model service which keeps track of all the pods, replication controllers and services along
-     * with their associations and status
-     */
-    function createKubernetesModel($rootScope: any, $http: any, AppLibraryURL: any, KubernetesApiURL: any, KubernetesState: any, KubernetesServices: any, KubernetesReplicationControllers: any, KubernetesPods: any, watcher: WatcherService): KubernetesModelService;
 }

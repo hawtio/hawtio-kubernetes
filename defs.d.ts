@@ -1,8 +1,9 @@
 /// <reference path="d.ts/includes.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesInterfaces.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesHelpers.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/kubernetesModel.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/schema.d.ts"/>
+/// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
+/// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
+/// <reference path="d.ts/project/ts/project.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/build.d.ts"/>
@@ -18,7 +19,10 @@
 /// <reference path="d.ts/kubernetes/ts/hosts.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/imageRepositories.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesJsonDirective.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/kubernetesModel.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/schema.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesSchema.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/kubernetesServices.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesTopLevel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/namespace.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/overview.d.ts"/>
@@ -35,6 +39,3 @@
 /// <reference path="d.ts/kubernetes/ts/services.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/watcher.d.ts"/>
-/// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
-/// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
-/// <reference path="d.ts/project/ts/project.d.ts"/>

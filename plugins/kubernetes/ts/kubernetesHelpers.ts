@@ -36,16 +36,20 @@ module Kubernetes {
     }
   }
 
+  export function apiPrefix() {
+    var prefix = Core.pathGet(osConfig, ['api', 'k8s', 'prefix']);
+    if (!prefix) {
+      prefix = 'api';
+    }    
+    return Core.trimLeading(prefix, '/');
+  }
+
   export function masterApiUrl() {
     return masterUrl || "";
   }
 
   export function kubernetesApiUrl() {
-    var prefix = Core.pathGet(osConfig, ['api', 'k8s', 'prefix']);
-    if (!prefix) {
-      prefix = 'api';
-    }    
-    return UrlHelpers.join(masterApiUrl(), prefix, defaultApiVersion);
+    return UrlHelpers.join(masterApiUrl(), apiPrefix(), defaultApiVersion);
   }
 
   export function openshiftApiUrl() {
@@ -213,14 +217,7 @@ module Kubernetes {
 
 
   export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) {
-    if (!KubernetesState.selectedNamespace) {
-      KubernetesState.selectedNamespace = $routeParams.namespace || $location.search()["namespace"];
-    }
-    if (!KubernetesState.selectedNamespace) {
-      if (angular.isArray(KubernetesState.namespaces) && KubernetesState.namespaces.length) {
-        KubernetesState.selectedNamespace = KubernetesState.namespaces[0];
-      }
-    }
+
     var injector = HawtioCore.injector;
     if (injector) {
       var ServiceRegistry = injector.get("ServiceRegistry");

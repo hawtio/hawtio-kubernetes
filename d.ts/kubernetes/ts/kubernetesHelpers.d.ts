@@ -19,6 +19,7 @@ declare module Kubernetes {
     var defaultNamespace: string;
     var appSuffix: string;
     function kubernetesNamespacePath(): string;
+    function apiPrefix(): string;
     function masterApiUrl(): string;
     function kubernetesApiUrl(): string;
     function openshiftApiUrl(): string;
