@@ -168,6 +168,10 @@ module Kubernetes {
       });
     }
 
+    $scope.deleteSingleApp = (app) => {
+      $scope.deletePrompt([app]);
+    }
+
     $scope.deletePrompt = (selected) => {
       if (angular.isString(selected)) {
         selected = [{

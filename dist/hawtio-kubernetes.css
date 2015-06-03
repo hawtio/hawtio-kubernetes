@@ -199,6 +199,26 @@ img.icon-selected-app {
     padding-bottom: 5px;
 }
 
+.service-view-header .pull-right {
+  position: relative;
+}
+
+.service-view-header .pull-right .service-view-header-delete {
+  position: absolute;
+  top: -7px;
+  right: -14px;
+}
+
+.service-view-header-delete .red {
+  opacity: 0.5;
+  transition: opacity 1s;
+  font-size: larger;
+}
+
+.service-view-header-delete:hover .red {
+  opacity: 1;
+}
+
 .service-view-icon img {
     width: 32px;
     height: 32px;
