@@ -50,6 +50,9 @@ module Kubernetes {
             }
             var name:string = obj.metadata.name;
             var url = UrlHelpers.join(kubernetesApiUrl(), kubernetesNamespacePath(), kind);
+            if (kind === 'templates') {
+              var url = UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), kind);
+            }
             var method = 'POST';
             if (_.any(localList, (obj:any) => obj.metadata.name === name)) {
               method = 'PUT';
