@@ -30,15 +30,15 @@ module Kubernetes {
     log.debug("Url for ", thing, ": ", url);
     var resource = $resource(url, null, {
       query: { method: 'GET', isArray: false, params: {
-        namespace: currentKubernetesNamespace(), 
+        namespace: currentKubernetesNamespace, 
       }},
       save: { method: 'PUT', params: { 
         id: '@id', 
-        namespace: currentKubernetesNamespace(), 
+        namespace: currentKubernetesNamespace, 
       }},
       delete: { method: 'DELETE', params: {
         id: '@id', 
-        namespace: currentKubernetesNamespace(), 
+        namespace: currentKubernetesNamespace, 
       }}
     });
     return resource;
