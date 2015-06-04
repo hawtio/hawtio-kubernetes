@@ -528,16 +528,22 @@ module Kubernetes {
 			var types = watcher.getTypes();
 			_.forEach(types, (type:string) => {
 				switch (type) {
-					case "replicationcontrollers":
+					case WatchTypes.REPLICATION_CONTROLLERS:
 						$scope.replicationControllers = populateKeys(objects['replicationcontrollers']);
 					break;
-					case "services":
+					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
 						angular.forEach(items, (item) => {
               item.proxyUrl = kubernetesProxyUrlForService(KubernetesApiURL, item);
             });
 						$scope[type] = items;
 						break;
+          case WatchTypes.ROUTES:
+          case WatchTypes.TEMPLATES:
+          case WatchTypes.BUILDS:
+          case WatchTypes.BUILD_CONFIGS:
+          case WatchTypes.IMAGE_STREAMS:
+            $scope.isOpenShift = true;
 					default:
 						$scope[type] = populateKeys(objects[type]);
 				}
@@ -545,23 +551,8 @@ module Kubernetes {
 
 			$scope.maybeInit();
 
-      // TODO let's replace these with ng-resource objects
-      var url = routesRestURL();
-      $http.get(url).
-        success(function (data, status, headers, config) {
-          if (data && data.items) {
-            $scope.routes = data.items;
-            $scope.isOpenShift = true;
-            $scope.maybeInit();
-          } else {
-            log.warn("No routes loaded: " + angular.toJson(data, true));
-          }
-        }).
-        error(function (data, status, headers, config) {
-          log.warn("Failed to load " + url + " " + data + " " + status);
-        });
-
-      url = templatesRestURL();
+      // TODO this can come out once we can watch templates
+      var url = templatesRestURL();
       $http.get(url).
         success(function (data, status, headers, config) {
           if (data) {

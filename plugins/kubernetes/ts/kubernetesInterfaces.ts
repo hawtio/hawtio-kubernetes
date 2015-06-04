@@ -31,7 +31,6 @@ module Kubernetes {
 		public static get NAMESPACES():string { return "namespaces"; }
 		public static get ENDPOINTS():string { return "endpoints"; }
 		public static get PODS():string { return "pods"; }
-		public static get NODES():string { return "nodes"; }
 		public static get REPLICATION_CONTROLLERS():string { return "replicationcontrollers"; }
 		public static get SERVICES():string { return "services"; }
 		public static get TEMPLATES():string { return "templates"; }
@@ -45,6 +44,32 @@ module Kubernetes {
 		public static get ROLE_BINDINGS():string { return "rolebindings"; }
 		public static get ROLES():string { return "roles"; }
 	}
+
+  export class NamespacedTypes {
+    public static get k8sTypes():Array<string> {
+      return [
+        WatchTypes.ENDPOINTS,
+        WatchTypes.PODS,
+        WatchTypes.REPLICATION_CONTROLLERS,
+        WatchTypes.SERVICES
+      ];
+    }
+    public static get osTypes():Array<string> {
+      return [
+        WatchTypes.TEMPLATES,
+        WatchTypes.BUILD_CONFIGS,
+        WatchTypes.ROUTES,
+        WatchTypes.BUILDS,
+        WatchTypes.BUILD_CONFIGS,
+        WatchTypes.DEPLOYMENT_CONFIGS,
+        WatchTypes.IMAGE_STREAMS,
+        WatchTypes.POLICIES,
+        WatchTypes.POLICY_BINDINGS,
+        //WatchTypes.ROLE_BINDINGS,
+        //WatchTypes.ROLES
+      ];
+    }
+  }
 	
 	export class WatchActions {
 		public static get ANY():string { return "*"; }

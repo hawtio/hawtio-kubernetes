@@ -24,7 +24,6 @@ declare module Kubernetes {
         static NAMESPACES: string;
         static ENDPOINTS: string;
         static PODS: string;
-        static NODES: string;
         static REPLICATION_CONTROLLERS: string;
         static SERVICES: string;
         static TEMPLATES: string;
@@ -37,6 +36,10 @@ declare module Kubernetes {
         static POLICY_BINDINGS: string;
         static ROLE_BINDINGS: string;
         static ROLES: string;
+    }
+    class NamespacedTypes {
+        static k8sTypes: Array<string>;
+        static osTypes: Array<string>;
     }
     class WatchActions {
         static ANY: string;

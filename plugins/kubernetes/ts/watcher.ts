@@ -6,21 +6,8 @@ module Kubernetes {
 
 	var namespaceType = WatchTypes.NAMESPACES;
 
-	var types = [WatchTypes.ENDPOINTS,
-							 WatchTypes.PODS,
-							 WatchTypes.REPLICATION_CONTROLLERS,
-							 WatchTypes.SERVICES];
-							 //WatchTypes.NODES];
-
-  var osTypes  = [
-    WatchTypes.TEMPLATES,
-    WatchTypes.BUILD_CONFIGS,
-    WatchTypes.ROUTES,
-    WatchTypes.BUILDS,
-    WatchTypes.BUILD_CONFIGS,
-    WatchTypes.DEPLOYMENT_CONFIGS,
-    WatchTypes.IMAGE_STREAMS,
-  ];
+	var k8sTypes = NamespacedTypes.k8sTypes;
+  var osTypes  = NamespacedTypes.osTypes;
 
   var baseWatch = <any> {
 			url: <string> undefined,
@@ -41,7 +28,7 @@ module Kubernetes {
 	});
 
 	var watches = <any> {};
-	_.forEach(types, (type) => {
+	_.forEach(k8sTypes, (type) => {
 		watches[type] = _.assign(_.cloneDeep(baseWatch), {
       prefix: kubernetesApiPrefix()
     });	
@@ -269,7 +256,7 @@ module Kubernetes {
 		}
 
 		self.getTypes = () => {
-			return types.concat([WatchTypes.NAMESPACES]);
+			return k8sTypes.concat([WatchTypes.NAMESPACES]).concat(osTypes);
 		}
 
 		self.getObjectMap = (type: string) => {
