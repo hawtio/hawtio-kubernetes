@@ -32,7 +32,6 @@ module Kubernetes {
   export var fabric8ForgeServiceName = "fabric8-forge";
   export var gogsServiceName = "gogs";
 
-
   export function kubernetesNamespacePath() {
     var ns = currentKubernetesNamespace();
     if (ns) {
@@ -68,6 +67,19 @@ module Kubernetes {
 
   export function openshiftApiPrefix() {
     return UrlHelpers.join(osApiPrefix(), defaultOSApiVersion);
+  }
+
+  export function prefixForType(type:string) {
+    if (type === WatchTypes.NAMESPACES) {
+      return kubernetesApiPrefix();        
+    }
+    if (_.any(NamespacedTypes.k8sTypes, (t) => t === type)) {
+      return kubernetesApiPrefix();        
+    }
+    if (_.any(NamespacedTypes.osTypes, (t) => t === type)) {
+      return openshiftApiPrefix();
+    }
+    return null;
   }
 
   export function kubernetesApiUrl() {

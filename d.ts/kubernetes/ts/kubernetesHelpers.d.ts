@@ -27,6 +27,7 @@ declare module Kubernetes {
     function masterApiUrl(): string;
     function kubernetesApiPrefix(): string;
     function openshiftApiPrefix(): string;
+    function prefixForType(type: string): string;
     function kubernetesApiUrl(): string;
     function openshiftApiUrl(): string;
     function imageRepositoriesRestURL(): string;
