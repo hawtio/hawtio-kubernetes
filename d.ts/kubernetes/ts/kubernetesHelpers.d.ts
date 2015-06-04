@@ -30,6 +30,7 @@ declare module Kubernetes {
     function prefixForType(type: string): string;
     function kubernetesApiUrl(): string;
     function openshiftApiUrl(): string;
+    function createResource(thing: string, urlTemplate: string, $resource: ng.resource.IResourceService): ng.resource.IResourceClass;
     function imageRepositoriesRestURL(): string;
     function deploymentConfigsRestURL(): string;
     function buildsLogsRestURL(): string;
