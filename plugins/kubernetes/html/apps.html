@@ -197,7 +197,16 @@
                          css-class="input-xxlarge"
                          placeholder="Filter apps..."></hawtio-filter>
         </span>
-        <button ng-show="model.apps.length"
+        <span ng-hide="id" class="pull-right">
+          <div class="btn-group">
+            <a class="btn" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
+              <i class="fa fa-list"></i></a>
+            <a class="btn" ng-disabled="mode == 'detail'" href="" ng-click="mode = 'detail'">
+              <i class="fa fa-table"></i></a>
+          </div>
+        </span>
+        <span class="pull-right">&nbsp;</span>
+        <button ng-show="model.apps.length && mode == 'list'"
                 class="btn btn-danger pull-right"
                 ng-disabled="!id && tableConfig.selectedItems.length == 0"
                 ng-click="deletePrompt(id || tableConfig.selectedItems)">
@@ -214,16 +223,6 @@
         <button ng-show="id"
                 class="btn btn-primary pull-right"
                 ng-click="id = undefined"><i class="fa fa-list"></i></button>
-
-        <span class="pull-right">&nbsp;</span>
-        <span ng-hide="id" class="pull-right">
-          <div class="btn-group">
-            <a class="btn btn-sm" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
-              <i class="fa fa-list"></i></a>
-            <a class="btn btn-sm" ng-disabled="mode == 'detail'" href="" ng-click="mode = 'detail'">
-              <i class="fa fa-table"></i></a>
-          </div>
-        </span>
       </div>
     </div>
     <div class="row">

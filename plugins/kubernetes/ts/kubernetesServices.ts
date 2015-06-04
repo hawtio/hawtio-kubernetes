@@ -25,7 +25,7 @@ module Kubernetes {
 
   _module.factory('KubernetesApiURL', () => kubernetesApiUrl());
 
-  function createResource(thing:string, urlTemplate:string, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL: string) {
+  function createResource(thing:string, urlTemplate:string, $resource: ng.resource.IResourceService) {
     var url = UrlHelpers.join(kubernetesApiUrl(), urlTemplate);
     log.debug("Url for ", thing, ": ", url);
     var resource = $resource(url, null, {
@@ -44,20 +44,24 @@ module Kubernetes {
     return resource;
   }
 
-  _module.factory('KubernetesVersion', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    return createResource('pods', '/version', $rootScope, $resource, KubernetesApiURL);
+  // TODO we'll get rid of this...
+  _module.factory('KubernetesVersion', [() => {
+    return {
+      query: () => null
+    }
   }]);
 
-  _module.factory('KubernetesPods', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    return createResource('pods', 'namespaces/:namespace/pods/:id', $rootScope, $resource, KubernetesApiURL);
+  // TODO let's move these into KubernetesModel so controllers don't have to inject them separately
+  _module.factory('KubernetesPods', ['$resource', ($resource: ng.resource.IResourceService) => {
+    return createResource('pods', 'namespaces/:namespace/pods/:id', $resource);
   }]);
 
-  _module.factory('KubernetesReplicationControllers', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    return createResource('replication controllers', 'namespaces/:namespace/replicationcontrollers/:id', $rootScope, $resource, KubernetesApiURL);
+  _module.factory('KubernetesReplicationControllers', ['$resource', ($resource: ng.resource.IResourceService) => {
+    return createResource('replication controllers', 'namespaces/:namespace/replicationcontrollers/:id', $resource);
   }]);
 
-  _module.factory('KubernetesServices', ['$q', '$rootScope', '$resource', 'KubernetesApiURL', ($q:ng.IQService, $rootScope: ng.IRootScopeService, $resource: ng.resource.IResourceService, KubernetesApiURL) => {
-    return createResource('services', 'namespaces/:namespace/services/:id', $rootScope, $resource, KubernetesApiURL);
+  _module.factory('KubernetesServices', ['$resource', ($resource: ng.resource.IResourceService) => {
+    return createResource('services', 'namespaces/:namespace/services/:id', $resource);
   }]);
 
   _module.factory('KubernetesBuilds', ['restmod', (restmod) => {

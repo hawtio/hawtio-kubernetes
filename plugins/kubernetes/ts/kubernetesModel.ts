@@ -519,11 +519,10 @@ module Kubernetes {
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
    */
-  _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'KubernetesServices', 'KubernetesReplicationControllers', 'KubernetesPods', 'WatcherService', ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, KubernetesServices, KubernetesReplicationControllers, KubernetesPods, watcher:WatcherService) => {
+  _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'WatcherService', '$location', ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, watcher:WatcherService, $location:ng.ILocationService) => {
 
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
-    var lastJson = "";
 
 		watcher.registerListener((objects:ObjectMap) => {
 			var types = watcher.getTypes();
@@ -543,42 +542,10 @@ module Kubernetes {
 						$scope[type] = populateKeys(objects[type]);
 				}
 			});
-			$scope.maybeInit();
-      // lets see if we can find the app-library service
-      var hasAppLibrary = false;
-      angular.forEach($scope.services, (service) => {
-        var metadata = service.metadata;
-        if (metadata) {
-          var name = metadata.name;
-          if (name && name === "app-library") {
-            hasAppLibrary = true;
-          }
-        }
-      });
-      if (hasAppLibrary) {
-        var appsUrl = AppLibraryURL + "/apps";
-        console.log("has app library so lets query: " + appsUrl);
-        var etags = $scope.resourceVersions["appLibrary"];
-        $http.get(appsUrl, {
-          headers: {
-            "If-None-Match": etags
-          }
-        }).
-          success(function (data, status, headers, config) {
-            if (angular.isArray(data) && status === 200) {
-              var newETags = headers("etag") || headers("ETag");
-              if (!newETags || newETags !== etags) {
-                if (newETags) {
-                  $scope.resourceVersions["appLibrary"] = newETags;
-                }
-                $scope.appInfos = data;
-              }
-            }
-          }).
-          error(function (data, status, headers, config) {
-          });
-      }
 
+			$scope.maybeInit();
+
+      // TODO let's replace these with ng-resource objects
       var url = routesRestURL();
       $http.get(url).
         success(function (data, status, headers, config) {
@@ -612,13 +579,9 @@ module Kubernetes {
     // set the selected namespace if set in the location bar
     // otherwise use whatever previously selected namespace is
     // available
-    var injector = HawtioCore.injector;
-    if (injector) {
-      var $location = injector.get('$location');
-      var search = $location.search();
-      if ('namespace' in search) {
-        watcher.setNamespace(search['namespace']);
-      }
+    var search = $location.search();
+    if ('namespace' in search) {
+      watcher.setNamespace(search['namespace']);
     }
 
     function selectPods(pods, namespace, labels) {
