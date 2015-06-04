@@ -13,7 +13,7 @@ module Project {
   }]);
 
   _module.factory('ForgeApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
-    return "kubernetes/api/" + Kubernetes.defaultApiVersion + "/proxy/services/fabric8-forge/api/forge";
+    return Kubernetes.kubernetesApiUrl() + "/proxy" + Kubernetes.kubernetesNamespacePath() + "/services/fabric8-forge/api/forge";
   }]);
 
 
