@@ -147,7 +147,7 @@ module Kubernetes {
 
     var repos = builder.id('kube-repos')
                       .href(() => "/forge/repos")
-                      .isValid(() => ServiceRegistry.hasService("fabric8-forge") && ServiceRegistry.hasService("gogs-http-service") && !Core.isRemoteConnection())
+                      .isValid(() => ServiceRegistry.hasService(fabric8ForgeServiceName) && ServiceRegistry.hasService(gogsServiceName) && !Core.isRemoteConnection())
                       .title(() => 'Repositories')
                       .build();
 

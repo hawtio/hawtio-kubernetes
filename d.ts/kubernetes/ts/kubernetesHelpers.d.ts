@@ -18,6 +18,9 @@ declare module Kubernetes {
     var labelFilterTextSeparator: string;
     var defaultNamespace: string;
     var appSuffix: string;
+    var kibanaServiceName: string;
+    var fabric8ForgeServiceName: string;
+    var gogsServiceName: string;
     function kubernetesNamespacePath(): string;
     function apiPrefix(): string;
     function osApiPrefix(): string;

@@ -45,14 +45,14 @@
               class="btn btn-primary pull-right"
               ng-click="id = undefined"><i class="fa fa-list"></i></button>
       <span class="pull-right">&nbsp;</span>
-      <button ng-show="hasService('kibana-service')"
+      <button ng-show="hasServiceKibana()"
               class="btn btn-primary pull-right"
               title="View the logs for the selected pods"
               ng-disabled="!id && tableConfig.selectedItems.length == 0"
               ng-click="openLogs()">
         <i class="fa fa-file-text-o"></i> Logs
       </button>
-      <span ng-show="hasService('kibana-service')" class="pull-right">&nbsp;</span>
+      <span ng-show="hasServiceKibana()" class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
          title="Create a new pod"
               href="/kubernetes/namespace/{{namespace}}/podCreate"><i class="fa fa-plus"></i> Create</a>

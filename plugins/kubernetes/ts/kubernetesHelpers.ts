@@ -27,6 +27,12 @@ module Kubernetes {
 
   export var appSuffix = ".app";
 
+  // kubernetes service names
+  export var kibanaServiceName = "kibana";
+  export var fabric8ForgeServiceName = "fabric8-forge";
+  export var gogsServiceName = "gogs";
+
+
   export function kubernetesNamespacePath() {
     var ns = currentKubernetesNamespace();
     if (ns) {
@@ -198,12 +204,21 @@ module Kubernetes {
   export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) {
 
     var injector = HawtioCore.injector;
-    if (injector) {
-      var ServiceRegistry = injector.get("ServiceRegistry");
-      if (ServiceRegistry) {
-        $scope.hasService = (name) => ServiceRegistry.hasService(name);
+
+    function hasService(name) {
+      if (injector) {
+        var ServiceRegistry = injector.get("ServiceRegistry");
+        if (ServiceRegistry) {
+          return ServiceRegistry.hasService(name);
+        }
       }
+      return false;
     }
+
+    $scope.hasServiceKibana = () => hasService(kibanaServiceName);
+    $scope.hasServiceGogs = () => hasService(gogsServiceName);
+    $scope.hasServiceForge = () => hasService(fabric8ForgeServiceName);
+
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
     $scope.forgeEnabled = isForgeEnabled();
 
@@ -592,7 +607,7 @@ module Kubernetes {
    * Returns a link to the kibana logs web application
    */
   export function kibanaLogsLink(ServiceRegistry) {
-    var link = ServiceRegistry.serviceLink("kibana-service");
+    var link = ServiceRegistry.serviceLink(kibanaServiceName);
     if (link) {
       if (!link.endsWith("/")) {
         link += "/";

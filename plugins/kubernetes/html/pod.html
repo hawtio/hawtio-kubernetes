@@ -14,8 +14,8 @@
 
       <a class="btn btn-default pull-right"
               href="/kubernetes/pods?namespace={{item.metadata.namespace}}"><i class="fa fa-list"></i></a>
-      <span ng-show="hasService('kibana-service')" class="pull-right">&nbsp;</span>
-      <button ng-show="hasService('kibana-service')"
+      <span ng-show="hasServiceKibana()" class="pull-right">&nbsp;</span>
+      <button ng-show="hasServiceKibana()"
               class="btn btn-default pull-right"
               title="View the logs for this pod"
               ng-click="openLogs()">
