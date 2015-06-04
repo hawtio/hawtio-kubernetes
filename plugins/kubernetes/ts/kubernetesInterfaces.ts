@@ -35,6 +35,15 @@ module Kubernetes {
 		public static get REPLICATION_CONTROLLERS():string { return "replicationcontrollers"; }
 		public static get SERVICES():string { return "services"; }
 		public static get TEMPLATES():string { return "templates"; }
+		public static get ROUTES():string { return "routes"; }
+		public static get BUILD_CONFIGS():string { return "buildconfigs"; }
+		public static get BUILDS():string { return "builds"; }
+		public static get DEPLOYMENT_CONFIGS():string { return "deploymentconfigs"; }
+		public static get IMAGE_STREAMS():string { return "imagestreams"; }
+		public static get POLICIES():string { return "policies"; }
+		public static get POLICY_BINDINGS():string { return "policybindings"; }
+		public static get ROLE_BINDINGS():string { return "rolebindings"; }
+		public static get ROLES():string { return "roles"; }
 	}
 	
 	export class WatchActions {

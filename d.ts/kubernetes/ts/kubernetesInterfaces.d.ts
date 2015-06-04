@@ -28,6 +28,15 @@ declare module Kubernetes {
         static REPLICATION_CONTROLLERS: string;
         static SERVICES: string;
         static TEMPLATES: string;
+        static ROUTES: string;
+        static BUILD_CONFIGS: string;
+        static BUILDS: string;
+        static DEPLOYMENT_CONFIGS: string;
+        static IMAGE_STREAMS: string;
+        static POLICIES: string;
+        static POLICY_BINDINGS: string;
+        static ROLE_BINDINGS: string;
+        static ROLES: string;
     }
     class WatchActions {
         static ANY: string;

@@ -13,8 +13,13 @@ module Kubernetes {
 							 //WatchTypes.NODES];
 
   var osTypes  = [
-    // TODO Dpesn't seem like openshift supports UPGRADEing to websockets currently
-    // WatchTypes.TEMPLATES
+    WatchTypes.TEMPLATES,
+    WatchTypes.BUILD_CONFIGS,
+    WatchTypes.ROUTES,
+    WatchTypes.BUILDS,
+    WatchTypes.BUILD_CONFIGS,
+    WatchTypes.DEPLOYMENT_CONFIGS,
+    WatchTypes.IMAGE_STREAMS,
   ];
 
   var baseWatch = <any> {
