@@ -35,7 +35,7 @@ module Kubernetes {
    * The object which keeps track of all the pods, replication controllers, services and their associations
    */
   export class KubernetesModelService {
-    public kubernetes = null;
+    public kubernetes = <KubernetesState> null;
     public apps = [];
     public services = [];
     public replicationControllers = [];
@@ -563,22 +563,11 @@ module Kubernetes {
 						$scope[type] = populateKeys(objects[type]);
 				}
 			});
-
 			$scope.maybeInit();
-
       // TODO this can come out once we can watch templates
-      var url = templatesRestURL();
-      $http.get(url).
-        success(function (data, status, headers, config) {
-          if (data) {
-            $scope.templates = data.items;
-            $scope.isOpenShift = true;
-            $scope.maybeInit();
-          }
-        }).
-        error(function (data, status, headers, config) {
-          log.warn("Failed to load " + url + " " + data + " " + status);
-        });
+      $scope['templatesResource'].query((templates) => {
+        $scope.templates = templates.items;
+      });
 			Core.$apply($rootScope);
 		});
 

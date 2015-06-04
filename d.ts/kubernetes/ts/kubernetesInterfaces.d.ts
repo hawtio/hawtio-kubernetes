@@ -20,6 +20,10 @@ declare module Kubernetes {
         api?: ApiLocations;
         auth?: OAuthConfig;
     }
+    interface KubernetesState {
+        namespaces: Array<string>;
+        selectedNamespace: string;
+    }
     class WatchTypes {
         static NAMESPACES: string;
         static ENDPOINTS: string;

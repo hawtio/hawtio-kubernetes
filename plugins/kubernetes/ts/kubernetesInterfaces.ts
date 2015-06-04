@@ -27,6 +27,11 @@ module Kubernetes {
     auth?: OAuthConfig;
   }
 
+  export interface KubernetesState {
+    namespaces: Array<string>;
+    selectedNamespace: string;
+  }
+
 	export class WatchTypes {
 		public static get NAMESPACES():string { return "namespaces"; }
 		public static get ENDPOINTS():string { return "endpoints"; }

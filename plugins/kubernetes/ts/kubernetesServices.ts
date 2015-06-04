@@ -3,7 +3,7 @@
 module Kubernetes {
 
   // facade this to the watcher service
-  class KubernetesState {
+  class KubernetesStateImpl implements KubernetesState {
     constructor(private watcher:WatcherService) {
     }
     get namespaces():Array<string> {
@@ -20,7 +20,7 @@ module Kubernetes {
   }
 
   _module.factory('KubernetesState', ['WatcherService', (watcher:WatcherService) => {
-    return new KubernetesState(watcher);
+    return new KubernetesStateImpl(watcher);
   }]);
 
   // TODO this doesn't need to be a service really

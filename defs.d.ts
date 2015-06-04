@@ -38,4 +38,5 @@
 /// <reference path="d.ts/kubernetes/ts/serviceRegistry.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/services.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/templates.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/watcher.d.ts"/>

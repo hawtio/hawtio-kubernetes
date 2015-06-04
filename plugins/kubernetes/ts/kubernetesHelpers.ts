@@ -254,6 +254,9 @@ module Kubernetes {
     $scope.hasServiceKibana = () => hasService(kibanaServiceName);
     $scope.hasServiceGogs = () => hasService(gogsServiceName);
     $scope.hasServiceForge = () => hasService(fabric8ForgeServiceName);
+    $scope.viewTemplates = () => {
+      $location.path('/kubernetes/templates');
+    }
 
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
     $scope.forgeEnabled = isForgeEnabled();
