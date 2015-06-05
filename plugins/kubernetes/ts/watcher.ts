@@ -18,7 +18,8 @@ module Kubernetes {
 			onAddActions: <Array<(obj:any) => void>> [],
 			onModifiedActions: <Array<(obj:any) => void>> [],
 			onDeletedActions: <Array<(obj:any) => void>> [],
-			socket: <WebSocket> undefined
+			socket: <WebSocket> undefined,
+      connected: false
   }
 
 	var namespaceWatch = <any> _.assign(_.cloneDeep(baseWatch), {
@@ -76,6 +77,7 @@ module Kubernetes {
 			var onOpenInternal = (event) => {
 				watch.retries = 0;
 				watch.connectTime = new Date().getTime();
+        watch.connected = true;
 				onOpen(event);
 			};
 			var onMessageInternal = (event) => {
@@ -123,6 +125,7 @@ module Kubernetes {
 				Core.$apply($scope);
 			};
 			var onCloseInternal = (event) => {
+        watch.connected = false;
 				if (watch.retries < 3 && watch.connectTime && new Date().getTime() - watch.connectTime > 5000) {
 					setTimeout(() => {
 						watch.retries = watch.retries + 1;
@@ -284,10 +287,12 @@ module Kubernetes {
 		self.listeners = <Array<(ObjectMap) => void>> [];
 
 		var updateFunction = () => {
-				log.debug("Objects changed, firing listeners");
+      log.debug("Objects changed, firing listeners");
 			var objects = <ObjectMap>{};
 			_.forEach(self.getTypes(), (type:string) => {
-				objects[type] = self.getObjects(type);
+        if (watches[type] && watches[type].connected) {
+          objects[type] = self.getObjects(type);
+        }
 			});
 			_.forEach(self.listeners, (listener:(ObjectMap) => void) => {
 				listener(objects);

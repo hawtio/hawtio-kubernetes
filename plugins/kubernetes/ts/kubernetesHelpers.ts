@@ -94,7 +94,8 @@ module Kubernetes {
     var kind = getKind(object);
     if (kind === "List") {
       log.debug("Object is a list, deploying all objects");
-      _.forEach(object.objects, (obj) => {
+      _.forEach(object.items, (obj) => {
+        log.debug("Deploying: ", obj);
         updateOrCreateObject(obj, KubernetesModel, success, error);
       });
       return;
@@ -114,12 +115,31 @@ module Kubernetes {
       log.debug("Object has no name: ", object);
       return;
     }
-    if (_.any(KubernetesModel[kind], (n) => n === name)) {
+
+    var isUpdate = _.any(KubernetesModel[kind], (n) => n === name)
+    var action = isUpdate ? "Modified" : "Added";
+
+    var successInternal = (data) => {
+      log.debug(action, data);
+      if (!isUpdate) {
+        KubernetesModel[kind].push(data);
+      }
+      if (success) {
+        success(data);
+      }
+    };
+    var errorInternal = (err) => {
+      log.debug("Failed to add/modify object: ", object, " error: ", err);
+      if (error) {
+        error(err);
+      }
+    }
+    if (isUpdate) {
       log.debug("Object already exists, updating...");
-      resource.save({ id: name }, object, success, error);
+      resource.save({ id: name }, object, successInternal, errorInternal);
     } else {
       log.debug("Object doesn't exist, creating...");
-      resource.create({}, object, success, error);
+      resource.create({}, object, successInternal, errorInternal);
     }
   }
 
@@ -129,23 +149,23 @@ module Kubernetes {
       log.debug("Invalid type given: ", thing);
       return null;
     }
+
+    var params = <any> {
+      namespace: currentKubernetesNamespace
+    }
+    if (thing === "namespaces") {
+      params = {};
+    }
+
     var url = UrlHelpers.join(masterApiUrl(), prefix, urlTemplate);
     log.debug("Url for ", thing, ": ", url);
     var resource = $resource(url, null, {
-      query: { method: 'GET', isArray: false, params: {
-        namespace: currentKubernetesNamespace, 
-      }},
-      create: { method: 'POST', params: { 
-        namespace: currentKubernetesNamespace, 
-      }},
-      save: { method: 'PUT', params: { 
-        id: '@id', 
-        namespace: currentKubernetesNamespace, 
-      }},
-      delete: { method: 'DELETE', params: {
-        id: '@id', 
-        namespace: currentKubernetesNamespace, 
-      }}
+      query: { method: 'GET', isArray: false, params: params},
+      create: { method: 'POST', params: params},
+      save: { method: 'PUT', params: params},
+      delete: { method: 'DELETE', params: _.extend({
+        id: '@id'
+      }, params)}
     });
     return resource;
   }

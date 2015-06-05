@@ -536,7 +536,7 @@ module Kubernetes {
       var urlTemplate = '';
       switch (type) {
         case WatchTypes.NAMESPACES:
-          urlTemplate = UrlHelpers.join('namespaces:/namespace');
+          urlTemplate = UrlHelpers.join('namespaces');
           break;
         default: 
           urlTemplate = UrlHelpers.join('namespaces/:namespace', type, ':id');
@@ -548,6 +548,16 @@ module Kubernetes {
 		watcher.registerListener((objects:ObjectMap) => {
 			var types = watcher.getTypes();
 			_.forEach(types, (type:string) => {
+        // work around any issues creating watches for a given type
+        if (!(type in objects)) {
+          // this log statement may be a bit alarming
+          //log.debug("No ", type, " in object map, falling back to a regular GET");
+          $scope[type + 'Resource'].query((data) => {
+            $scope[type] = populateKeys(data.items);
+            $scope.maybeInit();
+          });
+          return;
+        }
 				switch (type) {
 					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
