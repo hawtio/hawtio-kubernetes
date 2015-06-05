@@ -25,38 +25,15 @@ module Kubernetes {
               log.debug("Failed to read dropped file ", file._file.name, ": ", err);
               return;
             }
-            log.debug("obj: ", obj);
-            var kind:string = obj.kind.toLowerCase().pluralize();
-            // little tweak, as we use replicationControllers locally
-            if (kind !== 'replicationcontrollers' && !(kind in model)) {
-              log.debug("Kind ", kind, " not found in model");
-              return;
-            }
-            var localList = model[kind];
-            if (kind === 'replicationcontrollers') {
-              localList = model['replicationControllers'];
-            }
-            var name:string = obj.metadata.name;
-            var url = UrlHelpers.join(kubernetesApiUrl(), kubernetesNamespacePath(), kind);
-            if (kind === 'templates') {
-              var url = UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), kind);
-            }
-            var method = 'POST';
-            if (_.any(localList, (obj:any) => obj.metadata.name === name)) {
-              method = 'PUT';
-              url = UrlHelpers.join(url, name);
-            }
-            log.debug("url: ", url);
-            $http({
-              url: url,
-              method: method,
-              data: obj
-            }).success((response) => {
-              log.debug("got back response: ", response);
-            }).error((response) => {
-              log.debug("got back error: ", response);
-            })
-            //uploader.uploadItem(file);
+            log.debug("Dropped object: ", obj);
+            var kind:string = getKind(obj);
+            if (kind === 'List') {
+              _.forEach(obj.items, (obj) => {
+                updateOrCreateObject(obj, model);
+              });
+            } else {
+              updateOrCreateObject(obj, model);
+            } 
           }
         }
         reader.readAsText(file._file);

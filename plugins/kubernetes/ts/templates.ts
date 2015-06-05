@@ -17,7 +17,21 @@ module Kubernetes {
       return _.find(_.keys(annotations), (k) => _.endsWith(k, key));
     }
 
-    $scope.cancel = () => $location.path('/kubernetes/apps');
+    $scope.cancel = () => {
+      if ($scope.formConfig) {
+        delete $scope.formConfig;
+        delete $scope.entity;
+        $scope.objects = undefined;
+        return;
+      }
+      $location.path('/kubernetes/apps');
+    }
+
+    $scope.$watch('model.templates.length', (newValue) => {
+      if (newValue === 0) {
+        $location.path('/kubernetes/apps');
+      }
+    });
 
     $scope.filterTemplates = (template) => {
       if (Core.isBlank($scope.filterText)) {
@@ -35,7 +49,55 @@ module Kubernetes {
     }
 
     $scope.deployTemplate = (template) => {
-      log.debug("I don't work yet");
+      if (!template.parameters || template.parameters.length === 0) {
+        log.debug("No parameters required, deploying objects");
+        applyObjects(template.objects);
+        return;
+      }
+      log.debug("Template parameters: ", template.parameters);
+      log.debug("Template objects: ", template.objects);
+      var formConfig = {
+        style: HawtioForms.FormStyle.STANDARD,
+        hideLegend: true,
+        properties: <any> {}
+      };
+      var params = template.parameters;
+      _.forEach(params, (param:any) => {
+        var property = <any> {};
+        property.label = param.name.titleize();
+        property.description = param.description;
+        property.default = param.value;
+        // TODO, do parameters support types?
+        property.type = 'string';
+        formConfig.properties[param.name] = property;
+      });
+      $scope.entity = <any> {};
+      $scope.formConfig = formConfig;
+      $scope.objects = template.objects;
+      log.debug("Form config: ", formConfig);
+    }
+
+    function substitute(str, data) {
+      return str.replace(/\${\w*}/g, (match) => {
+        var key = match.replace(/\${/, '').replace(/}/, '').trim();
+        return data[key] || match;
+      });
+    }
+
+    $scope.substituteAndDeployTemplate = () => {
+      var objects = $scope.objects;
+      var objectsText = angular.toJson(objects, true);
+      objectsText = substitute(objectsText, $scope.entity);
+      objects = angular.fromJson(objectsText);
+      applyObjects(objects);
+    }
+
+    function applyObjects(objects) {
+      _.forEach(objects, (object:any) => {
+        log.debug("Object: ", object);
+        updateOrCreateObject(object, KubernetesModel);
+      });
+      $location.path('/kubernetes/apps');
     }
 
     $scope.deleteTemplate = (template) => {

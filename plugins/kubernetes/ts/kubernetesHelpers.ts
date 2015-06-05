@@ -90,7 +90,33 @@ module Kubernetes {
     return UrlHelpers.join(masterApiUrl(), openshiftApiPrefix());
   }
 
-  export function createResource(thing:string, urlTemplate:string, $resource: ng.resource.IResourceService) {
+  export function updateOrCreateObject(object, KubernetesModel, success?: (data) => void, error?: (error) => void) {
+    var kind = getKind(object);
+    if (!kind) {
+      log.debug("Object: ", object, " has no object type");
+      return;
+    }
+    kind = kind.toLowerCase().pluralize();
+    var resource = KubernetesModel[kind + 'Resource'];
+    if (!resource) {
+      log.debug("Unable to find resource for kind: ", kind);
+      return;
+    }
+    var name = getName(object);
+    if (!name) {
+      log.debug("Object has no name: ", object);
+      return;
+    }
+    if (_.any(KubernetesModel[kind], (n) => n === name)) {
+      log.debug("Object already exists, updating...");
+      resource.save({ id: name }, object, success, error);
+    } else {
+      log.debug("Object doesn't exist, creating...");
+      resource.create({}, object, success, error);
+    }
+  }
+
+  export function createResource(thing:string, urlTemplate:string, $resource: ng.resource.IResourceService, KubernetesModel) {
     var prefix = prefixForType(thing);
     if (!prefix) {
       log.debug("Invalid type given: ", thing);
@@ -100,6 +126,9 @@ module Kubernetes {
     log.debug("Url for ", thing, ": ", url);
     var resource = $resource(url, null, {
       query: { method: 'GET', isArray: false, params: {
+        namespace: currentKubernetesNamespace, 
+      }},
+      create: { method: 'POST', params: { 
         namespace: currentKubernetesNamespace, 
       }},
       save: { method: 'PUT', params: { 

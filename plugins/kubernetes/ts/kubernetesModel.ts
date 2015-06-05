@@ -38,7 +38,13 @@ module Kubernetes {
     public kubernetes = <KubernetesState> null;
     public apps = [];
     public services = [];
-    public replicationControllers = [];
+    public replicationcontrollers = [];
+    public get replicationControllers():Array<any> {
+      return this.replicationcontrollers;
+    }
+    public set replicationControllers(replicationControllers:Array<any>) {
+      this.replicationcontrollers = replicationControllers;
+    }
     public pods = [];
     public hosts = [];
     public get namespaces():Array<string> {
@@ -535,7 +541,7 @@ module Kubernetes {
         default: 
           urlTemplate = UrlHelpers.join('namespaces/:namespace', type, ':id');
       }
-      $scope[type + 'Resource'] = createResource(type, urlTemplate, $resource);
+      $scope[type + 'Resource'] = createResource(type, urlTemplate, $resource, $scope);
     });
 
     // register for all updates on objects
@@ -543,9 +549,6 @@ module Kubernetes {
 			var types = watcher.getTypes();
 			_.forEach(types, (type:string) => {
 				switch (type) {
-					case WatchTypes.REPLICATION_CONTROLLERS:
-						$scope.replicationControllers = populateKeys(objects['replicationcontrollers']);
-					break;
 					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
 						angular.forEach(items, (item) => {
@@ -564,11 +567,7 @@ module Kubernetes {
 				}
 			});
 			$scope.maybeInit();
-      // TODO this can come out once we can watch templates
-      $scope['templatesResource'].query((templates) => {
-        $scope.templates = templates.items;
-      });
-			Core.$apply($rootScope);
+      Core.$apply($rootScope);
 		});
 
     // set the selected namespace if set in the location bar

@@ -8,7 +8,8 @@ declare module Kubernetes {
         kubernetes: KubernetesState;
         apps: any[];
         services: any[];
-        replicationControllers: any[];
+        replicationcontrollers: any[];
+        replicationControllers: Array<any>;
         pods: any[];
         hosts: any[];
         namespaces: Array<string>;
