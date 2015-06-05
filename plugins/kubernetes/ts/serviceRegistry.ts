@@ -60,7 +60,7 @@ module Kubernetes {
       return serviceLinkUrl(service);
     }
 
-    protected getModel():KubernetesModelService {
+    private getModel():KubernetesModelService {
       var answer = this.model;
       // lets allow lazy load so we can be invoked before the injector has been created
       if (!answer) {

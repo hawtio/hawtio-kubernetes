@@ -5,7 +5,7 @@ declare module Kubernetes {
      * The object which keeps track of all the pods, replication controllers, services and their associations
      */
     class KubernetesModelService {
-        kubernetes: any;
+        kubernetes: KubernetesState;
         apps: any[];
         services: any[];
         replicationControllers: any[];

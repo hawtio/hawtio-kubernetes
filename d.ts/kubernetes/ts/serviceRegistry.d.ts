@@ -27,6 +27,6 @@ declare module Kubernetes {
          * @return {null}
          */
         serviceLink(serviceName: string): string;
-        protected getModel(): KubernetesModelService;
+        private getModel();
     }
 }

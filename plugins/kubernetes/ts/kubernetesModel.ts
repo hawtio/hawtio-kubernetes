@@ -35,7 +35,7 @@ module Kubernetes {
    * The object which keeps track of all the pods, replication controllers, services and their associations
    */
   export class KubernetesModelService {
-    public kubernetes = null;
+    public kubernetes = <KubernetesState> null;
     public apps = [];
     public services = [];
     public replicationControllers = [];
@@ -519,11 +519,26 @@ module Kubernetes {
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
    */
-  _module.factory('KubernetesModel', ['$rootScope', '$http', 'AppLibraryURL', 'KubernetesApiURL', 'KubernetesState', 'WatcherService', '$location', ($rootScope, $http, AppLibraryURL, KubernetesApiURL, KubernetesState, watcher:WatcherService, $location:ng.ILocationService) => {
+  _module.factory('KubernetesModel', ['$rootScope', '$http', 'KubernetesApiURL', 'KubernetesState', 'WatcherService', '$location', '$resource', ($rootScope, $http, AppLibraryURL, KubernetesState, watcher:WatcherService, $location:ng.ILocationService, $resource:ng.resource.IResourceService) => {
 
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
 
+    // create all of our resource classes
+    var typeNames = watcher.getTypes();
+    _.forEach(typeNames, (type:string) => {
+      var urlTemplate = '';
+      switch (type) {
+        case WatchTypes.NAMESPACES:
+          urlTemplate = UrlHelpers.join('namespaces:/namespace');
+          break;
+        default: 
+          urlTemplate = UrlHelpers.join('namespaces/:namespace', type, ':id');
+      }
+      $scope[type + 'Resource'] = createResource(type, urlTemplate, $resource);
+    });
+
+    // register for all updates on objects
 		watcher.registerListener((objects:ObjectMap) => {
 			var types = watcher.getTypes();
 			_.forEach(types, (type:string) => {
@@ -534,7 +549,7 @@ module Kubernetes {
 					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
 						angular.forEach(items, (item) => {
-              item.proxyUrl = kubernetesProxyUrlForService(KubernetesApiURL, item);
+              item.proxyUrl = kubernetesProxyUrlForService(kubernetesApiUrl(), item);
             });
 						$scope[type] = items;
 						break;
@@ -548,22 +563,11 @@ module Kubernetes {
 						$scope[type] = populateKeys(objects[type]);
 				}
 			});
-
 			$scope.maybeInit();
-
       // TODO this can come out once we can watch templates
-      var url = templatesRestURL();
-      $http.get(url).
-        success(function (data, status, headers, config) {
-          if (data) {
-            $scope.templates = data.items;
-            $scope.isOpenShift = true;
-            $scope.maybeInit();
-          }
-        }).
-        error(function (data, status, headers, config) {
-          log.warn("Failed to load " + url + " " + data + " " + status);
-        });
+      $scope['templatesResource'].query((templates) => {
+        $scope.templates = templates.items;
+      });
 			Core.$apply($rootScope);
 		});
 

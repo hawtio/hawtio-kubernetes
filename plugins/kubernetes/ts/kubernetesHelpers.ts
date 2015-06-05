@@ -90,6 +90,30 @@ module Kubernetes {
     return UrlHelpers.join(masterApiUrl(), openshiftApiPrefix());
   }
 
+  export function createResource(thing:string, urlTemplate:string, $resource: ng.resource.IResourceService) {
+    var prefix = prefixForType(thing);
+    if (!prefix) {
+      log.debug("Invalid type given: ", thing);
+      return null;
+    }
+    var url = UrlHelpers.join(masterApiUrl(), prefix, urlTemplate);
+    log.debug("Url for ", thing, ": ", url);
+    var resource = $resource(url, null, {
+      query: { method: 'GET', isArray: false, params: {
+        namespace: currentKubernetesNamespace, 
+      }},
+      save: { method: 'PUT', params: { 
+        id: '@id', 
+        namespace: currentKubernetesNamespace, 
+      }},
+      delete: { method: 'DELETE', params: {
+        id: '@id', 
+        namespace: currentKubernetesNamespace, 
+      }}
+    });
+    return resource;
+  }
+
   export function imageRepositoriesRestURL() {
     return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/imagestreams");
   }
@@ -230,6 +254,9 @@ module Kubernetes {
     $scope.hasServiceKibana = () => hasService(kibanaServiceName);
     $scope.hasServiceGogs = () => hasService(gogsServiceName);
     $scope.hasServiceForge = () => hasService(fabric8ForgeServiceName);
+    $scope.viewTemplates = () => {
+      $location.path('/kubernetes/templates');
+    }
 
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
     $scope.forgeEnabled = isForgeEnabled();
