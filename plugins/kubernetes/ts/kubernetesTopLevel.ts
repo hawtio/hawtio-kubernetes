@@ -26,14 +26,7 @@ module Kubernetes {
               return;
             }
             log.debug("Dropped object: ", obj);
-            var kind:string = getKind(obj);
-            if (kind === 'List') {
-              _.forEach(obj.items, (obj) => {
-                updateOrCreateObject(obj, model);
-              });
-            } else {
-              updateOrCreateObject(obj, model);
-            } 
+            updateOrCreateObject(obj, model);
           }
         }
         reader.readAsText(file._file);

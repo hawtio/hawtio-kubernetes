@@ -92,6 +92,13 @@ module Kubernetes {
 
   export function updateOrCreateObject(object, KubernetesModel, success?: (data) => void, error?: (error) => void) {
     var kind = getKind(object);
+    if (kind === "List") {
+      log.debug("Object is a list, deploying all objects");
+      _.forEach(object.objects, (obj) => {
+        updateOrCreateObject(obj, KubernetesModel, success, error);
+      });
+      return;
+    }
     if (!kind) {
       log.debug("Object: ", object, " has no object type");
       return;
