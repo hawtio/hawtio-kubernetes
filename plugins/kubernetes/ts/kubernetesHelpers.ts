@@ -948,6 +948,23 @@ module Kubernetes {
         }
       }
       var $fabric8Views = {};
+
+      function defaultPropertiesIfNotExist(name, object, autoCreate = false) {
+        var view = $fabric8Views[name];
+        if (autoCreate && !view) {
+          view = {}
+          $fabric8Views[name] = view;
+        }
+        if (view) {
+          angular.forEach(object, (value, property) => {
+            var current = view[property];
+            if (!current) {
+              view[property] = value;
+            }
+          });
+        }
+      }
+
       var labels = metadata.labels || {};
       var annotations = metadata.annotations || {};
 
@@ -964,8 +981,7 @@ module Kubernetes {
             var link = $fabric8Views[linkId];
             if (!link) {
               link = {
-                class: linkId,
-                description: "Open the view"
+                class: linkId
               };
               $fabric8Views[linkId] = link;
             }
@@ -975,41 +991,41 @@ module Kubernetes {
       });
 
       if (buildConfig.$user && buildConfig.$repo) {
+        // browse gogs repo view
         var gogsUrl = serviceLinkUrl(gogsServiceName);
         if (gogsUrl) {
-          var repoView = $fabric8Views["fabric8.link.browseGogs.view"];
-          if (!repoView) {
-            repoView = {};
-            $fabric8Views["fabric8.link.browseGogs.view"] = repoView;
-          }
-          if (!repoView["url"]) {
-            repoView["url"] = UrlHelpers.join(gogsUrl, buildConfig.$user, buildConfig.$repo);
-          }
-          if (!repoView["label"]) {
-            repoView["label"] = "Browse";
-          }
-          if (!repoView["iconClass"]) {
-            repoView["iconClass"] = "fa fa-external-link";
-          }
+          defaultPropertiesIfNotExist("fabric8.link.browseGogs.view", {
+            label: "Browse...",
+            url: UrlHelpers.join(gogsUrl, buildConfig.$user, buildConfig.$repo),
+            description: "Browse the source code of this repository",
+            iconClass: "fa fa-external-link"
+          }, true);
         }
-        var forgeView = $fabric8Views["fabric8.link.forgeCommand.view"];
-        if (!forgeView) {
-          forgeView = {};
-          $fabric8Views["fabric8.link.forgeCommand.view"] = forgeView;
-        }
-        if (!forgeView["url"]) {
-          forgeView["url"] = UrlHelpers.join("/forge/commands/user", buildConfig.$user, buildConfig.$repo);
-        }
-        if (!forgeView["label"]) {
-          forgeView["label"] = "Command...";
-        }
-        if (!forgeView["description"]) {
-          forgeView["description"] = "Perform an action on this project";
-        }
-        if (!forgeView["iconClass"]) {
-          forgeView["iconClass"] = "fa fa-play-circle";
-        }
+
+        // run forge commands view
+        defaultPropertiesIfNotExist("fabric8.link.forgeCommand.view", {
+          label: "Command...",
+          url: UrlHelpers.join("/forge/commands/user", buildConfig.$user, buildConfig.$repo),
+          description: "Perform an action on this project",
+          iconClass: "fa fa-play-circle"
+        }, true);
+
       }
+
+      // add some icons and descriptions
+      defaultPropertiesIfNotExist("fabric8.link.jenkins.job", {
+        iconClass: "fa fa-tasks",
+        description: "View the Jenkins Job for this build"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.jenkins.monitor", {
+        iconClass: "fa fa-tachometer",
+        description: "View the Jenkins Monitor dashboard for this project"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.jenkins.pipeline", {
+        iconClass: "fa fa-arrow-circle-o-right",
+        description: "View the Jenkins Pipeline for this project"
+      });
+
       buildConfig.$fabric8Views = $fabric8Views;
     }
   }
