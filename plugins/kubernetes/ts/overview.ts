@@ -269,7 +269,6 @@ module Kubernetes {
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
 
-    ControllerHelpers.bindModelToSearchParam($scope, $location, 'kubernetes.selectedNamespace', 'namespace', undefined);
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
   }]);
 
