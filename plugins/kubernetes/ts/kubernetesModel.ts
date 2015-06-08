@@ -548,6 +548,7 @@ module Kubernetes {
 		watcher.registerListener((objects:ObjectMap) => {
 			var types = watcher.getTypes();
 			_.forEach(types, (type:string) => {
+      /*
         // work around any issues creating watches for a given type
         if (!(type in objects)) {
           // this log statement may be a bit alarming
@@ -558,6 +559,7 @@ module Kubernetes {
           });
           return;
         }
+        */
 				switch (type) {
 					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
@@ -565,19 +567,18 @@ module Kubernetes {
               item.proxyUrl = kubernetesProxyUrlForService(kubernetesApiUrl(), item);
             });
 						$scope[type] = items;
-            $scope.maybeInit();
 						break;
           case WatchTypes.TEMPLATES:
           case WatchTypes.ROUTES:
-            $scope.maybeInit();
           case WatchTypes.BUILDS:
           case WatchTypes.BUILD_CONFIGS:
           case WatchTypes.IMAGE_STREAMS:
             $scope.isOpenShift = true;
-            break;
+            // don't put a break here :-)
 					default:
 						$scope[type] = populateKeys(objects[type]);
 				}
+        log.debug("Type: ", type, " object: ", $scope[type]);
 			});
 			$scope.maybeInit();
       Core.$apply($rootScope);

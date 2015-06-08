@@ -47,6 +47,7 @@ declare module Kubernetes {
     function getSelector(entity: any): any;
     function getHost(pod: any): any;
     function getStatus(pod: any): any;
+    function getPorts(service: any): any;
     function getCreationTimestamp(entity: any): any;
     var mbean: string;
     var managerMBean: string;

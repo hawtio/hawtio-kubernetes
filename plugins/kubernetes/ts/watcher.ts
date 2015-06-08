@@ -290,16 +290,14 @@ module Kubernetes {
       log.debug("Objects changed, firing listeners");
 			var objects = <ObjectMap>{};
 			_.forEach(self.getTypes(), (type:string) => {
-        if (watches[type] && watches[type].connected) {
-          objects[type] = self.getObjects(type);
-        }
+        objects[type] = self.getObjects(type);
 			});
 			_.forEach(self.listeners, (listener:(ObjectMap) => void) => {
 				listener(objects);
 			});
 		};
 
-		var debouncedUpdate = _.debounce(updateFunction, 250, { trailing: true });
+		var debouncedUpdate = _.debounce(updateFunction, 500, { trailing: true });
 
 		// listener gets notified after a bunch of changes have occurred
 		self.registerListener = (fn:(objects:ObjectMap) => void) => {

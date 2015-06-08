@@ -48,14 +48,30 @@ module Kubernetes {
       return Core.pathGet(template, ['metadata', 'annotations', getKeyFor(template, 'iconUrl')]) || defaultIconUrl;
     }
 
+
     $scope.deployTemplate = (template) => {
-      if (!template.parameters || template.parameters.length === 0) {
+      log.debug("Template parameters: ", template.parameters);
+      log.debug("Template objects: ", template.objects);
+      var routeServiceName = <string> undefined;
+      var service = _.find(template.objects, (obj) => {
+        if (getKind(obj) === "Service") {
+          var ports = getPorts(obj);
+          if (ports && ports.length === 1) {
+            return true;
+          }
+        } else {
+          return false;
+        }
+      });
+      if (service) {
+        routeServiceName = getName(service);
+      }
+      log.debug("Service: ", service);
+      if (!routeServiceName && (!template.parameters || template.parameters.length === 0)) {
         log.debug("No parameters required, deploying objects");
         applyObjects(template.objects);
         return;
       }
-      log.debug("Template parameters: ", template.parameters);
-      log.debug("Template objects: ", template.objects);
       var formConfig = {
         style: HawtioForms.FormStyle.STANDARD,
         hideLegend: true,
@@ -71,6 +87,33 @@ module Kubernetes {
         property.type = 'string';
         formConfig.properties[param.name] = property;
       });
+      if (routeServiceName) {
+        formConfig.properties.createRoute = {
+          type: 'boolean',
+          default: true,
+          label: "Create Route"
+        };
+        formConfig.properties.routeName = {
+          type: 'string',
+          label: 'Route Name',
+          default: routeServiceName,
+          'control-group-attributes': {
+            'ng-show': 'entity.createRoute'
+          }
+        };
+        formConfig.properties.routeServiceName = {
+          type: 'hidden',
+          default: routeServiceName
+        }
+        formConfig.properties.routeHostname = {
+          type: 'string',
+          default: routeServiceName + '.' + currentKubernetesNamespace() + ".svc.cluster.local",
+          label: "Hostname",
+          'control-group-attributes': {
+            'ng-show': 'entity.createRoute'
+          }
+        };
+      }
       $scope.entity = <any> {};
       $scope.formConfig = formConfig;
       $scope.objects = template.objects;
@@ -87,8 +130,34 @@ module Kubernetes {
     $scope.substituteAndDeployTemplate = () => {
       var objects = $scope.objects;
       var objectsText = angular.toJson(objects, true);
+      // pull these out of the entity object so they're not used in substitutions
+      var createRoute = $scope.entity.createRoute;
+      var routeHostname = $scope.entity.routeHostname;
+      var routeName = $scope.entity.routeName;
+      var routeServiceName = $scope.entity.routeServiceName;
+      delete $scope.entity.createRoute;
+      delete $scope.entity.routeHostname;
+      delete $scope.entity.routeName;
+      delete $scope.entity.routeServiceName;
       objectsText = substitute(objectsText, $scope.entity);
       objects = angular.fromJson(objectsText);
+      if (createRoute) {
+        var route = {
+          kind: "Route",
+          apiVersion: defaultOSApiVersion,
+          metadata: {
+            name: routeName,
+          },
+          spec: {
+            host: routeHostname,
+            to: {
+              kind: "Service",
+              name: routeServiceName
+            }
+          }
+        }
+        objects.push(route);
+      }
       applyObjects(objects);
     }
 

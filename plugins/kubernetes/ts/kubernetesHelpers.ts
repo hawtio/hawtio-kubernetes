@@ -232,6 +232,10 @@ module Kubernetes {
     return Core.pathGet(pod, ["status", "phase"]);
   }
 
+  export function getPorts(service) {
+    return Core.pathGet(service, ["spec", "ports"]);
+  }
+
   export function getCreationTimestamp(entity) {
     return Core.pathGet(entity, ["metadata", "creationTimestamp"]);
   };
