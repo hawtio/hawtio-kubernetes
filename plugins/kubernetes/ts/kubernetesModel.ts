@@ -566,12 +566,14 @@ module Kubernetes {
             });
 						$scope[type] = items;
 						break;
-          case WatchTypes.ROUTES:
           case WatchTypes.TEMPLATES:
+            $scope.maybeInit();
+          case WatchTypes.ROUTES:
           case WatchTypes.BUILDS:
           case WatchTypes.BUILD_CONFIGS:
           case WatchTypes.IMAGE_STREAMS:
             $scope.isOpenShift = true;
+            break;
 					default:
 						$scope[type] = populateKeys(objects[type]);
 				}
