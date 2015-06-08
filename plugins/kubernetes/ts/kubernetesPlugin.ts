@@ -159,11 +159,12 @@ module Kubernetes {
 
     var projectsTab = builder.id('openshift')
                          .rank(100)
-                         //.href(() => "/forge/repos")
-                         .href(() => UrlHelpers.join(context, 'pipelines') + '?sub-tab=kube-pipelines')
+                         .href(() => UrlHelpers.join(context, 'buildConfigs') + '?sub-tab=kube-buildConfigs')
                          .title(() => 'Projects')
                          .isValid(() => !Core.isRemoteConnection())
-                         .tabs(repos, pipelines, builds, buildConfigs, deploys, imageRepositories)
+                          // lets disable the pipelines view for now
+                          // pipelines,
+                         .tabs(repos, buildConfigs, builds,  deploys, imageRepositories)
                          .build();
 
     HawtioNav.add(projectsTab);
