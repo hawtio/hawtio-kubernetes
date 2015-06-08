@@ -9,6 +9,15 @@
         {{row.entity.metadata.name}}</a>
     </div>
   </script>
+  <script type="text/ng-template" id="buildConfigViewsTemplate.html">
+    <div class="ngCellText">
+      <span ng-repeat="view in row.entity.$fabric8Views track by $index">
+        <a title="{{view.description}}" href="{{view.url}}" class="btn btn-default {{view.class}}" ng-show="{{view.url}}">
+          {{view.label}}
+        </a>
+      </span>
+    </div>
+  </script>
   <div class="row filter-header">
     <div class="col-md-12">
       <span>

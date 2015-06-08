@@ -895,7 +895,8 @@ module Kubernetes {
   export function enrichBuildConfig(buildConfig, sortedBuilds) {
     if (buildConfig) {
       var triggerUrl:string = null;
-      var name = Core.pathGet(buildConfig, ["metadata", "name"]);
+      var metadata = buildConfig.metadata || {};
+      var name = metadata.name;
       buildConfig.$name = name;
       if (name) {
         angular.forEach([false, true], (flag) => {
@@ -927,6 +928,26 @@ module Kubernetes {
           });
         }
       }
+      var $fabric8Views = {};
+      angular.forEach(metadata.annotations, (value, key) => {
+        var parts = key.split('/', 2);
+        if (parts.length > 1) {
+          var linkId = parts[0];
+          var property = parts[1];
+          if (linkId && property && linkId.startsWith("fabric8.link")) {
+            var link = $fabric8Views[linkId];
+            if (!link) {
+              link = {
+                class: linkId,
+                description: "Open the view"
+              };
+              $fabric8Views[linkId] = link;
+            }
+            link[property] = value;
+          }
+        }
+      });
+      buildConfig.$fabric8Views = $fabric8Views;
     }
   }
 

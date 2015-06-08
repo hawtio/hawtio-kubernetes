@@ -29,24 +29,29 @@ module Kubernetes {
             cellTemplate: $templateCache.get("buildConfigLinkTemplate.html")
           },
           {
-            field: 'parameters.source.type',
+            field: 'spec.source.type',
             displayName: 'Source'
           },
           {
-            field: 'parameters.source.git.uri',
+            field: 'spec.source.git.uri',
             displayName: 'Repository'
           },
           {
-            field: 'parameters.strategy.type',
+            field: 'spec.strategy.type',
             displayName: 'Strategy'
           },
           {
-            field: 'parameters.strategy.stiStrategy.image',
+            field: 'spec.strategy.stiStrategy.image',
             displayName: 'Source Image'
           },
           {
-            field: 'parameters.output.imageTag',
+            field: 'spec.output.imageTag',
             displayName: 'Output Image'
+          },
+          {
+            field: '$fabric8Views',
+            displayName: 'Views',
+            cellTemplate: $templateCache.get("buildConfigViewsTemplate.html")
           }
         ]
       };
