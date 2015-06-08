@@ -565,6 +565,7 @@ module Kubernetes {
               item.proxyUrl = kubernetesProxyUrlForService(kubernetesApiUrl(), item);
             });
 						$scope[type] = items;
+            $scope.maybeInit();
 						break;
           case WatchTypes.TEMPLATES:
           case WatchTypes.ROUTES:
