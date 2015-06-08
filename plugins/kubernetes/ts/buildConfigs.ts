@@ -28,18 +28,22 @@ module Kubernetes {
             displayName: 'Name',
             cellTemplate: $templateCache.get("buildConfigLinkTemplate.html")
           },
+/*
           {
             field: 'spec.source.type',
             displayName: 'Source'
           },
+*/
           {
             field: 'spec.source.git.uri',
             displayName: 'Repository'
           },
+/*
           {
             field: 'spec.strategy.type',
             displayName: 'Strategy'
           },
+*/
           {
             field: 'spec.strategy.stiStrategy.image',
             displayName: 'Source Image'
@@ -51,6 +55,8 @@ module Kubernetes {
           {
             field: '$fabric8Views',
             displayName: 'Views',
+            width: "***",
+            minWidth: 500,
             cellTemplate: $templateCache.get("buildConfigViewsTemplate.html")
           }
         ]

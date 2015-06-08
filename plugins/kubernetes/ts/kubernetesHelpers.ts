@@ -398,8 +398,11 @@ module Kubernetes {
     });
   }
 
+  /**
+   * Returns the service link URL for either the service name or the service object
+   */
   export function serviceLinkUrl(service) {
-    if (service) {
+    if (angular.isObject(service)) {
       var portalIP = service.$host;
       // lets assume no custom port for now for external routes
       var port = null;
@@ -434,6 +437,14 @@ module Kubernetes {
           return protocol + portalIP + ":" + port + "/";
         } else {
           return protocol + portalIP;
+        }
+      }
+    } else if (service) {
+      var serviceId = service.toString();
+      if (serviceId) {
+        var ServiceRegistry = getServiceRegistry();
+        if (ServiceRegistry) {
+          return ServiceRegistry.serviceLink(serviceId) || "";
         }
       }
     }
@@ -697,6 +708,14 @@ module Kubernetes {
     }
   }
 
+  /**
+   * Returns the service registry
+   */
+  export function getServiceRegistry() {
+    var injector = HawtioCore.injector;
+    return injector ? injector.get("ServiceRegistry") : null;
+  }
+
 
   /**
    * Returns a link to the kibana logs web application
@@ -929,7 +948,14 @@ module Kubernetes {
         }
       }
       var $fabric8Views = {};
-      angular.forEach(metadata.annotations, (value, key) => {
+      var labels = metadata.labels || {};
+      var annotations = metadata.annotations || {};
+
+      // lets default the repo and user
+      buildConfig.$user = annotations["fabric8.jenkins/user"] || labels["user"];
+      buildConfig.$repo = annotations["fabric8.jenkins/repo"] || labels["repo"];
+
+      angular.forEach(annotations, (value, key) => {
         var parts = key.split('/', 2);
         if (parts.length > 1) {
           var linkId = parts[0];
@@ -947,6 +973,43 @@ module Kubernetes {
           }
         }
       });
+
+      if (buildConfig.$user && buildConfig.$repo) {
+        var gogsUrl = serviceLinkUrl(gogsServiceName);
+        if (gogsUrl) {
+          var repoView = $fabric8Views["fabric8.link.browseGogs.view"];
+          if (!repoView) {
+            repoView = {};
+            $fabric8Views["fabric8.link.browseGogs.view"] = repoView;
+          }
+          if (!repoView["url"]) {
+            repoView["url"] = UrlHelpers.join(gogsUrl, buildConfig.$user, buildConfig.$repo);
+          }
+          if (!repoView["label"]) {
+            repoView["label"] = "Browse";
+          }
+          if (!repoView["iconClass"]) {
+            repoView["iconClass"] = "fa fa-external-link";
+          }
+        }
+        var forgeView = $fabric8Views["fabric8.link.forgeCommand.view"];
+        if (!forgeView) {
+          forgeView = {};
+          $fabric8Views["fabric8.link.forgeCommand.view"] = forgeView;
+        }
+        if (!forgeView["url"]) {
+          forgeView["url"] = UrlHelpers.join("/forge/commands/user", buildConfig.$user, buildConfig.$repo);
+        }
+        if (!forgeView["label"]) {
+          forgeView["label"] = "Command...";
+        }
+        if (!forgeView["description"]) {
+          forgeView["description"] = "Perform an action on this project";
+        }
+        if (!forgeView["iconClass"]) {
+          forgeView["iconClass"] = "fa fa-play-circle";
+        }
+      }
       buildConfig.$fabric8Views = $fabric8Views;
     }
   }

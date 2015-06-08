@@ -12,7 +12,8 @@
   <script type="text/ng-template" id="buildConfigViewsTemplate.html">
     <div class="ngCellText">
       <span ng-repeat="view in row.entity.$fabric8Views track by $index">
-        <a title="{{view.description}}" href="{{view.url}}" class="btn btn-default {{view.class}}" ng-show="{{view.url}}">
+        <a title="{{view.description}}" ng-show="view.url" ng-href="{{view.url}}" class="btn btn-default">
+          <i class="{{view.iconClass}}" ng-show="view.iconClass"></i>
           {{view.label}}
         </a>
       </span>

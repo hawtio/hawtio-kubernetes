@@ -60,7 +60,10 @@ declare module Kubernetes {
      */
     function labelsToString(labels: any, seperatorText?: string): string;
     function initShared($scope: any, $location: any, $http: any, $timeout: any, $routeParams: any, KubernetesModel: any, KubernetesState: any, KubernetesApiURL: any): void;
-    function serviceLinkUrl(service: any): string;
+    /**
+     * Returns the service link URL for either the service name or the service object
+     */
+    function serviceLinkUrl(service: any): any;
     /**
      * Given the list of pods lets iterate through them and find all pods matching the selector
      * and return counters based on the status of the pod
@@ -108,6 +111,10 @@ declare module Kubernetes {
      * Returns true if the labels object has all of the key/value pairs from the selector
      */
     function selectorMatches(selector: any, labels: any): boolean;
+    /**
+     * Returns the service registry
+     */
+    function getServiceRegistry(): any;
     /**
      * Returns a link to the kibana logs web application
      */

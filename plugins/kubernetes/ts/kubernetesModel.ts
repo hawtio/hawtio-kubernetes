@@ -567,8 +567,8 @@ module Kubernetes {
 						$scope[type] = items;
 						break;
           case WatchTypes.TEMPLATES:
-            $scope.maybeInit();
           case WatchTypes.ROUTES:
+            $scope.maybeInit();
           case WatchTypes.BUILDS:
           case WatchTypes.BUILD_CONFIGS:
           case WatchTypes.IMAGE_STREAMS:
