@@ -23,13 +23,15 @@
       </div>
     </div>
   </script>
-  <script type="text/ng-template" id="hostTemplate.html">
+  <script type="text/ng-template" id="overviewHostTemplate.html">
     <div class="kubernetes-overview-row">
       <div class="kubernetes-overview-cell">
-        <div id="{{host.id}}"
+        <div id="{{host.elementId}}"
              data-type="host"
              class="kubernetes-host-container host">
-          <h5><a ng-href="/kubernetes/hosts/{{host.id}}">{{host.id}}</a></h5>
+             <h5><img ng-src="{{host.$iconUrl}}" style="width: 32px; height: 32px;">
+               <a ng-href="/kubernetes/hosts/{{host.id}}">{{host.id}}</a>
+             </h5>
           <div class="pod-container"></div>
         </div>
       </div>
@@ -38,7 +40,7 @@
   <script type="text/ng-template" id="podTemplate.html">
     <div id="{{pod._key}}"
          data-type="pod"
-         title="Pod ID: {{pod.id}}"
+         title="Pod ID: {{pod.metadata.name}}"
          class="jsplumb-node kubernetes-node kubernetes-pod-node"
          ng-mouseenter="mouseEnter($event)"
          ng-mouseleave="mouseLeave($event)"

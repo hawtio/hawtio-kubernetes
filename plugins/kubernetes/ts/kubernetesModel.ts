@@ -292,7 +292,9 @@ module Kubernetes {
             }
           }
           var hostDetails = {
+            name: hostKey,
             id: hostKey,
+            elementId: hostKey.replace(/\./g, '_'),
             hostIP: hostIP,
             pods: hostPods,
             kind: "Host",

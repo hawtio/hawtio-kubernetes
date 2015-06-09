@@ -1,6 +1,7 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
 /// <reference path="kubernetesPlugin.ts"/>
+/// <reference path="kubernetesModel.ts"/>
 
 module Kubernetes {
 
@@ -39,7 +40,7 @@ module Kubernetes {
           $scope.id = $routeParams["id"];
           $scope.item = null;
           if ($scope.id) {
-            var url = UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/" + "minions", $scope.id);
+            var url = UrlHelpers.join(KubernetesApiURL, "nodes", $scope.id);
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {

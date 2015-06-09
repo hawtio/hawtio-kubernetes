@@ -1,10 +1,10 @@
 <script type="text/ng-template" id="idTemplate.html">
   <div class="ngCellText">
     <a href="" 
-       title="View details for {{row.entity.metadata.name}}"
+       title="View details for {{row.entity.metadata.name || row.entity.name}}"
        ng-href="{{row.entity | kubernetesPageLink}}">
       <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
-      {{row.entity.metadata.name}}</a>
+      {{row.entity.metadata.name || row.entity.name}}</a>
   </div>
 </script>
 <script type="text/ng-template" id="selectorTemplate.html">
