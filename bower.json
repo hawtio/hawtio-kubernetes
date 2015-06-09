@@ -27,7 +27,7 @@
     "hawtio-template-cache": "*",
     "angular-restmod": "~1.1.8",
     "hawtio-wiki": "~2.0.31",
-    "hawtio-forge": "~2.0.19",
+    "hawtio-forge": "~2.0.21",
     "hawtio-oauth": "~2.0.6",
     "angular-ui-codemirror": "~0.3.0"
   },
