@@ -57,14 +57,24 @@
     <div class="service-view-rectangle" ng-repeat="view in item.$serviceViews">
       <div class="service-view-header">
         <span class="service-view-icon">
-          <img ng-show="item.$iconUrl" ng-src="{{item.$iconUrl}}">
+          <a ng-href="{{view.service | kubernetesPageLink}}" title="View the service detail page">
+            <img ng-show="item.$iconUrl" ng-src="{{item.$iconUrl}}">
+          </a>
         </span>
-        <span class="service-view-name" title="{{view.name}}">{{view.appName}}</span>
-        <span class="service-view-address" title="Go to the service detail page">
-          <a ng-href="{{view.service | kubernetesPageLink}}">{{view.service.$host}}</a>
+        <span class="service-view-name" title="{{view.name}}">
+          <a ng-href="{{view.service | kubernetesPageLink}}" title="View the service detail page">
+            {{view.appName}}
+          </a>
+        </span>
+        <span class="service-view-address" title="The service address">
+          <a ng-show="view.service.$connectUrl" ng-href="{{view.service.$connectUrl}}" title="Connect to the service">
+            {{view.service.$host}}
+          </a>
+          <span ng-hide="view.service.$connectUrl">{{view.service.$host}}</span>
         </span>
         <span class="pull-right">
-          <a class="service-view-header-delete" href="" ng-click="deleteSingleApp(item)" title="Delete this app"><i class="fa fa-remove red"></i></a>
+          <a class="service-view-header-delete" href="" ng-click="deleteSingleApp(item)" title="Delete this app"><i
+                  class="fa fa-remove red"></i></a>
         </span>
       </div>
 
