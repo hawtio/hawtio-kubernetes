@@ -37,10 +37,16 @@
       </button>
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
-         title="Create a new build configuration"
-         href="/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create</a>
+         title="Add a build configuration for an existing project"
+         href="/kubernetes/buildConfigCreate"><i class="fa fa-wrench"></i> Add Build</a>
       <span class="pull-right">&nbsp;</span>
-      <button class="btn btn-primary pull-right"
+      <a class="btn btn-primary pull-right" href="/forge/command/project-new"
+         ng-show="isLoggedIntoGogs()"
+         title="Create a new project and repository">
+        <i class="fa fa-plus"></i> Create Project</a>
+      </a>
+      <span class="pull-right">&nbsp;</span>
+      <button class="btn btn-default pull-right"
          title="Trigger the given build"
          ng-disabled="tableConfig.selectedItems.length != 1 || !tableConfig.selectedItems[0].$triggerUrl"
          ng-click="triggerBuild(tableConfig.selectedItems[0])"><i class="fa fa-play-circle-o"></i> Trigger</button>
