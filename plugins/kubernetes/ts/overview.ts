@@ -221,17 +221,21 @@ module Kubernetes {
             var servicesEl = parentEl.find(".services");
             var hostsEl = parentEl.find(".hosts");
             var replicationControllersEl = parentEl.find(".replicationControllers");
+
             appendNewElements(servicesEl, $templateCache.get("serviceTemplate.html"), "service", services.filter(namespaceFilter));
             appendNewElements(replicationControllersEl, $templateCache.get("replicationControllerTemplate.html"), "replicationController", replicationControllers.filter(namespaceFilter));
             appendNewElements(hostsEl, $templateCache.get("hostTemplate.html"), "host", hosts);
             hosts.forEach((host) => {
-              var hostEl = parentEl.find("#" + host._key);
+              log.debug("host: ", host);
+              var hostEl = hostsEl.find("#" + host.id);
+              log.debug("hostEl: ", hostEl);
               appendNewElements(hostEl, $templateCache.get("podTemplate.html"), "pod", host.pods.filter(namespaceFilter));
             });
           });
         }
 
         function refreshDrawing() {
+          log.debug("Refreshing drawing");
           if (element.children().length === 0) {
             firstDraw();
           } else {
@@ -240,12 +244,8 @@ module Kubernetes {
           Core.$apply(scope);
         }
 
-        scope.$on('kubernetesModelUpdated', refreshDrawing);
-
-        // detect the view changing after the last time the model changed
-        scope.$on("$routeChangeSuccess", () => {
-          setTimeout(refreshDrawing, 100);
-        });
+        scope.$on('kubernetesModelUpdated', _.debounce(refreshDrawing, 500, { trailing: true}));
+        setTimeout(refreshDrawing, 100);
       }
     };
   }]);

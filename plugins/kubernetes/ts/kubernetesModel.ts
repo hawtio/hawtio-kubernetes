@@ -548,18 +548,6 @@ module Kubernetes {
 		watcher.registerListener((objects:ObjectMap) => {
 			var types = watcher.getTypes();
 			_.forEach(types, (type:string) => {
-      /*
-        // work around any issues creating watches for a given type
-        if (!(type in objects)) {
-          // this log statement may be a bit alarming
-          //log.debug("No ", type, " in object map, falling back to a regular GET");
-          $scope[type + 'Resource'].query((data) => {
-            $scope[type] = populateKeys(data.items);
-            $scope.maybeInit();
-          });
-          return;
-        }
-        */
 				switch (type) {
 					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
@@ -581,7 +569,13 @@ module Kubernetes {
         log.debug("Type: ", type, " object: ", $scope[type]);
 			});
 			$scope.maybeInit();
-      $rootScope.$broadcast('kubernetesModelUpdate');
+      // TODO remove when there's an openshift release that supports watching templates
+      $scope['templatesResource'].query((data) => {
+        $scope['templates'] = populateKeys(data.items);
+        $scope.maybeInit();
+        $rootScope.$broadcast('kubernetesModelUpdated');
+      });
+      $rootScope.$broadcast('kubernetesModelUpdated');
       Core.$apply($rootScope);
 		});
 
