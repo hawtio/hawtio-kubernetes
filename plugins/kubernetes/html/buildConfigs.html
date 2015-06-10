@@ -40,12 +40,21 @@
          title="Add a build configuration for an existing project"
          href="/kubernetes/buildConfigCreate"><i class="fa fa-wrench"></i> Add Build</a>
       <span class="pull-right">&nbsp;</span>
+
       <a class="btn btn-primary pull-right" href="/forge/command/project-new"
          ng-show="isLoggedIntoGogs()"
          title="Create a new project and repository">
         <i class="fa fa-plus"></i> Create Project</a>
       </a>
-      <span class="pull-right">&nbsp;</span>
+      <span class="pull-right" ng-show="isLoggedIntoGogs()">&nbsp;</span>
+
+      <a class="btn btn-primary pull-right" href="/forge/repos"
+         ng-hide="isLoggedIntoGogs()"
+         title="Sign in to gogs so that you can create a new project">
+        <i class="fa fa-sign-in"></i> Sign In</a>
+      </a>
+      <span class="pull-right" ng-hide="isLoggedIntoGogs()">&nbsp;</span>
+
       <button class="btn btn-default pull-right"
          title="Trigger the given build"
          ng-disabled="tableConfig.selectedItems.length != 1 || !tableConfig.selectedItems[0].$triggerUrl"
@@ -62,7 +71,7 @@
       <div ng-show="fetched">
         <div ng-hide="buildConfigs.length" class="align-center">
           <p class="alert alert-info">There are no build configurations available.</p>
-          <a class="btn btn-primary" href="/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create Build Configuration</a>
+          <a class="btn btn-primary" href="/kubernetes/buildConfigCreate"><i class="fa fa-wrench"></i> Add Build Configuration</a>
         </div>
         <div ng-show="buildConfigs.length">
           <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
