@@ -204,7 +204,7 @@ gulp.task('connect', ['watch'], function() {
   var staticProxies = localProxies.concat(defaultProxies);
 
   hawtio.setConfig({
-    port: 9000,
+    port: process.env.DEV_PORT || 9000,
     staticProxies: staticProxies,
     staticAssets: staticAssets,
     fallback: 'index.html',
