@@ -21,7 +21,7 @@ RUN yum install -y tar && \
       tar xzv
 
 COPY site /site/
-RUN chown nobody:nobody /site/osconsole/
+RUN chmod 777 /site/osconsole/
 
 WORKDIR /site/
 USER nobody
