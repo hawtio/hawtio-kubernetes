@@ -145,20 +145,20 @@ gulp.task('connect', ['watch'], function() {
         proto: "http",
         port: "8588",
         hostname: "localhost",
-        path: '/api/v1beta3/proxy/namespaces/default/services/app-library',
+        path: '/api/v1/proxy/namespaces/default/services/app-library',
         targetPath: "/"
       });
-    console.log("because of $LOCAL_APP_LIBRARY being true we are using a local proxy for /api/v1beta3/proxy/namespaces/default/services/app-library" );
+    console.log("because of $LOCAL_APP_LIBRARY being true we are using a local proxy for /api/v1/proxy/namespaces/default/services/app-library" );
   }
   if (process.env.LOCAL_FABRIC8_FORGE === "true") {
     localProxies.push({
         proto: "http",
         port: "8080",
         hostname: "localhost",
-        path: '/api/v1beta3/proxy/namespaces/default/services/fabric8-forge',
+        path: '/api/v1/proxy/namespaces/default/services/fabric8-forge',
         targetPath: "/"
       });
-    console.log("because of LOCAL_FABRIC8_FORGE being true we are using a local proxy for /api/v1beta3/proxy/namespaces/default/services/fabric8-forge" );
+    console.log("because of LOCAL_FABRIC8_FORGE being true we are using a local proxy for /api/v1/proxy/namespaces/default/services/fabric8-forge" );
   }
   if (process.env.LOCAL_GOGS_HOST) {
     var gogsPort = process.env.LOCAL_GOGS_PORT || "3000";
@@ -169,10 +169,10 @@ gulp.task('connect', ['watch'], function() {
         proto: "http",
         port: gogsPort,
         hostname: gogsHostName,
-        path: '/kubernetes/api/v1beta2/proxy/services/gogs-http-service',
+        path: '/kubernetes/api/v1/proxy/services/gogs-http-service',
         targetPath: "/"
       });
-    console.log("because of LOCAL_GOGS_HOST being set we are using a local proxy for /kubernetes/api/v1beta2/proxy/services/gogs-http-service to point to http://"
+    console.log("because of LOCAL_GOGS_HOST being set we are using a local proxy for /kubernetes/api/v1/proxy/services/gogs-http-service to point to http://"
     + process.env.LOCAL_GOGS_HOST + ":" + gogsPort);
   }
   var defaultProxies = [{

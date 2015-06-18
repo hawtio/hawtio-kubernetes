@@ -49,7 +49,7 @@ module Kubernetes {
             var defaultRegistry = "172.30.17.189:5000";
 
             $scope.entity = {
-              "apiVersion": "v1beta1",
+              "apiVersion": "v1",
               "kind": "BuildConfig",
               "metadata": {
                 "name": "",
