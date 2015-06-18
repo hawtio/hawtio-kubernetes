@@ -19,8 +19,8 @@ module Kubernetes {
   export var osConfig:OpenshiftConfig = undefined;
   export var masterUrl = "";
 
-  export var defaultApiVersion = "v1beta3";
-  export var defaultOSApiVersion = "v1beta3";
+  export var defaultApiVersion = "v1";
+  export var defaultOSApiVersion = "v1";
   export var labelFilterTextSeparator = ",";
 
   export var defaultNamespace = "default";
@@ -45,15 +45,15 @@ module Kubernetes {
     var prefix = Core.pathGet(osConfig, ['api', 'k8s', 'prefix']);
     if (!prefix) {
       prefix = 'api';
-    }    
+    }
     return Core.trimLeading(prefix, '/');
   }
 
   export function osApiPrefix() {
     var prefix = Core.pathGet(osConfig, ['api', 'openshift', 'prefix']);
     if (!prefix) {
-      prefix = 'osapi';
-    }    
+      prefix = 'oapi';
+    }
     return Core.trimLeading(prefix, '/');
   }
 
@@ -71,10 +71,10 @@ module Kubernetes {
 
   export function prefixForType(type:string) {
     if (type === WatchTypes.NAMESPACES) {
-      return kubernetesApiPrefix();        
+      return kubernetesApiPrefix();
     }
     if (_.any(NamespacedTypes.k8sTypes, (t) => t === type)) {
-      return kubernetesApiPrefix();        
+      return kubernetesApiPrefix();
     }
     if (_.any(NamespacedTypes.osTypes, (t) => t === type)) {
       return openshiftApiPrefix();

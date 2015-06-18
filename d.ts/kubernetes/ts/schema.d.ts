@@ -4,6 +4,30 @@ declare module Kubernetes {
         "id": string;
         "$schema": string;
         "definitions": {
+            "kubernetes_AWSElasticBlockStoreVolumeSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "fsType": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "partition": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "readOnly": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "volumeID": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
             "kubernetes_Capabilities": {
                 "type": string;
                 "description": string;
@@ -39,10 +63,6 @@ declare module Kubernetes {
                             "type": string;
                             "description": string;
                         };
-                    };
-                    "capabilities": {
-                        "$ref": string;
-                        "javaType": string;
                     };
                     "command": {
                         "type": string;
@@ -90,15 +110,15 @@ declare module Kubernetes {
                             "javaType": string;
                         };
                     };
-                    "privileged": {
-                        "type": string;
-                        "description": string;
-                    };
                     "readinessProbe": {
                         "$ref": string;
                         "javaType": string;
                     };
                     "resources": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "securityContext": {
                         "$ref": string;
                         "javaType": string;
                     };
@@ -288,7 +308,7 @@ declare module Kubernetes {
                 "type": string;
                 "description": string;
                 "properties": {
-                    "IP": {
+                    "ip": {
                         "type": string;
                         "description": string;
                     };
@@ -378,6 +398,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_EndpointsList": {
                 "type": string;
@@ -411,6 +432,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_EnvVar": {
                 "type": string;
@@ -424,6 +446,22 @@ declare module Kubernetes {
                     "value": {
                         "type": string;
                         "description": string;
+                    };
+                    "valueFrom": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_EnvVarSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "fieldRef": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
                 "additionalProperties": boolean;
@@ -633,6 +671,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_ListMeta": {
                 "type": string;
@@ -643,6 +682,50 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "selfLink": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_LoadBalancerIngress": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "hostname": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "ip": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_LoadBalancerStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "ingress": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_LocalObjectReference": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "name": {
                         "type": string;
                         "description": string;
                     };
@@ -663,6 +746,102 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "server": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Namespace": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "spec": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "status": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
+            };
+            "kubernetes_NamespaceList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
+            };
+            "kubernetes_NamespaceSpec": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "finalizers": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_NamespaceStatus": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "phase": {
                         "type": string;
                         "description": string;
                     };
@@ -702,6 +881,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_NodeAddress": {
                 "type": string;
@@ -783,6 +963,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_NodeSpec": {
                 "type": string;
@@ -849,10 +1030,6 @@ declare module Kubernetes {
                 "type": string;
                 "description": string;
                 "properties": {
-                    "KubeProxyVersion": {
-                        "type": string;
-                        "description": string;
-                    };
                     "bootID": {
                         "type": string;
                         "description": string;
@@ -862,6 +1039,10 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "kernelVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "kubeProxyVersion": {
                         "type": string;
                         "description": string;
                     };
@@ -878,6 +1059,22 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "systemUUID": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_ObjectFieldSelector": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "fieldPath": {
                         "type": string;
                         "description": string;
                     };
@@ -983,6 +1180,22 @@ declare module Kubernetes {
                 "additionalProperties": boolean;
                 "javaType": string;
             };
+            "kubernetes_PersistentVolumeClaimVolumeSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "claimName": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "readOnly": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
             "kubernetes_Pod": {
                 "type": string;
                 "description": string;
@@ -1015,6 +1228,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_PodCondition": {
                 "type": string;
@@ -1064,11 +1278,17 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_PodSpec": {
                 "type": string;
                 "description": string;
                 "properties": {
+                    "activeDeadlineSeconds": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
                     "containers": {
                         "type": string;
                         "description": string;
@@ -1089,6 +1309,14 @@ declare module Kubernetes {
                         "type": string;
                         "description": string;
                     };
+                    "imagePullSecrets": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
                     "nodeSelector": {
                         "type": string;
                         "description": string;
@@ -1101,6 +1329,15 @@ declare module Kubernetes {
                     "restartPolicy": {
                         "type": string;
                         "description": string;
+                    };
+                    "serviceAccount": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "terminationGracePeriodSeconds": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
                     };
                     "volumes": {
                         "type": string;
@@ -1118,7 +1355,7 @@ declare module Kubernetes {
                 "type": string;
                 "description": string;
                 "properties": {
-                    "Condition": {
+                    "conditions": {
                         "type": string;
                         "description": string;
                         "items": {
@@ -1147,6 +1384,10 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "podIP": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "startTime": {
                         "type": string;
                         "description": string;
                     };
@@ -1200,6 +1441,50 @@ declare module Kubernetes {
                 "additionalProperties": boolean;
                 "javaType": string;
             };
+            "kubernetes_RBDVolumeSource": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "fsType": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "image": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "keyring": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "monitors": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
+                    };
+                    "pool": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "readOnly": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "secretRef": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "user": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
             "kubernetes_ReplicationController": {
                 "type": string;
                 "description": string;
@@ -1232,6 +1517,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_ReplicationControllerList": {
                 "type": string;
@@ -1265,6 +1551,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_ReplicationControllerSpec": {
                 "type": string;
@@ -1333,6 +1620,103 @@ declare module Kubernetes {
                 "additionalProperties": boolean;
                 "javaType": string;
             };
+            "kubernetes_SELinuxOptions": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "level": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "role": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "user": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_Secret": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "data": {
+                        "type": string;
+                        "description": string;
+                        "additionalProperties": {
+                            "type": string;
+                            "description": string;
+                        };
+                        "javaType": string;
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
+            };
+            "kubernetes_SecretList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
+            };
             "kubernetes_SecretVolumeSource": {
                 "type": string;
                 "description": string;
@@ -1340,6 +1724,31 @@ declare module Kubernetes {
                     "secretName": {
                         "type": string;
                         "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_SecurityContext": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "capabilities": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "privileged": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "runAsUser": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
+                    "seLinuxOptions": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
                 "additionalProperties": boolean;
@@ -1377,6 +1786,75 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
+            };
+            "kubernetes_ServiceAccount": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "secrets": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
+            };
+            "kubernetes_ServiceAccountList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_ServiceList": {
                 "type": string;
@@ -1410,6 +1888,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "kubernetes_ServicePort": {
                 "type": string;
@@ -1420,6 +1899,10 @@ declare module Kubernetes {
                         "description": string;
                         "maxLength": number;
                         "pattern": string;
+                    };
+                    "nodePort": {
+                        "type": string;
+                        "description": string;
                     };
                     "port": {
                         "type": string;
@@ -1441,9 +1924,13 @@ declare module Kubernetes {
                 "type": string;
                 "description": string;
                 "properties": {
-                    "createExternalLoadBalancer": {
+                    "deprecatedPublicIPs": {
                         "type": string;
                         "description": string;
+                        "items": {
+                            "type": string;
+                            "description": string;
+                        };
                     };
                     "portalIP": {
                         "type": string;
@@ -1455,14 +1942,6 @@ declare module Kubernetes {
                         "items": {
                             "$ref": string;
                             "javaType": string;
-                        };
-                    };
-                    "publicIPs": {
-                        "type": string;
-                        "description": string;
-                        "items": {
-                            "type": string;
-                            "description": string;
                         };
                     };
                     "selector": {
@@ -1478,6 +1957,10 @@ declare module Kubernetes {
                         "type": string;
                         "description": string;
                     };
+                    "type": {
+                        "type": string;
+                        "description": string;
+                    };
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
@@ -1485,6 +1968,12 @@ declare module Kubernetes {
             "kubernetes_ServiceStatus": {
                 "type": string;
                 "description": string;
+                "properties": {
+                    "loadBalancer": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
                 "additionalProperties": boolean;
                 "javaType": string;
             };
@@ -1520,6 +2009,10 @@ declare module Kubernetes {
                 "type": string;
                 "description": string;
                 "properties": {
+                    "awsElasticBlockStore": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
                     "emptyDir": {
                         "$ref": string;
                         "javaType": string;
@@ -1551,6 +2044,14 @@ declare module Kubernetes {
                         "pattern": string;
                     };
                     "nfs": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "persistentVolumeClaim": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "rbd": {
                         "$ref": string;
                         "javaType": string;
                     };
@@ -1586,6 +2087,10 @@ declare module Kubernetes {
                 "type": string;
                 "description": string;
                 "properties": {
+                    "awsElasticBlockStore": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
                     "emptyDir": {
                         "$ref": string;
                         "javaType": string;
@@ -1614,6 +2119,14 @@ declare module Kubernetes {
                         "$ref": string;
                         "javaType": string;
                     };
+                    "persistentVolumeClaim": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "rbd": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
                     "secret": {
                         "$ref": string;
                         "javaType": string;
@@ -1631,104 +2144,6 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "selfLink": {
-                        "type": string;
-                        "description": string;
-                    };
-                };
-                "additionalProperties": boolean;
-                "javaType": string;
-            };
-            "kubernetes_base_ObjectMeta": {
-                "type": string;
-                "description": string;
-                "properties": {
-                    "annotations": {
-                        "type": string;
-                        "description": string;
-                        "additionalProperties": {
-                            "type": string;
-                            "description": string;
-                        };
-                        "javaType": string;
-                    };
-                    "creationTimestamp": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "deletionTimestamp": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "generateName": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "labels": {
-                        "type": string;
-                        "description": string;
-                        "additionalProperties": {
-                            "type": string;
-                            "description": string;
-                        };
-                        "javaType": string;
-                    };
-                    "name": {
-                        "type": string;
-                        "description": string;
-                        "maxLength": number;
-                        "pattern": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                        "description": string;
-                        "maxLength": number;
-                        "pattern": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "selfLink": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "uid": {
-                        "type": string;
-                        "description": string;
-                    };
-                };
-                "additionalProperties": boolean;
-                "javaType": string;
-            };
-            "kubernetes_base_ObjectReference": {
-                "type": string;
-                "description": string;
-                "properties": {
-                    "apiVersion": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "fieldPath": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "kind": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "name": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "namespace": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "resourceVersion": {
-                        "type": string;
-                        "description": string;
-                    };
-                    "uid": {
                         "type": string;
                         "description": string;
                     };
@@ -1845,6 +2260,254 @@ declare module Kubernetes {
                 "additionalProperties": boolean;
                 "javaType": string;
             };
+            "kubernetes_config_AuthInfo": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "client-certificate": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "client-certificate-data": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "client-key": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "client-key-data": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "extensions": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "password": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "token": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "username": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_Cluster": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "api-version": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "certificate-authority": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "certificate-authority-data": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "extensions": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "insecure-skip-tls-verify": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "server": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_Config": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "clusters": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "contexts": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "current-context": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "extensions": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "preferences": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "users": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_Context": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "cluster": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "extensions": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "namespace": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "user": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_NamedAuthInfo": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "name": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "user": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_NamedCluster": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "cluster": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_NamedContext": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "context": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_NamedExtension": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "extension": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "name": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_config_Preferences": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "colors": {
+                        "type": string;
+                        "description": string;
+                    };
+                    "extensions": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
             "kubernetes_errors_StatusError": {
                 "type": string;
                 "description": string;
@@ -1880,10 +2543,6 @@ declare module Kubernetes {
                     "RawJSON": {
                         "type": string;
                         "description": string;
-                        "items": {
-                            "type": string;
-                            "description": string;
-                        };
                     };
                 };
                 "additionalProperties": boolean;
@@ -1902,6 +2561,22 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "StrVal": {
+                        "type": string;
+                        "description": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
+            "kubernetes_watch_WatchEvent": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "object": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "type": {
                         "type": string;
                         "description": string;
                     };
@@ -1941,6 +2616,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_build_BuildConfig": {
                 "type": string;
@@ -1974,6 +2650,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_build_BuildConfigList": {
                 "type": string;
@@ -2007,6 +2684,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_build_BuildConfigSpec": {
                 "type": string;
@@ -2023,6 +2701,10 @@ declare module Kubernetes {
                     "revision": {
                         "$ref": string;
                         "javaType": string;
+                    };
+                    "serviceAccount": {
+                        "type": string;
+                        "description": string;
                     };
                     "source": {
                         "$ref": string;
@@ -2088,14 +2770,15 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_build_BuildOutput": {
                 "type": string;
                 "description": string;
                 "properties": {
-                    "pushSecretName": {
-                        "type": string;
-                        "description": string;
+                    "pushSecret": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                     "to": {
                         "$ref": string;
@@ -2104,6 +2787,40 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+            };
+            "os_build_BuildRequest": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "revision": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "triggeredByImage": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_build_BuildSource": {
                 "type": string;
@@ -2114,6 +2831,10 @@ declare module Kubernetes {
                         "description": string;
                     };
                     "git": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "sourceSecret": {
                         "$ref": string;
                         "javaType": string;
                     };
@@ -2140,6 +2861,10 @@ declare module Kubernetes {
                     "revision": {
                         "$ref": string;
                         "javaType": string;
+                    };
+                    "serviceAccount": {
+                        "type": string;
+                        "description": string;
                     };
                     "source": {
                         "$ref": string;
@@ -2202,7 +2927,7 @@ declare module Kubernetes {
                         "$ref": string;
                         "javaType": string;
                     };
-                    "stiStrategy": {
+                    "sourceStrategy": {
                         "$ref": string;
                         "javaType": string;
                     };
@@ -2258,6 +2983,10 @@ declare module Kubernetes {
                         "$ref": string;
                         "javaType": string;
                     };
+                    "pullSecret": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
@@ -2273,6 +3002,10 @@ declare module Kubernetes {
                     "noCache": {
                         "type": string;
                         "description": string;
+                    };
+                    "pullSecret": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                 };
                 "additionalProperties": boolean;
@@ -2330,7 +3063,7 @@ declare module Kubernetes {
                 "additionalProperties": boolean;
                 "javaType": string;
             };
-            "os_build_STIBuildStrategy": {
+            "os_build_SourceBuildStrategy": {
                 "type": string;
                 "description": string;
                 "properties": {
@@ -2349,6 +3082,10 @@ declare module Kubernetes {
                     "incremental": {
                         "type": string;
                         "description": string;
+                    };
+                    "pullSecret": {
+                        "$ref": string;
+                        "javaType": string;
                     };
                     "scripts": {
                         "type": string;
@@ -2490,6 +3227,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_deploy_DeploymentConfigList": {
                 "type": string;
@@ -2523,6 +3261,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_deploy_DeploymentConfigSpec": {
                 "type": string;
@@ -2614,6 +3353,10 @@ declare module Kubernetes {
                         "javaType": string;
                     };
                     "resources": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "rollingParams": {
                         "$ref": string;
                         "javaType": string;
                     };
@@ -2729,6 +3472,37 @@ declare module Kubernetes {
                 "additionalProperties": boolean;
                 "javaType": string;
             };
+            "os_deploy_RollingDeploymentStrategyParams": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "intervalSeconds": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
+                    "post": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "pre": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                    "timeoutSeconds": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
+                    "updatePeriodSeconds": {
+                        "type": string;
+                        "description": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+            };
             "os_image_Image": {
                 "type": string;
                 "description": string;
@@ -2769,6 +3543,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_image_ImageList": {
                 "type": string;
@@ -2802,6 +3577,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_image_ImageStream": {
                 "type": string;
@@ -2835,6 +3611,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_image_ImageStreamList": {
                 "type": string;
@@ -2868,6 +3645,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_image_ImageStreamSpec": {
                 "type": string;
@@ -2928,6 +3706,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_image_NamedTagReference": {
                 "type": string;
@@ -3035,6 +3814,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_oauth_OAuthAccessTokenList": {
                 "type": string;
@@ -3068,6 +3848,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_oauth_OAuthAuthorizeToken": {
                 "type": string;
@@ -3126,6 +3907,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_oauth_OAuthAuthorizeTokenList": {
                 "type": string;
@@ -3159,6 +3941,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_oauth_OAuthClient": {
                 "type": string;
@@ -3200,6 +3983,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_oauth_OAuthClientAuthorization": {
                 "type": string;
@@ -3245,6 +4029,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_oauth_OAuthClientAuthorizationList": {
                 "type": string;
@@ -3278,6 +4063,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_oauth_OAuthClientList": {
                 "type": string;
@@ -3311,6 +4097,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_route_Route": {
                 "type": string;
@@ -3344,6 +4131,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_route_RouteList": {
                 "type": string;
@@ -3377,6 +4165,7 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
             };
             "os_route_RouteSpec": {
                 "type": string;
@@ -3513,6 +4302,41 @@ declare module Kubernetes {
                 };
                 "additionalProperties": boolean;
                 "javaType": string;
+                "javaInterfaces": string[];
+            };
+            "os_template_TemplateList": {
+                "type": string;
+                "description": string;
+                "properties": {
+                    "apiVersion": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                        "enum": string[];
+                    };
+                    "items": {
+                        "type": string;
+                        "description": string;
+                        "items": {
+                            "$ref": string;
+                            "javaType": string;
+                        };
+                    };
+                    "kind": {
+                        "type": string;
+                        "description": string;
+                        "default": string;
+                        "required": boolean;
+                    };
+                    "metadata": {
+                        "$ref": string;
+                        "javaType": string;
+                    };
+                };
+                "additionalProperties": boolean;
+                "javaType": string;
+                "javaInterfaces": string[];
             };
             "speter_inf_Dec": {
                 "type": string;
@@ -3532,6 +4356,14 @@ declare module Kubernetes {
                 "javaType": string;
             };
             "BuildList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "BuildRequest": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "Config": {
                 "$ref": string;
                 "javaType": string;
             };
@@ -3560,6 +4392,14 @@ declare module Kubernetes {
                 "javaType": string;
             };
             "ImageStreamList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "Namespace": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "NamespaceList": {
                 "$ref": string;
                 "javaType": string;
             };
@@ -3623,6 +4463,22 @@ declare module Kubernetes {
                 "$ref": string;
                 "javaType": string;
             };
+            "Secret": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "SecretList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "ServiceAccount": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "ServiceAccountList": {
+                "$ref": string;
+                "javaType": string;
+            };
             "ServiceList": {
                 "$ref": string;
                 "javaType": string;
@@ -3636,6 +4492,14 @@ declare module Kubernetes {
                 "javaType": string;
             };
             "Template": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "TemplateList": {
+                "$ref": string;
+                "javaType": string;
+            };
+            "WatchEvent": {
                 "$ref": string;
                 "javaType": string;
             };

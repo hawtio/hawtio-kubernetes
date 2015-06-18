@@ -2,7 +2,7 @@
 
 module Kubernetes {
 	var log = Logger.get('kubernetes-watcher');
-	var apiUrl = UrlHelpers.join('api', 'v1beta3');
+	var apiUrl = UrlHelpers.join('api', 'v1');
 
 	var namespaceType = WatchTypes.NAMESPACES;
 
@@ -32,12 +32,12 @@ module Kubernetes {
 	_.forEach(k8sTypes, (type) => {
 		watches[type] = _.assign(_.cloneDeep(baseWatch), {
       prefix: kubernetesApiPrefix()
-    });	
+    });
   });
 	_.forEach(osTypes, (type) => {
 		watches[type] = _.assign(_.cloneDeep(baseWatch), {
       prefix: UrlHelpers.join(openshiftApiPrefix())
-    });	
+    });
   });
 
   hawtioPluginLoader.registerPreBootstrapTask((next) => {
@@ -339,5 +339,5 @@ module Kubernetes {
 			}
 		}
 		return self;
-	}]);	
+	}]);
 }
