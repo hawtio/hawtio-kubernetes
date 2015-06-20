@@ -107,8 +107,8 @@ module Kubernetes {
         }
         formConfig.properties.routeHostname = {
           type: 'string',
-          default: routeServiceName + '.' + currentKubernetesNamespace() + ".svc.cluster.local",
-          label: "Hostname",
+          default: '.' + currentKubernetesNamespace() + ".svc.cluster.local",
+          label: "Hostname postfix",
           'control-group-attributes': {
             'ng-show': 'entity.createRoute'
           }
@@ -132,7 +132,7 @@ module Kubernetes {
       var objectsText = angular.toJson(objects, true);
       // pull these out of the entity object so they're not used in substitutions
       var createRoute = $scope.entity.createRoute;
-      var routeHostname = $scope.entity.routeHostname;
+      var routeHostnameSuffix = $scope.entity.routeHostname || "";
       var routeName = $scope.entity.routeName;
       var routeServiceName = $scope.entity.routeServiceName;
       delete $scope.entity.createRoute;
@@ -142,21 +142,30 @@ module Kubernetes {
       objectsText = substitute(objectsText, $scope.entity);
       objects = angular.fromJson(objectsText);
       if (createRoute) {
-        var route = {
-          kind: "Route",
-          apiVersion: defaultOSApiVersion,
-          metadata: {
-            name: routeName,
-          },
-          spec: {
-            host: routeHostname,
-            to: {
-              kind: "Service",
-              name: routeServiceName
+        var routes = [];
+        angular.forEach(objects, (object) => {
+          var kind = object.kind;
+          var name = getName(object);
+          if (name && "Service" === kind) {
+            var routeHostname = name + routeHostnameSuffix;
+            var route = {
+              kind: "Route",
+              apiVersion: defaultOSApiVersion,
+              metadata: {
+                name: name,
+              },
+              spec: {
+                host: routeHostname,
+                to: {
+                  kind: "Service",
+                  name: name
+                }
+              }
             }
+            routes.push(route);
           }
-        }
-        objects.push(route);
+        });
+        objects = objects.concat(routes);
       }
       applyObjects(objects);
     }
