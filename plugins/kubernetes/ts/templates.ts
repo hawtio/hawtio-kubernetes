@@ -93,6 +93,7 @@ module Kubernetes {
           default: true,
           label: "Create Route"
         };
+/*
         formConfig.properties.routeName = {
           type: 'string',
           label: 'Route Name',
@@ -101,14 +102,20 @@ module Kubernetes {
             'ng-show': 'entity.createRoute'
           }
         };
+*/
         formConfig.properties.routeServiceName = {
           type: 'hidden',
           default: routeServiceName
         }
+
+        var namespace = currentKubernetesNamespace();
+        // TODO store this in localStorage!
+        var domain = "vagrant.local";
+        var defaultRouteHostSuffix = '.' + (namespace === "default" ? "" : namespace + ".") + domain;
         formConfig.properties.routeHostname = {
           type: 'string',
-          default: '.' + currentKubernetesNamespace() + ".svc.cluster.local",
-          label: "Hostname postfix",
+          default: defaultRouteHostSuffix,
+          label: "Route host name suffix",
           'control-group-attributes': {
             'ng-show': 'entity.createRoute'
           }
