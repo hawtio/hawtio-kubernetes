@@ -118,7 +118,7 @@ gulp.task('connect', ['watch'], function() {
 
   var kubeBase = process.env.KUBERNETES_MASTER || 'https://localhost:8443';
   var kube = uri(urljoin(kubeBase, 'api'));
-  var osapi = uri(urljoin(kubeBase, 'osapi'));
+  var oapi = uri(urljoin(kubeBase, 'oapi'));
   console.log("Connecting to Kubernetes on: " + kube);
 
   var staticAssets = [{
@@ -182,11 +182,11 @@ gulp.task('connect', ['watch'], function() {
     path: '/kubernetes/api',
     targetPath: kube.path()
   }, {
-    proto: osapi.protocol(),
-    port: osapi.port(),
-    hostname: osapi.hostname(),
-    path: '/kubernetes/osapi',
-    targetPath: osapi.path()
+    proto: oapi.protocol(),
+    port: oapi.port(),
+    hostname: oapi.hostname(),
+    path: '/kubernetes/oapi',
+    targetPath: oapi.path()
   }, {
     proto: kube.protocol(),
     hostname: kube.hostname(),
@@ -219,9 +219,9 @@ gulp.task('connect', ['watch'], function() {
     var config = {
       api: {
         openshift: {
-          proto: osapi.protocol(),
-          hostPort: osapi.host(),
-          prefix: osapi.path()
+          proto: oapi.protocol(),
+          hostPort: oapi.host(),
+          prefix: oapi.path()
         },
         k8s: {
           proto: kube.protocol(),
