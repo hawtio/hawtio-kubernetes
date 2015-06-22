@@ -571,12 +571,6 @@ module Kubernetes {
         log.debug("Type: ", type, " object: ", $scope[type]);
 			});
 			$scope.maybeInit();
-      // TODO remove when there's an openshift release that supports watching templates
-      $scope['templatesResource'].query((data) => {
-        $scope['templates'] = populateKeys(data.items);
-        $scope.maybeInit();
-        $rootScope.$broadcast('kubernetesModelUpdated');
-      });
       $rootScope.$broadcast('kubernetesModelUpdated');
       Core.$apply($rootScope);
 		});
