@@ -123,7 +123,7 @@ module Kubernetes {
 
         var namespace = currentKubernetesNamespace();
         // TODO store this in localStorage!
-        var domain = "vagrant.local";
+        var domain = "vagrant.f8";
         var defaultRouteHostSuffix = '.' + (namespace === "default" ? "" : namespace + ".") + domain;
         formConfig.properties.routeHostname = {
           type: 'string',
