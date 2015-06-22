@@ -9,12 +9,25 @@ module Kubernetes {
       return Core.pathGet(obj, ['metadata', 'annotations']);
     }
 
-    function getKeyFor(obj, key) {
+    function getValueFor(obj, key) {
       var annotations = getAnnotations(obj);
       if (!annotations) {
         return "";
       }
-      return _.find(_.keys(annotations), (k) => _.endsWith(k, key));
+      var name = getName(obj);
+      if (name) {
+        var fullKey = "fabric8." + name + "/" + key;
+        var answer = annotations[fullKey];
+        if (answer) {
+          return answer;
+        }
+      }
+      var key: any = _.find(_.keys(annotations), (k: string) => _.endsWith(k, key));
+      if (key) {
+        return annotations[key];
+      } else {
+        return "";
+      }
     }
 
     $scope.cancel = () => {
@@ -41,11 +54,11 @@ module Kubernetes {
     }
 
     $scope.getDescription = (template) => {
-      return marked(Core.pathGet(template, ['metadata', 'annotations', getKeyFor(template, 'description')]) || 'No description');
+      return marked(getValueFor(template, 'description') || 'No description');
     }
 
     $scope.getIconUrl = (template) => {
-      return Core.pathGet(template, ['metadata', 'annotations', getKeyFor(template, 'iconUrl')]) || defaultIconUrl;
+      return getValueFor(template, 'iconUrl') || defaultIconUrl;
     }
 
 
