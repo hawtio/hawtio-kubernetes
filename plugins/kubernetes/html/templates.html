@@ -16,7 +16,7 @@
   <div class="row" ng-hide="formConfig">
     <div class="col-md-12">
       <div class="column-box" 
-           ng-repeat="template in model.templates | filter:filterTemplates">
+           ng-repeat="template in model.templates | filter:filterTemplates | orderBy:'metadata.name' track by $index">
           <div class="row">
             <div class="col-md-2">
               <img style="width: 64px; height: 64px;" ng-src="{{getIconUrl(template)}}">
