@@ -173,6 +173,7 @@ module Kubernetes {
             pod.$startTime = date;
             pod.$age = date.relative();
           }
+          pod.$statusCss = statusTextToCssClass((pod.status || {}).phase);
 
           var maxRestartCount = 0;
           angular.forEach(Core.pathGet(pod, ["status", "containerStatuses"]), (status) => {
