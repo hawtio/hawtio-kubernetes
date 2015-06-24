@@ -114,7 +114,7 @@ module Kubernetes {
         (this.templates || []).forEach((template) => {
           var metadata = template.metadata;
           if (metadata) {
-            var annotations = metadata.annotations;
+            var annotations = metadata.annotations || {};
             var iconUrl = annotations["fabric8." + id + "/iconUrl"] || annotations["fabric8/iconUrl"];
             if (iconUrl) {
               (template.objects || []).forEach((item) => {
