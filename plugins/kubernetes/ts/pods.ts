@@ -32,7 +32,7 @@ module Kubernetes {
       },
       columnDefs: [
         {
-          field: 'id',
+          field: '_key',
           displayName: 'ID',
           defaultSort: true,
           cellTemplate: $templateCache.get("idTemplate.html")
@@ -41,6 +41,14 @@ module Kubernetes {
           field: 'status.phase',
           displayName: 'Status',
           cellTemplate: $templateCache.get("statusTemplate.html")
+        },
+        {
+          field: '$restartCount',
+          displayName: 'Restarts'
+        },
+        {
+          field: '$age',
+          displayName: 'Age'
         },
         {
           field: 'containerImages',

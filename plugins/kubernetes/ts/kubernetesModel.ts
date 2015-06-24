@@ -164,6 +164,28 @@ module Kubernetes {
           pod.$iconUrl = defaultIconUrl;
           this.discoverPodConnections(pod);
           pod.$containerPorts = [];
+
+          var startTime = (pod.status || {}).startTime;
+          pod.$startTime = null;
+          pod.$age = null;
+          if (startTime) {
+            var date =  new Date(startTime);
+            pod.$startTime = date;
+            pod.$age = date.relative();
+          }
+
+          var maxRestartCount = 0;
+          angular.forEach(Core.pathGet(pod, ["status", "containerStatuses"]), (status) => {
+            var restartCount = status.restartCount;
+            if (restartCount) {
+              if (restartCount > maxRestartCount) {
+                maxRestartCount = restartCount;
+              }
+            }
+          });
+          if (maxRestartCount ) {
+            pod.$restartCount = maxRestartCount;
+          }
           angular.forEach(Core.pathGet(pod, ["spec", "containers"]), (container) => {
             var image = container.image;
             if (image) {
