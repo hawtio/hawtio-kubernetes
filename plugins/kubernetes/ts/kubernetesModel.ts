@@ -167,11 +167,15 @@ module Kubernetes {
 
           var startTime = (pod.status || {}).startTime;
           pod.$startTime = null;
-          pod.$age = null;
           if (startTime) {
-            var date =  new Date(startTime);
-            pod.$startTime = date;
-            pod.$age = date.relative();
+            pod.$startTime = new Date(startTime);
+          }
+          var createdTime = getCreationTimestamp(pod);
+          pod.$createdTime = null;
+          pod.$age = null;
+          if (createdTime) {
+            pod.$createdTime = new Date(createdTime);
+            pod.$age = pod.$createdTime.relative();
           }
           pod.$statusCss = statusTextToCssClass((pod.status || {}).phase);
 
