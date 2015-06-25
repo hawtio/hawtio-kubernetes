@@ -48,11 +48,11 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-        { field: 'icon', displayName: 'App', cellTemplate: $templateCache.get("appIconTemplate.html") },
-        { field: 'services', displayName: 'Services', cellTemplate: $templateCache.get("appServicesTemplate.html") },
-        { field: 'replicationControllers', displayName: 'Controllers', cellTemplate: $templateCache.get("appReplicationControllerTemplate.html") },
-        { field: '$podsLink', displayName: 'Pods', cellTemplate: $templateCache.get("appPodCountsAndLinkTemplate.html") },
-        { field: '$deployedText', displayName: 'Deployed', cellTemplate: $templateCache.get("appDeployedTemplate.html") }
+        { field: '$name', displayName: 'App', cellTemplate: $templateCache.get("appIconTemplate.html") },
+        { field: '$servicesText', displayName: 'Services', cellTemplate: $templateCache.get("appServicesTemplate.html") },
+        { field: '$replicationControllersText', displayName: 'Controllers', cellTemplate: $templateCache.get("appReplicationControllerTemplate.html") },
+        { field: '$podCount', displayName: 'Pods', cellTemplate: $templateCache.get("appPodCountsAndLinkTemplate.html") },
+        { field: '$creationDate', displayName: 'Deployed', cellTemplate: $templateCache.get("appDeployedTemplate.html") }
       ]
     };
 

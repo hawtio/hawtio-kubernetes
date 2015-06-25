@@ -509,6 +509,9 @@ module Kubernetes {
               }
               apps.push(appView);
               appView.$podCounters = createAppViewPodCounters(appView);
+              appView.$podCount = (appView.pods || []).length;
+              appView.$replicationControllersText = (appView.replicationControllers || []).map("_key").join(" ");
+              appView.$servicesText= (appView.services || []).map("_key").join(" ");
               appView.$serviceViews = createAppViewServiceViews(appView);
             } catch (e) {
               log.warn("Failed to update appViews: " + e);
