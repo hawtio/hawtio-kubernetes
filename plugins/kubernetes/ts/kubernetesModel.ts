@@ -191,9 +191,15 @@ module Kubernetes {
           if (maxRestartCount ) {
             pod.$restartCount = maxRestartCount;
           }
+          var imageNames = "";
           angular.forEach(Core.pathGet(pod, ["spec", "containers"]), (container) => {
             var image = container.image;
             if (image) {
+              if (!imageNames) {
+                imageNames = image;
+              } else {
+                imageNames = imageNames + " " + image;
+              }
               var idx = image.lastIndexOf(":");
               if (idx > 0) {
                 image = image.substring(0, idx);
@@ -218,6 +224,9 @@ module Kubernetes {
               }
             });
           });
+          pod.$imageNames = imageNames;
+          pod.$podIP = (pod.status || {}).podIP;
+          pod.$host = (pod.spec || {}).host;
         });
 
         this.services.forEach((service) => {
@@ -229,18 +238,20 @@ module Kubernetes {
             service.$podCounters = {};
           }
           _.assign(service.$podCounters, selector ? createPodCounters(selector, this.pods, service.$pods) : {});
+          service.$podCount = service.$pods.length;
+
           var selectedPods = service.$pods;
           service.connectTo = selectedPods.map((pod) => {
             return pod._key;
           }).join(',');
           service.$labelsText = Kubernetes.labelsToString(getLabels(service));
           this.updateIconUrlAndAppInfo(service, "serviceNames");
-          var spec = service.spec;
-          if (spec) {
-            var ports = _.map(spec.ports, "port");
-            service.$ports = ports;
-            service.$portsText = ports.join(", ");
-          }
+          var spec = service.spec || {};
+          service.$portalIP = spec.portalIP;
+          service.$selectorText = Kubernetes.labelsToString(spec.selector);
+          var ports = _.map(spec.ports || [], "port");
+          service.$ports = ports;
+          service.$portsText = ports.join(", ");
           var iconUrl = service.$iconUrl;
           if (iconUrl && selectedPods) {
             selectedPods.forEach((pod) => {
@@ -256,6 +267,9 @@ module Kubernetes {
           var selector = getSelector(replicationController);
           replicationController.$pods = [];
           replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
+          replicationController.$podCount = replicationController.$pods.length;
+          replicationController.$replicas = (replicationController.spec || {}).replicas;
+
           var selectedPods = replicationController.$pods;
           replicationController.connectTo = selectedPods.map((pod) => {
             return pod._key;

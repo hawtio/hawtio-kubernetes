@@ -23,10 +23,9 @@ module Kubernetes {
       },
       columnDefs: [
         { field: '_key', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
-        { field: '$podsLink', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
-        { field: 'desiredState.replicas', displayName: 'Replicas', cellTemplate:$templateCache.get("desiredReplicas.html") },
-        { field: 'labelsText', displayName: 'Labels', cellTemplate: $templateCache.get("labelTemplate.html") },
-        { field: 'metadata.namespace', displayName: 'Namespace' }
+        { field: '$podCount', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
+        { field: '$replicas', displayName: 'Replicas', cellTemplate:$templateCache.get("desiredReplicas.html") },
+        { field: '$labelsText', displayName: 'Labels', cellTemplate: $templateCache.get("labelTemplate.html") }
       ]
     };
 

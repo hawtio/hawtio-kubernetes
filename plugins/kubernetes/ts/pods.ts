@@ -38,7 +38,7 @@ module Kubernetes {
           cellTemplate: $templateCache.get("idTemplate.html")
         },
         {
-          field: 'status.phase',
+          field: '$statusCss',
           displayName: 'Status',
           cellTemplate: $templateCache.get("statusTemplate.html")
         },
@@ -47,36 +47,29 @@ module Kubernetes {
           displayName: 'Restarts'
         },
         {
-          field: '$age',
-          displayName: 'Age'
+          field: '$createdTime',
+          displayName: 'Age',
+          cellTemplate: $templateCache.get("ageTemplate.html")
         },
         {
-          field: 'containerImages',
+          field: '$imageNames',
           displayName: 'Images',
           cellTemplate: $templateCache.get("imageTemplate.html")
         },
         {
-          field: 'spec.host',
+          field: '$host',
           displayName: 'Host',
           cellTemplate: $templateCache.get("hostTemplate.html")
         },
         {
-          field: 'labels',
+          field: '$labelsText',
           displayName: 'Labels',
           cellTemplate: $templateCache.get("labelTemplate.html")
         },
         {
-          field: 'status.podIP',
+          field: '$podIP',
           displayName: 'Pod IP'
         }
-        /*
-        TODO only show namespace if we have a 'show all namespaces' option
-        ,
-        {
-              field: 'namespace',
-              displayName: 'Namespace'
-        }
-        */
       ]
     };
 
