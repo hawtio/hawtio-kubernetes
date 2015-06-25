@@ -314,8 +314,10 @@ module Kubernetes {
     $scope.hasServiceKibana = () => hasService(kibanaServiceName);
     $scope.hasServiceGogs = () => hasService(gogsServiceName);
     $scope.hasServiceForge = () => hasService(fabric8ForgeServiceName);
+
     $scope.viewTemplates = () => {
-      $location.path('/kubernetes/templates');
+      var returnTo = $location.url();
+      $location.path('/kubernetes/templates').search({'returnTo': returnTo});
     }
 
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;

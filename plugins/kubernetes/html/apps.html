@@ -230,12 +230,7 @@
           <i class="fa fa-play-circle"></i> Run ...
         </button>
         <span class="pull-right">&nbsp;</span>
-        <button ng-show="model.templates.length"
-                class="btn btn-success pull-right"
-                ng-click="viewTemplates()"
-                title="Run an application from a template">
-          <i class="fa fa-play-circle"></i> Run ...
-        </button>
+        <span ng-include="'runButton.html'"></span>
         <span class="pull-right">&nbsp;</span>
         <button ng-show="id"
                 class="btn btn-primary pull-right"

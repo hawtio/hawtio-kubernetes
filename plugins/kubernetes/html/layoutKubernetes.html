@@ -1,3 +1,11 @@
+<script type="text/ng-template" id="runButton.html">
+  <button ng-show="model.templates.length"
+    class="btn btn-success pull-right"
+    ng-click="viewTemplates()"
+    title="Run an application from a template">
+    <i class="fa fa-play-circle"></i> Run ...
+  </button>
+</script>
 <script type="text/ng-template" id="idTemplate.html">
   <div class="ngCellText">
     <a href="" 

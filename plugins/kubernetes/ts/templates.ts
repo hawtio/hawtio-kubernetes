@@ -5,6 +5,12 @@ module Kubernetes {
     $scope.model = KubernetesModel;
     $scope.filterText = "";
 
+    var returnTo = new URI($location.search()['returnTo'] || '/kubernetes/apps');
+
+    function goBack() {
+      $location.path(returnTo.path()).search(returnTo.query(true));
+    }
+
     function getAnnotations(obj) {
       return Core.pathGet(obj, ['metadata', 'annotations']);
     }
@@ -37,12 +43,12 @@ module Kubernetes {
         $scope.objects = undefined;
         return;
       }
-      $location.path('/kubernetes/apps');
+      goBack();
     }
 
     $scope.$watch('model.templates.length', (newValue) => {
       if (newValue === 0) {
-        $location.path('/kubernetes/apps');
+        goBack();
       }
     });
 
@@ -195,7 +201,7 @@ module Kubernetes {
         log.debug("Object: ", object);
         updateOrCreateObject(object, KubernetesModel);
       });
-      $location.path('/kubernetes/apps');
+      goBack();
     }
 
     $scope.deleteTemplate = (template) => {
