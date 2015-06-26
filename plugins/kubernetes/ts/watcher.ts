@@ -245,7 +245,7 @@ module Kubernetes {
 			self.setNamespace(undefined);
 		});
 
-    self.setNamespace(localStorage[Constants.NAMESPACE_STORAGE_KEY]);
+    self.setNamespace(localStorage[Constants.NAMESPACE_STORAGE_KEY] || defaultNamespace);
 
 		self.hasWebSocket = true;
 
