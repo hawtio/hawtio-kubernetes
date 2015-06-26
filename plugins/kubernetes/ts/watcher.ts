@@ -196,9 +196,7 @@ module Kubernetes {
         } else {
           localStorage[Constants.NAMESPACE_STORAGE_KEY] = namespace;
         }
-				$rootScope.$broadcast("WatcherNamespaceChanged", namespace);
 				if (namespace) {
-
           _.forIn(watches, (watch, type) => {
 						// reset the object rather than re-assigning them
 						// ensures that any watches in controllers won't
@@ -216,6 +214,7 @@ module Kubernetes {
 						createWatch(type, watch, userDetails, $rootScope);
 					});
 				}
+				$rootScope.$broadcast("WatcherNamespaceChanged", namespace);
 			}
 		}
 

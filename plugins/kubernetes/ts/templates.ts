@@ -2,8 +2,14 @@
 
 module Kubernetes {
   export var TemplateController = controller("TemplateController", ["$scope", "KubernetesModel", "$location", "marked", "$templateCache", "$modal", ($scope, KubernetesModel, $location, marked, $templateCache, $modal) => {
-    $scope.model = KubernetesModel;
+    var model = $scope.model = KubernetesModel;
     $scope.filterText = "";
+
+    $scope.$watchCollection('model.namespaces', () => {
+      if (!$scope.targetNamespace) {
+        $scope.targetNamespace = model.currentNamespace();
+      }
+    });
 
     var returnTo = new URI($location.search()['returnTo'] || '/kubernetes/apps');
 
@@ -46,11 +52,13 @@ module Kubernetes {
       goBack();
     }
 
+    /*
     $scope.$watch('model.templates.length', (newValue) => {
       if (newValue === 0) {
         goBack();
       }
     });
+    */
 
     $scope.filterTemplates = (template) => {
       if (Core.isBlank($scope.filterText)) {
@@ -210,7 +218,19 @@ module Kubernetes {
         });
         objects = objects.concat(routes);
       }
-      applyObjects(objects);
+      if ($scope.targetNamespace !== model.currentNamespace()) {
+        $scope.$on('WatcherNamespaceChanged', () => {
+          log.debug("Namespace changed");
+          setTimeout(() => {
+            applyObjects(objects);
+            Core.$apply($scope);
+          }, 500);
+        });
+        Core.notification('info', "Switching to namespace " + $scope.targetNamespace + " and deploying template");
+        model.kubernetes.selectedNamespace = $scope.targetNamespace;
+      } else {
+        applyObjects(objects);
+      }
     }
 
     function applyObjects(objects) {

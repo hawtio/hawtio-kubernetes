@@ -4,11 +4,13 @@
   </script>
   <div class="row filter-header">
     <div class="col-md-12">
+      <span ng-show="!formConfig" ng-include="'namespaceSelector.html'"></span>
       <span ng-show="model.templates.length && !formConfig">
         <hawtio-filter ng-model="filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter templates..."></hawtio-filter>
       </span>
+
       <button ng-show="formConfig" 
         class="btn btn-success pull-right"
         title="Click to deploy this app" 
@@ -21,6 +23,19 @@
               title="Go back to app view">
               Cancel
       </button>
+      <span class="pull-right">&nbsp;</span>
+      <span class="pull-right">
+        Target namespace: <select ng-model="targetNamespace" ng-options="namespace for namespace in model.namespaces" title="Select the namespace to deploy these objects in">
+    </select>
+
+      </span>
+    </div>
+  </div>
+  <div class="row" ng-hide="formConfig || model.templates.length != 0">
+    <div class="col-md-12">
+      <div class="alert alert-info centered">
+        There are no templates currently available.  Add templates by dragging and dropping template files into this area.
+      </div>
     </div>
   </div>
   <div class="row" ng-hide="formConfig">
