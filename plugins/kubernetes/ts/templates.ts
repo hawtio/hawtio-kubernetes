@@ -1,7 +1,7 @@
 /// <reference path="kubernetesPlugin.ts"/>
 
 module Kubernetes {
-  export var TemplateController = controller("TemplateController", ["$scope", "KubernetesModel", "$location", "marked", ($scope, KubernetesModel, $location, marked) => {
+  export var TemplateController = controller("TemplateController", ["$scope", "KubernetesModel", "$location", "marked", "$templateCache", "$modal", ($scope, KubernetesModel, $location, marked, $templateCache, $modal) => {
     $scope.model = KubernetesModel;
     $scope.filterText = "";
 
@@ -59,8 +59,25 @@ module Kubernetes {
       return _.contains(angular.toJson(template), $scope.filterText.toLowerCase());
     }
 
+    $scope.openFullDescription = (template) => {
+      var text = marked(getValueFor(template, 'description') || 'No description');
+      var modal = $modal.open({
+        templateUrl: UrlHelpers.join(templatePath, 'templateDescription.html'),
+        controller: ['$scope', '$modalInstance', ($scope, $modalInstance) => {
+          $scope.text = text,
+          $scope.ok = () => {
+            modal.close();
+          }
+        }]
+      });
+    };
+
     $scope.getDescription = (template) => {
-      return marked(getValueFor(template, 'description') || 'No description');
+      var answer = marked(getValueFor(template, 'description') || 'No description');
+      if (answer.length > 140) {
+        answer = _.trunc(answer, 140) + $templateCache.get('truncatedDescriptionTag.html');
+      }
+      return answer;
     }
 
     $scope.getIconUrl = (template) => {

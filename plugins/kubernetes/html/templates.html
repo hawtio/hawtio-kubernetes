@@ -1,4 +1,7 @@
 <div ng-controller="Kubernetes.TemplateController">
+  <script type="text/ng-template" id="truncatedDescriptionTag.html">
+    <a href="" ng-click="openFullDescription(template)">More...</a>
+  </script>
   <div class="row filter-header">
     <div class="col-md-12">
       <span ng-show="model.templates.length && !formConfig">
@@ -37,7 +40,7 @@
           </div>
           <div class="row">
             <div class="col-md-10">
-              <div ng-bind-html="getDescription(template)"></div>
+              <div compile="getDescription(template)"></div>
             </div>
             <div class="col-md-2">
               <a href="" 
