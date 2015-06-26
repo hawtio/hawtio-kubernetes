@@ -1,11 +1,18 @@
 <div ng-controller="Kubernetes.TemplateController">
   <div class="row filter-header">
     <div class="col-md-12">
-      <span ng-show="model.templates.length">
+      <span ng-show="model.templates.length && !formConfig">
         <hawtio-filter ng-model="filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter templates..."></hawtio-filter>
       </span>
+      <button ng-show="formConfig" 
+        class="btn btn-success pull-right"
+        title="Click to deploy this app" 
+        ng-click="substituteAndDeployTemplate()">
+        <i class="fa fa-play-circle"></i> Run
+      </button>
+      <span class="pull-right">&nbsp;</span>
       <button class="btn btn-info pull-right"
               ng-click="cancel()"
               title="Go back to app view">
@@ -44,18 +51,12 @@
     </div>
   </div>
   <div class="row" ng-show="formConfig">
-    <div class="col-md-3">
+    <div class="col-md-4">
     </div>
     <div class="col-md-4">
       <div hawtio-form-2="formConfig" entity="entity"></div>
-      <a href="" 
-        class="btn btn-success pull-right"
-        title="Click to deploy this app" 
-        ng-click="substituteAndDeployTemplate()">
-        <i class="fa fa-play-circle"></i> Run
-      </a>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
     </div>
 
   </div>
