@@ -38,7 +38,7 @@ module Kubernetes {
     public kubernetes = <KubernetesState> null;
     public apps = [];
     public services = [];
-    public serviceApps = [];
+
     public replicationcontrollers = [];
     public get replicationControllers():Array<any> {
       return this.replicationcontrollers;
@@ -70,8 +70,11 @@ module Kubernetes {
     public fetched = false;
     public isOpenShift = false;
 
-    public fetch = () => {
-    };
+    public get serviceApps():Array<any> {
+      return _.filter(this.services, (s) => {
+        return s.$host && s.$serviceUrl && s.$podCount
+      });
+    }
 
     public $keepPolling() {
       return keepPollingModel;
@@ -149,220 +152,201 @@ module Kubernetes {
 
     public maybeInit() {
       this.fetched = true;
-      if (this.services && this.replicationControllers && this.pods) {
-        this.servicesByKey = {};
-        this.podsByKey = {};
-        this.replicationControllersByKey = {};
+      this.servicesByKey = {};
+      this.podsByKey = {};
+      this.replicationControllersByKey = {};
 
-        this.pods.forEach((pod) => {
-          if (!pod.kind) pod.kind = "Pod";
-          this.podsByKey[pod._key] = pod;
-          var host = getHost(pod);
-          pod.$labelsText = Kubernetes.labelsToString(getLabels(pod));
-          if (host) {
-            pod.$labelsText += labelFilterTextSeparator + "host=" + host;
-          }
-          pod.$iconUrl = defaultIconUrl;
-          this.discoverPodConnections(pod);
-          pod.$containerPorts = [];
+      this.pods.forEach((pod) => {
+        if (!pod.kind) pod.kind = "Pod";
+        this.podsByKey[pod._key] = pod;
+        var host = getHost(pod);
+        pod.$labelsText = Kubernetes.labelsToString(getLabels(pod));
+        if (host) {
+          pod.$labelsText += labelFilterTextSeparator + "host=" + host;
+        }
+        pod.$iconUrl = defaultIconUrl;
+        this.discoverPodConnections(pod);
+        pod.$containerPorts = [];
 
-          var startTime = (pod.status || {}).startTime;
-          pod.$startTime = null;
-          if (startTime) {
-            pod.$startTime = new Date(startTime);
-          }
-          var createdTime = getCreationTimestamp(pod);
-          pod.$createdTime = null;
-          pod.$age = null;
-          if (createdTime) {
-            pod.$createdTime = new Date(createdTime);
-            pod.$age = pod.$createdTime.relative();
-          }
-          pod.$statusCss = statusTextToCssClass((pod.status || {}).phase);
+        var startTime = (pod.status || {}).startTime;
+        pod.$startTime = null;
+        if (startTime) {
+          pod.$startTime = new Date(startTime);
+        }
+        var createdTime = getCreationTimestamp(pod);
+        pod.$createdTime = null;
+        pod.$age = null;
+        if (createdTime) {
+          pod.$createdTime = new Date(createdTime);
+          pod.$age = pod.$createdTime.relative();
+        }
+        pod.$statusCss = statusTextToCssClass((pod.status || {}).phase);
 
-          var maxRestartCount = 0;
-          angular.forEach(Core.pathGet(pod, ["status", "containerStatuses"]), (status) => {
-            var restartCount = status.restartCount;
-            if (restartCount) {
-              if (restartCount > maxRestartCount) {
-                maxRestartCount = restartCount;
-              }
+        var maxRestartCount = 0;
+        angular.forEach(Core.pathGet(pod, ["status", "containerStatuses"]), (status) => {
+          var restartCount = status.restartCount;
+          if (restartCount) {
+            if (restartCount > maxRestartCount) {
+              maxRestartCount = restartCount;
             }
-          });
-          if (maxRestartCount ) {
-            pod.$restartCount = maxRestartCount;
           }
-          var imageNames = "";
-          angular.forEach(Core.pathGet(pod, ["spec", "containers"]), (container) => {
-            var image = container.image;
-            if (image) {
-              if (!imageNames) {
-                imageNames = image;
+        });
+        if (maxRestartCount ) {
+          pod.$restartCount = maxRestartCount;
+        }
+        var imageNames = "";
+        angular.forEach(Core.pathGet(pod, ["spec", "containers"]), (container) => {
+          var image = container.image;
+          if (image) {
+            if (!imageNames) {
+              imageNames = image;
+            } else {
+              imageNames = imageNames + " " + image;
+            }
+            var idx = image.lastIndexOf(":");
+            if (idx > 0) {
+              image = image.substring(0, idx);
+            }
+            var paths = image.split("/", 3);
+            if (paths.length) {
+              var answer = null;
+              if (paths.length == 3) {
+                answer = paths[1] + "/" + paths[2];
+              } else if (paths.length == 2) {
+                answer = paths[0] + "/" + paths[1];
               } else {
-                imageNames = imageNames + " " + image;
+                answer = paths[0] + "/" + paths[1];
               }
-              var idx = image.lastIndexOf(":");
-              if (idx > 0) {
-                image = image.substring(0, idx);
-              }
-              var paths = image.split("/", 3);
-              if (paths.length) {
-                var answer = null;
-                if (paths.length == 3) {
-                  answer = paths[1] + "/" + paths[2];
-                } else if (paths.length == 2) {
-                  answer = paths[0] + "/" + paths[1];
-                } else {
-                  answer = paths[0] + "/" + paths[1];
-                }
-                container.$imageLink = UrlHelpers.join("https://registry.hub.docker.com/u/", answer);
-              }
+              container.$imageLink = UrlHelpers.join("https://registry.hub.docker.com/u/", answer);
             }
-            angular.forEach(container.ports, (port) => {
-              var containerPort = port.containerPort;
-              if (containerPort) {
-                pod.$containerPorts.push(containerPort);
-              }
-            });
+          }
+          angular.forEach(container.ports, (port) => {
+            var containerPort = port.containerPort;
+            if (containerPort) {
+              pod.$containerPorts.push(containerPort);
+            }
           });
-          pod.$imageNames = imageNames;
-          pod.$podIP = (pod.status || {}).podIP;
-          pod.$host = (pod.spec || {}).host;
         });
+        pod.$imageNames = imageNames;
+        pod.$podIP = (pod.status || {}).podIP;
+        pod.$host = (pod.spec || {}).host;
+      });
 
-        this.services.forEach((service) => {
-          if (!service.kind) service.kind = "Service";
-          this.servicesByKey[service._key] = service;
-          var selector = getSelector(service);
-          service.$pods = [];
-          if (!service.$podCounters) {
-            service.$podCounters = {};
-          }
-          _.assign(service.$podCounters, selector ? createPodCounters(selector, this.pods, service.$pods) : {});
-          service.$podCount = service.$pods.length;
+      this.services.forEach((service) => {
+        if (!service.kind) service.kind = "Service";
+        this.servicesByKey[service._key] = service;
+        var selector = getSelector(service);
+        service.$pods = [];
+        if (!service.$podCounters) {
+          service.$podCounters = {};
+        }
+        _.assign(service.$podCounters, selector ? createPodCounters(selector, this.pods, service.$pods) : {});
+        service.$podCount = service.$pods.length;
 
-          var selectedPods = service.$pods;
-          service.connectTo = selectedPods.map((pod) => {
-            return pod._key;
-          }).join(',');
-          service.$labelsText = Kubernetes.labelsToString(getLabels(service));
-          this.updateIconUrlAndAppInfo(service, "serviceNames");
-          var spec = service.spec || {};
-          service.$portalIP = spec.portalIP;
-          service.$selectorText = Kubernetes.labelsToString(spec.selector);
-          var ports = _.map(spec.ports || [], "port");
-          service.$ports = ports;
-          service.$portsText = ports.join(", ");
-          var iconUrl = service.$iconUrl;
-          if (iconUrl && selectedPods) {
-            selectedPods.forEach((pod) => {
-              pod.$iconUrl = iconUrl;
-            });
-          }
-          service.$serviceUrl = serviceLinkUrl(service);
-        });
+        var selectedPods = service.$pods;
+        service.connectTo = selectedPods.map((pod) => {
+          return pod._key;
+        }).join(',');
+        service.$labelsText = Kubernetes.labelsToString(getLabels(service));
+        this.updateIconUrlAndAppInfo(service, "serviceNames");
+        var spec = service.spec || {};
+        service.$portalIP = spec.portalIP;
+        service.$selectorText = Kubernetes.labelsToString(spec.selector);
+        var ports = _.map(spec.ports || [], "port");
+        service.$ports = ports;
+        service.$portsText = ports.join(", ");
+        var iconUrl = service.$iconUrl;
+        if (iconUrl && selectedPods) {
+          selectedPods.forEach((pod) => {
+            pod.$iconUrl = iconUrl;
+          });
+        }
+        service.$serviceUrl = serviceLinkUrl(service);
+      });
 
-        this.replicationControllers.forEach((replicationController) => {
-          if (!replicationController.kind) replicationController.kind = "ReplicationController";
-          this.replicationControllersByKey[replicationController._key] = replicationController
+      this.replicationControllers.forEach((replicationController) => {
+        if (!replicationController.kind) replicationController.kind = "ReplicationController";
+        this.replicationControllersByKey[replicationController._key] = replicationController
           var selector = getSelector(replicationController);
-          replicationController.$pods = [];
-          replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
-          replicationController.$podCount = replicationController.$pods.length;
-          replicationController.$replicas = (replicationController.spec || {}).replicas;
+        replicationController.$pods = [];
+        replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
+        replicationController.$podCount = replicationController.$pods.length;
+        replicationController.$replicas = (replicationController.spec || {}).replicas;
 
-          var selectedPods = replicationController.$pods;
-          replicationController.connectTo = selectedPods.map((pod) => {
-            return pod._key;
-          }).join(',');
-          replicationController.$labelsText = Kubernetes.labelsToString(getLabels(replicationController));
-          this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
-          var iconUrl =  replicationController.$iconUrl;
-          if (iconUrl && selectedPods) {
+        var selectedPods = replicationController.$pods;
+        replicationController.connectTo = selectedPods.map((pod) => {
+          return pod._key;
+        }).join(',');
+        replicationController.$labelsText = Kubernetes.labelsToString(getLabels(replicationController));
+        this.updateIconUrlAndAppInfo(replicationController, "replicationControllerNames");
+        var iconUrl =  replicationController.$iconUrl;
+        if (iconUrl && selectedPods) {
+          selectedPods.forEach((pod) => {
+            pod.$iconUrl = iconUrl;
+          });
+        }
+      });
+
+      // services may not map to an icon but their pods may do via the RC
+      // so lets default it...
+      this.services.forEach((service) => {
+        var iconUrl = service.$iconUrl;
+        var selectedPods = service.$pods;
+        if (selectedPods) {
+          if (!iconUrl || iconUrl === defaultIconUrl) {
+            iconUrl = null;
             selectedPods.forEach((pod) => {
-              pod.$iconUrl = iconUrl;
+              if (!iconUrl) {
+                iconUrl = pod.$iconUrl;
+                if (iconUrl) {
+                  service.$iconUrl = iconUrl;
+                }
+              }
             });
           }
-        });
+        }
+      });
 
-        // services may not map to an icon but their pods may do via the RC
-        // so lets default it...
-        this.services.forEach((service) => {
-          var iconUrl = service.$iconUrl;
-          var selectedPods = service.$pods;
-          if (selectedPods) {
-            if (!iconUrl || iconUrl === defaultIconUrl) {
-              iconUrl = null;
-              selectedPods.forEach((pod) => {
-                if (!iconUrl) {
-                  iconUrl = pod.$iconUrl;
-                  if (iconUrl) {
-                    service.$iconUrl = iconUrl;
-                  }
-                }
-              });
-            }
+      this.updateApps();
+
+      var podsByHost = {};
+      this.pods.forEach((pod) => {
+        var host = getHost(pod);
+        var podsForHost = podsByHost[host];
+        if (!podsForHost) {
+          podsForHost = [];
+          podsByHost[host] = podsForHost;
+        }
+        podsForHost.push(pod);
+      });
+      this.podsByHost = podsByHost;
+
+      var tmpHosts = [];
+      for (var hostKey in podsByHost) {
+        var hostPods = [];
+        var podCounters = createPodCounters((pod) => getHost(pod) === hostKey, this.pods, hostPods, "host=" + hostKey);
+        var hostIP = null;
+        if (hostPods.length) {
+          var pod = hostPods[0];
+          var currentState = pod.status;
+          if (currentState) {
+            hostIP = currentState.hostIP;
           }
-        });
-
-        this.serviceApps = this.services.filter(s => s.$host && s.$serviceUrl && s.$podCount);
-
-        this.updateApps();
-
-        //updateNamespaces(this.kubernetes, this.pods, this.replicationControllers, this.services);
-
-        var podsByHost = {};
-        this.pods.forEach((pod) => {
-          var host = getHost(pod);
-          var podsForHost = podsByHost[host];
-          if (!podsForHost) {
-            podsForHost = [];
-            podsByHost[host] = podsForHost;
-          }
-          podsForHost.push(pod);
-        });
-        this.podsByHost = podsByHost;
-
-        var tmpHosts = [];
-        for (var hostKey in podsByHost) {
-          var hostPods = [];
-          var podCounters = createPodCounters((pod) => getHost(pod) === hostKey, this.pods, hostPods, "host=" + hostKey);
-          var hostIP = null;
-          if (hostPods.length) {
-            var pod = hostPods[0];
-            var currentState = pod.status;
-            if (currentState) {
-              hostIP = currentState.hostIP;
-            }
-          }
-          var hostDetails = {
-            name: hostKey,
-            id: hostKey,
-            elementId: hostKey.replace(/\./g, '_'),
-            hostIP: hostIP,
-            pods: hostPods,
-            kind: "Host",
+        }
+        var hostDetails = {
+          name: hostKey,
+          id: hostKey,
+          elementId: hostKey.replace(/\./g, '_'),
+          hostIP: hostIP,
+          pods: hostPods,
+          kind: "Host",
             $podCounters: podCounters,
             $iconUrl: hostIconUrl
-          };
-          tmpHosts.push(hostDetails);
-        }
-
-        this.hosts = tmpHosts;
-/*
-        tmpHosts.forEach((newHost) => {
-          var oldHost:any = this.hosts.find((h) => {
-            return h.id === newHost.id
-          });
-          if (!oldHost) {
-            this.redraw = true;
-            this.hosts.push(newHost);
-          } else {
-            this.orRedraw(ArrayHelpers.sync(oldHost.pods, newHost.pods));
-          }
-        });
-*/
+        };
+        tmpHosts.push(hostDetails);
       }
+
+      this.hosts = tmpHosts;
     }
 
     protected updateApps() {

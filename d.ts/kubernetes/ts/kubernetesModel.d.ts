@@ -8,7 +8,6 @@ declare module Kubernetes {
         kubernetes: KubernetesState;
         apps: any[];
         services: any[];
-        serviceApps: any[];
         replicationcontrollers: any[];
         replicationControllers: Array<any>;
         pods: any[];
@@ -27,7 +26,7 @@ declare module Kubernetes {
         appFolders: any[];
         fetched: boolean;
         isOpenShift: boolean;
-        fetch: () => void;
+        serviceApps: Array<any>;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;
         getService(namespace: any, id: any): any;

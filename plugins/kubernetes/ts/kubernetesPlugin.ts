@@ -72,7 +72,7 @@ module Kubernetes {
 
   _module.filter('kubernetesPageLink', () => entityPageLink);
 
-  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav) => {
+  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
     log.debug("Running");
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
     var builder = HawtioNav.builder();
@@ -155,6 +155,14 @@ module Kubernetes {
                          .tabs(apps, services, controllers, pods, hosts, overview)
                          .build();
     HawtioNav.add(mainTab);
+
+    HawtioNav.add({
+      id: 'k8sAppSwitcher',
+      title: () => '', // not used as 'template' below overrides this
+      isValid: () => KubernetesModel.serviceApps.length > 0,
+      context: true,
+      template: () => $templateCache.get(UrlHelpers.join(templatePath, 'serviceApps.html'))
+    });
 
 
     var projectsTab = builder.id('openshift')
