@@ -38,6 +38,7 @@ module Kubernetes {
     public kubernetes = <KubernetesState> null;
     public apps = [];
     public services = [];
+    public serviceApps = [];
     public replicationcontrollers = [];
     public get replicationControllers():Array<any> {
       return this.replicationcontrollers;
@@ -303,6 +304,8 @@ module Kubernetes {
             }
           }
         });
+
+        this.serviceApps = this.services.filter(s => s.$host && s.$serviceUrl && s.$podCount);
 
         this.updateApps();
 

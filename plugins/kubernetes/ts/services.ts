@@ -12,6 +12,8 @@ module Kubernetes {
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
 
+    ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
+
     $scope.tableConfig = {
       data: 'model.services',
       showSelectionCheckbox: true,

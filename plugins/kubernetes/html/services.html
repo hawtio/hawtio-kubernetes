@@ -11,6 +11,15 @@
                        placeholder="Filter services..."
                        save-as="kubernetes-services-text-filter"></hawtio-filter>
       </span>
+      <span ng-hide="id" class="pull-right">
+        <div class="btn-group">
+          <a class="btn" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
+            <i class="fa fa-list"></i></a>
+          <a class="btn" ng-disabled="mode == 'icon'" href="" ng-click="mode = 'icon'">
+            <i class="fa fa-table"></i></a>
+        </div>
+      </span>
+      <span class="pull-right">&nbsp;</span>
       <button ng-show="model.fetched"
               class="btn btn-danger pull-right"
               ng-disabled="!id && tableConfig.selectedItems.length == 0"
@@ -41,8 +50,35 @@
           <p class="alert alert-info">There are no services currently available.</p>
         </div>
         <div ng-show="model.services.length">
-          <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
-                 hawtio-simple-table="tableConfig"></table>
+          <div ng-show="mode == 'list'">
+            <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
+                   hawtio-simple-table="tableConfig"></table>
+          </div>
+
+          <div ng-hide="mode == 'list'">
+            <div class="column-box"
+                 ng-repeat="service in model.serviceApps | filter:filterTemplates | orderBy:'metadata.name' track by $index">
+              <div class="row">
+                <div class="col-md-2">
+                  <a href="{{service.$serviceUrl}}"
+                     title="Click to open this app">
+                    <img style="width: 64px; height: 64px;" ng-src="{{service.$iconUrl}}">
+                  </a>
+                </div>
+                <div class="col-md-9">
+                  <a href="{{service.$serviceUrl}}"
+                     title="Click to open this app">
+                    <h3 ng-bind="service.metadata.name"></h3>
+                  </a>
+                </div>
+<!--
+                <div class="col-md-1">
+                  <a href="" ng-click="deleteService(service)"><i class="fa fa-remove red"></i></a>
+                </div>
+-->
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
