@@ -81,11 +81,15 @@ module Kubernetes {
     };
 
     $scope.getDescription = (template) => {
-      var answer = marked(getValueFor(template, 'description') || 'No description');
-      if (answer.length > 140) {
-        answer = _.trunc(answer, 140) + $templateCache.get('truncatedDescriptionTag.html');
+      var answer:any = $(marked(getValueFor(template, 'description') || 'No description'));
+      var textDefault = answer.html();
+      var maxLength = 200;
+      if (textDefault.length > maxLength) {
+        var truncated = $.trim(textDefault).substring(0, maxLength).split(' ').slice(0, -1).join(' ');
+        answer.html(truncated + '...');
+        answer.append($templateCache.get('truncatedDescriptionTag.html'));
       }
-      return answer;
+      return answer.html();
     }
 
     $scope.getIconUrl = (template) => {
