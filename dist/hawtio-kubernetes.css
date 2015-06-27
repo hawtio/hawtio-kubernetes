@@ -395,6 +395,10 @@ img.icon-selected-app {
     height: 90%;
 }
 
+.k8sServiceApp-menu {
+  width: 260px;
+}
+
 .k8sServiceApp > a {
   padding-top: 5px !important;
   padding-bottom: 5px !important;
