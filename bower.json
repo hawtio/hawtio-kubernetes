@@ -28,7 +28,7 @@
     "angular-restmod": "~1.1.8",
     "hawtio-wiki": "~2.0.31",
     "hawtio-forge": "~2.0.22",
-    "hawtio-oauth": "~2.0.12",
+    "hawtio-oauth": "~2.0.13",
     "angular-ui-codemirror": "~0.3.0"
   },
   "devDependencies": {
