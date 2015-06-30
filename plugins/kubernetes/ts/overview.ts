@@ -96,8 +96,8 @@ module Kubernetes {
               break;
             case 'service':
               params.anchors = [
-                [ "ContinuousRight", { } ],
-                [ "ContinuousLeft", { } ] 
+                [ "Continuous", { faces: ["right"] } ],
+                [ "Continuous", { faces: ["left"] } ] 
                 /*
                 [1, 0.5, 0, 0, -10, -90],
                 [0, 0.5, 0, 0, -10, -90]
@@ -107,7 +107,7 @@ module Kubernetes {
             case 'replicationController':
               params.anchors = [
                 [ "Perimeter", { shape: "Circle" } ],
-                [ "ContinuousRight", { } ]
+                [ "Continuous", { faces: ["right"] } ]
                 /*
                 [0, 0.5, 0, 0, -10, -90],
                 [1, 0.5, 0, 0, -10, -90]
