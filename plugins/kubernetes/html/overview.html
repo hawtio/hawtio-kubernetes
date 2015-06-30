@@ -1,8 +1,8 @@
 <div ng-controller="Kubernetes.OverviewController">
   <script type="text/ng-template" id="serviceBoxTemplate.html">
-    <div class="row">
-      <div class="col-md-3 align-left node-body">{{entity.$portsText}}</div>
-      <div class="col-md-9 align-right node-header" title="{{entity._key}}">{{entity._key}}</div>
+    <div>
+      <div class="align-left node-body">{{entity.$portsText}}</div>
+      <div class="align-right node-header" title="{{entity.metadata.name}}" ng-bind="entity.metadata.name"></div>
     </div>
   </script>
   <script type="text/ng-template" id="serviceTemplate.html">

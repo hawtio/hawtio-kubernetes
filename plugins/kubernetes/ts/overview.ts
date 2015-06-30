@@ -5,29 +5,33 @@
 module Kubernetes {
 
   var OverviewDirective = _module.directive("kubernetesOverview", ["$templateCache", "$compile", "$interpolate", "$timeout", "$window", "KubernetesState", 'KubernetesModel', ($templateCache:ng.ITemplateCacheService, $compile:ng.ICompileService, $interpolate:ng.IInterpolateService, $timeout:ng.ITimeoutService, $window:ng.IWindowService, KubernetesState, KubernetesModel) => {
+
+    var log = Logger.get('kubernetes-overview');
+    var model = KubernetesModel;
+    var state = KubernetesState;
+
     return {
       restrict: 'E',
       replace: true,
       link: (scope, element, attr) => {
-        scope.model = KubernetesModel;
+        scope.model = model;
         element.css({visibility: 'hidden'});
         scope.getEntity = (type:string, key:string) => {
           switch (type) {
             case 'host':
-              return scope.model.podsByHost[key];
+              return model.podsByHost[key];
             case 'pod':
-              return scope.model.podsByKey[key];
+              return model.podsByKey[key];
             case 'replicationController':
-              return scope.model.replicationControllersByKey[key];
+              return model.replicationControllersByKey[key];
             case 'service':
-              return scope.model.servicesByKey[key];
+              return model.servicesByKey[key];
             default:
               return undefined;
-
           }
         };
 
-        scope.kubernetes = KubernetesState;
+        scope.kubernetes = state;
 
         scope.customizeDefaultOptions = (options) => {
           options.Endpoint = ['Blank', {}];
@@ -132,6 +136,7 @@ module Kubernetes {
             var key = thing['_key'] || thing['elementId'] || thing['id']
             var existing = parentEl.find("#" + key );
             if (!existing.length) {
+              log.debug("existing: ", existing, " key: ", key);
               parentEl.append($compile(createElement(template, thingName, thing))(scope));
             }
           });
@@ -142,11 +147,11 @@ module Kubernetes {
         function firstDraw() {
           log.debug("First draw");
           element.empty();
-          var services = scope.model.services;
-          var replicationControllers = scope.model.replicationControllers;
-          var pods = scope.model.pods;
-          var hosts = scope.model.hosts;
-          // log.debug("hosts: ", scope.model.hosts);
+          var services = model.services;
+          var replicationControllers = model.replicationControllers;
+          var pods = model.pods;
+          var hosts = model.hosts;
+          // log.debug("hosts: ", model.hosts);
           var parentEl = angular.element($templateCache.get("overviewTemplate.html"));
           var servicesEl = parentEl.find(".services");
           var hostsEl = parentEl.find(".hosts");
@@ -169,29 +174,29 @@ module Kubernetes {
         function update() {
           scope.$emit('jsplumbDoWhileSuspended', () => {
             log.debug("Update");
-            var services = scope.model.services;
-            var replicationControllers = scope.model.replicationControllers;
-            var pods = scope.model.pods;
-            var hosts = scope.model.hosts;
+            var services = model.services;
+            var replicationControllers = model.replicationControllers;
+            var pods = model.pods;
+            var hosts = model.hosts;
             var parentEl = element.find('[hawtio-jsplumb]');
             var children = parentEl.find('.jsplumb-node');
             children.each((index, c) => {
               var child = angular.element(c);
               var key = child.attr('id');
+              log.debug('key: ', key);
               if (Core.isBlank(key)) {
                 return;
               }
               var type = child.attr('data-type');
               switch (type) {
                 case 'host':
-                  log.debug('key: ', key);
-                  if (key in scope.model.podsByHost) {
+                  if (key in model.podsByHost) {
                     return;
                   }
                   break;
                 case 'service':
-                  if (key in scope.model.servicesByKey && getNamespace(scope.model.servicesByKey[key]) == scope.kubernetes.selectedNamespace) {
-                    var service = scope.model.servicesByKey[key];
+                  if (key in model.servicesByKey && getNamespace(model.servicesByKey[key]) == scope.kubernetes.selectedNamespace) {
+                    var service = model.servicesByKey[key];
                     child.attr('connect-to', service.connectTo);
                     return;
                   }
@@ -202,13 +207,13 @@ module Kubernetes {
                     return;
                   }
                   */
-                  if (key in scope.model.podsByKey) {
+                  if (key in model.podsByKey) {
                     return;
                   }
                   break;
                 case 'replicationController':
-                  if (key in scope.model.replicationControllersByKey) {
-                    var replicationController = scope.model.replicationControllersByKey[key];
+                  if (key in model.replicationControllersByKey) {
+                    var replicationController = model.replicationControllersByKey[key];
                     child.attr('connect-to', replicationController.connectTo);
                     return;
                   }
