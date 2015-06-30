@@ -7,13 +7,13 @@ module Kubernetes {
     return thing.id;
   }
 
-  function createKey(namespace, id) {
-    return (namespace || "") + "-" + (id || 'undefined').replace(/\./g, '-');
+  function createKey(namespace, id, kind) {
+    return (namespace || "") + "-" + (kind || 'undefined').toLowerCase() + '-' + (id || 'undefined').replace(/\./g, '-');
   }
 
   function populateKey(item) {
     var result = item;
-    result['_key'] = createKey(getNamespace(item), getName(item));
+    result['_key'] = createKey(getNamespace(item), getName(item), getKind(item));
     return result;
   }
 
@@ -85,15 +85,15 @@ module Kubernetes {
     }
 
     public getService(namespace, id) {
-      return this.servicesByKey[createKey(namespace ,id)];
+      return this.servicesByKey[createKey(namespace, id, 'service')];
     }
 
     public getReplicationController(namespace, id) {
-      return this.replicationControllersByKey[createKey(namespace ,id)];
+      return this.replicationControllersByKey[createKey(namespace, id, 'replicationController')];
     }
 
     public getPod(namespace, id) {
-      return this.podsByKey[createKey(namespace ,id)];
+      return this.podsByKey[createKey(namespace, id, 'pod')];
     }
 
     public podsForNamespace(namespace = this.currentNamespace()) {
