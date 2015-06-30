@@ -8,7 +8,7 @@ module Kubernetes {
   }
 
   function createKey(namespace, id) {
-    return (namespace || "") + "-" + id.replace(/\./g, '-');
+    return (namespace || "") + "-" + (id || 'undefined').replace(/\./g, '-');
   }
 
   function populateKey(item) {
