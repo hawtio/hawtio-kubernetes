@@ -16,7 +16,7 @@ module Kubernetes {
   export var hostIconUrl = Core.url("/img/host.svg");
 
   // this gets set as a pre-bootstrap task
-  export var osConfig:OpenshiftConfig = undefined;
+  export var osConfig:KubernetesConfig = undefined;
   export var masterUrl = "";
 
   export var defaultApiVersion = "v1";

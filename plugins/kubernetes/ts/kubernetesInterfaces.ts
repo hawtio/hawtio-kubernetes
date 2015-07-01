@@ -16,15 +16,28 @@ module Kubernetes {
     openshift?: ApiLocation;
     k8s?: ApiLocation;
   }
-  
-  export interface OAuthConfig {
+
+  export interface KubernetesConfig {
+    master_uri?: string;
+    api?: ApiLocations;
+    openshift?: OpenShiftOAuthConfig;
+    google?: GoogleOAuthConfig;
+    keycloak?: KeyCloakAuthConfig;
+  }
+
+  export interface OpenShiftOAuthConfig {
     oauth_authorize_uri:string;
     oauth_client_id:string;
   }
-  
-  export interface OpenshiftConfig {
-    api?: ApiLocations;
-    auth?: OAuthConfig;
+
+  export interface GoogleOAuthConfig {
+    oauth_authorize_uri:string;
+    oauth_client_id:string;
+  }
+
+  export interface KeyCloakAuthConfig {
+    oauth_authorize_uri:string;
+    oauth_client_id:string;
   }
 
   export interface KubernetesState {

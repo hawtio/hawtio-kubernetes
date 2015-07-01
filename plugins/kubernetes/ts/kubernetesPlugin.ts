@@ -181,33 +181,40 @@ module Kubernetes {
   hawtioPluginLoader.registerPreBootstrapTask((next) => {
     $.getScript('osconsole/config.js')
       .done((script, textStatus) => {
-        var config:OpenshiftConfig = Kubernetes.osConfig = window['OPENSHIFT_CONFIG'];
-        log.debug("Fetched openshift config: ", config);
-        var master:string = undefined;
-        if (config.api && config.api.k8s) {
+        var config:KubernetesConfig = Kubernetes.osConfig = window['OPENSHIFT_CONFIG'];
+        log.debug("Fetched OAuth config: ", config);
+        var master:string = config.master_uri;
+        if (!master && config.api && config.api.k8s) {
           var masterUri = new URI().host(config.api.k8s.hostPort).path(config.api.k8s.prefix);
           if (config.api.k8s.proto) {
             masterUri.protocol(config.api.k8s.proto);
           }
           master = masterUri.toString();
         }
-        OSOAuthConfig = config['auth'];
-        if (!OSOAuthConfig) {
+
+        OSOAuthConfig = config.openshift;
+        GoogleOAuthConfig = config.google;
+        KeycloakConfig = config.google;
+
+        if (master && !OSOAuthConfig && !GoogleOAuthConfig && !KeycloakConfig) {
           Kubernetes.masterUrl = master;
           next();
           return;
         }
-        master = OSOAuthConfig.master_uri;
-        if (!master) {
-          var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;
-          if (oauth_authorize_uri) {
-            var text = oauth_authorize_uri;
-            var idx = text.indexOf("://");
-            if (idx > 0) {
-              idx += 3;
-              idx = text.indexOf("/", idx);
+
+        if (OSOAuthConfig && !master) {
+          master = OSOAuthConfig.master_uri;
+          if (!master) {
+            var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;
+            if (oauth_authorize_uri) {
+              var text = oauth_authorize_uri;
+              var idx = text.indexOf("://");
               if (idx > 0) {
-                master = text.substring(0, ++idx);
+                idx += 3;
+                idx = text.indexOf("/", idx);
+                if (idx > 0) {
+                  master = text.substring(0, ++idx);
+                }
               }
             }
           }
