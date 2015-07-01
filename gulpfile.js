@@ -215,6 +215,9 @@ gulp.task('connect', ['watch'], function() {
   var debugLoggingOfProxy = process.env.DEBUG_PROXY === "true";
   var useAuthentication = process.env.DISABLE_OAUTH !== "true";
 
+  var googleClientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  var googleClientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+
   hawtio.use('/osconsole/config.js', function(req, res, next) {
     var config = {
       api: {
@@ -230,8 +233,19 @@ gulp.task('connect', ['watch'], function() {
         }
       }
     };
-    if (useAuthentication) {
-      config.auth = {
+    if (googleClientId && googleClientSecret) {
+      config.master_uri = kubeBase;
+      config.google = {
+         clientId: googleClientId,
+         clientSecret: googleClientSecret,
+         authenticationURI: "https://accounts.google.com/o/oauth2/auth",
+         authorizationURI: "https://accounts.google.com/o/oauth2/auth",
+         scope: "profile",
+         redirectURI: "http://localhost:9000"
+      };
+
+    } else if (useAuthentication) {
+      config.openshift = {
         oauth_authorize_uri: urljoin(kubeBase, '/oauth/authorize'),
         oauth_client_id: 'fabric8'
       };

@@ -31,8 +31,13 @@ module Kubernetes {
   }
 
   export interface GoogleOAuthConfig {
-    oauth_authorize_uri:string;
-    oauth_client_id:string;
+    authenticationURI:string;
+    authorizationURI:string;
+    clientId:string;
+    clientSecret:string;
+    redirectURI:string;
+    scope:string;
+    tokenURI?:string;
   }
 
   export interface KeyCloakAuthConfig {

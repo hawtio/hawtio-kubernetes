@@ -196,13 +196,7 @@ module Kubernetes {
 
         OSOAuthConfig = config.openshift;
         GoogleOAuthConfig = config.google;
-        KeycloakConfig = config.google;
-
-        if (master && !OSOAuthConfig && !GoogleOAuthConfig && !KeycloakConfig) {
-          Kubernetes.masterUrl = master;
-          next();
-          return;
-        }
+        KeycloakConfig = config.keycloak;
 
         if (OSOAuthConfig && !master) {
           // TODO auth.master_uri no longer used right?
@@ -224,6 +218,8 @@ module Kubernetes {
         }
         if (master) {
           Kubernetes.masterUrl = master;
+          next();
+          return;
         }
       })
       .fail((response) => {
