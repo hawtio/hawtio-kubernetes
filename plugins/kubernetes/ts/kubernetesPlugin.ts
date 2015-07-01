@@ -1,7 +1,9 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
 
-declare var OSOAuthConfig;
+declare var OSOAuthConfig: Kubernetes.OpenShiftOAuthConfig;
+declare var GoogleOAuthConfig: Kubernetes.GoogleOAuthConfig;
+declare var KeycloakConfig: Kubernetes.KeyCloakAuthConfig;
 
 module Kubernetes {
 
@@ -203,7 +205,8 @@ module Kubernetes {
         }
 
         if (OSOAuthConfig && !master) {
-          master = OSOAuthConfig.master_uri;
+          // TODO auth.master_uri no longer used right?
+          // master = OSOAuthConfig.master_uri;
           if (!master) {
             var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;
             if (oauth_authorize_uri) {

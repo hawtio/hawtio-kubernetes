@@ -13,23 +13,23 @@ declare module Kubernetes {
         k8s?: ApiLocation;
     }
     interface KubernetesConfig {
-      master_uri?: string;
-      api?: ApiLocations;
-      openshift?: OpenShiftOAuthConfig;
-      google?: GoogleOAuthConfig;
-      keycloak?: KeyCloakAuthConfig;
+        master_uri?: string;
+        api?: ApiLocations;
+        openshift?: OpenShiftOAuthConfig;
+        google?: GoogleOAuthConfig;
+        keycloak?: KeyCloakAuthConfig;
     }
     interface OpenShiftOAuthConfig {
-      oauth_authorize_uri:string;
-      oauth_client_id:string;
+        oauth_authorize_uri: string;
+        oauth_client_id: string;
     }
     interface GoogleOAuthConfig {
-      oauth_authorize_uri:string;
-      oauth_client_id:string;
+        oauth_authorize_uri: string;
+        oauth_client_id: string;
     }
     interface KeyCloakAuthConfig {
-      oauth_authorize_uri:string;
-      oauth_client_id:string;
+        oauth_authorize_uri: string;
+        oauth_client_id: string;
     }
     interface KubernetesState {
         namespaces: Array<string>;
