@@ -245,6 +245,7 @@ gulp.task('connect', ['watch'], function() {
       };
 
     } else if (useAuthentication) {
+      config.master_uri = kubeBase;
       config.openshift = {
         oauth_authorize_uri: urljoin(kubeBase, '/oauth/authorize'),
         oauth_client_id: 'fabric8'
