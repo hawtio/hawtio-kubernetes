@@ -1016,6 +1016,15 @@ module Kubernetes {
           iconClass: "fa fa-play-circle"
         }, true);
 
+
+        // configure devops view
+        defaultPropertiesIfNotExist("fabric8.link.forgeCommand.devops.settings", {
+          label: "Settings",
+          url: UrlHelpers.join("/forge/command/devops-edit/user", buildConfig.$user, buildConfig.$repo),
+          description: "Configure the DevOps settings for this project",
+          iconClass: "fa fa-pencil-square-o"
+        }, true);
+
       }
 
       // add some icons and descriptions
@@ -1030,6 +1039,22 @@ module Kubernetes {
       defaultPropertiesIfNotExist("fabric8.link.jenkins.pipeline", {
         iconClass: "fa fa-arrow-circle-o-right",
         description: "View the Jenkins Pipeline for this project"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.letschat.room", {
+        iconClass: "fa fa-comment",
+        description: "Chat room for this project"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.letschat.room", {
+        iconClass: "fa fa-comment",
+        description: "Chat room for this project"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.taiga", {
+        iconClass: "fa fa-check-square-o",
+        description: "Issue tracker for this project"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.taiga.team", {
+        iconClass: "fa fa-users",
+        description: "Team members for this project"
       });
 
       buildConfig.$fabric8Views = $fabric8Views;
