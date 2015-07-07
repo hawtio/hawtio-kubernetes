@@ -43,7 +43,6 @@ module Kubernetes {
             field: 'spec.strategy.type',
             displayName: 'Strategy'
           },
-*/
           {
             field: 'spec.strategy.stiStrategy.image',
             displayName: 'Source Image'
@@ -52,12 +51,27 @@ module Kubernetes {
             field: 'spec.output.imageTag',
             displayName: 'Output Image'
           },
+*/
           {
-            field: '$fabric8Views',
-            displayName: 'Views',
+            field: '$fabric8CodeViews',
+            displayName: 'Code',
             width: "***",
             minWidth: 500,
-            cellTemplate: $templateCache.get("buildConfigViewsTemplate.html")
+            cellTemplate: $templateCache.get("buildConfigCodeViewsTemplate.html")
+          },
+          {
+            field: '$fabric8BuildViews',
+            displayName: 'Builds',
+            width: "***",
+            minWidth: 500,
+            cellTemplate: $templateCache.get("buildConfigBuildViewsTemplate.html")
+          },
+          {
+            field: '$fabric8TeamViews',
+            displayName: 'People',
+            width: "***",
+            minWidth: 500,
+            cellTemplate: $templateCache.get("buildConfigTeamViewsTemplate.html")
           }
         ]
       };

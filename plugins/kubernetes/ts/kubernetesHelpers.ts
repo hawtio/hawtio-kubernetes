@@ -1057,7 +1057,29 @@ module Kubernetes {
         description: "Team members for this project"
       });
 
+
+      // lets put the views into sections...
+      var $fabric8CodeViews = {};
+      var $fabric8BuildViews = {};
+      var $fabric8TeamViews = {};
+      angular.forEach($fabric8Views, (value, key) => {
+        var view;
+        if (key.indexOf("taiga") > 0 || key.indexOf("letschat") > 0) {
+          view = $fabric8TeamViews;
+        } else if (key.indexOf("jenkins") > 0) {
+          view = $fabric8BuildViews;
+        } else {
+          view = $fabric8CodeViews;
+        }
+        view[key] = value;
+      });
+
+
       buildConfig.$fabric8Views = $fabric8Views;
+      buildConfig.$fabric8CodeViews = $fabric8CodeViews;
+      buildConfig.$fabric8BuildViews = $fabric8BuildViews;
+      buildConfig.$fabric8TeamViews = $fabric8TeamViews;
+
     }
   }
 
