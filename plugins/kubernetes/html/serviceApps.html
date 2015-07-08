@@ -6,6 +6,7 @@
     <li class="k8sServiceApp" 
         ng-repeat="service in model.serviceApps | filter:filterTemplates | orderBy:'metadata.name' track by $index">
       <a href="{{service.$serviceUrl}}"
+         target="_blank"
          title="Click to open this app">
         <img style="width: 32px; height: 32px;" ng-src="{{service.$iconUrl}}">&nbsp;
         <span ng-bind="service.metadata.name"></span>

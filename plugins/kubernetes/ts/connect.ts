@@ -23,7 +23,7 @@ module Kubernetes {
           returnTo: returnTo
         });
         log.debug("Connect URI: ", connectUrl.toString());
-        window.location.href = connectUrl.toString();
+        window.open(connectUrl.toString());
       };
 
     }]);

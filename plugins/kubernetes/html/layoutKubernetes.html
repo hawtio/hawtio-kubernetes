@@ -51,7 +51,7 @@
 <script type="text/ng-template" id="portalAddress.html">
   <div class="ngCellText">
     <div ng-repeat="port in row.entity.$ports">
-      <a target="openService" href="{{row.entity.$connectUrl}}"
+      <a target="_blank" href="{{row.entity.$connectUrl}}"
          ng-show="row.entity.$connectUrl && row.entity.$podCounters.valid" title="Protocol {{row.entity.spec.protocol}}">
         {{row.entity.$host}}
       </a>

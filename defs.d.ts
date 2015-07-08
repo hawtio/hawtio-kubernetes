@@ -1,5 +1,3 @@
-/// <reference path="d.ts/includes.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/kubernetesInterfaces.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesHelpers.d.ts"/>
 /// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
 /// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
