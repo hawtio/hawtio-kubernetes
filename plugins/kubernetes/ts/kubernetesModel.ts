@@ -114,6 +114,11 @@ module Kubernetes {
     protected updateIconUrlAndAppInfo(entity, nameField: string) {
       var answer = null;
       var id = getName(entity);
+      entity.$iconUrl = Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.' + id + '/iconUrl']);
+      entity.$info = Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.' + id + '/summary']);
+      if (entity.$iconUrl) {
+        return;
+      }
       if (id && nameField) {
         (this.templates || []).forEach((template) => {
           var metadata = template.metadata;

@@ -96,10 +96,24 @@ module Kubernetes {
       return getValueFor(template, 'iconUrl') || defaultIconUrl;
     }
 
-
     $scope.deployTemplate = (template) => {
       log.debug("Template parameters: ", template.parameters);
       log.debug("Template objects: ", template.objects);
+      log.debug("Template annotations: ", template.metadata.annotations);
+      var templateAnnotations = template.metadata.annotations;
+      if (templateAnnotations) {
+        _.forEach(template.objects, (object:any) => {
+          var annotations = object.metadata.annotations || {};
+          var name = getName(object);
+          var matches = _.filter(_.keys(templateAnnotations), (key) => key.match('.' + name + '/'));
+          matches.forEach((match) => {
+            if (!(match in annotations)) {
+              annotations[match] = templateAnnotations[match];
+            }
+          });
+          object.metadata.annotations = annotations;
+        });
+      }
       var routeServiceName = <string> undefined;
       var service = _.find(template.objects, (obj) => {
         if (getKind(obj) === "Service") {
