@@ -40,25 +40,29 @@ module Kubernetes {
     });
   });
 
-  hawtioPluginLoader.registerPreBootstrapTask((next) => {
-    var uri = new URI(masterApiUrl());
-    uri.path(namespaceWatch.url);
-    var url = uri.toString();
+  hawtioPluginLoader.registerPreBootstrapTask({
+    name: 'KubernetesWatcherInit',
+    depends: ['hawtio-oauth'],
+    task: (next) => {
+      var uri = new URI(masterApiUrl());
+      uri.path(namespaceWatch.url);
+      var url = uri.toString();
 
-    // can't use $http here
-    $.get(uri.toString())
-      .done((data) => {
-        _.forEach(data.items, (namespace:any) => {
-          if (!namespace.metadata.uid) {
-            namespace.metadata.uid = namespace.metadata.namespace + '/' + namespace.metadata.name;
-          }
-          namespaceWatch.objects[namespace.metadata.uid] = namespace;
-        });
-        namespaceWatch.objectArray.length = 0;
-        _.forIn(namespaceWatch.objects, (object, key) => {
-          namespaceWatch.objectArray.push(object);
-        });
-      }).always(next);
+      // can't use $http here
+      $.get(uri.toString())
+        .done((data) => {
+          _.forEach(data.items, (namespace:any) => {
+            if (!namespace.metadata.uid) {
+              namespace.metadata.uid = namespace.metadata.namespace + '/' + namespace.metadata.name;
+            }
+            namespaceWatch.objects[namespace.metadata.uid] = namespace;
+          });
+          namespaceWatch.objectArray.length = 0;
+          _.forIn(namespaceWatch.objects, (object, key) => {
+            namespaceWatch.objectArray.push(object);
+          });
+        }).always(next);
+    }
   });
 
 	function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
