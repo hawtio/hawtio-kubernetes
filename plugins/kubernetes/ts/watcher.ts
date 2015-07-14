@@ -66,8 +66,17 @@ module Kubernetes {
   });
 
 	function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
-			var uri = new URI(masterApiUrl());
-			uri.path(watch.url);
+		var apiUrl = masterApiUrl();
+		var watchUrl = watch.url;
+		var uri;
+		if (!apiUrl || apiUrl === "/") {
+			// lets avoid using a relative path if no master url is specified
+			// as we are probably serving up static content from inside /api/v1/namespaces/default/services/fabric8 or something like that
+			uri = new URI(UrlHelpers.join(apiUrl, watchUrl));
+		} else {
+			uri = new URI(apiUrl);
+	    uri.path(watchUrl);
+		}
 			if (uri.protocol() === "https") {
 				uri.protocol('wss');
 			} else {
