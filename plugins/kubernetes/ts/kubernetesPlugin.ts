@@ -218,6 +218,15 @@ module Kubernetes {
               }
             }
           }
+          if ((!Kubernetes.masterUrl || Kubernetes.masterUrl === "/") && (!master || master === "/")) {
+            // lets default the master to the current protocol and host/port
+            // in case the master url is "/" and we are
+            // serving up static content from inside /api/v1/namespaces/default/services/fabric8 or something like that
+            var href = location.href;
+            if (href) {
+              master = new URI(href).query("").path("").toString();
+            }
+          }
           if (master) {
             Kubernetes.masterUrl = master;
             next();
