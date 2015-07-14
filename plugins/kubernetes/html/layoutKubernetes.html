@@ -42,7 +42,7 @@
   </div>
 </script>
 <script type="text/ng-template" id="hostTemplate.html">
-  <div class="ngCellText" ng-init="host=row.entity.spec.host">
+  <div class="ngCellText" ng-init="host=row.entity.$host">
     <span class="pod-label badge"
           class="background-light-grey mouse-pointer"
           ng-click="$emit('labelFilterUpdate', 'host=' + host)">{{host}}</span>
@@ -55,7 +55,7 @@
          ng-show="row.entity.$connectUrl && row.entity.$podCounters.valid" title="Protocol {{row.entity.spec.protocol}}">
         {{row.entity.$host}}
       </a>
-      <span ng-hide="row.entity.spec.portalIP && row.entity.$podCounters.valid">{{row.entity.spec.portalIP}}:{{port}}</span>
+      <span ng-hide="row.entity.$connectUrl && row.entity.$podCounters.valid">{{row.entity.spec.portalIP || row.entity.spec.clusterIP}}:{{port}}</span>
     </div>
   </div>
 </script>

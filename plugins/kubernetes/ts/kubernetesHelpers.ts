@@ -225,7 +225,7 @@ module Kubernetes {
   }
 
   export function getHost(pod) {
-    return Core.pathGet(pod, ["spec", "host"]);
+    return Core.pathGet(pod, ["spec", "host"]) || Core.pathGet(pod, ["spec", "nodeName"]) || Core.pathGet(pod, ["status", "hostIP"]);
   }
 
   export function getStatus(pod) {

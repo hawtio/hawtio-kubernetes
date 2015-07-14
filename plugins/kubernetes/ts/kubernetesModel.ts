@@ -233,8 +233,10 @@ module Kubernetes {
           });
         });
         pod.$imageNames = imageNames;
-        pod.$podIP = (pod.status || {}).podIP;
-        pod.$host = (pod.spec || {}).host;
+        var podStatus = (pod.status || {});
+        var podSpec = (pod.spec || {});
+        pod.$podIP = podStatus.podIP;
+        pod.$host = podSpec.host || podSpec.nodeName || podStatus.hostIP;
       });
 
       this.services.forEach((service) => {
