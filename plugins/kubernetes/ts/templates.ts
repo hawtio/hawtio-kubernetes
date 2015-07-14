@@ -11,7 +11,7 @@ module Kubernetes {
       }
     });
 
-    var returnTo = new URI($location.search()['returnTo'] || '/kubernetes/apps');
+    var returnTo = new URI($location.search()['returnTo'] || Core.url('/kubernetes/apps'));
 
     function goBack() {
       $location.path(returnTo.path()).search(returnTo.query(true));

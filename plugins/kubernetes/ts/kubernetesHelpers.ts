@@ -298,6 +298,7 @@ module Kubernetes {
 
 
   export function initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL) {
+    $scope.baseUri = Core.trimTrailing(Core.url("/") || "", "/") || "";
 
     var injector = HawtioCore.injector;
 
@@ -317,7 +318,7 @@ module Kubernetes {
 
     $scope.viewTemplates = () => {
       var returnTo = $location.url();
-      $location.path('/kubernetes/templates').search({'returnTo': returnTo});
+      $location.path(Core.url('/kubernetes/templates')).search({'returnTo': returnTo});
     }
 
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
@@ -543,9 +544,9 @@ module Kubernetes {
         var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
         var namespace = getNamespace(entity);
         if (namespace && !isIgnoreNamespaceKind(kind)) {
-          return UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
+          return Core.url(UrlHelpers.join('/kubernetes/namespace', namespace, path, id));
         } else {
-          return UrlHelpers.join('/kubernetes', path, id);
+          return Core.url(UrlHelpers.join('/kubernetes', path, id));
         }
       }
     }

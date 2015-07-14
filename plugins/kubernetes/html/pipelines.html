@@ -28,7 +28,7 @@
       <div ng-show="fetched">
         <div ng-hide="pipelines.length" class="align-center">
           <p class="alert alert-info">There are no build pipelines available.</p>
-          <a class="btn btn-primary" href="/kubernetes/buildConfig">Create Build Configuration</a>
+          <a class="btn btn-primary" href="{{baseUri}}/kubernetes/buildConfig">Create Build Configuration</a>
         </div>
       </div>
     </div>
@@ -50,7 +50,7 @@
                 <div class="col-md-2 pipeline-build" title="Build configuration">
                   <span class="pipeline-build-details">
                     <a title="View details for this build configuration"
-                       href="/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
+                       href="{{baseUri}}/kubernetes/buildConfigs/{{step.buildConfig.metadata.name}}">
                       <i class="fa fa-cog"></i>
                       {{step.buildConfig.metadata.name}}
                     </a>
@@ -104,7 +104,7 @@
                 <div class="col-md-2 pipeline-deploy" title="Deployment Configuration">
                   <div class="pipeline-build-details">
                     <a title="View details for this deployment configuration"
-                       href="/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
+                       href="{{baseUri}}/kubernetes/deploymentConfigs/{{step.buildConfig.metadata.name}}">
                       <i class="fa fa-cogs"></i>
                       {{step.buildConfig.metadata.name}}
                     </a>

@@ -30,7 +30,7 @@
              data-type="host"
              class="kubernetes-host-container host">
              <h5><img ng-src="{{host.$iconUrl}}" style="width: 32px; height: 32px;">
-               <a ng-href="/kubernetes/hosts/{{host.id}}">{{host.id}}</a>
+               <a ng-href="{{baseUri}}/kubernetes/hosts/{{host.id}}">{{host.id}}</a>
              </h5>
           <div class="pod-container"></div>
         </div>
@@ -106,5 +106,5 @@
    </div>
   </script>
   <div class="align-center" ng-include="'namespaceSelector.html'"></div>
-  <kubernetes-overview ui-if="kubernetes.selectedNamespace"></kubernetes-overview>
+  <kubernetes-overview ui-if="kubernetes.selectedNamespace"><{{baseUri}}/kubernetes-overview>
 </div>

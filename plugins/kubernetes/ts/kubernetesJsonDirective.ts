@@ -79,7 +79,7 @@ module Kubernetes {
           var name = $scope.appTitle || "App";
           runApp($location, $scope, $http, KubernetesApiURL, json, name, () => {
             // now lets navigate to the apps page so folks see things happen
-            $location.url("/kubernetes/apps");
+            $location.url(Core.url("/kubernetes/apps"));
           });
         };
       }]

@@ -2,7 +2,7 @@
   <script type="text/ng-template" id="deploymentConfigLinkTemplate.html">
     <div class="ngCellText">
       <a title="View details for this build configuration"
-         href="/kubernetes/deploymentConfigs/{{row.entity.metadata.name}}">
+         href="{{baseUri}}/kubernetes/deploymentConfigs/{{row.entity.metadata.name}}">
 <!--
         <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
 -->
@@ -37,7 +37,7 @@
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
          title="Create a new build configuration"
-         href="/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create</a>
+         href="{{baseUri}}/kubernetes/buildConfigCreate"><i class="fa fa-plus"></i> Create</a>
       <span class="pull-right">&nbsp;</span>
       <button class="btn btn-primary pull-right"
          ng-show="fetched && deploymentConfigs.length"
@@ -56,7 +56,7 @@
       <div ng-show="fetched">
         <div ng-hide="deploymentConfigs.length" class="align-center">
           <p class="alert alert-info">There are no deployment configurations available.</p>
-          <a class="btn btn-primary" href="/kubernetes/deploymentConfigCreate"><i class="fa fa-plus"></i> Create Deployment Configuration</a>
+          <a class="btn btn-primary" href="{{baseUri}}/kubernetes/deploymentConfigCreate"><i class="fa fa-plus"></i> Create Deployment Configuration</a>
         </div>
         <div ng-show="deploymentConfigs.length">
           <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
