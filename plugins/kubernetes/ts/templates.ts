@@ -6,20 +6,8 @@ module Kubernetes {
     $scope.filterText = "";
 
     $scope.watch = watches[WatchTypes.TEMPLATES];
-    log.info("has watch " + $scope.watch);
-    if (!$scope.watch && !$scope.watch.connected) {
-      // TODO register a handler of bad watches
-      log.info("watcher is not connected for templates so lets load via the resource");
-      model.templatesResource.query((response) => {
-        log.info("Has response: " + response);
-        if (response) {
-          var items = response.items;
-          log.info("Got items!");
-          model.templates = items;
-          Core.$apply($scope);
-        }
-      });
-    }
+
+    reloadDataIfNoWatch();
 
 
     $scope.$watchCollection('model.namespaces', () => {
@@ -28,7 +16,7 @@ module Kubernetes {
       }
     });
 
-    var returnTo = new URI($location.search()['returnTo'] || Core.url('/kubernetes/apps'));
+    var returnTo = new URI($location.search()['returnTo'] || '/kubernetes/apps');
 
     function goBack() {
       $location.path(returnTo.path()).search(returnTo.query(true));
@@ -82,7 +70,7 @@ module Kubernetes {
         return true;
       }
       return _.contains(angular.toJson(template), $scope.filterText.toLowerCase());
-    }
+    };
 
     $scope.openFullDescription = (template) => {
       var text = marked(getValueFor(template, 'description') || 'No description');
@@ -107,11 +95,11 @@ module Kubernetes {
         answer.append($templateCache.get('truncatedDescriptionTag.html'));
       }
       return answer.html();
-    }
+    };
 
     $scope.getIconUrl = (template) => {
       return getValueFor(template, 'iconUrl') || defaultIconUrl;
-    }
+    };
 
     $scope.deployTemplate = (template) => {
       log.debug("Template parameters: ", template.parameters);
@@ -204,14 +192,14 @@ module Kubernetes {
       $scope.formConfig = formConfig;
       $scope.objects = template.objects;
       log.debug("Form config: ", formConfig);
-    }
+    };
 
     function substitute(str, data) {
       return str.replace(/\${\w*}/g, (match) => {
         var key = match.replace(/\${/, '').replace(/}/, '').trim();
         return data[key] || match;
       });
-    }
+    };
 
     $scope.substituteAndDeployTemplate = () => {
       var objects = $scope.objects;
@@ -257,6 +245,7 @@ module Kubernetes {
         $scope.$on('WatcherNamespaceChanged', () => {
           log.debug("Namespace changed");
           setTimeout(() => {
+            reloadDataIfNoWatch();
             applyObjects(objects);
             Core.$apply($scope);
           }, 500);
@@ -266,7 +255,7 @@ module Kubernetes {
       } else {
         applyObjects(objects);
       }
-    }
+    };
 
     function applyObjects(objects) {
       _.forEach(objects, (object:any) => {
@@ -300,8 +289,20 @@ module Kubernetes {
         custom: "This operation is permanent once completed!",
         customClass: "alert alert-warning"
       }).open();
-    }
+    };
 
+    function reloadDataIfNoWatch() {
+      if (!$scope.watch || !$scope.watch.connected) {
+        // TODO register a handler of bad watches so we invoke this in a polling form automatically?
+        model.templatesResource.query((response) => {
+          if (response) {
+            var items = response.items;
+            model.templates = items;
+            Core.$apply($scope);
+          }
+        });
+      }
+    }
   }]);
 }
 
