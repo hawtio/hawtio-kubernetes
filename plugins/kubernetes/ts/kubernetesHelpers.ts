@@ -756,7 +756,7 @@ module Kubernetes {
         if (count > 1) {
           query = "(" + query + ")";
         }
-        query = 'pod_namespace:"' + namespace + '" AND pod:' + query;
+        query = 'kubernetes.namespace:"' + namespace + '" AND kubernetes.pod_name:' + query;
         link += "?_a=(query:(query_string:(query:'" + query + "')))";
         var newWindow = $window.open(link, "viewLogs");
       }
