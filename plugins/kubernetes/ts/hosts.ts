@@ -9,12 +9,15 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
+    $scope.$on('kubernetesModelUpdated', function () {
+      Core.$apply($scope);
+    });
 
     $scope.tableConfig = {
       data: 'model.hosts',
-      showSelectionCheckbox: true,
+      showSelectionCheckbox: false,
       enableRowClickSelection: false,
-      multiSelect: true,
+      multiSelect: false,
       selectedItems: [],
       filterOptions: {
         filterText: $location.search()["q"] || ''
