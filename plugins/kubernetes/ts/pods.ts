@@ -1,5 +1,6 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesPlugin.ts"/>
+/// <reference path="utilHelpers.ts"/>
 
 module Kubernetes {
 
@@ -68,7 +69,11 @@ module Kubernetes {
         },
         {
           field: '$podIP',
-          displayName: 'Pod IP'
+          displayName: 'Pod IP',
+          customSortField: (field) => {
+            // use a custom sort to sort ip address
+            return Kubernetes.sortByPodIp(field.$podIP);
+          }
         }
       ]
     };
