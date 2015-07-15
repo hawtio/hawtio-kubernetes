@@ -28,7 +28,7 @@ module Kubernetes {
 		url: UrlHelpers.join(apiUrl, WatchTypes.NAMESPACES),
 	});
 
-	var watches = <any> {};
+	export var watches = <any> {};
 	_.forEach(k8sTypes, (type) => {
 		watches[type] = _.assign(_.cloneDeep(baseWatch), {
       prefix: () => kubernetesApiPrefix(),

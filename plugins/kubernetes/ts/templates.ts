@@ -5,6 +5,23 @@ module Kubernetes {
     var model = $scope.model = KubernetesModel;
     $scope.filterText = "";
 
+    $scope.watch = watches[WatchTypes.TEMPLATES];
+    log.info("has watch " + $scope.watch);
+    if (!$scope.watch && !$scope.watch.connected) {
+      // TODO register a handler of bad watches
+      log.info("watcher is not connected for templates so lets load via the resource");
+      model.templatesResource.query((response) => {
+        log.info("Has response: " + response);
+        if (response) {
+          var items = response.items;
+          log.info("Got items!");
+          model.templates = items;
+          Core.$apply($scope);
+        }
+      });
+    }
+
+
     $scope.$watchCollection('model.namespaces', () => {
       if (!$scope.targetNamespace) {
         $scope.targetNamespace = model.currentNamespace();

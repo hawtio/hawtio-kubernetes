@@ -323,7 +323,9 @@ module Kubernetes {
 
     $scope.viewTemplates = () => {
       var returnTo = $location.url();
-      $location.path(Core.url('/kubernetes/templates')).search({'returnTo': returnTo});
+      var templatesPath = Core.url('/kubernetes/templates');
+      log.info("viewing templates at " + templatesPath);
+      $location.url(templatesPath).search({'returnTo': returnTo});
     }
 
     $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
