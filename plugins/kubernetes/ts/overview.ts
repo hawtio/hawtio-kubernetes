@@ -261,7 +261,7 @@ module Kubernetes {
       if (entity) {
         var namespace = getNamespace(entity);
         var id = getName(entity);
-        $location.path(UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
+        $location.path(UrlHelpers.join('/kubernetes/namespace', namespace, path, id));
       } else {
         log.warn("No entity for viewDetails!");
       }
