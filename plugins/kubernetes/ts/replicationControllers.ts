@@ -22,10 +22,29 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-        { field: '_key', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
-        { field: '$podCount', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
-        { field: '$replicas', displayName: 'Replicas', cellTemplate:$templateCache.get("desiredReplicas.html") },
-        { field: '$labelsText', displayName: 'Labels', cellTemplate: $templateCache.get("labelTemplate.html") }
+        { field: '_key',
+          displayName: 'ID',
+          cellTemplate: $templateCache.get("idTemplate.html")
+        },
+        { field: '$podCount',
+          displayName: 'Pods',
+          cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html"),
+          customSortField: (field) => {
+            // need to concat all the pod counters
+            var valid = field.$podCounters.valid || 0;
+            var waiting = field.$podCounters.waiting || 0;
+            var error = field.$podCounters.error || 0;
+            return valid + waiting + error;
+          }
+        },
+        { field: '$replicas',
+          displayName: 'Replicas',
+          cellTemplate:$templateCache.get("desiredReplicas.html")
+        },
+        { field: '$labelsText',
+          displayName: 'Labels',
+          cellTemplate: $templateCache.get("labelTemplate.html")
+        }
       ]
     };
 

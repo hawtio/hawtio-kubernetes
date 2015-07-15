@@ -24,11 +24,33 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-        { field: '_key', displayName: 'ID', cellTemplate: $templateCache.get("idTemplate.html") },
-        { field: '$serviceUrl', displayName: 'Address', cellTemplate: $templateCache.get("portalAddress.html") },
-        { field: '$podCount', displayName: 'Pods', cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html") },
-        { field: '$selectorText', displayName: 'Selector', cellTemplate: $templateCache.get("selectorTemplate.html") },
-        { field: '$labelsText', displayName: 'Labels', cellTemplate: $templateCache.get("labelTemplate.html") }
+        { field: '_key',
+          displayName: 'ID',
+          cellTemplate: $templateCache.get("idTemplate.html")
+        },
+        { field: '$serviceUrl',
+          displayName: 'Address',
+          cellTemplate: $templateCache.get("portalAddress.html")
+        },
+        { field: '$podCount',
+          displayName: 'Pods',
+          cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html"),
+          customSortField: (field) => {
+            // need to concat all the pod counters
+            var valid = field.$podCounters.valid || 0;
+            var waiting = field.$podCounters.waiting || 0;
+            var error = field.$podCounters.error || 0;
+            return valid + waiting + error;
+          }
+        },
+        { field: '$selectorText',
+          displayName: 'Selector',
+          cellTemplate: $templateCache.get("selectorTemplate.html")
+        },
+        { field: '$labelsText',
+          displayName: 'Labels',
+          cellTemplate: $templateCache.get("labelTemplate.html")
+        }
       ]
     };
 

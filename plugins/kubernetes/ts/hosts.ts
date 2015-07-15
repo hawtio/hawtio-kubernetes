@@ -40,7 +40,14 @@ module Kubernetes {
         },
         { field: '$podsLink',
           displayName: 'Pods',
-          cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html")
+          cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html"),
+          customSortField: (field) => {
+            // need to concat all the pod counters
+            var valid = field.$podCounters.valid || 0;
+            var waiting = field.$podCounters.waiting || 0;
+            var error = field.$podCounters.error || 0;
+            return valid + waiting + error;
+          }
         }
       ]
     };
