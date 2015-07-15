@@ -189,7 +189,7 @@ module Kubernetes {
           log.debug("Fetched OAuth config: ", config);
           var master:string = config.master_uri;
           if (!master && config.api && config.api.k8s) {
-            var masterUri = new URI().host(config.api.k8s.hostPort).path(config.api.k8s.prefix);
+            var masterUri = new URI().host(config.api.k8s.hostPort).path("").query("");
             if (config.api.k8s.proto) {
               masterUri.protocol(config.api.k8s.proto);
             }

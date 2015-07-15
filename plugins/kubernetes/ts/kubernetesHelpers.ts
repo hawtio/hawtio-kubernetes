@@ -31,6 +31,7 @@ module Kubernetes {
   export var kibanaServiceName = "kibana";
   export var fabric8ForgeServiceName = "fabric8-forge";
   export var gogsServiceName = "gogs";
+  export var isOpenShift = true;
 
   export function kubernetesNamespacePath() {
     var ns = currentKubernetesNamespace();
@@ -54,7 +55,11 @@ module Kubernetes {
     if (!prefix) {
       prefix = 'oapi';
     }
-    return Core.trimLeading(prefix, '/');
+    var answer = Core.trimLeading(prefix, '/');
+    if (!isOpenShift) {
+      return UrlHelpers.join(apiPrefix(), defaultOSApiVersion, "proxy", kubernetesNamespacePath(), "services/templates", answer);
+    }
+    return answer;
   }
 
   export function masterApiUrl() {

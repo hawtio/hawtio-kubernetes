@@ -31,12 +31,14 @@ module Kubernetes {
 	var watches = <any> {};
 	_.forEach(k8sTypes, (type) => {
 		watches[type] = _.assign(_.cloneDeep(baseWatch), {
-      prefix: kubernetesApiPrefix()
+      prefix: () => kubernetesApiPrefix(),
+			valid: () => true
     });
   });
 	_.forEach(osTypes, (type) => {
 		watches[type] = _.assign(_.cloneDeep(baseWatch), {
-      prefix: UrlHelpers.join(openshiftApiPrefix())
+      prefix: () => openshiftApiPrefix(),
+			valid: () => isOpenShift || (type === "templates" || type === "buildconfigs")
     });
   });
 
@@ -44,28 +46,59 @@ module Kubernetes {
     name: 'KubernetesWatcherInit',
     depends: ['hawtio-oauth'],
     task: (next) => {
-      var uri = new URI(masterApiUrl());
-      uri.path(namespaceWatch.url);
-      var url = uri.toString();
+			isOpenShift = true;
 
+			function watchNamespaces() {
+				var uri = new URI(masterApiUrl());
+				uri.path(namespaceWatch.url);
+				var url = uri.toString();
+				HawtioOAuth.authenticatedHttpRequest({
+					url: uri.toString()
+				}).done((data) => {
+					_.forEach(data.items, (namespace:any) => {
+						if (!namespace.metadata.uid) {
+							namespace.metadata.uid = namespace.metadata.namespace + '/' + namespace.metadata.name;
+						}
+						namespaceWatch.objects[namespace.metadata.uid] = namespace;
+					});
+					namespaceWatch.objectArray.length = 0;
+					_.forIn(namespaceWatch.objects, (object, key) => {
+						namespaceWatch.objectArray.push(object);
+					});
+					next();
+				}).fail((xHr, textStatus, errorThrown) => {
+					log.warn(textStatus, ": ", errorThrown);
+					HawtioOAuth.doLogout();
+				});
+			}
+
+
+			var rootUri = new URI(masterApiUrl());
+			rootUri.path("/").query("");
+      var rootUriText = rootUri.toString();
+			log.info("About to query root paths: " + masterApiUrl());
       HawtioOAuth.authenticatedHttpRequest({
-        url: uri.toString()
+        url: rootUriText
       }).done((data) => {
-          _.forEach(data.items, (namespace:any) => {
-            if (!namespace.metadata.uid) {
-              namespace.metadata.uid = namespace.metadata.namespace + '/' + namespace.metadata.name;
-            }
-            namespaceWatch.objects[namespace.metadata.uid] = namespace;
-          });
-          namespaceWatch.objectArray.length = 0;
-          _.forIn(namespaceWatch.objects, (object, key) => {
-            namespaceWatch.objectArray.push(object);
-          });
-          next();
+				if (data) {
+					var paths = data.paths;
+					if (paths) {
+						isOpenShift = false;
+						angular.forEach(paths, (path) => {
+							if (angular.isString(path) && (path === "/oapi" || path === "oapi")) {
+								isOpenShift = true;
+							}
+						});
+					}
+					log.info("isOpenShift " + isOpenShift + " with paths " + paths);
+				}
+				watchNamespaces();
       }).fail((xHr, textStatus, errorThrown) => {
-        log.warn(textStatus, ": ", errorThrown);
-        HawtioOAuth.doLogout();
+        log.warn("Failed to find root paths: " + textStatus, ": ", errorThrown);
+				watchNamespaces();
       });
+
+
     }
   });
 
@@ -218,17 +251,21 @@ module Kubernetes {
 						// reset the object rather than re-assigning them
 						// ensures that any watches in controllers won't
 						// be watching a stale object
-						watch.url = UrlHelpers.join(watch.prefix, WatchTypes.NAMESPACES, namespace, type);
-						watch.connectTime = <Number> undefined;
-						_.forEach(_.keys(watch.objects), (uid) => {
-							_.forEach(watch.onDeletedActions, (action:any) => action(watch.objects[uid]));
-							delete watch.objects[uid];
-						});
-						watch.objectArray.length = 0;
-						watch.socket = <WebSocket> undefined;
+						if (watch.valid()) {
+							watch.url = UrlHelpers.join(watch.prefix(), WatchTypes.NAMESPACES, namespace, type);
+							watch.connectTime = <Number> undefined;
+							_.forEach(_.keys(watch.objects), (uid) => {
+								_.forEach(watch.onDeletedActions, (action:any) => action(watch.objects[uid]));
+								delete watch.objects[uid];
+							});
+							watch.objectArray.length = 0;
+							watch.socket = <WebSocket> undefined;
+						}
           });
 					_.forIn(watches, (watch, type) => {
-						createWatch(type, watch, userDetails, $rootScope);
+						if (watch.valid()) {
+							createWatch(type, watch, userDetails, $rootScope);
+						}
 					});
 				}
 				$rootScope.$broadcast("WatcherNamespaceChanged", namespace);

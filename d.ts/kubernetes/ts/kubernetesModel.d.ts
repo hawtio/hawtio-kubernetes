@@ -25,7 +25,7 @@ declare module Kubernetes {
         appViews: any[];
         appFolders: any[];
         fetched: boolean;
-        isOpenShift: boolean;
+        showRunButton: boolean;
         serviceApps: Array<any>;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;

@@ -68,7 +68,7 @@ module Kubernetes {
     public appFolders = [];
 
     public fetched = false;
-    public isOpenShift = false;
+    public showRunButton = false;
 
     public get serviceApps():Array<any> {
       return _.filter(this.services, (s) => {
@@ -377,7 +377,15 @@ module Kubernetes {
           });
         });
 
+        var hasTemplatesService = isOpenShift;
         this.services.forEach((service) => {
+          var name = getName(service);
+          if (name === "templates") {
+            var podCounters = service.$podCounters;
+            if (podCounters && podCounters.valid) {
+              hasTemplatesService = true;
+            }
+          }
           // now lets see if we can find an app with an RC of the same selector
           var matchesApp = null;
           appViews.forEach((appView) => {
@@ -392,7 +400,6 @@ module Kubernetes {
           if (matchesApp) {
             matchesApp.services.push(service);
           } else {
-            var name = getName(service);
             var $iconUrl = service.$iconUrl;
             appViews.push({
               appPath: "/dummyPath/" + name,
@@ -407,6 +414,8 @@ module Kubernetes {
             });
           }
         });
+        this.showRunButton = hasTemplatesService;
+
         angular.forEach(this.routes, (route) => {
           var metadata = route.metadata || {};
           var spec = route.spec || {};
@@ -601,7 +610,6 @@ module Kubernetes {
           case WatchTypes.BUILDS:
           case WatchTypes.BUILD_CONFIGS:
           case WatchTypes.IMAGE_STREAMS:
-            $scope.isOpenShift = true;
             // don't put a break here :-)
 					default:
 						$scope[type] = populateKeys(objects[type]);

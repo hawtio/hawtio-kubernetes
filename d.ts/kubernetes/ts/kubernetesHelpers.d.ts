@@ -21,6 +21,7 @@ declare module Kubernetes {
     var kibanaServiceName: string;
     var fabric8ForgeServiceName: string;
     var gogsServiceName: string;
+    var isOpenShift: boolean;
     function kubernetesNamespacePath(): string;
     function apiPrefix(): string;
     function osApiPrefix(): string;
