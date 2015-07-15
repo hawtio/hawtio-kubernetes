@@ -48,9 +48,9 @@ module Kubernetes {
       uri.path(namespaceWatch.url);
       var url = uri.toString();
 
-      // can't use $http here
-      $.get(uri.toString())
-        .done((data) => {
+      HawtioOAuth.authenticatedHttpRequest({
+        url: uri.toString()
+      }).done((data) => {
           _.forEach(data.items, (namespace:any) => {
             if (!namespace.metadata.uid) {
               namespace.metadata.uid = namespace.metadata.namespace + '/' + namespace.metadata.name;
@@ -61,7 +61,11 @@ module Kubernetes {
           _.forIn(namespaceWatch.objects, (object, key) => {
             namespaceWatch.objectArray.push(object);
           });
-        }).always(next);
+          next();
+      }).fail((xHr, textStatus, errorThrown) => {
+        log.warn(textStatus, ": ", errorThrown);
+        HawtioOAuth.doLogout();
+      });
     }
   });
 

@@ -1,9 +1,9 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesHelpers.ts"/>
 
-declare var OSOAuthConfig: Kubernetes.OpenShiftOAuthConfig;
-declare var GoogleOAuthConfig: Kubernetes.GoogleOAuthConfig;
-declare var KeycloakConfig: Kubernetes.KeyCloakAuthConfig;
+declare var OSOAuthConfig:any;
+declare var GoogleOAuthConfig:any;
+declare var KeycloakConfig:any;
 
 module Kubernetes {
 
