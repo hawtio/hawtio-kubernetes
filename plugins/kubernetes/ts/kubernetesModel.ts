@@ -601,7 +601,7 @@ module Kubernetes {
 					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
 						angular.forEach(items, (item) => {
-              item.proxyUrl = kubernetesProxyUrlForService(kubernetesApiUrl(), item);
+              item.proxyUrl = kubernetesProxyUrlForService(masterApiUrl(), item);
             });
 						$scope[type] = items;
 						break;
