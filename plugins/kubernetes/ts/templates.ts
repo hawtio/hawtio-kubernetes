@@ -134,7 +134,7 @@ module Kubernetes {
         routeServiceName = getName(service);
       }
       log.debug("Service: ", service);
-      if (!routeServiceName && (!template.parameters || template.parameters.length === 0)) {
+      if ((!routeServiceName || !isOpenShift) && (!template.parameters || template.parameters.length === 0)) {
         log.debug("No parameters required, deploying objects");
         applyObjects(template.objects);
         return;
@@ -154,7 +154,7 @@ module Kubernetes {
         property.type = 'string';
         formConfig.properties[param.name] = property;
       });
-      if (routeServiceName) {
+      if (routeServiceName && isOpenShift) {
         formConfig.properties.createRoute = {
           type: 'boolean',
           default: true,
