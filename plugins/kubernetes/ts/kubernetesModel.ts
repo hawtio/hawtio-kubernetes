@@ -617,7 +617,7 @@ module Kubernetes {
         log.debug("Type: ", type, " object: ", $scope[type]);
 			});
 			$scope.maybeInit();
-      $rootScope.$broadcast('kubernetesModelUpdated');
+      $rootScope.$broadcast('kubernetesModelUpdated', $scope);
       Core.$apply($rootScope);
 		});
 
