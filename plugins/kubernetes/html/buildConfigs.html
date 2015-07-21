@@ -39,6 +39,16 @@
       </span>
     </div>
   </script>
+  <script type="text/ng-template" id="buildConfigEnvironmentViewsTemplate.html">
+    <div class="ngCellText">
+      <span ng-repeat="view in row.entity.$fabric8EnvironmentViews track by $index">
+        <a title="{{view.description}}" ng-show="view.url" ng-href="{{view.url}}" class="btn btn-default">
+          <i class="{{view.iconClass}}" ng-show="view.iconClass"></i>
+          {{view.label}}
+        </a>
+      </span>
+    </div>
+  </script>
   <script type="text/ng-template" id="buildConfigTeamViewsTemplate.html">
     <div class="ngCellText">
       <span ng-repeat="view in row.entity.$fabric8TeamViews track by $index">

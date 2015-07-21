@@ -977,6 +977,19 @@ module Kubernetes {
         }
       }
 
+      function defaultPropertiesIfNotExistStartsWith(prefix, object, autoCreate = false) {
+        angular.forEach($fabric8Views, (view, name) => {
+          if (view && name.startsWith(prefix)) {
+            angular.forEach(object, (value, property) => {
+              var current = view[property];
+              if (!current) {
+                view[property] = value;
+              }
+            });
+          }
+        });
+      }
+
       var labels = metadata.labels || {};
       var annotations = metadata.annotations || {};
 
@@ -1062,18 +1075,25 @@ module Kubernetes {
         iconClass: "fa fa-users",
         description: "Team members for this project"
       });
+      defaultPropertiesIfNotExistStartsWith("fabric8.link.environment.", {
+        iconClass: "fa fa-cloud",
+        description: "The kubernetes namespace for this environment"
+      });
 
 
       // lets put the views into sections...
       var $fabric8CodeViews = {};
       var $fabric8BuildViews = {};
       var $fabric8TeamViews = {};
+      var $fabric8EnvironmentViews = {};
       angular.forEach($fabric8Views, (value, key) => {
         var view;
         if (key.indexOf("taiga") > 0 || key.indexOf("letschat") > 0) {
           view = $fabric8TeamViews;
         } else if (key.indexOf("jenkins") > 0) {
           view = $fabric8BuildViews;
+        } else if (key.indexOf(".environment.") > 0) {
+          view = $fabric8EnvironmentViews;
         } else {
           view = $fabric8CodeViews;
         }
@@ -1084,6 +1104,7 @@ module Kubernetes {
       buildConfig.$fabric8Views = $fabric8Views;
       buildConfig.$fabric8CodeViews = $fabric8CodeViews;
       buildConfig.$fabric8BuildViews = $fabric8BuildViews;
+      buildConfig.$fabric8EnvironmentViews = $fabric8EnvironmentViews;
       buildConfig.$fabric8TeamViews = $fabric8TeamViews;
 
     }
