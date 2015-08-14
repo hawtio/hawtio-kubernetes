@@ -378,6 +378,7 @@ module Kubernetes {
         });
 
         var hasTemplatesService = isOpenShift;
+        var noMatches = [];
         this.services.forEach((service) => {
           var name = getName(service);
           if (name === "templates") {
@@ -391,7 +392,9 @@ module Kubernetes {
           appViews.forEach((appView) => {
             appView.replicationControllers.forEach((replicationController) => {
               var repSelector = getSelector(replicationController);
-              if (repSelector && selectorMatches(repSelector, getSelector(service)) && getNamespace(service) == getNamespace(replicationController)) {
+              if (repSelector && 
+                  selectorMatches(repSelector, getSelector(service)) && 
+                  getNamespace(service) === getNamespace(replicationController)) {
                 matchesApp = appView;
               }
             });
@@ -400,6 +403,19 @@ module Kubernetes {
           if (matchesApp) {
             matchesApp.services.push(service);
           } else {
+            noMatches.push(service);
+          }
+        });
+        log.debug("no matches: ", noMatches);
+        noMatches.forEach((service) => {
+          var appView = _.find(appViews, (appView) => {
+            return _.any(appView.replicationControllers, (rc) => {
+              return _.startsWith(getName(rc), getName(service));
+            });
+          });
+          if (appView) {
+            appView.services.push(service);
+          } else {
             var $iconUrl = service.$iconUrl;
             appViews.push({
               appPath: "/dummyPath/" + name,
@@ -407,13 +423,14 @@ module Kubernetes {
               $info: {
                 $iconUrl: $iconUrl
               },
-              $iconUrl: $iconUrl,
+                $iconUrl: $iconUrl,
               replicationControllers: [],
               pods: service.$pods || [],
               services: [service]
             });
           }
         });
+
         this.showRunButton = hasTemplatesService;
 
         angular.forEach(this.routes, (route) => {
