@@ -1127,7 +1127,7 @@ module Kubernetes {
     }
   }
 
-  export function enrichBuildConfigs(buildConfigs, sortedBuilds) {
+  export function enrichBuildConfigs(buildConfigs, sortedBuilds = null) {
     angular.forEach(buildConfigs, (buildConfig) => {
       enrichBuildConfig(buildConfig, sortedBuilds);
     });

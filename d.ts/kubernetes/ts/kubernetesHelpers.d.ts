@@ -132,7 +132,7 @@ declare module Kubernetes {
      */
     function gitPathToUrl(iconPath: any, branch?: string): string;
     function enrichBuildConfig(buildConfig: any, sortedBuilds: any): void;
-    function enrichBuildConfigs(buildConfigs: any, sortedBuilds: any): any;
+    function enrichBuildConfigs(buildConfigs: any, sortedBuilds?: any): any;
     function enrichBuilds(builds: any): {}[];
     function enrichBuild(build: any): any;
     function enrichDeploymentConfig(deploymentConfig: any): void;

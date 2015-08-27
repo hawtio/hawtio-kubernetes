@@ -9,12 +9,9 @@ module Kubernetes {
       $scope.kubernetes = KubernetesState;
       $scope.model = KubernetesModel;
       $scope.KubernetesBuilds = KubernetesBuilds;
-      $scope.$on('kubernetesModelUpdated', function () {
-        Core.$apply($scope);
-      });
 
       $scope.tableConfig = {
-        data: 'buildConfigs',
+        data: 'model.buildconfigs',
         showSelectionCheckbox: true,
         enableRowClickSelection: false,
         multiSelect: true,
@@ -133,6 +130,7 @@ module Kubernetes {
       }
 
       function updateData() {
+/*
         var url = buildConfigsRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
@@ -147,6 +145,7 @@ module Kubernetes {
           error(function (data, status, headers, config) {
             log.warn("Failed to load " + url + " " + data + " " + status);
           });
+*/
       }
 
       updateData();

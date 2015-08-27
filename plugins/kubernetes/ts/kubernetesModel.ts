@@ -70,6 +70,8 @@ module Kubernetes {
     public fetched = false;
     public showRunButton = false;
 
+    public buildconfigs = [];
+
     public get serviceApps():Array<any> {
       return _.filter(this.services, (s) => {
         return s.$host && s.$serviceUrl && s.$podCount
@@ -354,6 +356,8 @@ module Kubernetes {
       }
 
       this.hosts = tmpHosts;
+
+      enrichBuildConfigs(this.buildconfigs);
     }
 
     protected updateApps() {

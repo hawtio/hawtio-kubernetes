@@ -103,17 +103,17 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <div ng-hide="fetched">
+      <div ng-hide="model.fetched">
         <div class="align-center">
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
-      <div ng-show="fetched">
-        <div ng-hide="buildConfigs.length" class="align-center">
+      <div ng-show="model.fetched">
+        <div ng-hide="model.buildconfigs.length" class="align-center">
           <p class="alert alert-info">There are no build configurations available.</p>
           <a class="btn btn-primary" href="{{baseUri}}/kubernetes/buildConfigCreate"><i class="fa fa-wrench"></i> Add Build Configuration</a>
         </div>
-        <div ng-show="buildConfigs.length">
+        <div ng-show="model.buildconfigs.length">
           <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
                  hawtio-simple-table="tableConfig"></table>
         </div>
