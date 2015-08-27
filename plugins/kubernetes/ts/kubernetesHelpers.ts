@@ -1047,6 +1047,11 @@ module Kubernetes {
       }
 
       // add some icons and descriptions
+      defaultPropertiesIfNotExist("fabric8.link.repository.browse", {
+        label: "Browse...",
+        description: "Browse the source code of this repository",
+        iconClass: "fa fa-external-link"
+      });
       defaultPropertiesIfNotExist("fabric8.link.jenkins.job", {
         iconClass: "fa fa-tasks",
         description: "View the Jenkins Job for this build"
@@ -1071,7 +1076,19 @@ module Kubernetes {
         iconClass: "fa fa-check-square-o",
         description: "Issue tracker for this project"
       });
+      defaultPropertiesIfNotExist("fabric8.link.issues", {
+        iconClass: "fa fa-check-square-o",
+        description: "Issues for this project"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.releases", {
+        iconClass: "fa fa-tag",
+        description: "Issues for this project"
+      });
       defaultPropertiesIfNotExist("fabric8.link.taiga.team", {
+        iconClass: "fa fa-users",
+        description: "Team members for this project"
+      });
+      defaultPropertiesIfNotExist("fabric8.link.team", {
         iconClass: "fa fa-users",
         description: "Team members for this project"
       });
@@ -1088,7 +1105,7 @@ module Kubernetes {
       var $fabric8EnvironmentViews = {};
       angular.forEach($fabric8Views, (value, key) => {
         var view;
-        if (key.indexOf("taiga") > 0 || key.indexOf("letschat") > 0) {
+        if (key.indexOf("taiga") > 0 || key.indexOf(".issue") > 0 || key.indexOf("letschat") > 0|| key.indexOf(".team") > 0) {
           view = $fabric8TeamViews;
         } else if (key.indexOf("jenkins") > 0) {
           view = $fabric8BuildViews;
