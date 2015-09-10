@@ -84,7 +84,8 @@ module Kubernetes {
     if (_.any(NamespacedTypes.osTypes, (t) => t === type)) {
       return openshiftApiPrefix();
     }
-    return null;
+    // lets assume its an OpenShift extension type
+    return openshiftApiPrefix();
   }
 
   export function kubernetesApiUrl() {
@@ -93,6 +94,18 @@ module Kubernetes {
 
   export function openshiftApiUrl() {
     return UrlHelpers.join(masterApiUrl(), openshiftApiPrefix());
+  }
+
+  export function uriTemplateForKubernetesKind(type) {
+    var urlTemplate = '';
+    switch (type) {
+      case WatchTypes.NAMESPACES:
+        urlTemplate = UrlHelpers.join('namespaces');
+        break;
+      default:
+        urlTemplate = UrlHelpers.join('namespaces/:namespace', type, ':id');
+    }
+    return urlTemplate;
   }
 
   export function updateOrCreateObject(object, KubernetesModel, success?: (data) => void, error?: (error) => void) {
@@ -112,8 +125,14 @@ module Kubernetes {
     kind = kind.toLowerCase().pluralize();
     var resource = KubernetesModel[kind + 'Resource'];
     if (!resource) {
-      log.debug("Unable to find resource for kind: ", kind);
-      return;
+      var injector = HawtioCore.injector;
+      var $resource = injector ? injector.get("$resource") : null;
+      if (!$resource) {
+        log.warn("Cannot create resource for " + kind + " due to missing $resource");
+        return;
+      }
+      resource = createResource(kind, uriTemplateForKubernetesKind(kind), $resource, KubernetesModel);
+      KubernetesModel[kind + 'Resource'] = resource;
     }
     var name = getName(object);
     if (!name) {

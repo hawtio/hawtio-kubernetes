@@ -41,11 +41,19 @@ declare module Kubernetes {
         selectedNamespace: string;
     }
     class WatchTypes {
-        static NAMESPACES: string;
         static ENDPOINTS: string;
+        static EVENTS: string;
+        static NAMESPACES: string;
+        static NODES: string;
+        static PERSISTENT_VOLUMES: string;
+        static PERSISTENT_VOLUME_CLAIMS: string;
         static PODS: string;
         static REPLICATION_CONTROLLERS: string;
+        static RESOURCE_QUOTAS: string;
+        static OAUTH_CLIENTS: string;
+        static SECRETS: string;
         static SERVICES: string;
+        static SERVICE_ACCOUNTS: string;
         static TEMPLATES: string;
         static ROUTES: string;
         static BUILD_CONFIGS: string;

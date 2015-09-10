@@ -591,6 +591,7 @@ module Kubernetes {
     }
   }
 
+
   /**
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
@@ -603,14 +604,7 @@ module Kubernetes {
     // create all of our resource classes
     var typeNames = watcher.getTypes();
     _.forEach(typeNames, (type:string) => {
-      var urlTemplate = '';
-      switch (type) {
-        case WatchTypes.NAMESPACES:
-          urlTemplate = UrlHelpers.join('namespaces');
-          break;
-        default:
-          urlTemplate = UrlHelpers.join('namespaces/:namespace', type, ':id');
-      }
+      var urlTemplate = uriTemplateForKubernetesKind(type);
       $scope[type + 'Resource'] = createResource(type, urlTemplate, $resource, $scope);
     });
 

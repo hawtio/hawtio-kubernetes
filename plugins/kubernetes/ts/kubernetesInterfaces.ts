@@ -51,11 +51,20 @@ module Kubernetes {
   }
 
 	export class WatchTypes {
-		public static get NAMESPACES():string { return "namespaces"; }
 		public static get ENDPOINTS():string { return "endpoints"; }
+		public static get EVENTS():string { return "events"; }
+    public static get NAMESPACES():string { return "namespaces"; }
+		public static get NODES():string { return "nodes"; }
+		public static get PERSISTENT_VOLUMES():string { return "persistentvolumes"; }
+		public static get PERSISTENT_VOLUME_CLAIMS():string { return "persistentvolumeclaims"; }
 		public static get PODS():string { return "pods"; }
 		public static get REPLICATION_CONTROLLERS():string { return "replicationcontrollers"; }
+		public static get RESOURCE_QUOTAS():string { return "resourcequotas"; }
+		public static get OAUTH_CLIENTS():string { return "oauthclients"; }
+		public static get SECRETS():string { return "secrets"; }
 		public static get SERVICES():string { return "services"; }
+		public static get SERVICE_ACCOUNTS():string { return "serviceaccounts"; }
+
 		public static get TEMPLATES():string { return "templates"; }
 		public static get ROUTES():string { return "routes"; }
 		public static get BUILD_CONFIGS():string { return "buildconfigs"; }
@@ -72,9 +81,18 @@ module Kubernetes {
     public static get k8sTypes():Array<string> {
       return [
         WatchTypes.ENDPOINTS,
+        WatchTypes.EVENTS,
+        WatchTypes.NODES,
+        WatchTypes.PERSISTENT_VOLUMES,
+        WatchTypes.PERSISTENT_VOLUME_CLAIMS,
         WatchTypes.PODS,
+        WatchTypes.OAUTH_CLIENTS,
         WatchTypes.REPLICATION_CONTROLLERS,
-        WatchTypes.SERVICES
+        WatchTypes.RESOURCE_QUOTAS,
+        WatchTypes.PERSISTENT_VOLUMES,
+        WatchTypes.SECRETS,
+        WatchTypes.SERVICES,
+        WatchTypes.SERVICE_ACCOUNTS
       ];
     }
     public static get osTypes():Array<string> {
