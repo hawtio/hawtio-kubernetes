@@ -27,6 +27,8 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, '/namespace/:namespace/services/:id'), route('service.html', false))
                   .when(UrlHelpers.join(context, '/namespace/:namespace/serviceCreate'), route('serviceCreate.html', false))
                   .when(UrlHelpers.join(context, '/namespace/:namespace/serviceEdit/:id'), route('serviceEdit.html', false))
+                  .when(UrlHelpers.join(context, '/namespace/:namespace/events'), route('events.html', false))
+                  .when(UrlHelpers.join(context, 'events'), route('events.html', false))
                   .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'templates'), route('templates.html', false))
@@ -98,6 +100,11 @@ module Kubernetes {
                       .title(() => 'Pods')
                       .build();
 
+    var events = builder.id('kube-events')
+                      .href(() => UrlHelpers.join(context, 'events'))
+                      .title(() => 'Events')
+                      .build();
+
     var hosts = builder.id('kube-hosts')
                       .href(() => UrlHelpers.join(context, 'hosts'))
                       .title(() => 'Hosts')
@@ -154,7 +161,7 @@ module Kubernetes {
                          .href(() => context)
                          .title(() => 'Kubernetes')
                          .isValid(() => !Core.isRemoteConnection())
-                         .tabs(apps, services, controllers, pods, hosts, overview)
+                         .tabs(apps, services, controllers, pods, events, hosts, overview)
                          .build();
     HawtioNav.add(mainTab);
 

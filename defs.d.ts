@@ -12,6 +12,7 @@
 /// <reference path="d.ts/kubernetes/ts/connect.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/deploymentConfig.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/deploymentConfigs.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/events.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesModel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/host.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/utilHelpers.d.ts"/>
