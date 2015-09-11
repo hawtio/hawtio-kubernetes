@@ -24,11 +24,13 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-        { field: 'firstTimestamp',
-          displayName: 'First Seen'
+        { field: '$first',
+          displayName: 'First Seen',
+          cellTemplate: $templateCache.get("firstTimestampTemplate.html")
         },
-        { field: 'lastTimestamp',
-          displayName: 'Last Seen'
+        { field: '$last',
+          displayName: 'Last Seen',
+          cellTemplate: $templateCache.get("lastTimestampTemplate.html")
         },
         { field: 'count',
           displayName: 'Count'

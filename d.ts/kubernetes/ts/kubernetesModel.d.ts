@@ -27,6 +27,7 @@ declare module Kubernetes {
         fetched: boolean;
         showRunButton: boolean;
         buildconfigs: any[];
+        events: any[];
         serviceApps: Array<any>;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;

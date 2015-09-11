@@ -138,6 +138,8 @@ declare module Kubernetes {
     function enrichBuild(build: any): any;
     function enrichDeploymentConfig(deploymentConfig: any): void;
     function enrichDeploymentConfigs(deploymentConfigs: any): any;
+    function enrichEvent(event: any): void;
+    function enrichEvents(events: any): any;
     function enrichImageRepository(imageRepository: any): void;
     function enrichImageRepositories(imageRepositories: any): any;
     function containerLabelClass(labelType: string): string;

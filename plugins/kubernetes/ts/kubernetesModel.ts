@@ -71,6 +71,7 @@ module Kubernetes {
     public showRunButton = false;
 
     public buildconfigs = [];
+    public events = [];
 
     public get serviceApps():Array<any> {
       return _.filter(this.services, (s) => {
@@ -358,6 +359,7 @@ module Kubernetes {
       this.hosts = tmpHosts;
 
       enrichBuildConfigs(this.buildconfigs);
+      enrichEvents(this.events);
     }
 
     protected updateApps() {

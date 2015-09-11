@@ -1226,6 +1226,31 @@ module Kubernetes {
     return deploymentConfigs;
   }
 
+
+  export function enrichEvent(event) {
+    if (event) {
+      var metadata = event.metadata || {};
+
+      var firstTimestamp = event.firstTimestamp;
+      if (firstTimestamp) {
+        var d = new Date(firstTimestamp);
+        event.$firstTimestamp = d;
+      }
+      var lastTimestamp = event.lastTimestamp;
+      if (lastTimestamp) {
+        var d = new Date(lastTimestamp);
+        event.$lastTimestamp = d;
+      }
+    }
+  }
+
+  export function enrichEvents(events) {
+    angular.forEach(events, (event) => {
+      enrichEvent(event);
+    });
+    return events;
+  }
+
   export function enrichImageRepository(imageRepository) {
     if (imageRepository) {
       var triggerUrl:string = null;
