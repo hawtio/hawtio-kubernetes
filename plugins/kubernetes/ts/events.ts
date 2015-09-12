@@ -24,11 +24,11 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       columnDefs: [
-        { field: '$first',
+        { field: '$firstTimestamp',
           displayName: 'First Seen',
           cellTemplate: $templateCache.get("firstTimestampTemplate.html")
         },
-        { field: '$last',
+        { field: '$lastTimestamp',
           displayName: 'Last Seen',
           cellTemplate: $templateCache.get("lastTimestampTemplate.html")
         },
@@ -48,7 +48,8 @@ module Kubernetes {
           displayName: 'Reason'
         },
         { field: 'source',
-          displayName: 'Subject'
+          displayName: 'Source',
+          cellTemplate: $templateCache.get("eventSourceTemplate.html")
         },
         { field: 'message',
           displayName: 'Message'

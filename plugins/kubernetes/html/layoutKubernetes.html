@@ -41,6 +41,16 @@
           title="{{label.key}}">{{label.title}}</span>
   </div>
 </script>
+<script type="text/ng-template" id="eventSourceTemplate.html">
+  <div class="ngCellText" ng-init="labels=row.entity.source">
+    <p ng-show="data"><strong>Labels</strong></p>
+    <span ng-repeat="(key, value) in labels track by $index"
+          class="pod-label badge"
+          class="background-light-grey mouse-pointer"
+          title="{{key}}"
+          ng-click="$emit('labelFilterUpdate', key + '=' + value)">{{value}}</span>
+  </div>
+</script>
 <script type="text/ng-template" id="hostTemplate.html">
   <div class="ngCellText" ng-init="host=row.entity.$host">
     <span class="pod-label badge"
