@@ -89,6 +89,20 @@
     {{row.entity.$lastTimestamp.relative()}}
   </div>
 </script>
+<script type="text/ng-template" id="eventKindTemplate.html">
+  <div class="ngCellText" ng-init="kind=row.entity.involvedObject.kind">
+    <span class="pod-label badge"
+          class="background-light-grey mouse-pointer"
+          ng-click="$emit('labelFilterUpdate', 'kind=' + kind)">{{kind}}</span>
+  </div>
+</script>
+<script type="text/ng-template" id="eventNameTemplate.html">
+  <div class="ngCellText" ng-init="name=row.entity.involvedObject.name">
+    <span class="pod-label badge"
+          class="background-light-grey mouse-pointer"
+          ng-click="$emit('labelFilterUpdate', 'name=' + name)">{{name}}</span>
+  </div>
+</script>
 <script type="text/ng-template" id="statusTemplate.html">
   <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.metadata.name}} is {{entity.status.phase}}">
     <!-- in detail view -->

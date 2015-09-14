@@ -1241,6 +1241,18 @@ module Kubernetes {
         var d = new Date(lastTimestamp);
         event.$lastTimestamp = d;
       }
+      var labels = angular.copy(event.source || {});
+      var involvedObject = event.involvedObject || {};
+      var name = involvedObject.name;
+      var kind = involvedObject.kind;
+      if (name) {
+        labels['name'] = name;
+      }
+      if (kind) {
+        labels['kind'] = kind;
+      }
+      event.$labelsText = Kubernetes.labelsToString(labels);
+
     }
   }
 

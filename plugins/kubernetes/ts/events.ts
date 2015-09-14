@@ -36,10 +36,12 @@ module Kubernetes {
           displayName: 'Count'
         },
         { field: 'involvedObject.name',
-          displayName: 'Name'
+          displayName: 'Name',
+          cellTemplate: $templateCache.get("eventNameTemplate.html")
         },
         { field: 'involvedObject.kind',
-          displayName: 'Kind'
+          displayName: 'Kind',
+          cellTemplate: $templateCache.get("eventKindTemplate.html")
         },
         { field: 'involvedObject.fieldPath',
           displayName: 'Subject'
