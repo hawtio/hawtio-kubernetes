@@ -43,7 +43,7 @@ module Kubernetes {
           displayName: 'Status',
           cellTemplate: $templateCache.get("statusTemplate.html")
         },
-        { field: '$eventsLink',
+        { field: '$eventCount',
           displayName: 'Events',
           cellTemplate: $templateCache.get("eventSummaryTemplate.html")
         },

@@ -1266,6 +1266,7 @@ module Kubernetes {
       function clearEvents(entity) {
         entity.$events = [];
         entity.$eventsLink = null;
+        entity.$eventCount = 0;
       }
 
       function updateEvent(entity, event) {
@@ -1274,6 +1275,7 @@ module Kubernetes {
           if (!entity.$eventsLink) {
             entity.$eventsLink = UrlHelpers.join("/kubernetes/namespace/", currentKubernetesNamespace(), "events") + "?q=kind%3D" + entity.kind + "%20name%3D" + entity.metadata.name;
           }
+          entity.$eventCount = entity.$events.length;
         }
       }
 
