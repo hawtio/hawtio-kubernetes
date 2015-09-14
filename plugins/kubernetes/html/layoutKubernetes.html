@@ -103,6 +103,13 @@
           ng-click="$emit('labelFilterUpdate', 'name=' + name)">{{name}}</span>
   </div>
 </script>
+<script type="text/ng-template" id="eventSummaryTemplate.html">
+  <div class="ngCellText" title="Number of events on this resource">
+    <a ng-show="row.entity.$eventsLink" href="{{row.entity.$eventsLink}}">
+      <span class="badge">{{row.entity.$events.length}}</span>
+    </a>
+  </div>
+</script>
 <script type="text/ng-template" id="statusTemplate.html">
   <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.metadata.name}} is {{entity.status.phase}}">
     <!-- in detail view -->

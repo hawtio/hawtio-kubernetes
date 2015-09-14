@@ -359,7 +359,7 @@ module Kubernetes {
       this.hosts = tmpHosts;
 
       enrichBuildConfigs(this.buildconfigs);
-      enrichEvents(this.events);
+      enrichEvents(this.events, this);
     }
 
     protected updateApps() {

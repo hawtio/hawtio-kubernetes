@@ -43,6 +43,10 @@ module Kubernetes {
           displayName: 'Status',
           cellTemplate: $templateCache.get("statusTemplate.html")
         },
+        { field: '$eventsLink',
+          displayName: 'Events',
+          cellTemplate: $templateCache.get("eventSummaryTemplate.html")
+        },
         {
           field: '$restartCount',
           displayName: 'Restarts'

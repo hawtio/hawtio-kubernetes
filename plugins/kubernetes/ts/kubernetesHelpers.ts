@@ -1256,10 +1256,50 @@ module Kubernetes {
     }
   }
 
-  export function enrichEvents(events) {
+  export function enrichEvents(events, model = null) {
     angular.forEach(events, (event) => {
       enrichEvent(event);
     });
+
+    // lets update links to the events for each pod and RC
+    if (model) {
+      function clearEvents(entity) {
+        entity.$events = [];
+        entity.$eventsLink = null;
+      }
+
+      function updateEvent(entity, event) {
+        if (entity) {
+          entity.$events.push(event);
+          if (!entity.$eventsLink) {
+            entity.$eventsLink = UrlHelpers.join("/kubernetes/namespace/", currentKubernetesNamespace(), "events") + "?q=kind%3D" + entity.kind + "%20name%3D" + entity.metadata.name;
+          }
+        }
+      }
+
+      var pods = model.pods || [];
+      var rcs = model.replicationControllers || [];
+      angular.forEach(pods, clearEvents);
+      angular.forEach(rcs, clearEvents);
+
+      angular.forEach(events, (event) => {
+        var involvedObject = event.involvedObject || {};
+        var name = involvedObject.name;
+        var kind = involvedObject.kind;
+        var ns = model.currentNamespace();
+        if (name && kind && ns) {
+          var entity = null;
+          if (kind === "ReplicationController") {
+            entity = model.getReplicationController(ns, name);
+          } else if (kind === "Pod") {
+            entity = model.getPod(ns, name);
+          }
+          if (entity) {
+            updateEvent(entity, event);
+          }
+        }
+      });
+    }
     return events;
   }
 
