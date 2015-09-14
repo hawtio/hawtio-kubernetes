@@ -26,10 +26,16 @@
          ng-click="flipRaw()"
          title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'From' : 'Raw'}}</a>
       <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-primary pull-right"
+         href="/kubernetes/namespace/{{item.metadata.namespace}}/events?q=kind%3DPod%20name%3D{{item.metadata.name}}"
+         title="View the events for this Pod">
+        <i class="fa fa-ellipsis-v"></i> Events
+      </a>
+      <span class="pull-right">&nbsp;</span>
 
       <div ng-show="item.$jolokiaUrl" ng-controller="Kubernetes.ConnectController" class="pull-right">
         <span>&nbsp;</span>
-        <a class="btn btn-primary pull-right"
+        <a class="btn btn-default pull-right"
            ng-click="doConnect(item)"
            title="Open a new window and connect to this container">
           <i class="fa fa-sign-in"></i> Connect
