@@ -32,7 +32,7 @@ module Developer {
         build.$creationDate = d;
       }
       if (name) {
-        build.$viewLink = UrlHelpers.join("workspaces", name, "projects");
+        build.$viewLink = UrlHelpers.join("workspaces", name);
       }
     }
     return build;
@@ -64,15 +64,15 @@ module Developer {
     var answer = createWorkspaceBreadcrumbs();
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     if (workspaceName) {
-      answer.push(
-        {
-          href: UrlHelpers.join("/workspaces", workspaceName, "projects"),
-          label: "Projects",
-          title: "View all the projects"
-        }
-      );
-
       if (projectName) {
+        answer.push(
+          {
+            href: UrlHelpers.join("/workspaces", workspaceName, "projects"),
+            label: "Projects",
+            title: "View all the projects"
+          }
+        );
+
         answer.push(
           {
             href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
@@ -84,6 +84,27 @@ module Developer {
       return processChildren(answer, children);
     }
     return answer;
+  }
+
+  export function createWorkspaceSubNavBars() {
+    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    return activateCurrent([
+      {
+        href: UrlHelpers.join("/workspaces", workspaceName),
+        label: "Projects",
+        title: "View the projects for this workspace"
+      },
+      {
+        href: UrlHelpers.join("/workspaces", workspaceName, "runtime/apps"),
+        label: "Runtime",
+        title: "View the runtime environment for this workspace"
+      },
+      {
+        href: UrlHelpers.join("/workspaces", workspaceName, "detail"),
+        label: "Detail",
+        title: "View the workspace detail"
+      }
+    ]);
   }
 
   export function createProjectSubNavBars(projectName) {
