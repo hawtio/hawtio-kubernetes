@@ -9,13 +9,11 @@
 </script>
 <script type="text/ng-template" id="subTabsTemplate.html">
   <div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig">
-    <div class="container-fluid">
-        <ul class="nav navbar-nav navbar-persistent">
-          <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
-              title="{{breadcrumb.title}}">
-            <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-        </ul>
-    </div>
+    <ul class="nav navbar-nav nav-tabs">
+      <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
+        title="{{breadcrumb.title}}">
+        <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+      </ul>
   </div>
 </script>
 <script type="text/ng-template" id="runButton.html">
@@ -175,7 +173,7 @@
     </select>
 		</span>
   </script>
-<div class="row" ng-controller="Kubernetes.TopLevel">
+<div ng-controller="Kubernetes.TopLevel">
   <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over uploader="uploader" over-class="ready-drop">
     <div class="row kubernetes-view" ng-view></div>
   </div>

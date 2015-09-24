@@ -20,7 +20,6 @@
   ],
   "dependencies": {
     "hawtio-core": "~2.0.16",
-    "hawtio-core-navigation": "~2.0.40",
     "hawtio-forms": "~2.0.15",
     "hawtio-ui": "~2.0.54",
     "hawtio-utilities": "~2.0.21",
@@ -29,7 +28,8 @@
     "hawtio-wiki": "~2.0.31",
     "hawtio-forge": "~2.0.22",
     "hawtio-oauth": "~2.0.21",
-    "angular-ui-codemirror": "~0.3.0"
+    "angular-ui-codemirror": "~0.3.0",
+    "urijs": "uri.js#~1.16.1"
   },
   "devDependencies": {
     "bootstrap": "~3.3.1",
