@@ -2,6 +2,16 @@
   <script type="text/ng-template" id="truncatedDescriptionTag.html">
     <a href="" ng-click="openFullDescription(template)">More...</a>
   </script>
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
+
   <div class="row filter-header">
     <div class="col-md-12">
       <span ng-show="!formConfig" ng-include="'namespaceSelector.html'"></span>

@@ -60,6 +60,18 @@ module Developer {
     return answer;
   }
 
+
+  export function createEnvironmentBreadcrumbs($scope, $location, $routeParams) {
+    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    return createWorkspaceBreadcrumbs([
+      {
+        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
+        label: "Runtime",
+        title: "View the runtime of the workspace: " + workspaceName
+      }
+    ]);
+  }
+
   export function createProjectBreadcrumbs(projectName = null, children = null) {
     var answer = createWorkspaceBreadcrumbs();
     var workspaceName = Kubernetes.currentKubernetesNamespace();
@@ -95,7 +107,7 @@ module Developer {
         title: "View the projects for this workspace"
       },
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "runtime/apps"),
+        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
         title: "View the runtime environment for this workspace"
       },
@@ -133,6 +145,44 @@ module Developer {
       }
     ]);
   }
+
+
+  export function createEnvironmentSubNavBars($scope, $location, $routeParams) {
+    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    return activateCurrent([
+      {
+        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
+        label: "Apps",
+        title: "View the apps for this workspace"
+      },
+      {
+        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "services"),
+        label: "Services",
+        title: "View the apps for this workspace"
+      },
+      {
+        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "replicationControllers"),
+        label: "Controllers",
+        title: "View the Replication Controllers for this workspace"
+      },
+      {
+        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "pods"),
+        label: "Pods",
+        title: "View the pods for this workspace"
+      },
+      {
+        href: UrlHelpers.join("/kubernetes/hosts"),
+        label: "Nodes",
+        title: "View the nodes for this workspace"
+      },
+      {
+        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, ""),
+        label: "Angry Pods",
+        title: "Try the Angry Pods game!"
+      },
+    ]);
+  }
+
 
   /**
    * Removes the URL query string if its inside the given text

@@ -386,6 +386,9 @@ module Kubernetes {
     KubernetesState.selectedNamespace = $scope.namespace;
     $scope.forgeEnabled = isForgeEnabled();
 
+    $scope.breadcrumbConfig = Developer.createEnvironmentBreadcrumbs($scope, $location, $routeParams);
+    $scope.subTabConfig = Developer.createEnvironmentSubNavBars($scope, $location, $routeParams);
+
     $scope.codeMirrorOptions = {
       lineWrapping : true,
       lineNumbers: true,

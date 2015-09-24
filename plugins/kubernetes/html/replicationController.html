@@ -1,4 +1,13 @@
 <div ng-controller="Kubernetes.ReplicationControllerController">
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
   <div class="row row-header">
     <div class="col-md-12">
       <span ng-show="model.fetched && !rawMode" class="icon-heading">

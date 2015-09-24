@@ -14,6 +14,15 @@
          title="Edit the number of replicas of this controller">{{row.entity.spec.replicas || 0}}</a>
     </div>
   </script>
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
   <div class="row filter-header">
     <div class="col-md-12" ng-hide="model.replicationControllers.length">
       <span ng-include="'namespaceSelector.html'"></span>

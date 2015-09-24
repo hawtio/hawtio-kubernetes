@@ -1,4 +1,13 @@
 <div ng-controller="Kubernetes.Services">
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
   <div class="row filter-header">
     <div class="col-md-12" ng-hide="model.services.length">
       <span ng-include="'namespaceSelector.html'"></span>

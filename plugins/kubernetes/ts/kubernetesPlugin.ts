@@ -30,6 +30,7 @@ module Kubernetes {
                   .when(UrlHelpers.join(context, '/namespace/:namespace/events'), route('events.html', false))
                   .when(UrlHelpers.join(context, 'events'), route('events.html', false))
                   .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
+                  .when(UrlHelpers.join(context, '/namespace/:namespace/apps'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
                   .when(UrlHelpers.join(context, 'templates'), route('templates.html', false))
                   .when(UrlHelpers.join(context, 'hosts'), route('hosts.html', false))
