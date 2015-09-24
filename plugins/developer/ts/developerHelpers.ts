@@ -95,7 +95,8 @@ module Developer {
         title: "View the builds for this project"
       },
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
+        //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
         label: "Environments",
         title: "View the environments for this project"
       },

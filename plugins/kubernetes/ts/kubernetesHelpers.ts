@@ -990,7 +990,10 @@ module Kubernetes {
       var metadata = buildConfig.metadata || {};
       var name = metadata.name;
       buildConfig.$name = name;
+      var ns = metadata.namespace || currentKubernetesNamespace();
       if (name) {
+        buildConfig.$viewLink = UrlHelpers.join("workspaces", ns, "projects", name);
+
         angular.forEach([false, true], (flag) => {
           angular.forEach(buildConfig.triggers, (trigger) => {
             if (!triggerUrl) {
@@ -1218,7 +1221,8 @@ module Kubernetes {
       var configId = labels.buildconfig;
       build.$configId = configId;
       if (configId) {
-        build.$configLink = UrlHelpers.join("kubernetes/buildConfigs", configId);
+        //build.$configLink = UrlHelpers.join("kubernetes/buildConfigs", configId);
+        build.$configLink = UrlHelpers.join("workspaces", currentKubernetesNamespace(), "projects", configId);
       }
       var creationTimestamp = getCreationTimestamp(build);
       if (creationTimestamp) {
@@ -1226,7 +1230,8 @@ module Kubernetes {
         build.$creationDate = d;
       }
       if (name) {
-        build.$viewLink = UrlHelpers.join("kubernetes/builds", name);
+        //build.$viewLink = UrlHelpers.join("kubernetes/builds", name);
+        build.$viewLink = UrlHelpers.join("workspaces", currentKubernetesNamespace(), "projects", configId, "builds", name);
         build.$logsLink = UrlHelpers.join("kubernetes/buildLogs", name);
       }
       var podName = build.podName;

@@ -24,7 +24,7 @@ module Developer {
           {
             field: 'metadata.name',
             displayName: 'Name',
-            cellTemplate: $templateCache.get("buildConfigLinkTemplate.html")
+            cellTemplate: $templateCache.get("idTemplate.html")
           },
 /*
           {
