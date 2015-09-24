@@ -23,7 +23,7 @@ module Kubernetes {
       },
       columnDefs: [
         { field: '_key',
-          displayName: 'ID',
+          displayName: 'Name',
           cellTemplate: $templateCache.get("idTemplate.html")
         },
         { field: '$podCount',

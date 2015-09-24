@@ -34,7 +34,7 @@ module Kubernetes {
       columnDefs: [
         {
           field: '_key',
-          displayName: 'ID',
+          displayName: 'Name',
           defaultSort: true,
           cellTemplate: $templateCache.get("idTemplate.html")
         },
