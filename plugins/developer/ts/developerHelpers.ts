@@ -88,7 +88,7 @@ module Developer {
 
   export function createProjectSubNavBars(projectName) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
-    return [
+    return activateCurrent([
       {
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds"),
         label: "Builds",
@@ -109,7 +109,25 @@ module Developer {
         label: "Detail",
         title: "View the project detail"
       }
-    ];
+    ]);
+  }
+
+  function activateCurrent(navBarItems) {
+    var injector = HawtioCore.injector;
+    var $location = injector ? injector.get("$location") : null;
+    if ($location) {
+      var path = $location.path();
+      log.info("Found path: " + path);
+      var found = false;
+      angular.forEach(navBarItems, (item) => {
+        var href = item.href;
+        if (!found && href && href.startsWith(path)) {
+          item.active = true;
+          found = true;
+        }
+      });
+    }
+    return navBarItems;
   }
 
   function processChildren(answer, children) {
