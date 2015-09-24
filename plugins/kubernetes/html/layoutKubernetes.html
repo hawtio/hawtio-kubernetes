@@ -7,6 +7,17 @@
     </ol>
   </div>
 </script>
+<script type="text/ng-template" id="subTabsTemplate.html">
+  <div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav navbar-persistent">
+          <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
+              title="{{breadcrumb.title}}">
+            <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+        </ul>
+    </div>
+  </div>
+</script>
 <script type="text/ng-template" id="runButton.html">
   <button ng-show="model.showRunButton"
     class="btn btn-success pull-right"

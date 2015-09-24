@@ -20,6 +20,7 @@ module Kubernetes {
           label: "Detail",
           title: "View the project detail"
         }]);
+        $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id);
 
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();

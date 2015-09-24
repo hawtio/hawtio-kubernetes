@@ -86,6 +86,32 @@ module Developer {
     return answer;
   }
 
+  export function createProjectSubNavBars(projectName) {
+    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    return [
+      {
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds"),
+        label: "Builds",
+        title: "View the builds for this project"
+      },
+      {
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
+        label: "Environments",
+        title: "View the environments for this project"
+      },
+      {
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "tools"),
+        label: "Tools",
+        title: "View the tools for this project"
+      },
+      {
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "detail"),
+        label: "Detail",
+        title: "View the project detail"
+      }
+    ];
+  }
+
   function processChildren(answer, children) {
     if (children) {
       if (angular.isArray(children)) {

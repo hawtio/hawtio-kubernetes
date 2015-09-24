@@ -64,11 +64,20 @@
       {{row.entity.$creationDate.relative()}}
     </div>
   </script>
+
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
   <div class="row filter-header">
     <div class="col-md-12" >
       <span ng-show="!id">
-        <span ng-include="'namespaceSelector.html'"></span>
-        <hawtio-filter ng-show="builds.length" 
+        <hawtio-filter ng-show="builds.length"
                        ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter builds..."></hawtio-filter>
