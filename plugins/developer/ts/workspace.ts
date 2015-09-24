@@ -16,6 +16,10 @@ module Developer {
         $scope.config = KubernetesSchema.definitions.kubernetes_Namespace;
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+        $scope.breadcrumbConfig = createWorkspaceBreadcrumbs([{
+          label: "Detail",
+          title: "View the workspace detail"
+        }]);
 
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();

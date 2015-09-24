@@ -37,4 +37,63 @@ module Developer {
     }
     return build;
   }
+
+  export function createWorkspaceBreadcrumbs(children = null) {
+    var answer = [
+      {
+        href: "/workspaces",
+        label: "Workspaces",
+        title: "View all the workspaces"
+      }
+    ];
+    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    if (workspaceName) {
+      answer.push(
+        {
+          href: "/workspaces/" + workspaceName,
+          label: workspaceName,
+          title: "View the workspace: " + workspaceName
+        }
+      );
+      return processChildren(answer, children);
+    }
+    return answer;
+  }
+
+  export function createProjectBreadcrumbs(projectName = null, children = null) {
+    var answer = createWorkspaceBreadcrumbs();
+    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    if (workspaceName) {
+      answer.push(
+        {
+          href: UrlHelpers.join("/workspaces", workspaceName, "projects"),
+          label: "Projects",
+          title: "View all the projects"
+        }
+      );
+
+      if (projectName) {
+        answer.push(
+          {
+            href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
+            label: projectName,
+            title: "View the project: " + projectName
+          }
+        );
+      }
+      return processChildren(answer, children);
+    }
+    return answer;
+  }
+
+  function processChildren(answer, children) {
+    if (children) {
+      if (angular.isArray(children)) {
+        answer = answer.concat(children);
+      } else {
+        answer.push(children);
+      }
+    }
+    return answer;
+  }
 }

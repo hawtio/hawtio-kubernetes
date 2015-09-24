@@ -9,8 +9,11 @@ module Developer {
 
   _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
     $routeProvider.when(context, route('workspaces.html', false))
-                  .when(UrlHelpers.join(context, '/:namespace'), route('workspace.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace'), route('projects.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/detail'), route('workspace.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects'), route('projects.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/projects/:id'), Kubernetes.route('buildConfig.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/projects/:id/detail'), Kubernetes.route('buildConfig.html', false))
   }]);
   
 

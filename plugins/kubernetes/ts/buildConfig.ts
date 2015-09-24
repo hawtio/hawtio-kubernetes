@@ -16,6 +16,10 @@ module Kubernetes {
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+        $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id, [{
+          label: "Detail",
+          title: "View the project detail"
+        }]);
 
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();

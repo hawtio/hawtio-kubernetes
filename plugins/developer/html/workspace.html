@@ -1,5 +1,9 @@
 <div ng-controller="Developer.WorkspaceController">
   <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
     <div class="col-md-12">
       <a class="btn btn-default pull-right"
               href="{{baseUri}}/kubernetes/workspaces"><i class="fa fa-list"></i></a>

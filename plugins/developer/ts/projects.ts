@@ -82,6 +82,8 @@ module Developer {
       };
 
       Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+      $scope.breadcrumbConfig = createProjectBreadcrumbs();
+
 
       $scope.isLoggedIntoGogs = Forge.isLoggedIntoGogs;
 
