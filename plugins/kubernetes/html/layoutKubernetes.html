@@ -1,9 +1,9 @@
 <script type="text/ng-template" id="breadcrumbsTemplate.html">
   <div ng-show="breadcrumbConfig" ng-init="breadcrumbConfig = $parent.breadcrumbConfig">
     <ol class="breadcrumb">
-      <li ng-repeat="breadcrumb in breadcrumbConfig" class="{{$last ? 'active' : ''}}" title="{{breadcrumb.title}}">
-        <a ng-show="breadcrumb.href && !$last" href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-        <span ng-hide="breadcrumb.href && !$last">{{breadcrumb.label}}</span>
+      <li ng-repeat="breadcrumb in breadcrumbConfig" class="{{breadcrumb.active ? 'active' : ''}}" title="{{breadcrumb.title}}">
+        <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+        <span ng-hide="breadcrumb.href && !breadcrumb.active">{{breadcrumb.label}}</span>
     </ol>
   </div>
 </script>

@@ -112,16 +112,29 @@ module Developer {
     ]);
   }
 
+  /**
+   * Removes the URL query string if its inside the given text
+   */
+  function trimQuery(text) {
+    if (text) {
+      var idx = text.indexOf("?");
+      if (idx >= 0) {
+        return text.substring(0, idx);
+      }
+    }
+    return text;
+  }
+
   function activateCurrent(navBarItems) {
     var injector = HawtioCore.injector;
     var $location = injector ? injector.get("$location") : null;
     if ($location) {
-      var path = $location.path();
-      log.info("Found path: " + path);
+      var path = trimQuery($location.path());
       var found = false;
       angular.forEach(navBarItems, (item) => {
         var href = item.href;
-        if (!found && href && href.startsWith(path)) {
+        var trimHref = trimQuery(href);
+        if (!found && trimHref && trimHref === path) {
           item.active = true;
           found = true;
         }
@@ -138,6 +151,7 @@ module Developer {
         answer.push(children);
       }
     }
+    activateCurrent(answer);
     return answer;
   }
 }
