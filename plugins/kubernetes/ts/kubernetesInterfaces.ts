@@ -73,6 +73,7 @@ module Kubernetes {
 		public static get IMAGE_STREAMS():string { return "imagestreams"; }
 		public static get POLICIES():string { return "policies"; }
 		public static get POLICY_BINDINGS():string { return "policybindings"; }
+    public static get PROJECTS():string { return "projects"; }
 		public static get ROLE_BINDINGS():string { return "rolebindings"; }
 		public static get ROLES():string { return "roles"; }
 	}
@@ -86,7 +87,6 @@ module Kubernetes {
         WatchTypes.PERSISTENT_VOLUMES,
         WatchTypes.PERSISTENT_VOLUME_CLAIMS,
         WatchTypes.PODS,
-        WatchTypes.OAUTH_CLIENTS,
         WatchTypes.REPLICATION_CONTROLLERS,
         WatchTypes.RESOURCE_QUOTAS,
         WatchTypes.PERSISTENT_VOLUMES,
@@ -104,8 +104,10 @@ module Kubernetes {
         WatchTypes.BUILD_CONFIGS,
         WatchTypes.DEPLOYMENT_CONFIGS,
         WatchTypes.IMAGE_STREAMS,
+        WatchTypes.OAUTH_CLIENTS,
         WatchTypes.POLICIES,
         WatchTypes.POLICY_BINDINGS,
+        WatchTypes.PROJECTS,
         //WatchTypes.ROLE_BINDINGS,
         //WatchTypes.ROLES
       ];

@@ -252,7 +252,7 @@ _module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (use
           // ensures that any watches in controllers won't
           // be watching a stale object
           if (watch.valid()) {
-            watch.url = UrlHelpers.join(watch.prefix(), WatchTypes.NAMESPACES, namespace, type);
+            watch.url = UrlHelpers.join(watch.prefix(), Kubernetes.namespacePathForKind(type, namespace));
             watch.connectTime = <Number> undefined;
             _.forEach(_.keys(watch.objects), (uid) => {
               _.forEach(watch.onDeletedActions, (action:any) => action(watch.objects[uid]));
@@ -270,7 +270,7 @@ _module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (use
       }
       $rootScope.$broadcast("WatcherNamespaceChanged", namespace);
     }
-  }
+  };
 
   createWatch(WatchTypes.NAMESPACES, namespaceWatch, userDetails, $rootScope, (event) => {
     // log.debug("Got event: ", event);

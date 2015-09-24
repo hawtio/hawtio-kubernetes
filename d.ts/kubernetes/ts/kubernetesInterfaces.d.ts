@@ -62,6 +62,7 @@ declare module Kubernetes {
         static IMAGE_STREAMS: string;
         static POLICIES: string;
         static POLICY_BINDINGS: string;
+        static PROJECTS: string;
         static ROLE_BINDINGS: string;
         static ROLES: string;
     }

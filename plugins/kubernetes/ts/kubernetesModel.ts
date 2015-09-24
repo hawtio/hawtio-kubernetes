@@ -72,6 +72,8 @@ module Kubernetes {
 
     public buildconfigs = [];
     public events = [];
+    public workspaces = [];
+    public projects = [];
 
     public get serviceApps():Array<any> {
       return _.filter(this.services, (s) => {

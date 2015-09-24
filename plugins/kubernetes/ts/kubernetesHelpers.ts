@@ -96,16 +96,53 @@ module Kubernetes {
     return UrlHelpers.join(masterApiUrl(), openshiftApiPrefix());
   }
 
+  export function resourcesUriForKind(type) {
+    return UrlHelpers.join(masterApiUrl(), prefixForType(type), namespacePathForKind(type, currentKubernetesNamespace()));
+  }
+
   export function uriTemplateForKubernetesKind(type) {
     var urlTemplate = '';
     switch (type) {
       case WatchTypes.NAMESPACES:
+      case "Namespaces":
         urlTemplate = UrlHelpers.join('namespaces');
+        break;
+      case WatchTypes.PROJECTS:
+      case "Projects":
+        urlTemplate = UrlHelpers.join('projects');
         break;
       default:
         urlTemplate = UrlHelpers.join('namespaces/:namespace', type, ':id');
     }
     return urlTemplate;
+  }
+
+  export function namespacePathForKind(type, ns) {
+    var urlTemplate = '';
+    switch (type) {
+      case WatchTypes.NAMESPACES:
+      case "Namespaces":
+      case "Namespace":
+        return UrlHelpers.join('namespaces');
+      case WatchTypes.NODES:
+      case "Nodes":
+      case "node":
+        return UrlHelpers.join('nodes');
+      case WatchTypes.PROJECTS:
+      case "Projects":
+      case "Project":
+        return UrlHelpers.join('projects');
+      case WatchTypes.OAUTH_CLIENTS:
+      case "OAuthClients":
+      case "OAuthClient":
+        return UrlHelpers.join('oauthclients');
+      case WatchTypes.PERSISTENT_VOLUMES:
+      case "PersistentVolumes":
+      case "PersistentVolume":
+        return UrlHelpers.join('persisentvolumes');
+      default:
+        return UrlHelpers.join('namespaces', ns, type);
+    }
   }
 
   export function updateOrCreateObject(object, KubernetesModel, success?: (data) => void, error?: (error) => void) {
@@ -345,7 +382,8 @@ module Kubernetes {
       $location.path('/kubernetes/templates').search({'returnTo': returnTo});
     }
 
-    $scope.namespace = KubernetesState.selectedNamespace || defaultNamespace;
+    $scope.namespace = $routeParams.namespace || KubernetesState.selectedNamespace || defaultNamespace;
+    KubernetesState.selectedNamespace = $scope.namespace;
     $scope.forgeEnabled = isForgeEnabled();
 
     $scope.codeMirrorOptions = {
@@ -562,6 +600,10 @@ module Kubernetes {
    */
   export function entityPageLink(entity) {
     if (entity) {
+      var viewLink = entity["$viewLink"];
+      if (viewLink) {
+        return viewLink;
+      }
       var id = getName(entity);
       var kind = getKind(entity);
       if (kind && id) {

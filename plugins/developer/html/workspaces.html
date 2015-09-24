@@ -1,0 +1,66 @@
+<div ng-controller="Developer.WorkspacesController">
+  <div class="row filter-header">
+    <div class="col-md-12" ng-show="model.workspaces.length">
+      <span ng-show="!id">
+        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter workspaces..."></hawtio-filter>
+      </span>
+      <span class="pull-right">&nbsp;</span>
+      <button ng-show="id"
+              class="btn btn-primary pull-right"
+              ng-click="id = undefined"><i class="fa fa-list"></i></button>
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-primary pull-right"
+         title="Create a new workspace"
+         href="{{baseUri}}/workspaces/create"><i class="fa fa-plus"></i> Create Workspace</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="model.fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="model.fetched">
+        <div ng-hide="model.workspaces.length" class="align-center">
+          <p class="alert alert-info">There are no workspaces currently available.</p>
+        </div>
+        <div ng-show="model.workspaces.length">
+          <div ng-show="mode == 'list'">
+            <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
+                   hawtio-simple-table="tableConfig"></table>
+          </div>
+
+          <div ng-hide="mode == 'list'">
+            <div class="column-box"
+                 ng-repeat="workspace in model.workspaces | filter:filterTemplates | orderBy:'metadata.name' track by $index">
+              <div class="row">
+                <div class="col-md-2">
+                  <a href="{{workspace.$serviceUrl}}"
+                     target="_blank"
+                     title="Click to open this app">
+                    <img style="width: 64px; height: 64px;" ng-src="{{workspace.$iconUrl}}">
+                  </a>
+                </div>
+                <div class="col-md-9">
+                  <a href="{{workspace.$serviceUrl}}"
+                     target="_blank"
+                     title="Click to open this app">
+                    <h3 ng-bind="workspace.metadata.name"></h3>
+                  </a>
+                </div>
+<!--
+                <div class="col-md-1">
+                  <a href="" ng-click="deleteService(service)"><i class="fa fa-remove red"></i></a>
+                </div>
+-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -31,7 +31,9 @@ declare module Kubernetes {
     function prefixForType(type: string): string;
     function kubernetesApiUrl(): string;
     function openshiftApiUrl(): string;
+    function resourcesUriForKind(type: any): string;
     function uriTemplateForKubernetesKind(type: any): string;
+    function namespacePathForKind(type: any, ns: any): string;
     function updateOrCreateObject(object: any, KubernetesModel: any, success?: (data) => void, error?: (error) => void): void;
     function createResource(thing: string, urlTemplate: string, $resource: ng.resource.IResourceService, KubernetesModel: any): ng.resource.IResourceClass;
     function imageRepositoriesRestURL(): string;
@@ -86,7 +88,7 @@ declare module Kubernetes {
     /**
      * Returns a link to the detail page for the given entity
      */
-    function entityPageLink(entity: any): string;
+    function entityPageLink(entity: any): any;
     function resourceKindToUriPath(kind: any): string;
     /**
      * Returns the root URL for the kind
