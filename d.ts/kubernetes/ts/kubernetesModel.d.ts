@@ -1,6 +1,7 @@
 /// <reference path="../../includes.d.ts" />
 /// <reference path="kubernetesPlugin.d.ts" />
 declare module Kubernetes {
+    var FABRIC8_PROJECT_JSON: string;
     /**
      * The object which keeps track of all the pods, replication controllers, services and their associations
      */
@@ -30,6 +31,7 @@ declare module Kubernetes {
         events: any[];
         workspaces: any[];
         projects: any[];
+        project: any;
         serviceApps: Array<any>;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;
@@ -37,6 +39,9 @@ declare module Kubernetes {
         getReplicationController(namespace: any, id: any): any;
         getPod(namespace: any, id: any): any;
         podsForNamespace(namespace?: any): any[];
+        getBuildConfig(name: any): any;
+        getProject(name: any, ns?: any): any;
+        setProject(buildConfig: any): void;
         /**
          * Returns the current selected namespace or the default namespace
          */

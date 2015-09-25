@@ -3,6 +3,8 @@
 
 module Kubernetes {
 
+  export var FABRIC8_PROJECT_JSON = "fabric8ProjectJson";
+
   function byId(thing) {
     return thing.id;
   }
@@ -74,6 +76,7 @@ module Kubernetes {
     public events = [];
     public workspaces = [];
     public projects = [];
+    public project = null;
 
     public get serviceApps():Array<any> {
       return _.filter(this.services, (s) => {
@@ -103,6 +106,40 @@ module Kubernetes {
 
     public podsForNamespace(namespace = this.currentNamespace()) {
       return _.filter(this.pods, { namespace: namespace });
+    }
+
+    public getBuildConfig(name) {
+      return _.find(this.buildconfigs, { $name: name });
+    }
+
+    public getProject(name, ns = this.currentNamespace()) {
+      var buildConfig = this.project;
+      if (!buildConfig) {
+        var text = localStorage[FABRIC8_PROJECT_JSON];
+        if (text) {
+          try {
+            buildConfig = angular.fromJson(text);
+          } catch (e) {
+            log.warn("Could not parse json for " + FABRIC8_PROJECT_JSON + ". Was: " + text + ". " + e, e);
+          }
+        }
+      }
+      if (buildConfig && ns != getNamespace(buildConfig) && name != buildConfig.$name) {
+        buildConfig = this.getBuildConfig(name);
+      }
+      return buildConfig;
+    }
+
+
+    public setProject(buildConfig) {
+      this.project = buildConfig;
+      if (buildConfig) {
+        // lets store in local storage
+        var localStorage = inject("localStorage");
+        if (localStorage) {
+          localStorage[FABRIC8_PROJECT_JSON] = angular.toJson(buildConfig);
+        }
+      }
     }
 
     /**

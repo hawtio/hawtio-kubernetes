@@ -69,10 +69,22 @@ module Developer {
     var workspaceName = $routeParams.workspace;
     var project = $routeParams.project;
     if (workspaceName && project) {
-      var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", project, "namespace");
+      var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", project);
       namespacesLink = UrlHelpers.join(projectLink, "namespace");
       // TODO use the logical name?
       var envName = ns;
+      var buildConfig = null;
+      if ($scope.model) {
+        buildConfig = $scope.model.getProject(project, workspaceName);
+        if (buildConfig) {
+          // lets find the label for the namespace
+          var env = _.find(buildConfig.environments, { namespace: ns});
+          if (env) {
+            envName = env['label'] || envName;
+          }
+          log.info("env found: " + env + " for nameppace " + ns + " on buildConfig: " + buildConfig);
+        }
+      }
       var children = [
           {
             href: UrlHelpers.join(projectLink, "environments"),
@@ -154,8 +166,8 @@ module Developer {
         title: "View the builds for this project"
       },
       {
-        //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
+        //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
         label: "Environments",
         title: "View the environments for this project"
       },

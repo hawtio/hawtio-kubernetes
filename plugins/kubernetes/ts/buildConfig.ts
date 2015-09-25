@@ -39,6 +39,7 @@ module Kubernetes {
                   $scope.entity = data;
                   var sortedBuilds = null;
                   enrichBuildConfig(data, sortedBuilds);
+                  $scope.model.setProject($scope.entity);
                 }
                 $scope.fetched = true;
                 Core.$apply($scope);

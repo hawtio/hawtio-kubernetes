@@ -204,6 +204,14 @@ module Kubernetes {
     }
   }
 
+  /**
+   * Returns thevalue from the injector if its available or null
+   */
+  export function inject(name) {
+    var injector = HawtioCore.injector;
+    return injector ? injector.get(name) : null;
+  }
+
   export function createResource(thing:string, urlTemplate:string, $resource: ng.resource.IResourceService, KubernetesModel) {
     var prefix = prefixForType(thing);
     if (!prefix) {
@@ -1204,6 +1212,7 @@ module Kubernetes {
         var prefix = "fabric8.link.environment.";
         if (c && c.startsWith(prefix)) {
           var ens = c.substring(prefix.length);
+          env.namespace = ens;
           env.url = UrlHelpers.join("/workspaces", ns, "projects", name, "namespace", ens);
         }
         buildConfig.environments.push(env);
