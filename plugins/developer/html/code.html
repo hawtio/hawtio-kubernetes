@@ -1,0 +1,51 @@
+<div ng-controller="Kubernetes.BuildConfigController">
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
+  <div class="row filter-header">
+    <div class="col-md-12" ng-show="model.tools.length">
+      <span ng-show="!id">
+        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter tools..."></hawtio-filter>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="model.fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="model.fetched">
+        <div ng-hide="entity.tools.length" class="align-center">
+          <p class="alert alert-info">There are no tools currently available.</p>
+        </div>
+        <div ng-show="entity.tools.length">
+          <div ng-hide="entity.tools.length" class="align-center">
+            <p class="alert alert-info">There are no tools currently available.</p>
+          </div>
+          <div ng-repeat="env in entity.tools | filter:filterTemplates | orderBy:'label' track by $index">
+            <div class="row"
+                 title="{{env.description}}">
+              <div class="col-md-9">
+                <a href="{{env.url}}">
+                  <h3>
+                    <i class="{{env.iconClass}}"></i>
+                    {{env.label}}
+                  </h3>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
