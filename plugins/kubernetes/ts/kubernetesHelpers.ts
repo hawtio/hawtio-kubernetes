@@ -1209,6 +1209,14 @@ module Kubernetes {
         buildConfig.environments.push(env);
       });
 
+      buildConfig.tools = [];
+      angular.forEach($fabric8CodeViews, (env) => {
+        buildConfig.tools.push(env);
+      });
+      angular.forEach($fabric8TeamViews, (env) => {
+        buildConfig.tools.push(env);
+      });
+
     }
   }
 

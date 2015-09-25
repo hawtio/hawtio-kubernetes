@@ -24,25 +24,22 @@
         </div>
       </div>
       <div ng-show="model.fetched">
-        <div ng-hide="model.tools.length" class="align-center">
+        <div ng-hide="entity.tools.length" class="align-center">
           <p class="alert alert-info">There are no tools currently available.</p>
         </div>
-        <div ng-show="model.tools.length">
-          <div class="column-box"
-               ng-repeat="workspace in model.tools | filter:filterTemplates | orderBy:'metadata.name' track by $index">
-            <div class="row">
-              <div class="col-md-2">
-                <a href="{{workspace.$serviceUrl}}"
-                   target="_blank"
-                   title="Click to open this app">
-                  <img style="width: 64px; height: 64px;" ng-src="{{workspace.$iconUrl}}">
-                </a>
-              </div>
+        <div ng-show="entity.tools.length">
+          <div ng-hide="entity.tools.length" class="align-center">
+            <p class="alert alert-info">There are no tools currently available.</p>
+          </div>
+          <div ng-repeat="env in entity.tools | filter:filterTemplates | orderBy:'label' track by $index">
+            <div class="row"
+                 title="{{env.description}}">
               <div class="col-md-9">
-                <a href="{{workspace.$serviceUrl}}"
-                   target="_blank"
-                   title="Click to open this app">
-                  <h3 ng-bind="workspace.metadata.name"></h3>
+                <a href="{{env.url}}">
+                  <h3>
+                    <i class="{{env.iconClass}}"></i>
+                    {{env.label}}
+                  </h3>
                 </a>
               </div>
             </div>

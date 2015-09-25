@@ -89,6 +89,8 @@ module Kubernetes {
               //console.log("got data " + angular.toJson(data, true));
               $scope.builds = enrichBuilds(data.items);
               $scope.fetched = true;
+
+              $scope.buildConfig = _.find($scope.model.buildconfigs, {$name: $scope.buildConfigId});
             }
             Core.$apply($scope);
             next();

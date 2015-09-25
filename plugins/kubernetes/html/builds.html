@@ -82,6 +82,13 @@
                        css-class="input-xxlarge"
                        placeholder="Filter builds..."></hawtio-filter>
       </span>
+      <div class="pull-right" ng-repeat="view in buildConfig.$fabric8BuildViews | orderBy:'label'">
+        <a title="{{view.description}}" ng-show="view.url" ng-href="{{view.url}}" class="btn btn-default">
+          <i class="{{view.iconClass}}" ng-show="view.iconClass"></i>
+          {{view.label}}
+        </a>
+        <span class="pull-right" ng-show="view.url" >&nbsp;</span>
+      </div>
     </div>
   </div>
   <div class="row">
