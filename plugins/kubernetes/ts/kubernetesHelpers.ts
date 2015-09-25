@@ -383,7 +383,14 @@ module Kubernetes {
     }
 
     $scope.namespace = $routeParams.namespace || KubernetesState.selectedNamespace || defaultNamespace;
-    KubernetesState.selectedNamespace = $scope.namespace;
+    if ($scope.namespace != KubernetesState.selectedNamespace) {
+      KubernetesState.selectedNamespace = $scope.namespace;
+
+      // lets show page is going to reload
+      if ($scope.model) {
+        $scope.model.fetched = false;
+      }
+    }
     $scope.forgeEnabled = isForgeEnabled();
 
     $scope.breadcrumbConfig = Developer.createEnvironmentBreadcrumbs($scope, $location, $routeParams);
