@@ -994,6 +994,7 @@ module Kubernetes {
       var name = metadata.name;
       buildConfig.$name = name;
       var ns = metadata.namespace || currentKubernetesNamespace();
+      buildConfig.environments = [];
       if (name) {
         buildConfig.$viewLink = UrlHelpers.join("workspaces", ns, "projects", name);
 
@@ -1190,6 +1191,16 @@ module Kubernetes {
       buildConfig.$fabric8BuildViews = $fabric8BuildViews;
       buildConfig.$fabric8EnvironmentViews = $fabric8EnvironmentViews;
       buildConfig.$fabric8TeamViews = $fabric8TeamViews;
+
+      angular.forEach($fabric8EnvironmentViews, (env) => {
+        var c = env.class;
+        var prefix = "fabric8.link.environment.";
+        if (c && c.startsWith(prefix)) {
+          var ens = c.substring(prefix.length);
+          env.url = UrlHelpers.join("/workspaces", ns, "projects", name, "namespace", ens);
+        }
+        buildConfig.environments.push(env);
+      });
 
     }
   }

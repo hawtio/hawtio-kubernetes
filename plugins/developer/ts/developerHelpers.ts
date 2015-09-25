@@ -38,7 +38,7 @@ module Developer {
     return build;
   }
 
-  export function createWorkspaceBreadcrumbs(children = null) {
+  export function createWorkspaceBreadcrumbs(children = null, workspaceName = null) {
     var answer = [
       {
         href: "/workspaces",
@@ -46,7 +46,9 @@ module Developer {
         title: "View all the workspaces"
       }
     ];
-    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
+    }
     if (workspaceName) {
       answer.push(
         {
@@ -62,19 +64,43 @@ module Developer {
 
 
   export function createEnvironmentBreadcrumbs($scope, $location, $routeParams) {
-    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    var ns = Kubernetes.currentKubernetesNamespace();
+    var namespacesLink = "/kubernetes/namespace";
+    var workspaceName = $routeParams.workspace;
+    var project = $routeParams.project;
+    if (workspaceName && project) {
+      var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", project, "namespace");
+      namespacesLink = UrlHelpers.join(projectLink, "namespace");
+      // TODO use the logical name?
+      var envName = ns;
+      var children = [
+          {
+            href: UrlHelpers.join(projectLink, "environments"),
+            label: "Environments",
+            title: "View the environments for this project"
+          },
+          {
+            href: UrlHelpers.join(namespacesLink, ns, "apps"),
+            label: envName,
+            title: "View the runtime of the workspace: " + ns
+          }
+          ];
+      return createProjectBreadcrumbs(project, children, workspaceName);
+    }
     return createWorkspaceBreadcrumbs([
       {
-        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
+        href: UrlHelpers.join(namespacesLink, ns, "apps"),
         label: "Runtime",
-        title: "View the runtime of the workspace: " + workspaceName
+        title: "View the runtime of the workspace: " + ns
       }
     ]);
   }
 
-  export function createProjectBreadcrumbs(projectName = null, children = null) {
-    var answer = createWorkspaceBreadcrumbs();
-    var workspaceName = Kubernetes.currentKubernetesNamespace();
+  export function createProjectBreadcrumbs(projectName = null, children = null, workspaceName = null) {
+    if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
+    }
+    var answer = createWorkspaceBreadcrumbs(null, workspaceName);
     if (workspaceName) {
       if (projectName) {
         answer.push(
@@ -148,25 +174,32 @@ module Developer {
 
 
   export function createEnvironmentSubNavBars($scope, $location, $routeParams) {
-    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    var ns = Kubernetes.currentKubernetesNamespace();
+    var workspaceName = $routeParams.workspace;
+    var project = $routeParams.project;
+    var projectLink = "/kubernetes";
+    if (workspaceName && project) {
+      projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", project);
+    }
+    var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([
       {
-        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
+        href: UrlHelpers.join(namespacesLink, ns),
         label: "Apps",
         title: "View the apps for this workspace"
       },
       {
-        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "services"),
+        href: UrlHelpers.join(namespacesLink, ns, "services"),
         label: "Services",
         title: "View the apps for this workspace"
       },
       {
-        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "replicationControllers"),
+        href: UrlHelpers.join(namespacesLink, ns, "replicationControllers"),
         label: "Controllers",
         title: "View the Replication Controllers for this workspace"
       },
       {
-        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "pods"),
+        href: UrlHelpers.join(namespacesLink, ns, "pods"),
         label: "Pods",
         title: "View the pods for this workspace"
       },
@@ -176,7 +209,7 @@ module Developer {
         title: "View the nodes for this workspace"
       },
       {
-        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, ""),
+        href: UrlHelpers.join(namespacesLink, ns, "angryPods"),
         label: "Angry Pods",
         title: "Try the Angry Pods game!"
       },

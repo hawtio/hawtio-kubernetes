@@ -12,42 +12,51 @@ module Kubernetes {
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
   _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
-    $routeProvider.when(UrlHelpers.join(context, '/pods'), route('pods.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/podCreate'), route('podCreate.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/podEdit/:id'), route('podEdit.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/pods'), route('pods.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/pods/:id'), route('pod.html', false))
-                  .when(UrlHelpers.join(context, 'replicationControllers'), route('replicationControllers.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers'), route('replicationControllers.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers/:id'), route('replicationController.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerCreate'), route('replicationControllerCreate.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerEdit/:id'), route('replicationControllerEdit.html', false))
-                  .when(UrlHelpers.join(context, 'services'), route('services.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/services'), route('services.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/services/:id'), route('service.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/serviceCreate'), route('serviceCreate.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/serviceEdit/:id'), route('serviceEdit.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/events'), route('events.html', false))
-                  .when(UrlHelpers.join(context, 'events'), route('events.html', false))
-                  .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
-                  .when(UrlHelpers.join(context, '/namespace/:namespace/apps'), route('apps.html', false))
-                  .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
-                  .when(UrlHelpers.join(context, 'templates'), route('templates.html', false))
-                  .when(UrlHelpers.join(context, 'hosts'), route('hosts.html', false))
-                  .when(UrlHelpers.join(context, 'hosts/:id'), route('host.html', true))
-                  .when(UrlHelpers.join(context, 'builds'), route('builds.html', false))
-                  .when(UrlHelpers.join(context, 'builds/:id'), route('build.html', true))
-                  .when(UrlHelpers.join(context, 'buildLogs/:id'), route('buildLogs.html', true))
-                  .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
-                  .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
-                  .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
-                  .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
-                  .when(UrlHelpers.join(context, 'deploymentConfigs'), route('deploymentConfigs.html', false))
-                  .when(UrlHelpers.join(context, 'deploymentConfigs/:id'), route('deploymentConfig.html', true))
-                  .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
-                  .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
-                  .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
-                  .when(context, { redirectTo: "/workspaces" });
+
+    $routeProvider
+      .when(UrlHelpers.join(context, '/pods'), route('pods.html', false))
+      .when(UrlHelpers.join(context, 'replicationControllers'), route('replicationControllers.html', false))
+      .when(UrlHelpers.join(context, 'services'), route('services.html', false))
+      .when(UrlHelpers.join(context, 'events'), route('events.html', false))
+      .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
+      .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
+      .when(UrlHelpers.join(context, 'templates'), route('templates.html', false))
+      .when(UrlHelpers.join(context, 'hosts'), route('hosts.html', false))
+      .when(UrlHelpers.join(context, 'hosts/:id'), route('host.html', true))
+      .when(UrlHelpers.join(context, 'builds'), route('builds.html', false))
+      .when(UrlHelpers.join(context, 'builds/:id'), route('build.html', true))
+      .when(UrlHelpers.join(context, 'buildLogs/:id'), route('buildLogs.html', true))
+      .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
+      .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
+      .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
+      .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
+      .when(UrlHelpers.join(context, 'deploymentConfigs'), route('deploymentConfigs.html', false))
+      .when(UrlHelpers.join(context, 'deploymentConfigs/:id'), route('deploymentConfig.html', true))
+      .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
+      .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
+      .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
+      .when(context, {redirectTo: "/workspaces"});
+
+
+    var contexts = [context, "/workspaces/:workspace/projects/:project"];
+    angular.forEach(contexts, (context) => {
+      $routeProvider
+        .when(UrlHelpers.join(context, '/namespace/:namespace/podCreate'), route('podCreate.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/podEdit/:id'), route('podEdit.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/pods'), route('pods.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/pods/:id'), route('pod.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers'), route('replicationControllers.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers/:id'), route('replicationController.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerCreate'), route('replicationControllerCreate.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerEdit/:id'), route('replicationControllerEdit.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/services'), route('services.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/services/:id'), route('service.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/serviceCreate'), route('serviceCreate.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/serviceEdit/:id'), route('serviceEdit.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/events'), route('events.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/apps'), route('apps.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace'), route('apps.html', false))
+    });
   }]);
   
 
