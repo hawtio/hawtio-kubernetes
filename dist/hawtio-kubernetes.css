@@ -428,3 +428,7 @@ img.icon-selected-app {
   font-size: 14px;
   line-height: 32px;
 }
+
+.breadcrumb-tabs {
+    padding-bottom: 25px;
+}

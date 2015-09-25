@@ -9,12 +9,12 @@
 </script>
 <script type="text/ng-template" id="subTabsTemplate.html">
   <div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig">
-    <div class="container-fluid">
-        <ul class="nav navbar-nav navbar-persistent">
-          <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
-              title="{{breadcrumb.title}}">
-            <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-        </ul>
+    <div class="container-fluid breadcrumb-tabs">
+      <ul class="nav nav-tabs">
+        <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
+            title="{{breadcrumb.title}}">
+          <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+      </ul>
     </div>
   </div>
 </script>
