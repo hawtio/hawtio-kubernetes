@@ -7,17 +7,8 @@
     </ol>
   </div>
 </script>
-<!--
-    <div class="container-fluid breadcrumb-tabs">
-      <ul class="nav nav-tabs">
-        <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
-            title="{{breadcrumb.title}}">
-          <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-      </ul>
-    </div>
--->
 <script type="text/ng-template" id="subTabsTemplate.html">
-  <div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig">
+  <div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig" class="breadcrumb-tabs">
     <ul class="nav navbar-nav nav-tabs">
       <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
         title="{{breadcrumb.title}}">
