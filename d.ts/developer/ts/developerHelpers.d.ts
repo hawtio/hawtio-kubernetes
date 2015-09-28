@@ -14,4 +14,8 @@ declare module Developer {
     function createWorkspaceSubNavBars(): any;
     function createProjectSubNavBars(projectName: any): any;
     function createEnvironmentSubNavBars($scope: any, $location: any, $routeParams: any): any;
+    /**
+     * Lets load the project versions for the given namespace
+     */
+    function loadProjectVersions($scope: any, $http: any, project: any, env: any, ns: any): void;
 }

@@ -96,8 +96,11 @@ module Kubernetes {
     return UrlHelpers.join(masterApiUrl(), openshiftApiPrefix());
   }
 
-  export function resourcesUriForKind(type) {
-    return UrlHelpers.join(masterApiUrl(), prefixForType(type), namespacePathForKind(type, currentKubernetesNamespace()));
+  export function resourcesUriForKind(type, ns = null) {
+    if (!ns) {
+      ns = currentKubernetesNamespace();
+    }
+    return UrlHelpers.join(masterApiUrl(), prefixForType(type), namespacePathForKind(type, ns));
   }
 
   export function uriTemplateForKubernetesKind(type) {
@@ -1009,6 +1012,7 @@ module Kubernetes {
       var name = metadata.name;
       buildConfig.$name = name;
       var ns = metadata.namespace || currentKubernetesNamespace();
+      buildConfig.$namespace = ns;
       buildConfig.environments = [];
       if (name) {
         buildConfig.$viewLink = UrlHelpers.join("workspaces", ns, "projects", name);

@@ -1,4 +1,17 @@
-<div ng-controller="Kubernetes.BuildConfigController">
+<div ng-controller="Developer.ProjectController">
+  <style>
+    .jumbotron.environment {
+      padding-top: 20px;
+      padding-bottom: 50px;
+      margin-bottom: 50px;
+    }
+    .jumbotron h3 {
+      margin-top: 0px;
+    }
+    .projectVersionRow {
+      margin-bottom: 30px;
+    }
+  </style>
   <div class="row">
     <ng-include src="'breadcrumbsTemplate.html'"/>
   </div>
@@ -30,13 +43,40 @@
         <div ng-repeat="env in entity.environments | filter:filterTemplates | orderBy:'label' track by $index">
           <div class="row"
                title="{{env.description}}">
-            <div class="col-md-9">
-              <a href="{{env.url}}">
-                <h3>
-                  <i class="{{env.iconClass}}"></i>
-                  {{env.label}}
-                </h3>
-              </a>
+            <div class="jumbotron environment">
+              <div class="col-md-2">
+                <a href="{{env.url}}">
+                  <h3>
+                    <i class="{{env.iconClass}}"></i>
+                    {{env.label}}
+                  </h3>
+                </a>
+              </div>
+              <div class="col-md-6">
+                <div class="projectVersionRow" ng-repeat="(project, versions) in env.projectVersions | orderBy:'project' track by $index">
+                  <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
+                    <div ng-repeat="rc in versionInfo.replicationControllers">
+                      <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink" class="btn btn-default"
+                         title="View the Replication Controller from project {{project}} of version {{version}}">
+                        <i class="fa fa-cubes"></i>
+                        {{rc.$name}}
+                        : {{version}}
+                      </a>
+                      <a href="{{rc.$buildUrl}}" target="builds" ng-show="rc.$buildUrl" class="btn btn-default"
+                         title="View the build which created this Replication Controller">
+                        <i class="fa fa-tasks"></i>
+                        Build {{rc.$buildId}}
+                      </a>
+                      <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="btn btn-default"
+                         title="View the source code for the commit which created this Replication Controller">
+                        <i class="fa fa-code-fork"></i>
+                        Commit #
+                        {{rc.$gitCommit}}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

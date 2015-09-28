@@ -31,7 +31,7 @@ declare module Kubernetes {
     function prefixForType(type: string): string;
     function kubernetesApiUrl(): string;
     function openshiftApiUrl(): string;
-    function resourcesUriForKind(type: any): string;
+    function resourcesUriForKind(type: any, ns?: any): string;
     function uriTemplateForKubernetesKind(type: any): string;
     function namespacePathForKind(type: any, ns: any): string;
     function updateOrCreateObject(object: any, KubernetesModel: any, success?: (data) => void, error?: (error) => void): void;
