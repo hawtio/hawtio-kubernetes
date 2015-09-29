@@ -31,6 +31,7 @@ module Kubernetes {
   export var kibanaServiceName = "kibana";
   export var fabric8ForgeServiceName = "fabric8-forge";
   export var gogsServiceName = "gogs";
+  export var apimanServiceName = 'apiman';
   export var isOpenShift = true;
 
   export function kubernetesNamespacePath() {
@@ -387,6 +388,7 @@ module Kubernetes {
     $scope.hasServiceKibana = () => hasService(kibanaServiceName);
     $scope.hasServiceGogs = () => hasService(gogsServiceName);
     $scope.hasServiceForge = () => hasService(fabric8ForgeServiceName);
+    $scope.hasServiceApiman = () => hasService(apimanServiceName);
 
     $scope.viewTemplates = () => {
       var returnTo = $location.url();

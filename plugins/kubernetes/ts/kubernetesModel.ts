@@ -499,6 +499,18 @@ module Kubernetes {
                 }
                 service.$connectUrl = UrlHelpers.join(hostUrl,  "/");
               }
+
+              // TODO definitely need that annotation, temp hack for apiman link
+              if (getName(service) === 'apiman' && host) {
+                service.$connectUrl = (<any> new URI().host(service.$host)
+                                        .path('apimanui/'))
+                                        .query({})
+                                        .hash(URI.encode(angular.toJson({
+                                          backTo: new URI().toString(),
+                                          token: HawtioOAuth.getOAuthToken()
+                                        }))).toString();
+
+              }
             } else {
               log.debug("Could not find service " + serviceName + " namespace " + namespace + " for route: " + metadata.name);
             }
