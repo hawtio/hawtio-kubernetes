@@ -503,7 +503,7 @@ module Kubernetes {
               // TODO definitely need that annotation, temp hack for apiman link
               if (getName(service) === 'apiman' && host) {
                 service.$connectUrl = (<any> new URI().host(service.$host)
-                                        .path('apimanui/'))
+                                        .path('apimanui/index.html'))
                                         .query({})
                                         .hash(URI.encode(angular.toJson({
                                           backTo: new URI().toString(),
