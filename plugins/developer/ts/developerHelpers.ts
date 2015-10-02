@@ -8,6 +8,17 @@ module Developer {
   export var templatePath = pluginPath + 'html/';
   export var log:Logging.Logger = Logger.get(pluginName);
 
+  export var jenkinsServiceName = "jenkins";
+
+  /**
+   * Returns true if the value hasn't changed from the last cached JSON version of this object
+   */
+  export function hasObjectChanged(value, state) {
+    var json = angular.toJson(value || "");
+    var oldJson = state.json;
+    state.json = json;
+    return !oldJson || json !== oldJson;
+  }
 
   export function enrichWorkspaces(projects) {
     angular.forEach(projects, (project) => {
@@ -37,6 +48,27 @@ module Developer {
     }
     return build;
   }
+
+  function asDate(value) {
+    return value ? new Date(value) : null;
+  }
+
+  export function enrichJenkinsJob(job) {
+    if (job) {
+      angular.forEach(job.builds, (build) => {
+        enrichJenkinsBuild(build);
+      });
+    }
+    return job;
+  }
+
+  export function enrichJenkinsBuild(build) {
+    if (build) {
+      build.$duration = build.duration;
+      build.$timestamp = asDate(build.timestamp);
+    }
+  }
+
 
   export function createWorkspaceBreadcrumbs(children = null, workspaceName = null) {
     var answer = [
@@ -161,6 +193,7 @@ module Developer {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     return activateCurrent([
       {
+        id: "builds",
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds"),
         label: "Builds",
         title: "View the builds for this project"

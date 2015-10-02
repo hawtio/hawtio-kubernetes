@@ -286,6 +286,9 @@ module Kubernetes {
   }
 
   export function getName(entity) {
+    if (angular.isString(entity)) {
+      return entity;
+    }
     return Core.pathGet(entity, ["metadata", "name"]) || Core.pathGet(entity, "name") || Core.pathGet(entity, "id");
   }
 
@@ -699,9 +702,9 @@ module Kubernetes {
     var namespace = getNamespace(service);
     if (isV1beta1Or2()) {
       var postfix = "?namespace=" + namespace;
-      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy" + kubernetesNamespacePath() + "/services/" + getName(service) + pathSegment + postfix);
+      return UrlHelpers.join(KubernetesApiURL, "/proxy",  kubernetesNamespacePath(), "/services/" + getName(service) + pathSegment + postfix);
     } else {
-      return UrlHelpers.join(KubernetesApiURL, "/api/" + defaultApiVersion + "/proxy/namespaces/" + namespace + "/services/" + getName(service) + pathSegment);
+      return UrlHelpers.join(KubernetesApiURL, "/proxy/namespaces/", namespace, "/services/" + getName(service) + pathSegment);
     }
   }
 
@@ -1212,6 +1215,12 @@ module Kubernetes {
       buildConfig.$fabric8BuildViews = $fabric8BuildViews;
       buildConfig.$fabric8EnvironmentViews = $fabric8EnvironmentViews;
       buildConfig.$fabric8TeamViews = $fabric8TeamViews;
+
+      var $jenkinsJob = annotations["fabric8.io/jenkins-job"];
+      if (!$jenkinsJob && $fabric8Views["fabric8.link.jenkins.job"]) {
+        $jenkinsJob = name;
+      }
+      buildConfig.$jenkinsJob = $jenkinsJob;
 
       angular.forEach($fabric8EnvironmentViews, (env) => {
         var c = env.class;

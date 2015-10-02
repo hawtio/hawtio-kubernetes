@@ -14,6 +14,8 @@ module Developer {
         $scope.id = $routeParams["id"];
         $scope.schema = KubernetesSchema;
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
+        $scope.entityChangedCache = {};
+        $scope.projectsChangedCache = {};
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
@@ -38,10 +40,13 @@ module Developer {
               $http.get(url).
                 success(function (data, status, headers, config) {
                   if (data) {
-                    $scope.entity = data;
                     var sortedBuilds = null;
                     Kubernetes.enrichBuildConfig(data, sortedBuilds);
-                    $scope.model.setProject($scope.entity);
+                    if (hasObjectChanged(data, $scope.entityChangedCache)) {
+                      log.info("entity has changed!");
+                      $scope.entity = data;
+                      $scope.model.setProject($scope.entity);
+                    }
                     updateEnvironmentWatch();
                   }
                   $scope.fetched = true;
@@ -65,10 +70,21 @@ module Developer {
         function updateEnvironmentWatch() {
           var project = $scope.entity;
           if (project) {
+            var jenkinsJob = project.$jenkinsJob;
+            if (jenkinsJob) {
+              var buildsTab = _.find($scope.subTabConfig, {id: "builds"});
+              if (buildsTab) {
+                buildsTab["href"] = UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", $scope.id, "jenkinsJob", jenkinsJob);
+              }
+            }
+
             angular.forEach(project.environments, (env) => {
               var ns = env.namespace;
               if (ns) {
-                env.projectVersions = loadProjectVersions($scope, $http, project, env, ns);
+                var projectVersions = loadProjectVersions($scope, $http, project, env, ns);
+                if (hasObjectChanged(projectVersions, $scope.projectsChangedCache)) {
+                  env.projectVersions = projectVersions;
+                }
               }
             });
           }
