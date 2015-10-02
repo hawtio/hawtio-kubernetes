@@ -1,8 +1,15 @@
 <div class="row" ng-controller="Developer.JenkinsJobController">
   <script type="text/ng-template" id="jenkinsBuildIdTemplate.html">
     <div class="ngCellText" title="{{row.entity.fullDisplayName}} {{row.entity.result}}">
-      <a href="{{row.entity.url}}">
+      <a href="{{row.entity.$buildLink}}" target="buildLogs">
         <i class="{{row.entity.$iconClass}}"></i>&nbsp;&nbsp;{{row.entity.displayName}}
+      </a>
+    </div>
+  </script>
+  <script type="text/ng-template" id="jenkinsBuildButtonsTemplate.html">
+    <div class="ngCellText">
+      <a class="btn btn-default" href="{{row.entity.$logsLink}}" target="buildLogs" ng-show="row.entity.$logsLink">
+        <i class="fa fa-tasks"></i> Logs
       </a>
     </div>
   </script>

@@ -39,7 +39,7 @@ module Developer {
           },
           columnDefs: [
             {
-              field: 'number',
+              field: '$sortOrder',
               displayName: 'Name',
               cellTemplate: $templateCache.get("jenkinsBuildIdTemplate.html")
             },
@@ -52,6 +52,11 @@ module Developer {
               field: '$timestamp',
               displayName: 'Time Started',
               cellTemplate: $templateCache.get("jenkinsBuildTimestampTemplate.html")
+            },
+            {
+              field: '$buildLink',
+              displayName: 'Links',
+              cellTemplate: $templateCache.get("jenkinsBuildButtonsTemplate.html")
             },
 
           ]

@@ -31,6 +31,7 @@ module Developer {
     if (build) {
       var name = Kubernetes.getName(build);
       build.$name = name;
+      build.$sortOrder = 0 - build.number;
 
       var nameArray = name.split("-");
       var nameArrayLength = nameArray.length;
@@ -56,13 +57,13 @@ module Developer {
   export function enrichJenkinsJob(job) {
     if (job) {
       angular.forEach(job.builds, (build) => {
-        enrichJenkinsBuild(build);
+        enrichJenkinsBuild(job, build);
       });
     }
     return job;
   }
 
-  export function enrichJenkinsBuild(build) {
+  export function enrichJenkinsBuild(job, build) {
     if (build) {
       build.$duration = build.duration;
       build.$timestamp = asDate(build.timestamp);
@@ -76,6 +77,24 @@ module Developer {
           $iconClass = "fa fa-circle grey";
         } else if (result === "SUCCESS") {
           $iconClass = "fa fa-check-circle green";
+        }
+      }
+      var jobUrl = (job || {}).url;
+      if (!jobUrl || !jobUrl.startsWith("http")) {
+        var ServiceRegistry = Kubernetes.inject("ServiceRegistry");
+        if (ServiceRegistry) {
+          var jenkinsUrl = ServiceRegistry.serviceLink(jenkinsServiceName);
+          if (jenkinsUrl) {
+            jobUrl = UrlHelpers.join(jenkinsUrl, "job", job.name)
+          }
+        }
+      }
+      if (jobUrl) {
+        build.$jobLink = jobUrl;
+        var buildId = build.id;
+        if (buildId) {
+          build.$buildLink = UrlHelpers.join(jobUrl, build.id);
+          build.$logsLink = UrlHelpers.join(build.$buildLink, "console");
         }
       }
       build.$iconClass = $iconClass;
