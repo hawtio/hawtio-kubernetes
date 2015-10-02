@@ -11,6 +11,7 @@ module Developer {
 
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
+        $scope.id = $routeParams["id"];
         $scope.jobId = $routeParams["job"];
         $scope.schema = KubernetesSchema;
         $scope.entityChangedCache = {};
