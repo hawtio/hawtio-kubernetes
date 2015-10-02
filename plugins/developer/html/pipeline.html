@@ -39,9 +39,19 @@
 
           <h2>Pipeline for {{jobId}} build {{buildId}}</h2>
 
-          <div ng-repeat="stage in model.stages | filter:model.filterText track by $index" class="jumbotron">
-            <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i> {{stage.stageName}}</div>
-            <div class="stageStartTime" title="Stage started at {{stage.$startTime}}"><a href="{{stage.$viewLink}}" title="View the Stage detail">{{stage.$startTime.relative()}}</a></div>
+          <div class="pipeline-block">
+            <div ng-repeat="stage in model.stages | filter:model.filterText track by $index" class="inline-block">
+              <div class="pipeline-arrow inline-block" ng-show="$index">
+                <i class="fa fa-long-arrow-right"></i>
+              </div>
+              <div class="pipeline-deploy inline-block">
+              <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i> {{stage.stageName}}
+              </div>
+              <div class="stageStartTime" title="Stage started at {{stage.$startTime}}"><a href="{{stage.$viewLink}}"
+                                                                                           title="View the Stage detail">{{stage.$startTime.relative()}}</a>
+              </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
