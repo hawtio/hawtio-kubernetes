@@ -8,8 +8,12 @@
   </script>
   <script type="text/ng-template" id="jenkinsBuildButtonsTemplate.html">
     <div class="ngCellText">
-      <a class="btn btn-default" href="{{row.entity.$logsLink}}" target="buildLogs" ng-show="row.entity.$logsLink">
+      <a class="btn btn-default" target="buildLogs" nhref="{{row.entity.$logsLink}}" g-show="row.entity.$logsLink">
         <i class="fa fa-tasks"></i> Logs
+      </a>
+      &nbsp;&nbsp;
+      <a class="btn btn-default" href="{{row.entity.$pipelineLink}}" ng-show="row.entity.$pipelineLink">
+        <i class="fa fa-tasks"></i> Pipeline
       </a>
     </div>
   </script>

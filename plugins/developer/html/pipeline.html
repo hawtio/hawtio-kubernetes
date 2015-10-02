@@ -1,0 +1,50 @@
+<div class="row" ng-controller="Developer.PipelineController">
+  <script type="text/ng-template" id="pipelineXXXTemplate.html">
+    <div class="ngCellText" title="Build took {{row.entity.$duration}} milliseconds">
+      {{row.entity.$duration.duration()}}
+    </div>
+  </script>
+
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
+  <div class="row filter-header">
+    <div class="col-md-12">
+      <span>
+        <hawtio-filter ng-show="model.stages.length"
+                       ng-model="model.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter pipeline..."></hawtio-filter>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="model.fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="model.fetched">
+        <div ng-hide="model.stages.length" class="align-center">
+          <p class="alert alert-info">There are no pipeline stages in this build.</p>
+        </div>
+        <div ng-show="model.stages.length">
+
+          <h2>Pipeline for {{jobId}} build {{buildId}}</h2>
+
+          <div ng-repeat="stage in model.stages | filter:model.filterText track by $index" class="jumbotron">
+            <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i> {{stage.stageName}}</div>
+            <div class="stageStartTime" title="Stage started at {{stage.$startTime}}"><a href="{{stage.$viewLink}}" title="View the Stage detail">{{stage.$startTime.relative()}}</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

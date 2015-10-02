@@ -13,13 +13,17 @@ declare module Developer {
     function hasObjectChanged(value: any, state: any): boolean;
     function enrichWorkspaces(projects: any): any;
     function enrichWorkspace(build: any): any;
-    function enrichJenkinsJob(job: any): any;
+    function enrichJenkinsJob(job: any, projectId: any): any;
+    function createBuildStatusIconClass(result: any): string;
     function enrichJenkinsBuild(job: any, build: any): void;
+    function jenkinsLink(): any;
+    function enrichJenkinsStages(stages: any): any;
+    function enrichJenkinsStage(stage: any): void;
     function createWorkspaceBreadcrumbs(children?: any, workspaceName?: any): any;
     function createEnvironmentBreadcrumbs($scope: any, $location: any, $routeParams: any): any;
     function createProjectBreadcrumbs(projectName?: any, children?: any, workspaceName?: any): any;
     function createWorkspaceSubNavBars(): any;
-    function createProjectSubNavBars(projectName: any): any;
+    function createProjectSubNavBars(projectName: any, jenkinsJobId?: any): any;
     function createEnvironmentSubNavBars($scope: any, $location: any, $routeParams: any): any;
     /**
      * Lets load the project versions for the given namespace

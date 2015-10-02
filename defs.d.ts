@@ -4,6 +4,7 @@
 /// <reference path="d.ts/kubernetes/ts/kubernetesInterfaces.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesHelpers.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsJob.d.ts"/>
+/// <reference path="d.ts/developer/ts/pipeline.d.ts"/>
 /// <reference path="d.ts/developer/ts/project.d.ts"/>
 /// <reference path="d.ts/developer/ts/projects.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspace.d.ts"/>

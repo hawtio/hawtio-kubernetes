@@ -54,8 +54,9 @@ module Developer {
     return value ? new Date(value) : null;
   }
 
-  export function enrichJenkinsJob(job) {
+  export function enrichJenkinsJob(job, projectId) {
     if (job) {
+      job.$project = projectId;
       angular.forEach(job.builds, (build) => {
         enrichJenkinsBuild(job, build);
       });
@@ -63,44 +64,80 @@ module Developer {
     return job;
   }
 
+  export function createBuildStatusIconClass(result) {
+    var $iconClass = "fa fa-circle-thin grey";
+    if (result) {
+      if (result === "FAILURE") {
+        // TODO not available yet
+        $iconClass = "fa fa-exclamation-circle red";
+      } else if (result === "ABORTED") {
+        $iconClass = "fa fa-circle grey";
+      } else if (result === "SUCCESS") {
+        $iconClass = "fa fa-check-circle green";
+      }
+    }
+    return $iconClass;
+  }
+
   export function enrichJenkinsBuild(job, build) {
     if (build) {
       build.$duration = build.duration;
       build.$timestamp = asDate(build.timestamp);
-      var result = build.result;
-      var $iconClass = "fa fa-circle-thin grey";
-      if (result) {
-        if (result === "FAILURE") {
-          // TODO not available yet
-          $iconClass = "fa fa-exclamation-circle red";
-        } else if (result === "ABORTED") {
-          $iconClass = "fa fa-circle grey";
-        } else if (result === "SUCCESS") {
-          $iconClass = "fa fa-check-circle green";
-        }
-      }
+      var jobName = job.name;
+      var buildId = build.id;
+
+      var $iconClass = createBuildStatusIconClass(build.result);
       var jobUrl = (job || {}).url;
       if (!jobUrl || !jobUrl.startsWith("http")) {
-        var ServiceRegistry = Kubernetes.inject("ServiceRegistry");
-        if (ServiceRegistry) {
-          var jenkinsUrl = ServiceRegistry.serviceLink(jenkinsServiceName);
-          if (jenkinsUrl) {
-            jobUrl = UrlHelpers.join(jenkinsUrl, "job", job.name)
-          }
+        var jenkinsUrl = jenkinsLink();
+        if (jenkinsUrl) {
+          jobUrl = UrlHelpers.join(jenkinsUrl, "job", jobName)
         }
       }
       if (jobUrl) {
         build.$jobLink = jobUrl;
-        var buildId = build.id;
         if (buildId) {
           build.$buildLink = UrlHelpers.join(jobUrl, build.id);
           build.$logsLink = UrlHelpers.join(build.$buildLink, "console");
+          var workspaceName = Kubernetes.currentKubernetesNamespace();
+          build.$pipelineLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName, "pipeline", buildId);
         }
       }
       build.$iconClass = $iconClass;
     }
   }
 
+
+  export function jenkinsLink() {
+    var ServiceRegistry = Kubernetes.inject("ServiceRegistry");
+    if (ServiceRegistry) {
+      return ServiceRegistry.serviceLink(jenkinsServiceName);
+    }
+    return null;
+  }
+
+  export function enrichJenkinsStages(stages) {
+    if (stages) {
+      angular.forEach(stages, (stage) => {
+        enrichJenkinsStage(stage);
+      });
+    }
+    return stages;
+  }
+
+  export function enrichJenkinsStage(stage) {
+    if (stage) {
+      stage.$iconClass = createBuildStatusIconClass(stage.status);
+      stage.$startTime = asDate(stage.startTime);
+      var jenkinsUrl = jenkinsLink();
+      if (jenkinsUrl) {
+        var url = stage.url;
+        if (url) {
+          stage.$viewLink = UrlHelpers.join(jenkinsUrl, url, "log");
+        }
+      }
+    }
+  }
 
   export function createWorkspaceBreadcrumbs(children = null, workspaceName = null) {
     var answer = [
@@ -221,12 +258,17 @@ module Developer {
     ]);
   }
 
-  export function createProjectSubNavBars(projectName) {
+  export function createProjectSubNavBars(projectName, jenkinsJobId = null) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
+    var buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds");
+    if (projectName && jenkinsJobId) {
+      buildsLink = UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "jenkinsJob", jenkinsJobId);
+    }
+
     return activateCurrent([
       {
         id: "builds",
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds"),
+        href: buildsLink,
         label: "Builds",
         title: "View the builds for this project"
       },
