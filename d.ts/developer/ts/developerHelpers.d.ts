@@ -6,8 +6,15 @@ declare module Developer {
     var pluginPath: string;
     var templatePath: string;
     var log: Logging.Logger;
+    var jenkinsServiceName: string;
+    /**
+     * Returns true if the value hasn't changed from the last cached JSON version of this object
+     */
+    function hasObjectChanged(value: any, state: any): boolean;
     function enrichWorkspaces(projects: any): any;
     function enrichWorkspace(build: any): any;
+    function enrichJenkinsJob(job: any): any;
+    function enrichJenkinsBuild(build: any): void;
     function createWorkspaceBreadcrumbs(children?: any, workspaceName?: any): any;
     function createEnvironmentBreadcrumbs($scope: any, $location: any, $routeParams: any): any;
     function createProjectBreadcrumbs(projectName?: any, children?: any, workspaceName?: any): any;
