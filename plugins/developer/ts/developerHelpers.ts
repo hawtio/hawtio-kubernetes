@@ -66,6 +66,19 @@ module Developer {
     if (build) {
       build.$duration = build.duration;
       build.$timestamp = asDate(build.timestamp);
+      var result = build.result;
+      var $iconClass = "fa fa-circle-thin grey";
+      if (result) {
+        if (result === "FAILURE") {
+          // TODO not available yet
+          $iconClass = "fa fa-exclamation-circle red";
+        } else if (result === "ABORTED") {
+          $iconClass = "fa fa-circle grey";
+        } else if (result === "SUCCESS") {
+          $iconClass = "fa fa-check-circle green";
+        }
+      }
+      build.$iconClass = $iconClass;
     }
   }
 

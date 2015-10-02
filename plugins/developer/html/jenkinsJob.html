@@ -1,8 +1,8 @@
 <div class="row" ng-controller="Developer.JenkinsJobController">
   <script type="text/ng-template" id="jenkinsBuildIdTemplate.html">
-    <div class="ngCellText" title="B{{row.entity.fullDisplayName}}">
+    <div class="ngCellText" title="{{row.entity.fullDisplayName}} {{row.entity.result}}">
       <a href="{{row.entity.url}}">
-        {{row.entity.displayName}}
+        <i class="{{row.entity.$iconClass}}"></i>&nbsp;&nbsp;{{row.entity.displayName}}
       </a>
     </div>
   </script>
