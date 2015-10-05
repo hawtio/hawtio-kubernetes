@@ -44,7 +44,8 @@ module Developer {
                     enrichJenkinsStages(data);
                     if (hasObjectChanged(data, $scope.entityChangedCache)) {
                       log.info("entity has changed!");
-                      $scope.model.stages = data;
+                      $scope.model.build = data;
+                      $scope.model.stages = data.stages;
                     }
                   }
                   $scope.model.fetched = true;

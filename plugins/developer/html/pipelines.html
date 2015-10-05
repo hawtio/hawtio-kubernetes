@@ -1,0 +1,65 @@
+<div class="row" ng-controller="Developer.PipelinesController">
+  <script type="text/ng-template" id="pipelineXXXTemplate.html">
+    <div class="ngCellText" title="Build took {{row.entity.$duration}} milliseconds">
+      {{row.entity.$duration.duration()}}
+    </div>
+  </script>
+
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
+  <div class="row filter-header">
+    <div class="col-md-12">
+      <span>
+        <hawtio-filter ng-show="model.job.builds.length"
+                       ng-model="model.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter pipelines..."></hawtio-filter>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="model.fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="model.fetched">
+        <div ng-hide="model.job.builds.length" class="align-center">
+          <p class="alert alert-info">There are no pipelines for this job.</p>
+        </div>
+        <div ng-show="model.job.builds.length">
+
+          <h2>Pipeline for {{jobId}}</h2>
+
+          <div class="pipeline-build-block" ng-repeat="build in model.job.builds | filter:model.filterText track by $index">
+
+            <div class="pipeline-block">
+              <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="inline-block">
+                <div class="pipeline-arrow inline-block" ng-show="$index">
+                  <i class="fa fa-long-arrow-right"></i>
+                </div>
+                <div class="pipeline-deploy inline-block">
+                  <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i>
+                    {{stage.stageName}}
+                  </div>
+                  <div class="stageStartTime" title="Stage started at {{stage.$startTime}}"><a
+                          href="{{stage.$viewLink}}"
+                          title="View the Stage detail">{{stage.$startTime.relative()}}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

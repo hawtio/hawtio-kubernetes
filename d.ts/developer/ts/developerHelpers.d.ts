@@ -17,7 +17,8 @@ declare module Developer {
     function createBuildStatusIconClass(result: any): string;
     function enrichJenkinsBuild(job: any, build: any): void;
     function jenkinsLink(): any;
-    function enrichJenkinsStages(stages: any): any;
+    function enrichJenkinsPipelineJob(job: any): void;
+    function enrichJenkinsStages(build: any): any;
     function enrichJenkinsStage(stage: any): void;
     function createWorkspaceBreadcrumbs(children?: any, workspaceName?: any): any;
     function createEnvironmentBreadcrumbs($scope: any, $location: any, $routeParams: any): any;

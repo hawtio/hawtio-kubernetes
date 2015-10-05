@@ -116,13 +116,21 @@ module Developer {
     return null;
   }
 
-  export function enrichJenkinsStages(stages) {
-    if (stages) {
-      angular.forEach(stages, (stage) => {
+  export function enrichJenkinsPipelineJob(job) {
+    if (job) {
+      angular.forEach(job.builds, (build) => {
+        enrichJenkinsStages(build);
+      });
+    }
+  }
+
+  export function enrichJenkinsStages(build) {
+    if (build) {
+      angular.forEach(build.stages, (stage) => {
         enrichJenkinsStage(stage);
       });
     }
-    return stages;
+    return build;
   }
 
   export function enrichJenkinsStage(stage) {
@@ -261,9 +269,21 @@ module Developer {
   export function createProjectSubNavBars(projectName, jenkinsJobId = null) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     var buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds");
+    var pipelines = null;
+    if (!jenkinsJobId) {
+      jenkinsJobId = projectName;
+    }
     if (projectName && jenkinsJobId) {
       buildsLink = UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "jenkinsJob", jenkinsJobId);
+      var pipelinesLink = UrlHelpers.join(buildsLink, "pipelines");
+      pipelines = {
+        id: "pipelines",
+        href: pipelinesLink,
+        label: "Pipelines",
+        title: "View the pipeline builds for this project"
+      };
     }
+
 
     return activateCurrent([
       {
@@ -272,6 +292,7 @@ module Developer {
         label: "Builds",
         title: "View the builds for this project"
       },
+      pipelines,
       {
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
         //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
@@ -350,17 +371,20 @@ module Developer {
   }
 
   function activateCurrent(navBarItems) {
+    navBarItems = _.compact(navBarItems);
     var injector = HawtioCore.injector;
     var $location = injector ? injector.get("$location") : null;
     if ($location) {
       var path = trimQuery($location.path());
       var found = false;
       angular.forEach(navBarItems, (item) => {
-        var href = item.href;
-        var trimHref = trimQuery(href);
-        if (!found && trimHref && trimHref === path) {
-          item.active = true;
-          found = true;
+        if (item) {
+          var href = item.href;
+          var trimHref = trimQuery(href);
+          if (!found && trimHref && trimHref === path) {
+            item.active = true;
+            found = true;
+          }
         }
       });
     }
