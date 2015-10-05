@@ -67,7 +67,7 @@ module Developer {
   export function createBuildStatusIconClass(result) {
     var $iconClass = "fa fa-spinner fa-spin";
     if (result) {
-      if (result === "FAILURE") {
+      if (result === "FAILURE" || result === "FAILED") {
         // TODO not available yet
         $iconClass = "fa fa-exclamation-circle red";
       } else if (result === "ABORTED") {
