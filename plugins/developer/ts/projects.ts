@@ -24,7 +24,7 @@ module Developer {
         },
         columnDefs: [
           {
-            field: 'metadata.name',
+            field: '$name',
             displayName: 'Name',
             cellTemplate: $templateCache.get("idTemplate.html")
           },
