@@ -46,7 +46,35 @@ module Developer {
 
   export function enrichJenkinsJob(job, projectId) {
     if (job) {
-      job.$project = projectId;
+      var jobName = job.name;
+      job.$project = projectId || jobName;
+      var lastBuild = job.lastBuild;
+      var lastBuildResult = lastBuild ? lastBuild.result : "NOT_STARTED";
+      var $iconClass = createBuildStatusIconClass(lastBuildResult);
+
+      job.$lastBuildNumber = enrichJenkinsBuild(job, lastBuild);
+      job.$lastSuccessfulBuildNumber = enrichJenkinsBuild(job, job.lastSuccessfulBuild);
+      job.$lastFailedlBuildNumber = enrichJenkinsBuild(job, job.lastFailedlBuild);
+
+      if (lastBuild) {
+        job.$duration = lastBuild.duration;
+        job.$timestamp = asDate(lastBuild.timestamp);
+      }
+      var jobUrl = (job || {}).url;
+      if (!jobUrl || !jobUrl.startsWith("http")) {
+        var jenkinsUrl = jenkinsLink();
+        if (jenkinsUrl) {
+          jobUrl = UrlHelpers.join(jenkinsUrl, "job", jobName)
+        }
+      }
+      if (jobUrl) {
+        job.$jobLink = jobUrl;
+        var workspaceName = Kubernetes.currentKubernetesNamespace();
+        job.$pipelinesLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName, "pipelines");
+        job.$buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName);
+      }
+      job.$iconClass = $iconClass;
+
       angular.forEach(job.builds, (build) => {
         enrichJenkinsBuild(job, build);
       });
@@ -88,11 +116,13 @@ module Developer {
   }
 
   export function enrichJenkinsBuild(job, build) {
+    var number = null;
     if (build) {
       build.$duration = build.duration;
       build.$timestamp = asDate(build.timestamp);
       var jobName = job.name;
       var buildId = build.id;
+      number = build.number;
 
       var $iconClass = createBuildStatusIconClass(build.result);
       var jobUrl = (job || {}).url;
@@ -109,10 +139,12 @@ module Developer {
           build.$logsLink = UrlHelpers.join(build.$buildLink, "console");
           var workspaceName = Kubernetes.currentKubernetesNamespace();
           build.$pipelineLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName, "pipeline", buildId);
+          build.$buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName);
         }
       }
       build.$iconClass = $iconClass;
     }
+    return number;
   }
 
 

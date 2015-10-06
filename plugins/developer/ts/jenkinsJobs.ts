@@ -41,18 +41,28 @@ module Developer {
           },
           columnDefs: [
             {
-              field: '$sortOrder',
+              field: 'name',
               displayName: 'Name',
-              cellTemplate: $templateCache.get("jenkinsBuildIdTemplate.html")
+              cellTemplate: $templateCache.get("jenkinsJobNameTemplate.html")
             },
             {
               field: '$buildLink',
               displayName: 'Views',
-              cellTemplate: $templateCache.get("jenkinsBuildButtonsTemplate.html")
+              cellTemplate: $templateCache.get("jenkinsJobButtonsTemplate.html")
+            },
+            {
+              field: '$lastSuccessfulBuildNumber',
+              displayName: 'Last Success',
+              cellTemplate: $templateCache.get("jenkinsLastSuccessTemplate.html")
+            },
+            {
+              field: '$lastFailedlBuildNumber',
+              displayName: 'Last Failure',
+              cellTemplate: $templateCache.get("jenkinsLastFailureTemplate.html")
             },
             {
               field: '$duration',
-              displayName: 'Duration',
+              displayName: 'Last Duration',
               cellTemplate: $templateCache.get("jenkinsBuildDurationTemplate.html")
             },
             {
@@ -66,7 +76,8 @@ module Developer {
 
 
         function updateData() {
-          var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceName, "api/json?depth=1");
+          // TODO only need depth 2 to be able to fetch the lastBuild
+          var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceName, "api/json?depth=2");
           log.info("")
           if (url && (!$scope.jenkins || Kubernetes.keepPollingModel)) {
             $http.get(url).

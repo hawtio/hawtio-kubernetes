@@ -1,19 +1,15 @@
 <div class="row" ng-controller="Developer.JenkinsJobsController">
-  <script type="text/ng-template" id="jenkinsBuildIdTemplate.html">
+  <script type="text/ng-template" id="jenkinsJobNameTemplate.html">
     <div class="ngCellText" title="{{row.entity.fullDisplayName}} {{row.entity.result}}">
-      <a href="{{row.entity.$buildLink}}" target="buildLogs">
+      <a href="{{row.entity.$buildsLink}}">
         <i class="{{row.entity.$iconClass}}"></i>&nbsp;&nbsp;{{row.entity.displayName}}
       </a>
     </div>
   </script>
-  <script type="text/ng-template" id="jenkinsBuildButtonsTemplate.html">
+  <script type="text/ng-template" id="jenkinsJobButtonsTemplate.html">
     <div class="ngCellText">
-      <a class="btn btn-default" target="buildLogs" href="{{row.entity.$logsLink}}" ng-show="row.entity.$logsLink">
-        <i class="fa fa-tasks"></i> Logs
-      </a>
-      &nbsp;&nbsp;
-      <a class="btn btn-default" href="{{row.entity.$pipelineLink}}" ng-show="row.entity.$pipelineLink">
-        <i class="fa fa-tasks"></i> Pipeline
+      <a class="btn btn-default" href="{{row.entity.$pipelinesLink}}" ng-show="row.entity.$pipelinesLink" title="View the pipelines for this build">
+        <i class="fa fa-tasks"></i> Pipelines
       </a>
     </div>
   </script>
@@ -25,6 +21,36 @@
   <script type="text/ng-template" id="jenkinsBuildDurationTemplate.html">
     <div class="ngCellText" title="Build took {{row.entity.$duration}} milliseconds">
       {{row.entity.$duration.duration()}}
+    </div>
+  </script>
+  <script type="text/ng-template" id="jenkinsLastSuccessTemplate.html">
+    <div class="ngCellText"  ng-init="success=row.entity.lastSuccessfulBuild">
+      <span title="Build took {{success.$duration.duration()}} milliseconds">
+      <span ng-show="success">
+        {{success.$timestamp.relative()}}
+      </span>
+      <span ng-show="success.$buildLink">
+        -
+        <a href="{{success.$buildLink}}" target="build" title="View the builds">
+          {{success.displayName}}
+        </a>
+      </span>
+      </span>
+    </div>
+  </script>
+  <script type="text/ng-template" id="jenkinsLastFailureTemplate.html">
+    <div class="ngCellText" ng-init="fail=row.entity.lastFailedBuild">
+      <span title="Build took {{fail.$duration.duration()}} milliseconds">
+      <span ng-show="fail">
+        {{fail.$timestamp.relative()}}
+      </span>
+      <span ng-show="fail.$buildLink">
+        -
+        <a href="{{fail.$buildLink}}" target="build" title="View the builds">
+          {{fail.displayName}}
+        </a>
+      </span>
+      </span>
     </div>
   </script>
 
