@@ -19,7 +19,8 @@ module Developer {
         $scope.entityChangedCache = {};
 
         $scope.model = {
-          stages: null
+          job: null,
+          pendingOnly: false
         };
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
@@ -33,11 +34,19 @@ module Developer {
           updateData();
         });
 
+        $scope.$watch('model.pendingOnly', ($event) => {
+          updateData();
+        });
+
         updateData();
 
         function updateData() {
           if ($scope.jobId) {
-            var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceName, UrlHelpers.join("job", $scope.jobId, "fabric8/stages/"));
+            var queryPath = "fabric8/stages/";
+            if ($scope.model.pendingOnly) {
+              queryPath = "fabric8/pendingStages/";
+            }
+            var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceName, UrlHelpers.join("job", $scope.jobId, queryPath));
             if (url && (!$scope.model.stages || Kubernetes.keepPollingModel)) {
               $http.get(url).
                 success(function (data, status, headers, config) {

@@ -15,13 +15,23 @@
   </div>
 
   <div class="row filter-header">
-    <div class="col-md-12">
+    <div class="col-md-4">
       <span>
         <hawtio-filter ng-show="model.job.builds.length"
                        ng-model="model.filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter pipelines..."></hawtio-filter>
       </span>
+    </div>
+    <div class="col-md-4">
+      <form class="form-inline">
+        <div class="checkbox" title="Only show build pipelines which are pending">
+          <label>
+            <input type="checkbox" ng-model="model.pendingOnly"> &nbsp;Only pending builds
+          </label>
+        </div>
+      </form>
+
     </div>
   </div>
   <div class="row">

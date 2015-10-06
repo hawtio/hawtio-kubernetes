@@ -51,7 +51,7 @@ module Developer {
       if (result === "FAILURE" || result === "FAILED") {
         // TODO not available yet
         $iconClass = "fa fa-exclamation-circle red";
-      } else if (result === "ABORTED") {
+      } else if (result === "ABORTED" || result === "INTERUPTED") {
         $iconClass = "fa fa-circle grey";
       } else if (result === "SUCCESS") {
         $iconClass = "fa fa-check-circle green";
@@ -67,7 +67,7 @@ module Developer {
     if (result) {
       if (result === "FAILURE" || result === "FAILED") {
         $iconClass = "build-fail";
-      } else if (result === "ABORTED") {
+      } else if (result === "ABORTED" || result === "INTERUPTED") {
         $iconClass = "build-aborted";
       } else if (result === "SUCCESS") {
         $iconClass = "build-success";

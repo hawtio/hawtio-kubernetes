@@ -385,6 +385,10 @@ img.icon-selected-app {
     background: khaki;
 }
 
+.build-aborted {
+    background: silver;
+}
+
 .build-not-started {
     background: lightblue;
 }
