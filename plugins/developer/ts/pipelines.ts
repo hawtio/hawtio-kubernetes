@@ -46,7 +46,7 @@ module Developer {
             if ($scope.model.pendingOnly) {
               queryPath = "fabric8/pendingStages/";
             }
-            var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceName, UrlHelpers.join("job", $scope.jobId, queryPath));
+            var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, queryPath));
             if (url && (!$scope.model.job || Kubernetes.keepPollingModel)) {
               $http.get(url).
                 success(function (data, status, headers, config) {

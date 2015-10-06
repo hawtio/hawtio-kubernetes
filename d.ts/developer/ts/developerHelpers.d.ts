@@ -7,6 +7,7 @@ declare module Developer {
     var templatePath: string;
     var log: Logging.Logger;
     var jenkinsServiceName: string;
+    var jenkinsServiceNameAndPort: string;
     /**
      * Returns true if the value hasn't changed from the last cached JSON version of this object
      */

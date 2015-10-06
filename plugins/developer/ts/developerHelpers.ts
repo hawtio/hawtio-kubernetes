@@ -9,6 +9,7 @@ module Developer {
   export var log:Logging.Logger = Logger.get(pluginName);
 
   export var jenkinsServiceName = "jenkins";
+  export var jenkinsServiceNameAndPort = jenkinsServiceName + ":http";
 
   /**
    * Returns true if the value hasn't changed from the last cached JSON version of this object
