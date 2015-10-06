@@ -1,7 +1,8 @@
 <script type="text/ng-template" id="breadcrumbsTemplate.html">
   <div ng-show="breadcrumbConfig" ng-init="breadcrumbConfig = $parent.breadcrumbConfig">
     <ol class="breadcrumb">
-      <li ng-repeat="breadcrumb in breadcrumbConfig" class="{{breadcrumb.active ? 'active' : ''}}" title="{{breadcrumb.title}}">
+      <li ng-repeat="breadcrumb in breadcrumbConfig" class="{{breadcrumb.active ? 'active' : ''}}"
+          title="{{breadcrumb.title}}">
         <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
         <span ng-hide="breadcrumb.href && !breadcrumb.active">{{breadcrumb.label}}</span>
     </ol>
@@ -11,22 +12,22 @@
   <div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig" class="breadcrumb-tabs">
     <ul class="nav navbar-nav nav-tabs">
       <li ng-repeat="breadcrumb in subTabConfig" class="{{breadcrumb.active ? 'active' : ''}}"
-        title="{{breadcrumb.title}}">
+          title="{{breadcrumb.title}}">
         <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-      </ul>
+    </ul>
   </div>
 </script>
 <script type="text/ng-template" id="runButton.html">
   <button ng-show="model.showRunButton"
-    class="btn btn-success pull-right"
-    ng-click="viewTemplates()"
-    title="Run an application from a template">
+          class="btn btn-success pull-right"
+          ng-click="viewTemplates()"
+          title="Run an application from a template">
     <i class="fa fa-play-circle"></i> Run ...
   </button>
 </script>
 <script type="text/ng-template" id="idTemplate.html">
   <div class="ngCellText">
-    <a href="" 
+    <a href=""
        title="View details for {{row.entity.metadata.name || row.entity.name}}"
        ng-href="{{row.entity | kubernetesPageLink}}">
       <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
@@ -80,7 +81,8 @@
   <div class="ngCellText">
     <div ng-repeat="port in row.entity.$ports">
       <a target="_blank" href="{{row.entity.$connectUrl}}"
-         ng-show="row.entity.$connectUrl && row.entity.$podCounters.valid" title="Protocol {{row.entity.spec.protocol}}">
+         ng-show="row.entity.$connectUrl && row.entity.$podCounters.valid"
+         title="Protocol {{row.entity.spec.protocol}}">
         {{row.entity.$host}}
       </a>
       <span ng-hide="row.entity.$connectUrl && row.entity.$podCounters.valid">{{row.entity.spec.portalIP || row.entity.spec.clusterIP}}:{{port}}</span>
@@ -129,7 +131,8 @@
   </div>
 </script>
 <script type="text/ng-template" id="statusTemplate.html">
-  <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus" title="Pod {{entity.metadata.name}} is {{entity.status.phase}}">
+  <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus"
+       title="Pod {{entity.metadata.name}} is {{entity.status.phase}}">
     <!-- in detail view -->
     <p ng-show="data"><strong>Status: </strong></p>
     <i class="fa {{entity.$statusCss}}"></i>
@@ -146,35 +149,64 @@
 </script>
 <script type="text/ng-template" id="resizeDialog.html">
   <div modal="resizeDialog.dialog.show">
-      <form class="form-horizontal" ng-submit="resizeDialog.onOk()">
-          <div class="modal-header"><h4>Scale {{resizeDialog.controller.metadata.name}}</h4></div>
-          <div class="modal-body">
-            <div class="control-group">
-              <label class="control-label" for="replicas">Number of pods you would like to scale to?</label>
+    <form class="form-horizontal" ng-submit="resizeDialog.onOk()">
+      <div class="modal-header"><h4>Scale {{resizeDialog.controller.metadata.name}}</h4></div>
+      <div class="modal-body">
+        <div class="control-group">
+          <label class="control-label" for="replicas">Number of pods you would like to scale to?</label>
 
-              <div class="controls">
-                <input type="number" min="0" id="replicas" ng-model="resizeDialog.newReplicas">
-              </div>
-            </div>
+          <div class="controls">
+            <input type="number" min="0" id="replicas" ng-model="resizeDialog.newReplicas">
+          </div>
+        </div>
 
-          </div>
-          <div class="modal-footer">
-            <input class="btn btn-primary" type="submit"
-                   ng-disabled="resizeDialog.newReplicas === resizeDialog.controller.status.replicas"
-                   value="Resize">
-            <button class="btn btn-warning cancel" type="button" ng-click="resizeDialog.close()">Cancel</button>
-          </div>
-        </form>
-    </div>
-  </script>
-  <script type="text/ng-template" id="namespaceSelector.html">
-		<span ng-controller="Kubernetes.NamespaceController">
-    namespace: <select ng-model="namespace" ng-options="namespace for namespace in namespaces" title="choose the namespace - which is a selection of resources in kubernetes">
+      </div>
+      <div class="modal-footer">
+        <input class="btn btn-primary" type="submit"
+               ng-disabled="resizeDialog.newReplicas === resizeDialog.controller.status.replicas"
+               value="Resize">
+        <button class="btn btn-warning cancel" type="button" ng-click="resizeDialog.close()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</script>
+<script type="text/ng-template" id="namespaceSelector.html">
+  <span ng-controller="Kubernetes.NamespaceController">
+    namespace:
+    <select ng-model="namespace" ng-options="namespace for namespace in namespaces"
+            title="choose the namespace - which is a selection of resources in kubernetes">
     </select>
-		</span>
-  </script>
+  </span>
+</script>
+<script type="text/ng-template" id="pipelineTemplate.html">
+  <div class="pipeline-block">
+    <div class="pipeline-build inline-block">
+      <div class="buildName" title="{{build.description}}">
+        {{build.displayName}}
+      </div>
+      <div class="buildParameters" title="{{build.$parametersText}}">
+
+      </div>
+    </div>
+
+    <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="inline-block">
+      <div class="pipeline-arrow inline-block" ng-show="$index">
+        <i class="fa fa-long-arrow-right"></i>
+      </div>
+      <div class="pipeline-deploy inline-block">
+        <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i> {{stage.stageName}}
+        </div>
+        <div class="stageStartTime" title="Stage started at {{stage.$startTime}}">
+          <a href="{{stage.$viewLink}}" title="View the Stage detail">{{stage.$startTime.relative()}}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
 <div ng-controller="Kubernetes.TopLevel">
-  <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over uploader="uploader" over-class="ready-drop">
+  <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over
+       uploader="uploader" over-class="ready-drop">
     <div class="row kubernetes-view" ng-view></div>
   </div>
 </div>

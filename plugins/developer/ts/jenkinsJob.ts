@@ -1,6 +1,8 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
+/// <reference path="developerEnrichers.ts"/>
 /// <reference path="developerHelpers.ts"/>
+/// <reference path="developerNavigation.ts"/>
 
 module Developer {
 
@@ -44,6 +46,11 @@ module Developer {
               cellTemplate: $templateCache.get("jenkinsBuildIdTemplate.html")
             },
             {
+              field: '$buildLink',
+              displayName: 'Views',
+              cellTemplate: $templateCache.get("jenkinsBuildButtonsTemplate.html")
+            },
+            {
               field: '$duration',
               displayName: 'Duration',
               cellTemplate: $templateCache.get("jenkinsBuildDurationTemplate.html")
@@ -52,13 +59,7 @@ module Developer {
               field: '$timestamp',
               displayName: 'Time Started',
               cellTemplate: $templateCache.get("jenkinsBuildTimestampTemplate.html")
-            },
-            {
-              field: '$buildLink',
-              displayName: 'Links',
-              cellTemplate: $templateCache.get("jenkinsBuildButtonsTemplate.html")
-            },
-
+            }
           ]
         };
         updateData();

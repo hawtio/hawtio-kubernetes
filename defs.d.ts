@@ -1,5 +1,7 @@
 /// <reference path="d.ts/includes.d.ts"/>
+/// <reference path="d.ts/developer/ts/developerEnrichers.d.ts"/>
 /// <reference path="d.ts/developer/ts/developerHelpers.d.ts"/>
+/// <reference path="d.ts/developer/ts/developerNavigation.d.ts"/>
 /// <reference path="d.ts/developer/ts/developerPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesInterfaces.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesHelpers.d.ts"/>

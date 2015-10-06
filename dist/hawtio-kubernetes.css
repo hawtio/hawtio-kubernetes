@@ -346,11 +346,17 @@ img.icon-selected-app {
 }
 
 .pipeline-build {
-    background: lightgreen;
+    background: lightgrey;
     -moz-border-radius: 10px;
     border-radius: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .pipeline-deploy {

@@ -1,6 +1,8 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="../../kubernetes/ts/kubernetesHelpers.ts"/>
+/// <reference path="developerEnrichers.ts"/>
 /// <reference path="developerHelpers.ts"/>
+/// <reference path="developerNavigation.ts"/>
 
 module Developer {
 
@@ -44,7 +46,7 @@ module Developer {
                     enrichJenkinsStages(data);
                     if (hasObjectChanged(data, $scope.entityChangedCache)) {
                       log.info("entity has changed!");
-                      $scope.model.build = data;
+                      $scope.build = data;
                       $scope.model.stages = data.stages;
                     }
                   }
