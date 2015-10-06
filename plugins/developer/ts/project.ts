@@ -14,6 +14,7 @@ module Developer {
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
         $scope.id = $routeParams["id"];
+
         $scope.schema = KubernetesSchema;
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
         $scope.entityChangedCache = {};
@@ -22,6 +23,10 @@ module Developer {
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
         $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id);
+
+        // this is used for the pendingPipelines view
+        $scope.jobId = $scope.id;
+        $scope.pendingPipelinesOnly = true;
 
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();

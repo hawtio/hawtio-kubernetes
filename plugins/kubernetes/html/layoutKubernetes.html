@@ -220,6 +220,29 @@
     </div>
   </div>
 </script>
+<script type="text/ng-template" id="pendingPipelines.html">
+  <div class="row" ng-controller="Developer.PipelinesController">
+    <div class="row">
+      <div class="col-md-12">
+        <div ng-hide="model.fetched">
+          <div class="align-center">
+            <i class="fa fa-spinner fa-spin"></i>
+          </div>
+        </div>
+        <div ng-show="model.fetched">
+          <div ng-hide="model.job.builds.length" class="align-center">
+            <p class="alert alert-info">There are no pipelines for this job.</p>
+          </div>
+          <div ng-show="model.job.builds.length">
+            <div class="pipeline-build-block" ng-repeat="build in model.job.builds | filter:model.filterText track by $index">
+              <ng-include src="'pipelineTemplate.html'"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
 
 <div ng-controller="Kubernetes.TopLevel">
   <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over

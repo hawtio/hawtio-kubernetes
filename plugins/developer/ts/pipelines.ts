@@ -14,13 +14,13 @@ module Developer {
         $scope.kubernetes = KubernetesState;
         $scope.kubeModel = KubernetesModel;
         $scope.id = $routeParams["id"];
-        $scope.jobId = $routeParams["job"];
+        $scope.jobId = $scope.jobId || $routeParams["job"];
         $scope.schema = KubernetesSchema;
         $scope.entityChangedCache = {};
 
         $scope.model = {
           job: null,
-          pendingOnly: false
+          pendingOnly: $scope.pendingPipelinesOnly
         };
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
@@ -47,7 +47,7 @@ module Developer {
               queryPath = "fabric8/pendingStages/";
             }
             var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceName, UrlHelpers.join("job", $scope.jobId, queryPath));
-            if (url && (!$scope.model.stages || Kubernetes.keepPollingModel)) {
+            if (url && (!$scope.model.job || Kubernetes.keepPollingModel)) {
               $http.get(url).
                 success(function (data, status, headers, config) {
                   if (data) {
