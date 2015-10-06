@@ -32,7 +32,7 @@ module Developer {
               cellTemplate: $templateCache.get("idTemplate.html")
             },
             {
-              field: '$name',
+              field: '$projectLink',
               displayName: 'Views',
               cellTemplate: $templateCache.get("workspaceViewsTemplate.html")
             },
