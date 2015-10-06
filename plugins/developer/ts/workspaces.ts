@@ -32,6 +32,11 @@ module Developer {
               cellTemplate: $templateCache.get("idTemplate.html")
             },
             {
+              field: '$name',
+              displayName: 'Views',
+              cellTemplate: $templateCache.get("workspaceViewsTemplate.html")
+            },
+            {
               field: 'metadata.description',
               displayName: 'Description'
             },

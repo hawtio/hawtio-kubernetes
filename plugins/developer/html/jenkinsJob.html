@@ -8,7 +8,7 @@
   </script>
   <script type="text/ng-template" id="jenkinsBuildButtonsTemplate.html">
     <div class="ngCellText">
-      <a class="btn btn-default" target="buildLogs" nhref="{{row.entity.$logsLink}}" g-show="row.entity.$logsLink">
+      <a class="btn btn-default" target="buildLogs" href="{{row.entity.$logsLink}}" ng-show="row.entity.$logsLink">
         <i class="fa fa-tasks"></i> Logs
       </a>
       &nbsp;&nbsp;

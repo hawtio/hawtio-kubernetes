@@ -1020,7 +1020,7 @@ module Kubernetes {
       buildConfig.$namespace = ns;
       buildConfig.environments = [];
       if (name) {
-        buildConfig.$viewLink = UrlHelpers.join("workspaces", ns, "projects", name);
+        buildConfig.$viewLink = UrlHelpers.join("workspaces", ns, "projects", name, "environments");
 
         angular.forEach([false, true], (flag) => {
           angular.forEach(buildConfig.triggers, (trigger) => {

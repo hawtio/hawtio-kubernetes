@@ -1,4 +1,18 @@
 <div ng-controller="Developer.WorkspacesController">
+  <script type="text/ng-template" id="workspaceViewsTemplate.html">
+    <div class="ngCellText">
+      <div class="ngCellText">
+        <a class="btn btn-default" href="{{row.entity.$projectsLink}}" ng-show="row.entity.$projectsLink">
+          <i class="fa fa-tasks"></i> Projects
+        </a>
+        &nbsp;&nbsp;
+        <a class="btn btn-default" href="{{row.entity.$runtimeLink}}" ng-show="row.entity.$runtimeLink">
+          <i class="fa fa-cubes"></i> Runtime
+        </a>
+      </div>
+    </div>
+  </script>
+
   <div class="row filter-header">
     <div class="col-md-12" ng-show="model.workspaces.length">
       <span ng-show="!id">

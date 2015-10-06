@@ -25,7 +25,9 @@ module Developer {
         build.$creationDate = d;
       }
       if (name) {
-        build.$viewLink = UrlHelpers.join("workspaces", name);
+        build.$projectsLink = UrlHelpers.join("workspaces", name);
+        build.$runtimeLink = UrlHelpers.join("kubernetes/namespace/", name, "/apps");
+        build.$viewLink = build.$projectsLink;
       }
     }
     return build;
