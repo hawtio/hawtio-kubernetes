@@ -1,0 +1,71 @@
+<div class="row" ng-controller="Developer.JenkinsJobsController">
+  <script type="text/ng-template" id="jenkinsBuildIdTemplate.html">
+    <div class="ngCellText" title="{{row.entity.fullDisplayName}} {{row.entity.result}}">
+      <a href="{{row.entity.$buildLink}}" target="buildLogs">
+        <i class="{{row.entity.$iconClass}}"></i>&nbsp;&nbsp;{{row.entity.displayName}}
+      </a>
+    </div>
+  </script>
+  <script type="text/ng-template" id="jenkinsBuildButtonsTemplate.html">
+    <div class="ngCellText">
+      <a class="btn btn-default" target="buildLogs" href="{{row.entity.$logsLink}}" ng-show="row.entity.$logsLink">
+        <i class="fa fa-tasks"></i> Logs
+      </a>
+      &nbsp;&nbsp;
+      <a class="btn btn-default" href="{{row.entity.$pipelineLink}}" ng-show="row.entity.$pipelineLink">
+        <i class="fa fa-tasks"></i> Pipeline
+      </a>
+    </div>
+  </script>
+  <script type="text/ng-template" id="jenkinsBuildTimestampTemplate.html">
+    <div class="ngCellText" title="Build started at: {{row.entity.$timestamp}}">
+      {{row.entity.$timestamp.relative()}}
+    </div>
+  </script>
+  <script type="text/ng-template" id="jenkinsBuildDurationTemplate.html">
+    <div class="ngCellText" title="Build took {{row.entity.$duration}} milliseconds">
+      {{row.entity.$duration.duration()}}
+    </div>
+  </script>
+
+
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
+  <div class="row filter-header">
+    <div class="col-md-12">
+      <span>
+        <hawtio-filter ng-show="jenkins.jobs.length"
+                       ng-model="tableConfig.filterOptions.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter jobs..."></hawtio-filter>
+      </span>
+      <a class="btn btn-primary pull-right" ng-click="triggerBuild()"
+         title="Trigger this build">
+        <i class="fa fa-play-circle-o"></i>  Trigger</a>
+      </a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="model.fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="model.fetched">
+        <div ng-hide="jenkins.jobs.length" class="align-center">
+          <p class="alert alert-info">There are no jobs in this jenkins.</p>
+        </div>
+        <div ng-show="jenkins.jobs.length">
+          <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

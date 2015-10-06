@@ -2,6 +2,7 @@
 declare module Developer {
     function enrichWorkspaces(projects: any): any;
     function enrichWorkspace(build: any): any;
+    function enrichJenkinsJobs(jobsData: any, projectId: any): any;
     function enrichJenkinsJob(job: any, projectId: any): any;
     function createBuildStatusIconClass(result: any): string;
     function createBuildStatusBackgroundClass(result: any): string;

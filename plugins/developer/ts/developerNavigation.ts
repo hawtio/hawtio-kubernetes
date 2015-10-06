@@ -108,6 +108,11 @@ module Developer {
         title: "View the projects for this workspace"
       },
       {
+        href: UrlHelpers.join("/workspaces", workspaceName, "jenkinsJob"),
+        label: "Builds",
+        title: "View the projects for this workspace"
+      },
+      {
         href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
         title: "View the runtime environment for this workspace"

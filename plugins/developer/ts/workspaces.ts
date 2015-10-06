@@ -62,7 +62,7 @@ module Developer {
             success(function (data, status, headers, config) {
               if (data) {
                 $scope.model.workspaces = enrichWorkspaces(data.items);
-                $scope.fetched = true;
+                $scope.model.fetched = true;
               }
               Core.$apply($scope);
               next();

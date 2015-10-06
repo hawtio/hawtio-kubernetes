@@ -129,7 +129,7 @@ module Developer {
               //console.log("got data " + angular.toJson(data, true));
               var sortedBuilds = null;
               $scope.buildConfigs = enrichBuildConfigs(data.items, sortedBuilds);
-              $scope.fetched = true;
+              $scope.model.fetched = true;
               Core.$apply($scope);
             }
           }).

@@ -35,6 +35,15 @@ module Developer {
     return value ? new Date(value) : null;
   }
 
+  export function enrichJenkinsJobs(jobsData, projectId) {
+    if (jobsData) {
+      angular.forEach(jobsData.jobs, (job) => {
+        enrichJenkinsJob(job, projectId);
+      });
+    }
+    return jobsData;
+  }
+
   export function enrichJenkinsJob(job, projectId) {
     if (job) {
       job.$project = projectId;

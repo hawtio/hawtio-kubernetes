@@ -56,7 +56,7 @@ module Developer {
                     }
                     updateEnvironmentWatch();
                   }
-                  $scope.fetched = true;
+                  $scope.model.fetched = true;
                   Core.$apply($scope);
                 }).
                 error(function (data, status, headers, config) {
@@ -64,7 +64,7 @@ module Developer {
                 });
             }
           } else {
-            $scope.fetched = true;
+            $scope.model.fetched = true;
             Core.$apply($scope);
           }
         }

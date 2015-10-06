@@ -6,12 +6,16 @@
 /// <reference path="d.ts/kubernetes/ts/kubernetesInterfaces.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesHelpers.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsJob.d.ts"/>
+/// <reference path="d.ts/developer/ts/jenkinsJobs.d.ts"/>
 /// <reference path="d.ts/developer/ts/pipeline.d.ts"/>
 /// <reference path="d.ts/developer/ts/pipelines.d.ts"/>
 /// <reference path="d.ts/developer/ts/project.d.ts"/>
 /// <reference path="d.ts/developer/ts/projects.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspace.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspaces.d.ts"/>
+/// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
+/// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
+/// <reference path="d.ts/project/ts/project.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/build.d.ts"/>
@@ -50,6 +54,3 @@
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/templates.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/watcher.d.ts"/>
-/// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
-/// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
-/// <reference path="d.ts/project/ts/project.d.ts"/>

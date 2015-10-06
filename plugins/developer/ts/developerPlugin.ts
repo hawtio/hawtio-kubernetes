@@ -11,6 +11,7 @@ module Developer {
     $routeProvider.when(context, route('workspaces.html', false))
                   .when(UrlHelpers.join(context, '/:namespace'), route('projects.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/detail'), route('workspace.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/jenkinsJob'), route('jenkinsJobs.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects'), route('projects.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id'), route('environments.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/detail'), Kubernetes.route('buildConfig.html', false))

@@ -41,14 +41,14 @@ module Developer {
                 if (data) {
                   $scope.entity = enrichWorkspace(data);
                 }
-                $scope.fetched = true;
+                $scope.model.fetched = true;
                 Core.$apply($scope);
               }).
               error(function (data, status, headers, config) {
                 log.warn("Failed to load " + url + " " + data + " " + status);
               });
           } else {
-            $scope.fetched = true;
+            $scope.model.fetched = true;
             Core.$apply($scope);
           }
         }
