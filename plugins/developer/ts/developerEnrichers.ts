@@ -55,6 +55,24 @@ module Developer {
         $iconClass = "fa fa-circle grey";
       } else if (result === "SUCCESS") {
         $iconClass = "fa fa-check-circle green";
+      } else if (result === "NOT_STARTED") {
+        $iconClass = "fa fa-circle-thin grey";
+      }
+    }
+    return $iconClass;
+  }
+
+  export function createBuildStatusBackgroundClass(result) {
+    var $iconClass = "build-pending";
+    if (result) {
+      if (result === "FAILURE" || result === "FAILED") {
+        $iconClass = "build-fail";
+      } else if (result === "ABORTED") {
+        $iconClass = "build-aborted";
+      } else if (result === "SUCCESS") {
+        $iconClass = "build-success";
+      } else if (result === "NOT_STARTED") {
+        $iconClass = "build-not-started";
       }
     }
     return $iconClass;
@@ -134,13 +152,18 @@ module Developer {
 
   export function enrichJenkinsStage(stage) {
     if (stage) {
+      stage.$backgroundClass =  createBuildStatusBackgroundClass(stage.status);
       stage.$iconClass = createBuildStatusIconClass(stage.status);
       stage.$startTime = asDate(stage.startTime);
+      if (!stage.duration) {
+        stage.duration = 0;
+      }
       var jenkinsUrl = jenkinsLink();
       if (jenkinsUrl) {
         var url = stage.url;
         if (url) {
-          stage.$viewLink = UrlHelpers.join(jenkinsUrl, url, "log");
+          stage.$viewLink = UrlHelpers.join(jenkinsUrl, url);
+          stage.$logLink = UrlHelpers.join(stage.$viewLink, "log");
         }
       }
     }

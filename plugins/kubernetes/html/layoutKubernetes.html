@@ -202,11 +202,19 @@
       <div class="pipeline-arrow inline-block" ng-show="$index">
         <i class="fa fa-long-arrow-right"></i>
       </div>
-      <div class="pipeline-deploy inline-block">
+      <div class="pipeline-deploy {{stage.$backgroundClass}} inline-block">
         <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i> {{stage.stageName}}
         </div>
         <div class="stageStartTime" title="Stage started at {{stage.$startTime}}">
-          <a href="{{stage.$viewLink}}" title="View the Stage detail">{{stage.$startTime.relative()}}</a>
+          <a href="{{stage.$viewLink}}" title="This stage started at {{stage.$startTime}}" target="logs">
+            {{stage.$startTime.relative()}}
+          </a>
+          &nbsp;
+          &nbsp;
+          &nbsp;
+          <a href="{{stage.$logLink}}" title="View the logs of this stage" target="logs">
+            {{stage.duration.duration()}}
+          </a>
         </div>
       </div>
     </div>

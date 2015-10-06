@@ -360,7 +360,6 @@ img.icon-selected-app {
 }
 
 .pipeline-deploy {
-    background: goldenrod;
     -moz-border-radius: 10px;
     border-radius: 10px;
     padding-top: 10px;
@@ -373,6 +372,23 @@ img.icon-selected-app {
     margin-right: 20px;
     color: black;
 }
+
+.build-fail {
+    background: lightcoral;
+}
+
+.build-success {
+    background: lightgreen;
+}
+
+.build-pending {
+    background: khaki;
+}
+
+.build-not-started {
+    background: lightblue;
+}
+
 
 .pipeline-build a {
     color: black;
