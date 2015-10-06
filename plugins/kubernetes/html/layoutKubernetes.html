@@ -243,6 +243,11 @@
     </div>
   </div>
 </script>
+<script type="text/ng-template" id="creationTimeTemplate.html">
+  <div class="ngCellText" title="created at: {{row.entity.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
+    {{row.entity.$creationDate.relative()}}
+  </div>
+</script>
 
 <div ng-controller="Kubernetes.TopLevel">
   <div class="wiki-icon-view" ng-controller="Kubernetes.FileDropController" nv-file-drop nv-file-over

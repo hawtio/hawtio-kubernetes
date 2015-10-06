@@ -57,6 +57,11 @@ module Developer {
             displayName: 'Description'
           },
           {
+            field: '$creationDate',
+            displayName: 'Created',
+            cellTemplate: $templateCache.get("creationTimeTemplate.html")
+          },
+          {
             field: '$labelsText',
             displayName: 'Labels',
             cellTemplate: $templateCache.get("labelTemplate.html")
