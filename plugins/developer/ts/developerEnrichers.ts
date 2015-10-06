@@ -107,6 +107,24 @@ module Developer {
 
   export function enrichJenkinsStages(build) {
     if (build) {
+      var parameters = build.parameters;
+      var $parameterCount = 0;
+      var $parameterText = "No parameters";
+      if (parameters) {
+        $parameterCount = _.keys(parameters).length || 0;
+        $parameterText = Kubernetes.labelsToString(parameters, " ");
+      }
+      build.$parameterCount = $parameterCount;
+      build.$parameterText = $parameterText;
+      var jenkinsUrl = jenkinsLink();
+      if (jenkinsUrl) {
+        var url = build.url;
+        if (url) {
+          build.$viewLink = UrlHelpers.join(jenkinsUrl, url);
+          build.$logLink = UrlHelpers.join(build.$viewLink, "log");
+        }
+      }
+
       angular.forEach(build.stages, (stage) => {
         enrichJenkinsStage(stage);
       });

@@ -180,12 +180,21 @@
 </script>
 <script type="text/ng-template" id="pipelineTemplate.html">
   <div class="pipeline-block">
-    <div class="pipeline-build inline-block">
-      <div class="buildName" title="{{build.description}}">
-        {{build.displayName}}
+    <div class="pipeline-build inline-block" title="{{build.description || 'Pipeline build number ' + build.displayName}}">
+      <div class="buildName">
+        <a href="{{build.$viewLink}}" ng-show="build.$viewLink" target="build" title="View the build details inside Jenkins">
+          {{build.displayName}}
+        </a>
+        <span ng-hide="build.$viewLink">
+          {{build.displayName}}
+        </span>
       </div>
-      <div class="buildParameters" title="{{build.$parametersText}}">
-
+      <div class="buildParameters" title="{{build.$parameterText}}">
+        <ng-pluralize count="build.$parameterCount"
+                         when="{'0': 'No parameters',
+                             'one': '1 parameter',
+                             'other': '{} parameters'}">
+        </ng-pluralize>
       </div>
     </div>
 
