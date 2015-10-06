@@ -53,32 +53,13 @@ module Developer {
           },
 */
           {
-            field: '$fabric8CodeViews',
-            displayName: 'Code',
-            width: "***",
-            minWidth: 500,
-            cellTemplate: $templateCache.get("buildConfigCodeViewsTemplate.html")
+            field: 'metadata.description',
+            displayName: 'Description'
           },
           {
-            field: '$fabric8BuildViews',
-            displayName: 'Builds',
-            width: "***",
-            minWidth: 500,
-            cellTemplate: $templateCache.get("buildConfigBuildViewsTemplate.html")
-          },
-          {
-            field: '$fabric8EnvironmentViews',
-            displayName: 'Environments',
-            width: "***",
-            minWidth: 500,
-            cellTemplate: $templateCache.get("buildConfigEnvironmentViewsTemplate.html")
-          },
-          {
-            field: '$fabric8TeamViews',
-            displayName: 'People',
-            width: "***",
-            minWidth: 500,
-            cellTemplate: $templateCache.get("buildConfigTeamViewsTemplate.html")
+            field: '$labelsText',
+            displayName: 'Labels',
+            cellTemplate: $templateCache.get("labelTemplate.html")
           }
         ]
       };

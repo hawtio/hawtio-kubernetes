@@ -1009,6 +1009,9 @@ module Kubernetes {
     return (HawtioCore.injector.get('AppLibraryURL') || '') + "/git/" + branch + iconPath;
   }
 
+  function asDate(value) {
+    return value ? new Date(value) : null;
+  }
 
   export function enrichBuildConfig(buildConfig, sortedBuilds) {
     if (buildConfig) {
@@ -1019,6 +1022,9 @@ module Kubernetes {
       var ns = metadata.namespace || currentKubernetesNamespace();
       buildConfig.$namespace = ns;
       buildConfig.environments = [];
+      buildConfig.$creationDate = asDate(Kubernetes.getCreationTimestamp(buildConfig));
+      buildConfig.$labelsText = Kubernetes.labelsToString(getLabels(buildConfig));
+
       if (name) {
         buildConfig.$viewLink = UrlHelpers.join("workspaces", ns, "projects", name, "environments");
 

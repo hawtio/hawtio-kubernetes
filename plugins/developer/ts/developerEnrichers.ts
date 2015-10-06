@@ -18,12 +18,10 @@ module Developer {
       var nameArrayLength = nameArray.length;
       build.$shortName = (nameArrayLength > 4) ? nameArray.slice(0, nameArrayLength - 4).join("-") : name.substring(0, 30);
 
-      var labels = Kubernetes.getLabels(route);
-      var creationTimestamp = Kubernetes.getCreationTimestamp(build);
-      if (creationTimestamp) {
-        var d = new Date(creationTimestamp);
-        build.$creationDate = d;
-      }
+      var labels = Kubernetes.getLabels(build);
+      build.$creationDate = asDate(Kubernetes.getCreationTimestamp(build));
+      build.$labelsText = Kubernetes.labelsToString(labels);
+
       if (name) {
         build.$projectsLink = UrlHelpers.join("workspaces", name);
         build.$runtimeLink = UrlHelpers.join("kubernetes/namespace/", name, "/apps");
