@@ -32,6 +32,7 @@ module Developer {
   _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
     log.debug("Running");
     viewRegistry['workspaces'] = Kubernetes.templatePath + 'layoutKubernetes.html';
+    viewRegistry['namespaces'] = Kubernetes.templatePath + 'layoutKubernetes.html';
 
     var builder = HawtioNav.builder();
     var workspaces = builder.id('workspaces')
