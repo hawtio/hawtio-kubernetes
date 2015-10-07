@@ -43,9 +43,9 @@ module Developer {
 
         function updateJenkinsLink() {
           var jenkinsUrl = jenkinsLink();
-          log.info("Jenkins URL: " + jenkinsUrl);
           if (jenkinsUrl) {
-            $scope.$viewJenkinsLogLink = UrlHelpers.join(jenkinsUrl, "job", $scope.jobId, $scope.buildId, "console");
+            $scope.$viewJenkinsBuildLink = UrlHelpers.join(jenkinsUrl, "job", $scope.jobId, $scope.buildId);
+            $scope.$viewJenkinsLogLink = UrlHelpers.join($scope.$viewJenkinsBuildLink, "console");
           }
         }
 
