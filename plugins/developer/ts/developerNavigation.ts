@@ -147,6 +147,7 @@ module Developer {
     return answer;
   }
 
+
   export function createWorkspaceSubNavBars() {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     var buildsTab = null;
@@ -221,6 +222,15 @@ module Developer {
         title: "View the project detail"
       }
     ]);
+  }
+
+  export function createJenkinsBreadcrumbs(projectName, jobId, buildId) {
+    var children = [];
+    return createProjectBreadcrumbs(projectName, children);
+  }
+
+  export function createJenkinsSubNavBars(projectName, jenkinsJobId, buildId) {
+    return createProjectSubNavBars(projectName, jenkinsJobId);
   }
 
 

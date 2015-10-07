@@ -51,7 +51,7 @@ module Developer {
               $http.get(url).
                 success(function (data, status, headers, config) {
                   if (data) {
-                    enrichJenkinsPipelineJob(data);
+                    enrichJenkinsPipelineJob(data, $scope.id, $scope.jobId);
                     if (hasObjectChanged(data, $scope.entityChangedCache)) {
                       log.info("entity has changed!");
                       $scope.model.job = data;

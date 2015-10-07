@@ -20,6 +20,7 @@ module Developer {
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/builds'), Kubernetes.route('builds.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/environments'), route('environments.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job'), route('jenkinsJob.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/log/:build'), route('jenkinsLog.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/pipelines'), route('pipelines.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/pipeline/:build'), route('pipeline.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/tools'), route('tools.html', false))

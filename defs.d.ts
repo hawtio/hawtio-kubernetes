@@ -8,6 +8,7 @@
 /// <reference path="d.ts/developer/ts/home.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsJob.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsJobs.d.ts"/>
+/// <reference path="d.ts/developer/ts/jenkinsLog.d.ts"/>
 /// <reference path="d.ts/developer/ts/pipeline.d.ts"/>
 /// <reference path="d.ts/developer/ts/pipelines.d.ts"/>
 /// <reference path="d.ts/developer/ts/project.d.ts"/>

@@ -83,7 +83,7 @@ module Developer {
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {
-                  enrichJenkinsJobs(data, $scope.id);
+                  enrichJenkinsJobs(data, $scope.id, $scope.id);
                   if (hasObjectChanged(data, $scope.entityChangedCache)) {
                     log.info("entity has changed!");
                     $scope.jenkins = data;

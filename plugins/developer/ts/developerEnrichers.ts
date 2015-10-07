@@ -35,18 +35,21 @@ module Developer {
     return value ? new Date(value) : null;
   }
 
-  export function enrichJenkinsJobs(jobsData, projectId) {
+  export function enrichJenkinsJobs(jobsData, projectId, jobName) {
     if (jobsData) {
       angular.forEach(jobsData.jobs, (job) => {
-        enrichJenkinsJob(job, projectId);
+        enrichJenkinsJob(job, projectId, jobName);
       });
     }
     return jobsData;
   }
 
-  export function enrichJenkinsJob(job, projectId) {
+  export function enrichJenkinsJob(job, projectId, jobName) {
     if (job) {
-      var jobName = job.name;
+      if (!jobName) {
+        jobName = projectId;
+      }
+      job.$jobId = jobName;
       job.$project = projectId || jobName;
       var lastBuild = job.lastBuild;
       var lastBuildResult = lastBuild ? lastBuild.result : "NOT_STARTED";
@@ -120,9 +123,11 @@ module Developer {
     if (build) {
       build.$duration = build.duration;
       build.$timestamp = asDate(build.timestamp);
-      var jobName = job.name;
+      var projectId = job.$project;
+      var jobName = job.$jobId || projectId;
       var buildId = build.id;
       number = build.number;
+      var workspaceName = Kubernetes.currentKubernetesNamespace();
 
       var $iconClass = createBuildStatusIconClass(build.result);
       var jobUrl = (job || {}).url;
@@ -136,10 +141,10 @@ module Developer {
         build.$jobLink = jobUrl;
         if (buildId) {
           build.$buildLink = UrlHelpers.join(jobUrl, build.id);
-          build.$logsLink = UrlHelpers.join(build.$buildLink, "console");
-          var workspaceName = Kubernetes.currentKubernetesNamespace();
-          build.$pipelineLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName, "pipeline", buildId);
-          build.$buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName);
+          //build.$logsLink = UrlHelpers.join(build.$buildLink, "console");
+          build.$logsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", buildId);
+          build.$pipelineLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "pipeline", buildId);
+          build.$buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName);
         }
       }
       build.$iconClass = $iconClass;
@@ -156,16 +161,20 @@ module Developer {
     return null;
   }
 
-  export function enrichJenkinsPipelineJob(job) {
+  export function enrichJenkinsPipelineJob(job, projectId, jobId) {
     if (job) {
+      job.$project = projectId;
+      job.$jobId = jobId;
       angular.forEach(job.builds, (build) => {
-        enrichJenkinsStages(build);
+        enrichJenkinsStages(build, projectId, jobId);
       });
     }
   }
 
-  export function enrichJenkinsStages(build) {
+  export function enrichJenkinsStages(build, projectId, jobName) {
     if (build) {
+      build.$project = projectId;
+      build.$jobId = jobName;
       var parameters = build.parameters;
       var $parameterCount = 0;
       var $parameterText = "No parameters";
@@ -185,14 +194,22 @@ module Developer {
       }
 
       angular.forEach(build.stages, (stage) => {
-        enrichJenkinsStage(stage);
+        enrichJenkinsStage(stage, build);
       });
     }
     return build;
   }
 
-  export function enrichJenkinsStage(stage) {
+  export function enrichJenkinsStage(stage, build = null) {
     if (stage) {
+      if (build) {
+        stage.$buildId = build.id;
+        stage.$project = build.$project;
+      }
+      var projectId = build.$project;
+      var jobName = build.$jobId || projectId;
+      var buildId = build.id;
+      var workspaceName = Kubernetes.currentKubernetesNamespace();
       stage.$backgroundClass =  createBuildStatusBackgroundClass(stage.status);
       stage.$iconClass = createBuildStatusIconClass(stage.status);
       stage.$startTime = asDate(stage.startTime);
@@ -205,6 +222,9 @@ module Developer {
         if (url) {
           stage.$viewLink = UrlHelpers.join(jenkinsUrl, url);
           stage.$logLink = UrlHelpers.join(stage.$viewLink, "log");
+          if (projectId && buildId) {
+            stage.$logLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", buildId);
+          }
         }
       }
     }
