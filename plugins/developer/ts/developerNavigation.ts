@@ -178,6 +178,11 @@ module Developer {
     ]);
   }
 
+  function createBuildsLink(workspaceName, projectName, jenkinsJobId) {
+    workspaceName = workspaceName || Kubernetes.currentKubernetesNamespace();
+    return UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId);
+  }
+
   export function createProjectSubNavBars(projectName, jenkinsJobId = null) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     var buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds");
@@ -186,7 +191,7 @@ module Developer {
       jenkinsJobId = projectName;
     }
     if (projectName && jenkinsJobId) {
-      buildsLink = UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "jenkinsJob", jenkinsJobId);
+      buildsLink = createBuildsLink(workspaceName, projectName, jenkinsJobId);
       var pipelinesLink = UrlHelpers.join(buildsLink, "pipelines");
       pipelines = {
         id: "pipelines",
@@ -225,12 +230,33 @@ module Developer {
   }
 
   export function createJenkinsBreadcrumbs(projectName, jobId, buildId) {
-    var children = [];
+    var workspaceName = Kubernetes.currentKubernetesNamespace();
+    var children = [
+      {
+        id: "builds",
+        href: createBuildsLink(workspaceName, projectName, jobId),
+        label: "Builds",
+        title: "View the builds for this project"
+      }
+    ];
+    if (buildId) {
+      children.push({
+        id: "",
+        href: "",
+        label: "#" + buildId,
+        title: "Build #" + buildId
+      });
+    }
     return createProjectBreadcrumbs(projectName, children);
   }
 
-  export function createJenkinsSubNavBars(projectName, jenkinsJobId, buildId) {
-    return createProjectSubNavBars(projectName, jenkinsJobId);
+  export function createJenkinsSubNavBars(projectName, jenkinsJobId, buildId, extraOption: any = null) {
+    var answer = createProjectSubNavBars(projectName, jenkinsJobId);
+    if (extraOption) {
+      extraOption.active = true;
+      answer.push(extraOption);
+    }
+    return answer;
   }
 
 

@@ -182,7 +182,7 @@
   <div class="pipeline-block">
     <div class="pipeline-build inline-block" title="{{build.description || 'Pipeline build number ' + build.displayName}}">
       <div class="buildName">
-        <a href="{{build.$viewLink}}" ng-show="build.$viewLink" target="build" title="View the build details inside Jenkins">
+        <a href="{{build.$viewLink}}" ng-show="build.$viewLink" title="View the build details inside Jenkins">
           {{build.displayName}}
         </a>
         <span ng-hide="build.$viewLink">
@@ -212,7 +212,7 @@
           &nbsp;
           &nbsp;
           &nbsp;
-          <a href="{{stage.$logLink}}" title="View the logs of this stage" target="logs">
+          <a href="{{stage.$logLink}}" title="View the logs of this stage">
             {{stage.duration.duration()}}
           </a>
         </div>

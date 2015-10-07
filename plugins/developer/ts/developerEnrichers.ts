@@ -140,11 +140,12 @@ module Developer {
       if (jobUrl) {
         build.$jobLink = jobUrl;
         if (buildId) {
-          build.$buildLink = UrlHelpers.join(jobUrl, build.id);
           //build.$logsLink = UrlHelpers.join(build.$buildLink, "console");
           build.$logsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", buildId);
           build.$pipelineLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "pipeline", buildId);
           build.$buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName);
+          //build.$buildLink = UrlHelpers.join(jobUrl, build.id);
+          build.$buildLink = build.$logsLink;
         }
       }
       build.$iconClass = $iconClass;
@@ -175,6 +176,7 @@ module Developer {
     if (build) {
       build.$project = projectId;
       build.$jobId = jobName;
+      var workspaceName = Kubernetes.currentKubernetesNamespace();
       var parameters = build.parameters;
       var $parameterCount = 0;
       var $parameterText = "No parameters";
@@ -188,10 +190,14 @@ module Developer {
       if (jenkinsUrl) {
         var url = build.url;
         if (url) {
+/*
           build.$viewLink = UrlHelpers.join(jenkinsUrl, url);
           build.$logLink = UrlHelpers.join(build.$viewLink, "log");
+*/
         }
       }
+      build.$logLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", build.id);
+      build.$viewLink = build.$logLink;
 
       angular.forEach(build.stages, (stage) => {
         enrichJenkinsStage(stage, build);
