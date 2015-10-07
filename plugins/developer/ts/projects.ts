@@ -70,6 +70,7 @@ module Developer {
       };
 
       Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+
       $scope.breadcrumbConfig = createProjectBreadcrumbs();
       $scope.subTabConfig = Developer.createWorkspaceSubNavBars();
 

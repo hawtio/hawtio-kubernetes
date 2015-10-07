@@ -92,9 +92,8 @@ module Developer {
         function replaceClusterIPsInHtml(html) {
           if (html) {
             angular.forEach($scope.model.services, (service) => {
-
+              // TODO lets do a search and replace on the clusterIPs to the host URLs
             });
-
           }
           return html;
         }
