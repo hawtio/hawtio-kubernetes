@@ -72,7 +72,7 @@ module Developer {
                     var length = data.length;
                     $scope.log.start != length;
                     updateJenkinsLink();
-                    // TODO lets remove the URLs using the local service IPs and use the external host names instead
+                    $scope.log.html = replaceClusterIPsInHtml($scope.log.html);
                     $scope.log.logs = $scope.log.html.split("\n");
                   }
                   $scope.log.fetched = true;
@@ -86,6 +86,17 @@ module Developer {
             $scope.log.fetched = true;
             Core.$apply($scope);
           }
+        }
+
+        /** lets remove the URLs using the local service IPs and use the external host names instead */
+        function replaceClusterIPsInHtml(html) {
+          if (html) {
+            angular.forEach($scope.model.services, (service) => {
+
+            });
+
+          }
+          return html;
         }
       }]);
 }

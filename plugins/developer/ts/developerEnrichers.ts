@@ -46,9 +46,7 @@ module Developer {
 
   export function enrichJenkinsJob(job, projectId, jobName) {
     if (job) {
-      if (!jobName) {
-        jobName = projectId;
-      }
+      jobName = jobName || job.name || projectId;
       job.$jobId = jobName;
       job.$project = projectId || jobName;
       var lastBuild = job.lastBuild;
