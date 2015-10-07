@@ -463,3 +463,23 @@ img.icon-selected-app {
 .breadcrumb-tabs {
     padding-top: 5px;
 }
+
+.log-window {
+  position: absolute;
+  overflow: auto;
+  top: 159px;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  padding-left: 10px;
+  height: auto;
+  width: auto;
+  border-top: 1px solid #d4d4d4;
+}
+
+.log-window-inner {
+  position: static;
+  font-family: monospace;
+  line-height: 13px;
+}
+

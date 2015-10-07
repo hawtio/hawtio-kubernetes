@@ -59,4 +59,7 @@ module Developer {
 
 
   hawtioPluginLoader.addModule(pluginName);
+
+  // for scroll-glue directive
+  hawtioPluginLoader.addModule('luegg.directives');
 }
