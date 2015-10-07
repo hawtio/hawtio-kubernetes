@@ -1,5 +1,11 @@
 /// <reference path="../../includes.d.ts" />
 declare module Developer {
+    function createWorkspacesBreadcrumbs(developPerspective: any): {
+        href: string;
+        label: string;
+        title: string;
+    }[];
+    function createWorkspacesSubNavBars(developPerspective: any): any;
     function createWorkspaceBreadcrumbs(children?: any, workspaceName?: any): any;
     function createEnvironmentBreadcrumbs($scope: any, $location: any, $routeParams: any): any;
     function createProjectBreadcrumbs(projectName?: any, children?: any, workspaceName?: any): any;

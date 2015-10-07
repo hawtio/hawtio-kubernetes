@@ -4,5 +4,5 @@
 /// <reference path="developerHelpers.d.ts" />
 /// <reference path="developerNavigation.d.ts" />
 declare module Developer {
-    var WorkspacesController: ng.IModule;
+    var HomeController: ng.IModule;
 }

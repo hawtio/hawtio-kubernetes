@@ -1,0 +1,36 @@
+<div ng-controller="Developer.HomeController">
+  <div class="jumbotron">
+    <h1>Perspectives</h1>
+
+    <p>
+      Please choose the perspective you would like to use:
+    </p>
+  </div>
+  <div class="row">
+
+    <div class="col-md-6">
+      <p class="text-center">
+        <a class="btn btn-lg btn-primary" href="/workspaces/{{namespace}}" role="button"
+           title="Create or work on Projects">
+          Develop »
+        </a>
+      </p>
+
+      <p class="text-center">
+        Work on projects and source code
+      </p>
+    </div>
+    <div class="col-md-6">
+      <p class="text-center">
+        <a class="btn btn-lg btn-primary" href="/namespaces" role="button"
+           title="Look around the various Namespaces at running Pods and Services">
+          Operate »
+        </a>
+      </p>
+
+      <p class="text-center">
+        Manage and run Pods and Services
+      </p>
+    </div>
+  </div>
+</div>

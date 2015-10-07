@@ -1,13 +1,26 @@
 <div ng-controller="Developer.WorkspacesController">
-  <script type="text/ng-template" id="workspaceViewsTemplate.html">
+  <div class="row">
+    <ng-include src="'breadcrumbsTemplate.html'"/>
+  </div>
+
+  <div class="row">
+    <ng-include src="'subTabsTemplate.html'"/>
+  </div>
+
+  <script type="text/ng-template" id="viewNamespaceProjectsTemplate.html">
     <div class="ngCellText">
       <div class="ngCellText">
-        <a class="btn btn-default" href="{{row.entity.$projectsLink}}" ng-show="row.entity.$projectsLink">
-          <i class="fa fa-tasks"></i> Projects
+        <a href="{{row.entity.$projectsLink}}">
+          {{row.entity.$name}}
         </a>
-        &nbsp;&nbsp;
-        <a class="btn btn-default" href="{{row.entity.$runtimeLink}}" ng-show="row.entity.$runtimeLink">
-          <i class="fa fa-cubes"></i> Runtime
+      </div>
+    </div>
+  </script>
+  <script type="text/ng-template" id="viewNamespaceTemplate.html">
+    <div class="ngCellText">
+      <div class="ngCellText">
+        <a href="{{row.entity.$runtimeLink}}">
+          {{row.entity.$name}}
         </a>
       </div>
     </div>

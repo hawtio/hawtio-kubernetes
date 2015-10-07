@@ -6,7 +6,7 @@
 
 module Developer {
 
-  export var EventsController = controller("WorkspacesController",
+  export var WorkspacesController = controller("WorkspacesController",
     ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "jolokia", "$http", "$timeout", "KubernetesApiURL",
       ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesServices:ng.resource.IResourceClass, KubernetesPods:ng.resource.IResourceClass, KubernetesState,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, jolokia:Jolokia.IJolokia, $http, $timeout, KubernetesApiURL) => {
@@ -15,6 +15,8 @@ module Developer {
         $scope.model = KubernetesModel;
 
         ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
+
+        $scope.developerPerspective = Core.trimLeading($location.url(), "/").startsWith("workspace");
 
         $scope.tableConfig = {
           data: 'model.workspaces',
@@ -29,12 +31,7 @@ module Developer {
             {
               field: '$name',
               displayName: 'Name',
-              cellTemplate: $templateCache.get("idTemplate.html")
-            },
-            {
-              field: '$projectLink',
-              displayName: 'Views',
-              cellTemplate: $templateCache.get("workspaceViewsTemplate.html")
+              cellTemplate: $templateCache.get($scope.developerPerspective ? "viewNamespaceProjectsTemplate.html" : "viewNamespaceTemplate.html")
             },
             {
               field: 'metadata.description',
@@ -54,6 +51,9 @@ module Developer {
         };
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+
+        $scope.breadcrumbConfig = createWorkspacesBreadcrumbs($scope.developerPerspective);
+        $scope.subTabConfig = Developer.createWorkspacesSubNavBars($scope.developerPerspective);
 
         $scope.$keepPolling = () => Kubernetes.keepPollingModel;
         $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {

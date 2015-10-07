@@ -1,13 +1,55 @@
 /// <reference path="../../includes.ts"/>
 module Developer {
 
+  function homeBreadcrumb() {
+    return {
+      href: "/home",
+      label: "Home",
+      title: "Go to the home page"
+    }
+  }
+  function developBreadcrumb() {
+    return {
+      href: "/workspaces",
+      label: "Develop",
+      title: "View all the developer workspaces"
+    };
+  }
+  function operateBreadcrumb() {
+    return {
+      href: "/namespaces",
+      label: "Operate",
+      title: "View all the Runtime Namespaces"
+    };
+  }
+
+
+  export function createWorkspacesBreadcrumbs(developPerspective) {
+    if (developPerspective) {
+      return [
+        homeBreadcrumb(),
+        developBreadcrumb()
+      ];
+    } else {
+      return [
+        homeBreadcrumb(),
+        operateBreadcrumb()
+      ];
+    }
+  }
+
+
+  export function createWorkspacesSubNavBars(developPerspective) {
+      return activateCurrent([
+        developBreadcrumb(),
+        operateBreadcrumb()
+      ]);
+  }
+
   export function createWorkspaceBreadcrumbs(children = null, workspaceName = null) {
     var answer = [
-      {
-        href: "/workspaces",
-        label: "Workspaces",
-        title: "View all the workspaces"
-      }
+      homeBreadcrumb(),
+      developBreadcrumb()
     ];
     if (!workspaceName) {
       workspaceName = Kubernetes.currentKubernetesNamespace();
@@ -61,14 +103,20 @@ module Developer {
           }
           ];
       return createProjectBreadcrumbs(project, children, workspaceName);
-    }
-    return createWorkspaceBreadcrumbs([
-      {
-        href: UrlHelpers.join(namespacesLink, ns, "apps"),
-        label: "Runtime",
-        title: "View the runtime of the workspace: " + ns
+    } else {
+      if (!workspaceName) {
+        workspaceName = Kubernetes.currentKubernetesNamespace();
       }
-    ]);
+      return activateCurrent([
+        homeBreadcrumb(),
+        operateBreadcrumb(),
+        {
+          href: UrlHelpers.join(namespacesLink, ns, "apps"),
+          label: workspaceName,
+          title: "View the runtime of the workspace: " + ns
+        }
+      ]);
+    }
   }
 
   export function createProjectBreadcrumbs(projectName = null, children = null, workspaceName = null) {
@@ -187,7 +235,7 @@ module Developer {
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([
       {
-        href: UrlHelpers.join(namespacesLink, ns),
+        href: UrlHelpers.join(namespacesLink, ns, "apps"),
         label: "Apps",
         title: "View the apps for this workspace"
       },

@@ -35,7 +35,8 @@ module Kubernetes {
       .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
       .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
       .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
-      .when(context, {redirectTo: "/workspaces/" + Kubernetes.currentKubernetesNamespace()});
+      //.when(context, {redirectTo: "/workspaces/" + Kubernetes.currentKubernetesNamespace()});
+      .when(context, {redirectTo: "/home"});
 
 
     var contexts = [context, "/workspaces/:workspace/projects/:project"];
