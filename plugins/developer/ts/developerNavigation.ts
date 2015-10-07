@@ -101,17 +101,21 @@ module Developer {
 
   export function createWorkspaceSubNavBars() {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
+    var buildsTab = null;
+    if (jenkinsLink()) {
+      buildsTab = {
+        href: UrlHelpers.join("/workspaces", workspaceName, "jenkinsJob"),
+        label: "Builds",
+        title: "View the projects for this workspace"
+      };
+    }
     return activateCurrent([
       {
         href: UrlHelpers.join("/workspaces", workspaceName),
         label: "Projects",
         title: "View the projects for this workspace"
       },
-      {
-        href: UrlHelpers.join("/workspaces", workspaceName, "jenkinsJob"),
-        label: "Builds",
-        title: "View the projects for this workspace"
-      },
+      buildsTab,
       {
         href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
