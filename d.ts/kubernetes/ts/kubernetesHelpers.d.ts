@@ -27,6 +27,7 @@ declare module Kubernetes {
     function apiPrefix(): string;
     function osApiPrefix(): string;
     function masterApiUrl(): string;
+    /** WARNING - this excludes the host name - you probably want to use: kubernetesApiUrl() instead!! */
     function kubernetesApiPrefix(): string;
     function openshiftApiPrefix(): string;
     function prefixForType(type: string): string;
@@ -104,6 +105,7 @@ declare module Kubernetes {
      */
     function kubernetesUrlForItemKind(KubernetesApiURL: any, json: any): string;
     function kubernetesProxyUrlForService(KubernetesApiURL: any, service: any, path?: any): string;
+    function kubernetesProxyUrlForServiceCurrentNamespace(service: any, path?: any): string;
     function buildConfigRestUrl(id: any): string;
     function deploymentConfigRestUrl(id: any): string;
     function imageRepositoryRestUrl(id: any): string;

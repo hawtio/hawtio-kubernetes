@@ -77,10 +77,10 @@ module Developer {
 
         function updateData() {
           // TODO only need depth 2 to be able to fetch the lastBuild
-          var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceNameAndPort, "api/json?depth=2");
-          log.info("")
+          var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, "api/json?depth=2");
+          log.info("");
           if (url && (!$scope.jenkins || Kubernetes.keepPollingModel)) {
-            $http.get(url).
+            $http.get(url, jenkinsHttpConfig).
               success(function (data, status, headers, config) {
                 if (data) {
                   enrichJenkinsJobs(data, $scope.id, $scope.id);

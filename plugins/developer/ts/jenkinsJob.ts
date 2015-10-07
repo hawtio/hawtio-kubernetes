@@ -67,7 +67,7 @@ module Developer {
 
         function updateData() {
           if ($scope.jobId) {
-            var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, "api/json?depth=1"));
+            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, "api/json?depth=1"));
             if (url && (!$scope.job || Kubernetes.keepPollingModel)) {
               $http.get(url).
                 success(function (data, status, headers, config) {

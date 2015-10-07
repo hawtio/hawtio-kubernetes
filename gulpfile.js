@@ -117,6 +117,7 @@ gulp.task('connect', ['watch'], function() {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   var kubeBase = process.env.KUBERNETES_MASTER || 'https://localhost:8443';
+  console.log("==== using KUBERNETES URL: " + kubeBase);
   var kube = uri(urljoin(kubeBase, 'api'));
   var oapi = uri(urljoin(kubeBase, 'oapi'));
   console.log("Connecting to Kubernetes on: " + kube);

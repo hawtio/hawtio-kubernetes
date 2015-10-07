@@ -8,6 +8,11 @@ declare module Developer {
     var log: Logging.Logger;
     var jenkinsServiceName: string;
     var jenkinsServiceNameAndPort: string;
+    var jenkinsHttpConfig: {
+        headers: {
+            Accept: string;
+        };
+    };
     /**
      * Returns true if the value hasn't changed from the last cached JSON version of this object
      */

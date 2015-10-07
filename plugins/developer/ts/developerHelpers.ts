@@ -11,6 +11,12 @@ module Developer {
   export var jenkinsServiceName = "jenkins";
   export var jenkinsServiceNameAndPort = jenkinsServiceName + ":http";
 
+  export var jenkinsHttpConfig = {
+    headers: {
+      Accept: "application/json, text/x-json, text/plain"
+    }
+  };
+
   /**
    * Returns true if the value hasn't changed from the last cached JSON version of this object
    */

@@ -67,6 +67,7 @@ module Kubernetes {
     return masterUrl || "";
   }
 
+  /** WARNING - this excludes the host name - you probably want to use: kubernetesApiUrl() instead!! */
   export function kubernetesApiPrefix() {
     return UrlHelpers.join(apiPrefix(), defaultApiVersion);
   }
@@ -277,7 +278,7 @@ module Kubernetes {
 
   export function getNamespace(entity) {
     var answer = Core.pathGet(entity, ["metadata", "namespace"]);
-    return answer ? answer : defaultNamespace;
+    return answer ? answer : currentKubernetesNamespace();
   }
 
   export function getLabels(entity) {
@@ -708,6 +709,12 @@ module Kubernetes {
     }
   }
 
+
+  export function kubernetesProxyUrlForServiceCurrentNamespace(service, path = null) {
+    var apiPrefix = UrlHelpers.join(kubernetesApiUrl());
+    return kubernetesProxyUrlForService(apiPrefix, service, path);
+
+  }
   export function buildConfigRestUrl(id) {
     return UrlHelpers.join(buildConfigsRestURL(), id);
   }

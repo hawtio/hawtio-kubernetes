@@ -63,7 +63,7 @@ module Developer {
                 return defaults;
               }
             };
-            var url = Kubernetes.kubernetesProxyUrlForService(KubernetesApiURL, jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "logText/progressiveHtml"));
+            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "logText/progressiveHtml"));
             if (url && (!$scope.log.fetched || Kubernetes.keepPollingModel)) {
               $http.post(url, inputData, config).
                 success(function (data, status, headers, config) {
