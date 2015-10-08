@@ -25,13 +25,8 @@
       </a>
     </div>
   </div>
-  <style>
-    .logbox {
-      max-height: 900px;
-    }
-  </style>
-  <div class="row">
-    <div class="logbox pre-scrollable">
+  <div class="log-window" scroll-glue>
+    <div class="log-window-inner" >
       <p ng-repeat="log in log.logs | filter:log.filterText track by $index" ng-bind-html="log"></p>
     </div>
   </div>
