@@ -24,17 +24,12 @@ module Developer {
           html: "",
           start: 0
         };
-        $scope.$on('$routeUpdate', ($event) => {
-          updateData();
-        });
 
         $scope.$on('kubernetesModelUpdated', function () {
           updateJenkinsLink();
           Core.$apply($scope);
         });
 
-
-        updateData();
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = createJenkinsBreadcrumbs($scope.id, $scope.jobId, $scope.buildId);
@@ -52,31 +47,41 @@ module Developer {
           }
         }
 
-        function updateData() {
+
+        $scope.$keepPolling = () => Kubernetes.keepPollingModel;
+        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           if ($scope.jobId) {
             var inputData = {
               start: $scope.log.start
             };
             var config = {
               // lets avoid text losing the carriage returns
-              transformResponse: (defaults) => {
+              transformResponse: (defaults, value) => {
                 return defaults;
               }
             };
             var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "logText/progressiveHtml"));
             if (url && (!$scope.log.fetched || Kubernetes.keepPollingModel)) {
+              log.info("About to query from start: " + inputData.start);
+
               $http.post(url, inputData, config).
                 success(function (data, status, headers, config) {
                   if (data) {
-                    $scope.log.html += data;
-                    var length = data.length;
-                    $scope.log.start != length;
+                    var length = headers("X-Text-Size");
+                    log.info("length header is " + length);
+                    if (!length) {
+                      length = data.length;
+                      log.info("length is " + length);
+                    }
+                    $scope.log.html = $scope.log.html + data;
+                    $scope.log.start += length;
                     updateJenkinsLink();
                     $scope.log.html = replaceClusterIPsInHtml($scope.log.html);
                     $scope.log.logs = $scope.log.html.split("\n");
                   }
                   $scope.log.fetched = true;
                   Core.$apply($scope);
+                  next();
                 }).
                 error(function (data, status, headers, config) {
                   log.warn("Failed to load " + url + " " + data + " " + status);
@@ -85,8 +90,14 @@ module Developer {
           } else {
             $scope.log.fetched = true;
             Core.$apply($scope);
+            next();
+
           }
-        }
+        });
+
+        $scope.fetch();
+
+
 
         /** lets remove the URLs using the local service IPs and use the external host names instead */
         function replaceClusterIPsInHtml(html) {
