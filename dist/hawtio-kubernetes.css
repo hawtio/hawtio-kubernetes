@@ -497,7 +497,7 @@ tbody .ngCellText i {
   border: 1px solid #d4d4d4;
 }
 
-.terminal-title > h6 {
+.terminal-title > h5 {
   display: inline-block;
   margin-left: 5px;
 }
@@ -505,7 +505,7 @@ tbody .ngCellText i {
 .terminal-title > i {
   font-size: 16px;
   margin-right: 5px;
-  margin-top: 5px;
+  margin-top: 7px;
 }
 
 .terminal-window.minimized {

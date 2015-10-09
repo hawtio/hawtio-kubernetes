@@ -1,8 +1,8 @@
-<div class="terminal-window" terminal-window>
-  <div class="terminal-title" ng-click="raise()">
-    <h6 ng-bind="containerName"></h6>
-    <i class="fa fa-remove pull-right mouse-pointer" ng-click="close()"></i>
-    <i class="fa fa-toggle-down pull-right mouse-pointer" ng-click="minimize()"></i>
+<div class="terminal-window" terminal-window ng-click="raise()">
+  <div class="terminal-title">
+    <h5 ng-bind="containerName"></h5>
+    <i class="fa fa-remove pull-right clickable" title="Close and exit this terminal" ng-click="close()"></i>
+    <i class="fa fa-toggle-down pull-right clickable" title="Minimize this terminal" ng-click="minimize()"></i>
   </div>
   <div class="terminal-body">
   </div>
