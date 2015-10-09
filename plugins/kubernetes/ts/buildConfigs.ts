@@ -82,7 +82,8 @@ module Kubernetes {
 
       Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
-      $scope.isLoggedIntoGogs = Forge.isLoggedIntoGogs;
+      // TODO
+      // $scope.isLoggedIntoGogs = Forge.isLoggedIntoGogs;
 
       $scope.deletePrompt = (selected) => {
         UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{

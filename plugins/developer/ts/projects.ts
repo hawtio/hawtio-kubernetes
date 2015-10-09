@@ -74,7 +74,8 @@ module Developer {
       $scope.breadcrumbConfig = createProjectBreadcrumbs();
       $scope.subTabConfig = Developer.createWorkspaceSubNavBars();
 
-      $scope.isLoggedIntoGogs = Forge.isLoggedIntoGogs;
+      // TODO
+      //$scope.isLoggedIntoGogs = Forge.isLoggedIntoGogs;
 
       $scope.deletePrompt = (selected) => {
         UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
