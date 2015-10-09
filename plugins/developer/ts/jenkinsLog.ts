@@ -53,7 +53,7 @@ module Developer {
         $scope.$keepPolling = () => Kubernetes.keepPollingModel;
         $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           if ($scope.jobId) {
-            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "fabric8/log?tail=1&start=" + $scope.log.start + "&size=" + querySize));
+            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "fabric8/logHtml?tail=1&start=" + $scope.log.start + "&size=" + querySize));
             if ($scope.log.firstIdx !== null) {
               url += "&first=" + $scope.log.firstIdx;
             }
