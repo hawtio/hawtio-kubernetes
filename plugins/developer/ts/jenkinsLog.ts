@@ -22,7 +22,8 @@ module Developer {
 
         $scope.log = {
           html: "",
-          start: 0
+          start: 0,
+          firstIdx: null
         };
 
         $scope.$on('kubernetesModelUpdated', function () {
@@ -52,36 +53,81 @@ module Developer {
         $scope.$keepPolling = () => Kubernetes.keepPollingModel;
         $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           if ($scope.jobId) {
-            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "fabric8/log?start=" + $scope.log.start + "&size=" + querySize));
+            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "fabric8/log?tail=1&start=" + $scope.log.start + "&size=" + querySize));
+            if ($scope.log.firstIdx !== null) {
+              url += "&first=" + $scope.log.firstIdx;
+            }
             if (url && (!$scope.log.fetched || Kubernetes.keepPollingModel)) {
               $http.get(url).
                 success(function (data, status, headers, config) {
                   if (data) {
+                    var replaceClusterIPsInHtml = replaceClusterIpFunction();
+
                     if (!$scope.log.logs) {
                       $scope.log.logs = [];
                     }
                     var lines = data.lines;
-                    var textSize = data.textSize;
+                    var returnedLength = data.returnedLength;
                     var logLength = data.logLength;
-                    //log.debug("start was: " + $scope.log.start + " got textSize: " + textSize + " logLength: " + logLength);
-                    if (textSize) {
-                      $scope.log.start += (textSize - $scope.log.start);
+                    var returnedStart = data.start;
+                    var earlierLog = false;
+                    if (angular.isDefined(returnedStart)) {
+                      earlierLog = returnedStart < $scope.log.start;
+                    }
+                    var lineSplit = data.lineSplit;
+                    // log.info("start was: " + $scope.log.start + " first: " + $scope.log.firstIdx + " => returnedLength: " + returnedLength + " logLength: " + logLength +  " returnedStart: " + returnedStart + " earlierLog: " + earlierLog + " lineSplit: " + lineSplit);
+                    if (lines) {
+                      var currentLogs = $scope.log.logs;
+
+                      // lets re-join split lines
+                      if (lineSplit && currentLogs.length) {
+                        var lastIndex;
+                        var restOfLine;
+                        if (earlierLog) {
+                          lastIndex = 0;
+                          restOfLine = lines.pop();
+                          if (restOfLine) {
+                            currentLogs[lastIndex] = replaceClusterIPsInHtml(restOfLine + currentLogs[lastIndex]);
+                          }
+                        } else {
+                          lastIndex = currentLogs.length - 1;
+                          restOfLine = lines.shift();
+                          if (restOfLine) {
+                            currentLogs[lastIndex] = replaceClusterIPsInHtml(currentLogs[lastIndex] + restOfLine);
+                          }
+                        }
+                      }
+                      for (var i = 0; i < lines.length; i++) {
+                        lines[i] = replaceClusterIPsInHtml(lines[i]);
+                      }
+                      if (earlierLog) {
+                        $scope.log.logs = lines.concat(currentLogs);
+                      } else {
+                        $scope.log.logs = currentLogs.concat(lines);
+                      }
+                    }
+                    var moveForward = true;
+                    if (angular.isDefined(returnedStart)) {
+                      if (returnedStart > $scope.log.start && $scope.log.start === 0) {
+                        // we've jumped to the end of the file to read the tail of it
+                        $scope.log.start = returnedStart;
+                        $scope.log.firstIdx = returnedStart;
+                      } else if ($scope.log.firstIdx === null) {
+                        // lets remember where the first request started
+                        $scope.log.firstIdx = returnedStart;
+                      } else if (returnedStart < $scope.log.firstIdx) {
+                        // we've got an earlier bit of the log
+                        // after starting at the tail
+                        // so lets move firstIdx backwards and leave start as it is (at the end of the file)
+                        $scope.log.firstIdx = returnedStart;
+                        moveForward = false;
+                      }
+                    }
+                    if (moveForward && returnedLength && !earlierLog) {
+                      $scope.log.start += returnedLength;
                       if (logLength && $scope.log.start > logLength) {
                         $scope.log.start = logLength;
                       }
-                    }
-                    if (lines) {
-                      var currentLogs = $scope.log.logs;
-                      var lastIndex = currentLogs.length - 1;
-
-                      // lets re-join split lines
-                      if (data.lineSplit && lastIndex >= 0) {
-                        var restOfLine = lines.shift();
-                        if (restOfLine) {
-                          currentLogs[lastIndex] += restOfLine;
-                        }
-                      }
-                      $scope.log.logs = currentLogs.concat(lines);
                     }
                     updateJenkinsLink();
                   }
@@ -105,14 +151,69 @@ module Developer {
 
 
 
-        /** lets remove the URLs using the local service IPs and use the external host names instead */
-        function replaceClusterIPsInHtml(html) {
-          if (html) {
-            angular.forEach($scope.model.services, (service) => {
-              // TODO lets do a search and replace on the clusterIPs to the host URLs
-            });
+        function replaceClusterIpFunction() {
+          function createReplaceFunction(from, to) {
+            return (text) => replaceText(text, from, to);
           }
-          return html;
+
+          var replacements = [];
+          angular.forEach($scope.model.services, (service) => {
+            var $portalIP = service.$portalIP;
+            var $serviceUrl = service.$serviceUrl;
+            var $portsText = service.$portsText;
+            if ($portalIP && $serviceUrl) {
+              var idx = $serviceUrl.indexOf("://");
+              if (idx > 0) {
+                var replaceWith = $serviceUrl.substring(idx, $serviceUrl.length);
+                if (!replaceWith.endsWith("/")) {
+                  replaceWith += "/";
+                }
+                if (replaceWith.length > 4) {
+                  replacements.push(createReplaceFunction(
+                    "://" + $portalIP + "/",
+                    replaceWith
+                  ));
+                  if ($portsText) {
+                    var suffix = ":" + $portsText;
+                    var serviceWithPort = replaceWith.substring(0, replaceWith.length - 1);
+                    if (!serviceWithPort.endsWith(suffix)) {
+                      serviceWithPort += suffix;
+                    }
+                    serviceWithPort += "/";
+                    replacements.push(createReplaceFunction(
+                      "://" + $portalIP + ":" + $portsText + "/",
+                      serviceWithPort
+                    ));
+                  }
+                }
+              }
+            }
+          });
+
+          return function(text) {
+            var answer = text;
+            angular.forEach(replacements, (fn) => {
+              answer = fn(answer);
+            });
+            return answer;
+          }
+        }
+
+        function replaceText(text, from, to) {
+          if (from && to && text) {
+            //log.info("Replacing '" + from + "' => '" + to + "'");
+            var idx = 0;
+            while (true) {
+              idx = text.indexOf(from, idx);
+              if (idx >= 0) {
+                text = text.substring(0, idx) + to + text.substring(idx + from.length);
+                idx += to.length;
+              } else {
+                break;
+              }
+            }
+          }
+          return text;
         }
       }]);
 }
