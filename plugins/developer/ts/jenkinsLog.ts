@@ -47,37 +47,43 @@ module Developer {
           }
         }
 
+        var querySize = 50000;
 
         $scope.$keepPolling = () => Kubernetes.keepPollingModel;
         $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           if ($scope.jobId) {
-            var inputData = {
-              start: $scope.log.start
-            };
-            var config = {
-              // lets avoid text losing the carriage returns
-              transformResponse: (defaults, value) => {
-                return defaults;
-              }
-            };
-            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "logText/progressiveHtml"));
+            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "fabric8/log?start=" + $scope.log.start + "&size=" + querySize));
             if (url && (!$scope.log.fetched || Kubernetes.keepPollingModel)) {
-              log.info("About to query from start: " + inputData.start);
-
-              $http.post(url, inputData, config).
+              $http.get(url).
                 success(function (data, status, headers, config) {
                   if (data) {
-                    var length = headers("X-Text-Size");
-                    log.info("length header is " + length);
-                    if (!length) {
-                      length = data.length;
-                      log.info("length is " + length);
+                    if (!$scope.log.logs) {
+                      $scope.log.logs = [];
                     }
-                    $scope.log.html = $scope.log.html + data;
-                    $scope.log.start += length;
+                    var lines = data.lines;
+                    var textSize = data.textSize;
+                    var logLength = data.logLength;
+                    //log.debug("start was: " + $scope.log.start + " got textSize: " + textSize + " logLength: " + logLength);
+                    if (textSize) {
+                      $scope.log.start += (textSize - $scope.log.start);
+                      if (logLength && $scope.log.start > logLength) {
+                        $scope.log.start = logLength;
+                      }
+                    }
+                    if (lines) {
+                      var currentLogs = $scope.log.logs;
+                      var lastIndex = currentLogs.length - 1;
+
+                      // lets re-join split lines
+                      if (data.lineSplit && lastIndex >= 0) {
+                        var restOfLine = lines.shift();
+                        if (restOfLine) {
+                          currentLogs[lastIndex] += restOfLine;
+                        }
+                      }
+                      $scope.log.logs = currentLogs.concat(lines);
+                    }
                     updateJenkinsLink();
-                    $scope.log.html = replaceClusterIPsInHtml($scope.log.html);
-                    $scope.log.logs = $scope.log.html.split("\n");
                   }
                   $scope.log.fetched = true;
                   Core.$apply($scope);
