@@ -102,9 +102,8 @@ module Kubernetes {
     }
   });
 
-  function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
+  export function getWSUrl(watchUrl, userDetails) {
     var apiUrl = masterApiUrl();
-    var watchUrl = watch.url;
     var uri;
     if (!apiUrl || apiUrl === "/") {
       // lets avoid using a relative path if no master url is specified
@@ -119,6 +118,12 @@ module Kubernetes {
     } else {
       uri.protocol('ws');
     }
+    return uri;
+  }
+
+  function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
+    var watchUrl = watch.url;
+    var uri = getWSUrl(watchUrl, userDetails);
     uri.query(<any> {
       watch: true,
       access_token: userDetails.token

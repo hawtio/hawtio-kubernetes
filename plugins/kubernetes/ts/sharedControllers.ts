@@ -11,6 +11,13 @@ module Kubernetes {
     }
   }]);
 
+  _module.controller("Kubernetes.TermController", ($scope, TerminalService) => {
+    $scope.openTerminal = (selfLink, containerName) => {
+      var id = TerminalService.newTerminal(selfLink, containerName);
+      log.debug("Created terminal, id: ", id);
+    }
+  });
+
   // controller that deals with the labels per pod
   export var Labels = controller("Labels", ["$scope", "workspace", "jolokia", "$location", ($scope, workspace, jolokia, $location) => {
     $scope.labels = [];

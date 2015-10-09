@@ -29,7 +29,16 @@
     "hawtio-oauth": "~2.0.21",
     "angular-ui-codemirror": "~0.3.0",
     "urijs": "uri.js#~1.16.1",
-    "angularjs-scroll-glue": "~0.0.1"
+    "angularjs-scroll-glue": "~0.0.1",
+    "term.js": "~0.0.3",
+    "kubernetes-container-terminal": "~0.0.3"
+  },
+  "overrides": {
+    "term.js": {
+      "main": [
+        "./src/term.js"
+      ]
+    }
   },
   "devDependencies": {
     "bootstrap": "~3.3.1",

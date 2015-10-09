@@ -483,3 +483,31 @@ img.icon-selected-app {
   line-height: 13px;
 }
 
+tbody .ngCellText i {
+  font-size: 24px;
+  margin-right: 5px;
+}
+
+.terminal-window {
+  position: fixed;
+  bottom: 0;
+  height: 345px;
+  width: 443px;
+  background: white;
+  border: 1px solid #d4d4d4;
+}
+
+.terminal-title > h6 {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.terminal-title > i {
+  font-size: 16px;
+  margin-right: 5px;
+  margin-top: 5px;
+}
+
+.terminal-window.minimized {
+  height: 33px;
+}

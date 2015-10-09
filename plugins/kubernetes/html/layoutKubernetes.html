@@ -145,6 +145,11 @@
         <i class="fa fa-sign-in"></i>
       </a>
     </span>
+    <span ng-show="entity.status.phase === 'Running'" ng-controller="Kubernetes.TermController">
+      <span ng-repeat="container in entity.spec.containers">
+        <i class="fa fa-terminal mouse-pointer" title="Open up a terminal to {{container.name}}" ng-click="openTerminal(entity.metadata.selfLink, container.name)"></i>
+      </span>
+    </span>
   </div>
 </script>
 <script type="text/ng-template" id="resizeDialog.html">
