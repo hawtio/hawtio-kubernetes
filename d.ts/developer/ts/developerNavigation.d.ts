@@ -1,5 +1,6 @@
 /// <reference path="../../includes.d.ts" />
 declare module Developer {
+    function workspaceLink(): string;
     function createWorkspacesBreadcrumbs(developPerspective: any): {
         href: string;
         label: string;

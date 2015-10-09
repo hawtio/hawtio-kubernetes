@@ -23,6 +23,9 @@ module Developer {
     };
   }
 
+  export function workspaceLink() {
+    return UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace());
+  }
 
   export function createWorkspacesBreadcrumbs(developPerspective) {
     if (developPerspective) {
