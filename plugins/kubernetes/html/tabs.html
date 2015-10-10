@@ -1,0 +1,9 @@
+<div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig" class="breadcrumb-tabs"
+     ng-controller="Developer.NavBarController">
+  <ul class="nav navbar-nav nav-tabs">
+    <li ng-repeat="breadcrumb in subTabConfig" ng-show="isValid(breadcrumb)"
+        class="{{breadcrumb.active ? 'active' : ''}}"
+        title="{{breadcrumb.title}}">
+      <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+  </ul>
+</div>

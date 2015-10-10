@@ -1,0 +1,10 @@
+<div ng-show="breadcrumbConfig" ng-init="breadcrumbConfig = $parent.breadcrumbConfig"
+     ng-controller="Developer.NavBarController">
+  <ol class="breadcrumb">
+    <li ng-repeat="breadcrumb in breadcrumbConfig" ng-show="isValid(breadcrumb)"
+        class="{{breadcrumb.active ? 'active' : ''}}"
+        title="{{breadcrumb.title}}">
+      <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+      <span ng-hide="breadcrumb.href && !breadcrumb.active">{{breadcrumb.label}}</span>
+  </ol>
+</div>

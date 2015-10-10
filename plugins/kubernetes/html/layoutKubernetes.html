@@ -1,22 +1,3 @@
-<script type="text/ng-template" id="breadcrumbsTemplate.html">
-  <div ng-show="breadcrumbConfig" ng-init="breadcrumbConfig = $parent.breadcrumbConfig" ng-controller="Developer.NavBarController">
-    <ol class="breadcrumb">
-      <li ng-repeat="breadcrumb in breadcrumbConfig" ng-show="isValid(breadcrumb)" class="{{breadcrumb.active ? 'active' : ''}}"
-          title="{{breadcrumb.title}}">
-        <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-        <span ng-hide="breadcrumb.href && !breadcrumb.active">{{breadcrumb.label}}</span>
-    </ol>
-  </div>
-</script>
-<script type="text/ng-template" id="subTabsTemplate.html">
-  <div ng-show="subTabConfig" ng-init="subTabConfig = $parent.subTabConfig" class="breadcrumb-tabs" ng-controller="Developer.NavBarController">
-    <ul class="nav navbar-nav nav-tabs">
-      <li ng-repeat="breadcrumb in subTabConfig" ng-show="isValid(breadcrumb)" class="{{breadcrumb.active ? 'active' : ''}}"
-          title="{{breadcrumb.title}}">
-        <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-    </ul>
-  </div>
-</script>
 <script type="text/ng-template" id="runButton.html">
   <button ng-show="model.showRunButton"
           class="btn btn-success pull-right"
