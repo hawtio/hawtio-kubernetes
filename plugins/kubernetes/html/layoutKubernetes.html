@@ -7,7 +7,7 @@
   </button>
 </script>
 <script type="text/ng-template" id="idTemplate.html">
-  <div class="ngCellText">
+  <div class="ngCellText nowrap">
     <a href=""
        title="View details for {{row.entity.metadata.name || row.entity.name}}"
        ng-href="{{row.entity | kubernetesPageLink}}">
@@ -127,7 +127,7 @@
       </a>
     </span>
     <span ng-show="entity.status.phase === 'Running'" ng-controller="Kubernetes.TermController">
-      <span ng-repeat="container in entity.spec.containers">
+      <span ng-repeat="container in entity.spec.containers" ng-show="canConnectTo(container)">
         <i class="fa fa-television clickable" title="Open up a terminal to {{container.name}}" ng-click="openTerminal(entity.metadata.selfLink, container.name)"></i>
       </span>
     </span>

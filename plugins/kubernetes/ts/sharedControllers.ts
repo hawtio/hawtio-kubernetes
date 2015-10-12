@@ -12,6 +12,12 @@ module Kubernetes {
   }]);
 
   _module.controller("Kubernetes.TermController", ($scope, TerminalService) => {
+    $scope.canConnectTo = (container) => {
+      if (container.securityContext && container.securityContext.privileged) {
+        return false;
+      }
+      return true;
+    }
     $scope.openTerminal = (selfLink, containerName) => {
       var id = TerminalService.newTerminal(selfLink, containerName);
       log.debug("Created terminal, id: ", id);
