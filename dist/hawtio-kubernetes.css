@@ -511,3 +511,15 @@ tbody .ngCellText i {
 .terminal-window.minimized {
   height: 33px;
 }
+
+.log-success {
+    color: green;
+}
+
+.log-warn {
+    color: orange
+}
+
+.log-error {
+    color: red;
+}

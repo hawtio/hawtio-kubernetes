@@ -190,6 +190,19 @@ module Developer {
             }
           });
 
+          function addReplaceFn(from, to) {
+            replacements.push((text) => {
+              return replaceText(text, from, to);
+            });
+
+          }
+          addReplaceFn("[INFO]", "<span class='log-success'>[INFO]</span>");
+          addReplaceFn("[WARN]", "<span class='log-warn'>[WARN]</span>");
+          addReplaceFn("[WARNING]", "<span class='log-warn'>[WARNING]</span>");
+          addReplaceFn("[ERROR]", "<span class='log-error'>[ERROR]</span>");
+          addReplaceFn("FAILURE", "<span class='log-error'>FAILURE</span>");
+          addReplaceFn("SUCCESS", "<span class='log-success'>SUCCESS</span>");
+
           return function(text) {
             var answer = text;
             angular.forEach(replacements, (fn) => {
