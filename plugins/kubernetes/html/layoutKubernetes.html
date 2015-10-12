@@ -112,7 +112,7 @@
   </div>
 </script>
 <script type="text/ng-template" id="statusTemplate.html">
-  <div class="ngCellText" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus"
+  <div class="ngCellText nowrap" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus"
        title="Pod {{entity.metadata.name}} is {{entity.status.phase}}">
     <!-- in detail view -->
     <p ng-show="data"><strong>Status: </strong></p>

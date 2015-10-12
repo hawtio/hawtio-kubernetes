@@ -1,3 +1,7 @@
+.nowrap {
+  white-space: nowrap;
+}
+
 .kubernetes-overview {
   width: 100%;
   height: 100%;
@@ -484,7 +488,6 @@ img.icon-selected-app {
 }
 
 tbody .ngCellText i {
-  font-size: 24px;
   margin-right: 5px;
 }
 
