@@ -80,14 +80,14 @@
          href="{{baseUri}}/kubernetes/buildConfigCreate"><i class="fa fa-wrench"></i> Add Build</a>
       <span class="pull-right">&nbsp;</span>
 
-      <a class="btn btn-primary pull-right" href="/forge/command/project-new"
+      <a class="btn btn-primary pull-right" href="/workspaces/{{namespace}}/forge/createProject"
          ng-show="isLoggedIntoGogs()"
          title="Create a new project and repository">
         <i class="fa fa-plus"></i> Create Project</a>
       </a>
       <span class="pull-right" ng-show="isLoggedIntoGogs()">&nbsp;</span>
 
-      <a class="btn btn-primary pull-right" href="/forge/repos"
+      <a class="btn btn-primary pull-right" href="/workspaces/{{namespace}}/forge/repos"
          ng-hide="isLoggedIntoGogs()"
          title="Sign in to gogs so that you can create a new project">
         <i class="fa fa-sign-in"></i> Sign In</a>

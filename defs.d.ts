@@ -57,6 +57,3 @@
 /// <reference path="d.ts/developer/ts/projects.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspace.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspaces.d.ts"/>
-/// <reference path="d.ts/project/ts/projectHelpers.d.ts"/>
-/// <reference path="d.ts/project/ts/projectPlugin.d.ts"/>
-/// <reference path="d.ts/project/ts/project.d.ts"/>

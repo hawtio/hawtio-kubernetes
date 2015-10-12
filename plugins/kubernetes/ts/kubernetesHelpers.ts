@@ -1026,6 +1026,7 @@ module Kubernetes {
       var metadata = buildConfig.metadata || {};
       var name = metadata.name;
       buildConfig.$name = name;
+      var projectLink = Developer.projectLink(name);
       var ns = metadata.namespace || currentKubernetesNamespace();
       buildConfig.$namespace = ns;
       buildConfig.environments = [];
@@ -1135,7 +1136,7 @@ module Kubernetes {
         // run forge commands view
         defaultPropertiesIfNotExist("fabric8.link.forgeCommand.view", {
           label: "Command...",
-          url: UrlHelpers.join("/forge/commands/user", buildConfig.$user, buildConfig.$repo),
+          url: UrlHelpers.join(projectLink, "/forge/commands/user", buildConfig.$user, buildConfig.$repo),
           description: "Perform an action on this project",
           iconClass: "fa fa-play-circle"
         }, true);
@@ -1144,7 +1145,7 @@ module Kubernetes {
         // configure devops view
         defaultPropertiesIfNotExist("fabric8.link.forgeCommand.devops.settings", {
           label: "Settings",
-          url: UrlHelpers.join("/forge/command/devops-edit/user", buildConfig.$user, buildConfig.$repo),
+          url: UrlHelpers.join(projectLink, "/forge/command/devops-edit/user", buildConfig.$user, buildConfig.$repo),
           description: "Configure the DevOps settings for this project",
           iconClass: "fa fa-pencil-square-o"
         }, true);

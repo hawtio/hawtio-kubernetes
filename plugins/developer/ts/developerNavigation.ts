@@ -27,6 +27,15 @@ module Developer {
     return UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace());
   }
 
+  export function projectLink(projectId) {
+    var link = workspaceLink();
+    if (projectId) {
+      return UrlHelpers.join(link, "/projects", projectId);
+    } else {
+      return link;
+    }
+  }
+
   export function createWorkspacesBreadcrumbs(developPerspective) {
     if (developPerspective) {
       return [
