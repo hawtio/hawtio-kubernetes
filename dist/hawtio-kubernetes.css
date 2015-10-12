@@ -494,10 +494,14 @@ tbody .ngCellText i {
 .terminal-window {
   position: fixed;
   bottom: 0;
-  height: 345px;
-  width: 443px;
+  min-height: 345px;
+  min-width: 443px;
   background: white;
   border: 1px solid #d4d4d4;
+}
+
+.terminal-body .terminal-wrapper > .terminal * {
+  font-family: 'DroidSansMonoRegular';
 }
 
 .terminal-title > h5 {
@@ -512,7 +516,7 @@ tbody .ngCellText i {
 }
 
 .terminal-window.minimized {
-  height: 33px;
+  min-height: 33px;
 }
 
 .log-success {
