@@ -128,7 +128,7 @@
     </span>
     <span ng-show="entity.status.phase === 'Running'" ng-controller="Kubernetes.TermController">
       <span ng-repeat="container in entity.spec.containers">
-        <i class="fa fa-terminal mouse-pointer" title="Open up a terminal to {{container.name}}" ng-click="openTerminal(entity.metadata.selfLink, container.name)"></i>
+        <i class="fa fa-television clickable" title="Open up a terminal to {{container.name}}" ng-click="openTerminal(entity.metadata.selfLink, container.name)"></i>
       </span>
     </span>
   </div>
