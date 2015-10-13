@@ -63,14 +63,14 @@ module Kubernetes {
 		});
 	}]);
 
-  export var TopLevel = controller("TopLevel", ["$scope", "workspace", "KubernetesVersion", "KubernetesState", ($scope, workspace:Core.Workspace, KubernetesVersion:ng.resource.IResourceClass, KubernetesState) => {
+  export var TopLevel = controller("TopLevel", ["$scope", "KubernetesVersion", "KubernetesState", ($scope, KubernetesVersion:ng.resource.IResourceClass, KubernetesState) => {
 
     $scope.version = undefined;
 
-    $scope.showAppView = isAppView(workspace);
+    $scope.showAppView = isAppView();
 
     $scope.isActive = (href) => {
-      return workspace.isLinkActive(href);
+      return isLinkActive(href);
     };
 
     $scope.kubernetes = KubernetesState;

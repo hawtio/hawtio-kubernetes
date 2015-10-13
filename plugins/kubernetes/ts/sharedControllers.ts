@@ -25,7 +25,7 @@ module Kubernetes {
   });
 
   // controller that deals with the labels per pod
-  export var Labels = controller("Labels", ["$scope", "workspace", "jolokia", "$location", ($scope, workspace, jolokia, $location) => {
+  export var Labels = controller("Labels", ["$scope", "$location", ($scope, $location) => {
     $scope.labels = [];
     var labelKeyWeights = {
       "name": 1,

@@ -7,7 +7,7 @@ declare var KeycloakConfig:any;
 
 module Kubernetes {
 
-  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'wiki', 'restmod', 'ui.codemirror', 'kubernetesUI']);
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'restmod', 'ui.codemirror', 'kubernetesUI']);
   export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
@@ -87,7 +87,7 @@ module Kubernetes {
 
   _module.filter('kubernetesPageLink', () => entityPageLink);
 
-  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
+  _module.run(['viewRegistry', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
     log.debug("Running");
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
     var builder = HawtioNav.builder();
@@ -153,7 +153,7 @@ module Kubernetes {
 
     var repos = builder.id('kube-repos')
                       .href(() => "/forge/repos")
-                      .isValid(() => ServiceRegistry.hasService(fabric8ForgeServiceName) && ServiceRegistry.hasService(gogsServiceName) && !Core.isRemoteConnection())
+                      .isValid(() => ServiceRegistry.hasService(fabric8ForgeServiceName) && ServiceRegistry.hasService(gogsServiceName) )
                       .title(() => 'Repositories')
                       .build();
 
@@ -162,16 +162,11 @@ module Kubernetes {
                          .defaultPage({
                            rank: 20,
                            isValid: (yes, no) => {
-                             if (!Core.isRemoteConnection()) {
                                yes();
-                             } else {
-                               no();
-                             }
                            }
                          })
                          .href(() => context)
                          .title(() => 'Kubernetes')
-                         .isValid(() => !Core.isRemoteConnection())
                          .tabs(apps, services, controllers, pods, events, hosts, overview)
                          .build();
     HawtioNav.add(mainTab);
@@ -189,7 +184,6 @@ module Kubernetes {
                          .rank(100)
                          .href(() => UrlHelpers.join(context, 'buildConfigs') + '?sub-tab=kube-buildConfigs')
                          .title(() => 'Projects')
-                         .isValid(() => !Core.isRemoteConnection())
                           // lets disable the pipelines view for now
                           // pipelines,
                          .tabs(repos, buildConfigs, builds,  deploys, imageRepositories)
@@ -260,5 +254,6 @@ module Kubernetes {
     }
   }, true);
 
+  hawtioPluginLoader.addModule('ngResource');
   hawtioPluginLoader.addModule(pluginName);
 }

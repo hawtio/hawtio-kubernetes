@@ -4,9 +4,9 @@
 module Kubernetes {
   
   export var Apps = controller("Apps",
-    ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", "workspace", "jolokia",
+    ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", 
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.resource.IResourceClass, KubernetesReplicationControllers:ng.resource.IResourceClass, KubernetesPods:ng.resource.IResourceClass, KubernetesState, KubernetesApiURL,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $dialog, $timeout, workspace, jolokia:Jolokia.IJolokia) => {
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $dialog, $timeout) => {
 
     $scope.model = KubernetesModel;
 

@@ -323,19 +323,57 @@ module Kubernetes {
   export var managerMBean = fabricDomain + ":type=KubernetesManager";
   export var appViewMBean = fabricDomain + ":type=AppView";
 
-  export function isKubernetes(workspace) {
+  export function isKubernetes(workspace?) {
     // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "Kubernetes"});
     return true;
   }
 
-  export function isKubernetesTemplateManager(workspace) {
+  export function isKubernetesTemplateManager(workspace?) {
     // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "KubernetesTemplateManager"});
     return true;
   }
 
-  export function isAppView(workspace) {
+  export function isAppView(workspace?) {
     // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "AppView"});
     return true;
+  }
+
+  export function getStrippedPathName():String {
+    var pathName = Core.trimLeading((this.$location.path() || '/'), "#");
+    pathName = pathName.replace(/^\//, '');
+    return pathName;
+  }
+
+  export function linkContains(...words:String[]):boolean {
+    var pathName = this.getStrippedPathName();
+    return words.all((word:string) => {
+      return pathName.has(word);
+    });
+  }
+
+  /**
+   * Returns true if the given link is active. The link can omit the leading # or / if necessary.
+   * The query parameters of the URL are ignored in the comparison.
+   * @method isLinkActive
+   * @param {String} href
+   * @return {Boolean} true if the given link is active
+   */
+  export function isLinkActive(href:string):boolean {
+    // lets trim the leading slash
+    var pathName = getStrippedPathName();
+
+    var link = Core.trimLeading(href, "#");
+    link = link.replace(/^\//, '');
+    // strip any query arguments
+    var idx = link.indexOf('?');
+    if (idx >= 0) {
+      link = link.substring(0, idx);
+    }
+    if (!pathName.length) {
+      return link === pathName;
+    } else {
+      return pathName.startsWith(link);
+    }
   }
 
   export function setJson($scope, id, collection) {

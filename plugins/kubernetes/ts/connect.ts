@@ -13,7 +13,7 @@ module Kubernetes {
       var baseHref = base && base.href || '';
 
       $scope.doConnect = (entity) => {
-        var connectUrl:any = new URI(baseHref);
+        var connectUrl:any = new URI(baseHref).path('/java/index.html');
         var returnTo = new URI().toString();
         var title = entity.metadata.name || 'Untitled Container';
         var token = userDetails.token || '';

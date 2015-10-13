@@ -3,7 +3,7 @@
 
 module Developer {
 
-  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'wiki', 'restmod', 'ui.codemirror']);
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'restmod', 'ui.codemirror']);
   export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
@@ -30,7 +30,7 @@ module Developer {
   }]);
   
 
-  _module.run(['viewRegistry', 'workspace', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, workspace:Core.Workspace, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
+  _module.run(['viewRegistry', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
     log.debug("Running");
     viewRegistry['workspaces'] = Kubernetes.templatePath + 'layoutKubernetes.html';
     viewRegistry['namespaces'] = Kubernetes.templatePath + 'layoutKubernetes.html';
@@ -50,7 +50,7 @@ module Developer {
                          .rank(100)
                          .href(() => context)
                          .title(() => 'Workspaces')
-                         .isValid(() => !Core.isRemoteConnection())
+                         //.isValid(() => !Core.isRemoteConnection())
                          .tabs(workspaces)
                          .build();
 

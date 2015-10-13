@@ -62,9 +62,19 @@ declare module Kubernetes {
     var mbean: string;
     var managerMBean: string;
     var appViewMBean: string;
-    function isKubernetes(workspace: any): boolean;
-    function isKubernetesTemplateManager(workspace: any): boolean;
-    function isAppView(workspace: any): boolean;
+    function isKubernetes(workspace?: any): boolean;
+    function isKubernetesTemplateManager(workspace?: any): boolean;
+    function isAppView(workspace?: any): boolean;
+    function getStrippedPathName(): String;
+    function linkContains(...words: String[]): boolean;
+    /**
+     * Returns true if the given link is active. The link can omit the leading # or / if necessary.
+     * The query parameters of the URL are ignored in the comparison.
+     * @method isLinkActive
+     * @param {String} href
+     * @return {Boolean} true if the given link is active
+     */
+    function isLinkActive(href: string): boolean;
     function setJson($scope: any, id: any, collection: any): void;
     /**
      * Returns the labels text string using the <code>key1=value1,key2=value2,....</code> format
