@@ -16,7 +16,7 @@
       </div>
       <div ng-show="model.fetched">
         <div ng-hide="metrics.builds.length" class="align-center">
-          <p class="alert alert-info">There are no builds in this job.</p>
+          <p class="alert alert-info">There are no completed builds in this job.</p>
         </div>
         <div ng-show="metrics.builds.length">
           <nvd3 options="options" data="data" api="api"></nvd3>

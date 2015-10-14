@@ -48,7 +48,7 @@ module Developer {
             clipEdge: true,
             staggerLabels: false,
             transitionDuration: 500,
-            stacked: true,
+            stacked: false,
             interactive: true,
             tooltip: {
               enabled: true,
