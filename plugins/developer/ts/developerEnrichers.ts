@@ -174,6 +174,7 @@ module Developer {
     if (build) {
       build.$project = projectId;
       build.$jobId = jobName;
+      build.$timestamp = asDate(build.timeInMillis);
       var workspaceName = Kubernetes.currentKubernetesNamespace();
       var parameters = build.parameters;
       var $parameterCount = 0;

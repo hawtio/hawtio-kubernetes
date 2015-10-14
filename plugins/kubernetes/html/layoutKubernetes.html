@@ -166,21 +166,25 @@
 </script>
 <script type="text/ng-template" id="pipelineTemplate.html">
   <div class="pipeline-block">
-    <div class="pipeline-build inline-block" title="{{build.description || 'Pipeline build number ' + build.displayName}}">
+    <div class="pipeline-build inline-block"
+         title="{{build.description || 'Pipeline build number ' + build.displayName}}">
       <div class="buildName">
-        <a href="{{build.$viewLink}}" ng-show="build.$viewLink" title="View the build details inside Jenkins">
+        <a href="{{build.$viewLink}}" title="View the build details inside Jenkins">
           {{build.displayName}}
         </a>
-        <span ng-hide="build.$viewLink">
-          {{build.displayName}}
+        <span class="buildParameters pull-right" title="{{build.$parameterText}}">
+          <ng-pluralize count="build.$parameterCount"
+                        when="{'0': 'No parameters',
+                               'one': '1 parameter',
+                               'other': '{} parameters'}">
+          </ng-pluralize>
         </span>
       </div>
-      <div class="buildParameters" title="{{build.$parameterText}}">
-        <ng-pluralize count="build.$parameterCount"
-                         when="{'0': 'No parameters',
-                             'one': '1 parameter',
-                             'other': '{} parameters'}">
-        </ng-pluralize>
+
+      <div class="buildDuration text-center">
+        <a href="{{build.$logLink}}" title="This build started at {{build.$timestamp}}" target="logs">
+          started {{build.$timestamp.relative()}}
+        </a>
       </div>
     </div>
 
@@ -189,15 +193,12 @@
         <i class="fa fa-angle-double-right"></i>
       </div>
       <div class="pipeline-deploy {{stage.$backgroundClass}} inline-block">
-        <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i> {{stage.stageName}}
-        </div>
-        <div class="stageStartTime" title="Stage started at {{stage.$startTime}}">
+        <div class="text-center stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i>
           <a href="{{stage.$viewLink}}" title="This stage started at {{stage.$startTime}}" target="logs">
-            {{stage.$startTime.relative()}}
+            {{stage.stageName}}
           </a>
-          &nbsp;
-          &nbsp;
-          &nbsp;
+        </div>
+        <div class="text-center stageStartTime" title="Stage started at {{stage.$startTime}}">
           <a href="{{stage.$logLink}}" title="View the logs of this stage">
             {{stage.duration.duration()}}
           </a>
