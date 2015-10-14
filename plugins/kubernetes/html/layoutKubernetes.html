@@ -186,7 +186,7 @@
 
     <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="inline-block">
       <div class="pipeline-arrow inline-block" ng-show="$index">
-        <i class="fa fa-long-arrow-right"></i>
+        <i class="fa fa-angle-double-right"></i>
       </div>
       <div class="pipeline-deploy {{stage.$backgroundClass}} inline-block">
         <div class="stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i> {{stage.stageName}}
