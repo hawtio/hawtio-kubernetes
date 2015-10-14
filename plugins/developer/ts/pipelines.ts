@@ -62,6 +62,7 @@ module Developer {
                 }).
                 error(function (data, status, headers, config) {
                   log.warn("Failed to load " + url + " " + data + " " + status);
+                  $scope.model.fetched = true;
                 });
             }
           } else {
