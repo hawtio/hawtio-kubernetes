@@ -144,7 +144,7 @@ module Kubernetes {
       case WatchTypes.PERSISTENT_VOLUMES:
       case "PersistentVolumes":
       case "PersistentVolume":
-        return UrlHelpers.join('persisentvolumes');
+        return UrlHelpers.join('persistentvolumes');
       default:
         return UrlHelpers.join('namespaces', ns, type);
     }
