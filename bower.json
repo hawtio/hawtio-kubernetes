@@ -19,19 +19,20 @@
     "plugins"
   ],
   "dependencies": {
+    "angular-nvd3": "~1.0.2",
+    "angular-resource": "~1.4.7",
+    "angular-restmod": "~1.1.8",
+    "angular-ui-codemirror": "~0.3.0",
+    "angularjs-scroll-glue": "~0.0.1",
     "hawtio-core": "~2.0.16",
     "hawtio-forms": "~2.0.15",
+    "hawtio-oauth": "~2.0.21",
+    "hawtio-template-cache": "*",
     "hawtio-ui": "~2.0.54",
     "hawtio-utilities": "~2.0.21",
-    "hawtio-template-cache": "*",
-    "angular-restmod": "~1.1.8",
-    "hawtio-oauth": "~2.0.21",
-    "angular-ui-codemirror": "~0.3.0",
-    "urijs": "uri.js#~1.16.1",
-    "angularjs-scroll-glue": "~0.0.1",
-    "term.js": "~0.0.3",
     "kubernetes-container-terminal": "~0.0.3",
-    "angular-resource": "~1.4.7"
+    "term.js": "~0.0.3",
+    "urijs": "uri.js#~1.16.1"
   },
   "overrides": {
     "term.js": {

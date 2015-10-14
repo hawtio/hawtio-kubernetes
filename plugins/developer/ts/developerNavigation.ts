@@ -226,6 +226,12 @@ module Developer {
         title: "View the environments for this project"
       },
       {
+        isValid: () => jenkinsLink(),
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId, "metrics"),
+        label: "Metrics",
+        title: "View the metrics for this project"
+      },
+      {
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "tools"),
         label: "Tools",
         title: "View the tools for this project"

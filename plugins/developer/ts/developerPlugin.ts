@@ -3,7 +3,7 @@
 
 module Developer {
 
-  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'restmod', 'ui.codemirror']);
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'ui.codemirror', 'nvd3']);
   export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
@@ -23,6 +23,8 @@ module Developer {
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/log/:build'), route('jenkinsLog.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/pipelines'), route('pipelines.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/pipeline/:build'), route('pipeline.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/metrics'), route('jenkinsMetrics.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsMetrics'), route('jenkinsMetrics.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/tools'), route('tools.html', false))
                   .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false))
                   .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false))

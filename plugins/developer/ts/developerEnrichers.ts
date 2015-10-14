@@ -31,7 +31,7 @@ module Developer {
     return build;
   }
 
-  function asDate(value) {
+  export function asDate(value) {
     return value ? new Date(value) : null;
   }
 
