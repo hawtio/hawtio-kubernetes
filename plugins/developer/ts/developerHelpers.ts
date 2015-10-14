@@ -81,6 +81,12 @@ module Developer {
             item.$gitCommit = annotations["fabric8.io/git-commit"];
             item.$gitUrl = annotations["fabric8.io/git-url"];
             item.$gitBranch = annotations["fabric8.io/git-branch"];
+
+            var spec = item.spec || {};
+            var selector = spec.selector;
+            if (selector) {
+              loadProjectPodCounters($scope, $http, project, item, selector, ns, projectName);
+            }
           });
           Core.$apply($scope);
         }
@@ -88,7 +94,25 @@ module Developer {
       error(function (data, status, headers, config) {
         log.warn("Failed to load " + url + " " + data + " " + status);
       });
-
-
   }
+
+  function loadProjectPodCounters($scope, $http, project, rc, selector, ns, projectName) {
+    var selectorText = Kubernetes.labelsToString(selector, ",");
+    var url = Kubernetes.resourcesUriForKind(Kubernetes.WatchTypes.PODS, ns) + "?labelSelector=" + encodeURIComponent(selectorText);
+    var podLinkUrl = UrlHelpers.join(projectLink(projectName), "namespace", ns, "pods");
+    $http.get(url).
+      success(function (data, status, headers, config) {
+        if (data) {
+          var pods = data.items;
+          if (pods) {
+            rc.pods = [];
+            rc.$podCounters = Kubernetes.createPodCounters(selector, pods, rc.pods, selectorText, podLinkUrl);
+          }
+        }
+      }).
+      error(function (data, status, headers, config) {
+        log.warn("Failed to load " + url + " " + data + " " + status);
+      });
+  }
+
 }

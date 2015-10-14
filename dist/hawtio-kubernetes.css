@@ -436,6 +436,42 @@ img.icon-selected-app {
     font-size: 24px;
 }
 
+
+.environment-row a {
+    color: black;
+}
+
+.environment-row {
+    background-color: rgb(238, 238, 238);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.environment-rows {
+    padding-bottom: 20px;
+}
+
+.environment-name-block {
+    width: 200px;
+}
+
+.environment-name-block, .environment-deploy-block {
+    background: white;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.environment-deploy-version-and-pods {
+    padding-bottom: 5px;
+}
+
 .row-header {
     padding-bottom: 20px;
 }

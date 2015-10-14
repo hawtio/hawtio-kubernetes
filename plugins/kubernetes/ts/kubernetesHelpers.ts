@@ -589,7 +589,10 @@ module Kubernetes {
    * Given the list of pods lets iterate through them and find all pods matching the selector
    * and return counters based on the status of the pod
    */
-  export function createPodCounters(selector, pods, outputPods = [], podLinkQuery = null) {
+  export function createPodCounters(selector, pods, outputPods = [], podLinkQuery = null, podLinkUrl = null) {
+    if (!podLinkUrl) {
+      podLinkUrl = "/kubernetes/pods";
+    }
     var filterFn;
     if (angular.isFunction(selector)) {
       filterFn = selector;
@@ -606,7 +609,7 @@ module Kubernetes {
       if (!podLinkQuery) {
         podLinkQuery = Kubernetes.labelsToString(selector, " ");
       }
-      answer.podsLink = Core.url("/kubernetes/pods?q=" + encodeURIComponent(podLinkQuery));
+      answer.podsLink = podLinkUrl + "?q=" + encodeURIComponent(podLinkQuery);
       angular.forEach(pods, pod => {
         if (filterFn(pod)) {
           outputPods.push(pod);
