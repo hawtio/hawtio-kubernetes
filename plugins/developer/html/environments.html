@@ -68,10 +68,10 @@
                         Build {{rc.$buildId}}
                       </a>
                       <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="btn btn-default"
-                         title="View the source code for the commit which created this Replication Controller">
+                         title="View the source code for the commit which created this Replication Controller - commit: {{rc.$gitCommit}}">
                         <i class="fa fa-code-fork"></i>
                         Commit #
-                        {{rc.$gitCommit}}
+                        {{rc.$gitCommit | limitTo:7}}
                       </a>
                     </div>
                   </div>
