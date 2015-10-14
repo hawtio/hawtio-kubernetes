@@ -172,12 +172,10 @@
         <a href="{{build.$viewLink}}" title="View the build details inside Jenkins">
           {{build.displayName}}
         </a>
-        <span class="buildParameters pull-right" title="{{build.$parameterText}}">
-          <ng-pluralize count="build.$parameterCount"
-                        when="{'0': 'No parameters',
-                               'one': '1 parameter',
-                               'other': '{} parameters'}">
-          </ng-pluralize>
+        <span class="buildParameters pull-right">
+          <i class="{{build.$iconClass}}" title="Build result: {{build.result}}"></i>
+          &nbsp;
+          <i class="fa fa-ellipsis-v" title="build parameters: {{build.$parameterText}}"></i>
         </span>
       </div>
 

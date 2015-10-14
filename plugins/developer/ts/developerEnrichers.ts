@@ -175,6 +175,8 @@ module Developer {
       build.$project = projectId;
       build.$jobId = jobName;
       build.$timestamp = asDate(build.timeInMillis);
+      build.$iconClass = createBuildStatusIconClass(build.result || "NOT_STARTED");
+
       var workspaceName = Kubernetes.currentKubernetesNamespace();
       var parameters = build.parameters;
       var $parameterCount = 0;
