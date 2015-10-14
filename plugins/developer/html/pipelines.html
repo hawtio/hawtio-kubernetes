@@ -39,9 +39,6 @@
           <p class="alert alert-info">There are no pipelines for this job.</p>
         </div>
         <div ng-show="model.job.builds.length">
-
-          <h2>Pipeline for {{jobId}}</h2>
-
           <div class="pipeline-build-block" ng-repeat="build in model.job.builds | filter:model.filterText track by $index">
             <ng-include src="'pipelineTemplate.html'"/>
           </div>

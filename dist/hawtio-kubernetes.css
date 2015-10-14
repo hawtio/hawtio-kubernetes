@@ -349,8 +349,12 @@ img.icon-selected-app {
     padding-top: 8px;
 }
 
+.pipeline-build-block {
+    background-color: rgb(238, 238, 238);
+}
+
 .pipeline-build {
-    background: lightgrey;
+    background: white;
     -moz-border-radius: 10px;
     border-radius: 10px;
     padding-top: 10px;
@@ -364,6 +368,8 @@ img.icon-selected-app {
 }
 
 .pipeline-deploy {
+    background: white;
+    border:5px solid;
     -moz-border-radius: 10px;
     border-radius: 10px;
     padding-top: 10px;
@@ -378,23 +384,23 @@ img.icon-selected-app {
 }
 
 .build-fail {
-    background: lightcoral;
+    border-color: lightcoral;
 }
 
 .build-success {
-    background: lightgreen;
+    border-color: lightgreen;
 }
 
 .build-pending {
-    background: khaki;
+    border-color: khaki;
 }
 
 .build-aborted {
-    background: silver;
+    border-color: silver;
 }
 
 .build-not-started {
-    background: lightblue;
+    border-color: lightblue;
 }
 
 
