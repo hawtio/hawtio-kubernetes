@@ -182,7 +182,7 @@
       </div>
 
       <div class="buildDuration text-center">
-        <a href="{{build.$logLink}}" title="This build started at {{build.$timestamp}}" target="logs">
+        <a href="{{build.$logLink}}" title="This build started at {{build.$timestamp}}">
           started {{build.$timestamp.relative()}}
         </a>
       </div>
@@ -194,7 +194,7 @@
       </div>
       <div class="pipeline-deploy {{stage.$backgroundClass}} inline-block">
         <div class="text-center stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i>
-          <a href="{{stage.$viewLink}}" title="This stage started at {{stage.$startTime}}" target="logs">
+          <a href="{{stage.$viewLink}}" title="This stage started at {{stage.$startTime}}" target="jenkins">
             {{stage.stageName}}
           </a>
         </div>
