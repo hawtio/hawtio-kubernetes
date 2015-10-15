@@ -30,12 +30,12 @@
       <p class="alert alert-info">There are no environments currently available.</p>
     </div>
 
-    <div ng-repeat="env in entity.environments | filter:filterTemplates | orderBy:'label' track by $index"
-         class="environment-rows">
-      <div class="row" title="{{env.description}}">
-        <div class="col-md-12">
+    <div class="row" title="{{env.description}}">
+      <div class="col-md-12 environment-rows">
+        <div ng-repeat="env in entity.environments | filter:filterTemplates | orderBy:'label' track by $index"
+             class="inline-block">
           <div class="environment-row">
-            <div class="environment-name-block inline-block">
+            <div class="environment-name-block">
               <a href="{{env.url}}">
                 <h3>
                   <i class="{{env.iconClass}}"></i>&nbsp;
@@ -43,7 +43,7 @@
                 </h3>
               </a>
             </div>
-            <div class="environment-deploy-block inline-block"
+            <div class="environment-deploy-block"
                  ng-repeat="(project, versions) in env.projectVersions | orderBy:'project' track by $index">
               <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
                 <div ng-repeat="rc in versionInfo.replicationControllers">
