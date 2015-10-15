@@ -33,10 +33,7 @@ module Developer {
 
         $scope.options = {
           chart: {
-/*
             type: 'discreteBarChart',
-*/
-            type: 'multiBarChart',
             autorefresh: false,
             height: 450,
             margin: {
@@ -57,18 +54,14 @@ module Developer {
                 return data.tooltip;
               },
             },
-/*
-            tooltipContent: (args) => {
-              var data = args.data || {};
-              return data.tooltip;
+            color: (d, i) => {
+              return d.color;
             },
-*/
             xAxis: {
               axisLabel: 'Builds',
               showMaxMin: false,
               tickFormat: function (d) {
                 return "#" + d;
-                //return new Date(d).relative();
               }
             },
             yAxis: {
@@ -84,32 +77,61 @@ module Developer {
 
         updateData();
 
+        function barColourForBuildResult(result) {
+          if (result) {
+            if (result === "FAILURE" || result === "FAILED") {
+              return "red";
+            } else if (result === "ABORTED" || result === "INTERUPTED") {
+              return "tan";
+            } else if (result === "SUCCESS") {
+              return "green";
+            } else if (result === "NOT_STARTED") {
+              return "lightgrey"
+            }
+          }
+          return "darkgrey";
+        }
+
+
         function updateChartData() {
+          var useSingleSet = true;
           var buildsSucceeded = [];
           var buildsFailed = [];
           var successBuildKey = "Succeeded builds";
           var failedBuildKey = "Failed builds";
 
+          if (useSingleSet) {
+            successBuildKey = "Builds";
+          }
+
+          var count = 0;
           var builds = _.sortBy($scope.metrics.builds || [], "number");
           angular.forEach(builds, (build) => {
             var x = build.number;
             var y = build.duration / 1000;
             var date = Developer.asDate(build.timeInMillis);
-            var tooltip = '<h3>build ' + build.displayName + '</h3>' +
+            var result = build.result || "NOT_STARTED";
+            var color = barColourForBuildResult(result);
+            var iconClass = createBuildStatusIconClass(result);
+            var tooltip = '<h3><i class="' + iconClass + '"></i> ' + build.displayName + '</h3>' +
               '<p>duration: <b>' + y + '</b> seconds</p>';
             if (date) {
               tooltip += '<p>started: <b>' + date + '</b></p>';
+            }
+            if (result) {
+              tooltip += '<p>result: <b>' + result + '</b></p>';
             }
 
             if (x) {
               var data = buildsSucceeded;
               var key = successBuildKey;
-              if (!build.result || !build.result.startsWith("SUCC")) {
+              if (!successBuildKey && (!result || !result.startsWith("SUCC"))) {
                 data = buildsFailed;
                 key = failedBuildKey;
               }
               data.push({
                 tooltip: tooltip,
+                color: color,
                 x: x, y: y});
             }
           });
