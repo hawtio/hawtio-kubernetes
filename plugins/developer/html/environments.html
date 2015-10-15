@@ -68,7 +68,7 @@
                     </span>
                   </div>
                   <div class="environment-deploy-build-info">
-                    <a href="{{rc.$buildUrl}}" target="builds" ng-show="rc.$buildUrl" class="="
+                    <a href="{{rc.$buildUrl}}" target="builds" ng-show="rc.$buildUrl && rc.$buildId" class="="
                        title="View the build which created this Replication Controller">
                       <i class="fa fa-tasks"></i>
                       Build #{{rc.$buildId}}
