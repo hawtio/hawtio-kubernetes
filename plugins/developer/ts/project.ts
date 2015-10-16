@@ -19,6 +19,8 @@ module Developer {
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
         $scope.entityChangedCache = {};
         $scope.envVersionsCache = {};
+        $scope.envNSCaches = {};
+        $scope.envVersions = {};
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
@@ -93,15 +95,15 @@ module Developer {
               }
             }
 
-            var envVersions = {};
             angular.forEach(project.environments, (env) => {
               var ns = env.namespace;
-              loadProjectVersions($scope, $http, project, env, ns, envVersions);
+              var caches = $scope.envNSCaches[ns];
+              if (!caches) {
+                caches = {};
+                $scope.envNSCaches[ns] = caches;
+              }
+              loadProjectVersions($scope, $http, project, env, ns, $scope.envVersions, caches);
             });
-            if (hasObjectChanged(envVersions, $scope.envVersionsCache)) {
-              log.info("project versions has changed!");
-              $scope.envVersions = envVersions;
-            }
           }
         }
       }]);
