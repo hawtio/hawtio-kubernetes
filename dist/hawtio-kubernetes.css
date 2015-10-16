@@ -447,6 +447,7 @@ img.icon-selected-app {
     */
     padding-top: 5px;
     padding-bottom: 20px;
+    vertical-align: top;
 }
 
 .environment-name-block {
@@ -471,11 +472,13 @@ img.icon-selected-app {
     padding-top: 0px;
 }
 
+.environment-block {
+    vertical-align: top;
+}
+
 .environment-row {
     border: 1px solid;
     border-color: silver;
-}
-.environment-block {
 }
 
 .environment-deploy-block {
