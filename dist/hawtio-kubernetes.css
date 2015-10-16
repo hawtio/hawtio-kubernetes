@@ -472,8 +472,10 @@ img.icon-selected-app {
 }
 
 .environment-row {
-    border:1px solid;
+    border: 1px solid;
     border-color: silver;
+}
+.environment-block {
 }
 
 .environment-deploy-block {

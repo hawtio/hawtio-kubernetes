@@ -1288,6 +1288,8 @@ module Kubernetes {
         buildConfig.environments.push(env);
       });
 
+      buildConfig.environments = buildConfig.environments.reverse();
+
       buildConfig.tools = [];
       angular.forEach($fabric8CodeViews, (env) => {
         buildConfig.tools.push(env);
