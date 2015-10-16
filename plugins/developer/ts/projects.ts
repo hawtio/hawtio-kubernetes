@@ -89,7 +89,8 @@ module Developer {
                     deleteSelected(selected, selected.shift());
                   });
                 } else {
-                  updateData();
+                  // TODO
+                  // updateData();
                 }
               }
 
@@ -122,25 +123,26 @@ module Developer {
         }
       }
 
-      function updateData() {
-/*
-        var url = buildConfigsRestURL();
+      $scope.$keepPolling = () => Kubernetes.keepPollingModel;
+      $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
+        var url = Kubernetes.buildConfigsRestURL();
         $http.get(url).
           success(function (data, status, headers, config) {
             if (data) {
               //console.log("got data " + angular.toJson(data, true));
               var sortedBuilds = null;
-              $scope.buildConfigs = enrichBuildConfigs(data.items, sortedBuilds);
+              $scope.buildConfigs = Kubernetes.enrichBuildConfigs(data.items, sortedBuilds);
               $scope.model.fetched = true;
               Core.$apply($scope);
+              next();
             }
           }).
           error(function (data, status, headers, config) {
             log.warn("Failed to load " + url + " " + data + " " + status);
+            next();
           });
-*/
-      }
+      });
 
-      updateData();
+      $scope.fetch();
     }]);
 }

@@ -34,13 +34,17 @@ module Developer {
                 }
                 $scope.model.fetched = true;
                 Core.$apply($scope);
+                next();
               }).
               error(function (data, status, headers, config) {
                 log.warn("Failed to load " + url + " " + data + " " + status);
+                next();
               });
           } else {
             $scope.model.fetched = true;
             Core.$apply($scope);
+            next();
+
           }
         });
 
