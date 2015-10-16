@@ -30,33 +30,38 @@
       <p class="alert alert-info">There are no environments currently available.</p>
     </div>
 
-    <div class="row" title="{{env.description}}">
-      <div class="col-md-12 environment-rows">
-        <div ng-repeat="env in entity.environments | filter:filterTemplates | orderBy:'label' track by $index"
-             class="inline-block">
-          <div class="environment-row">
-            <div class="environment-name-block">
-              <a href="{{env.url}}">
-                <h3>
-                  <i class="{{env.iconClass}}"></i>&nbsp;
-                  {{env.label}}
-                </h3>
-              </a>
-            </div>
-            <div class="environment-deploy-block"
-                 ng-repeat="(project, versions) in env.projectVersions | orderBy:'project' track by $index">
-              <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
-                <div ng-repeat="rc in versionInfo.replicationControllers">
-                  <div class="environment-deploy-version-and-pods">
-                    <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink" class=""
-                       title="View the Replication Controller from project {{project}} of version {{version}}">
-                      <i class="fa fa-cubes"></i>
-                      {{rc.$name}}
-                      : {{version}}
-                    </a>
-                    &nbsp;
-                    &nbsp;
-                    &nbsp;
+    <div ng-show="entity.environments.length">
+      <div class="row">
+        <h4 class="project-overview-title">Environments</h4>
+      </div>
+
+      <div class="row" title="{{env.description}}">
+        <div class="col-md-12 environment-rows">
+          <div ng-repeat="env in entity.environments | filter:filterTemplates | orderBy:'label' track by $index"
+               class="inline-block">
+            <div class="environment-row">
+              <div class="environment-name-block">
+                <a href="{{env.url}}">
+                  <h3>
+                    <i class="{{env.iconClass}}"></i>&nbsp;
+                    {{env.label}}
+                  </h3>
+                </a>
+              </div>
+              <div class="environment-deploy-block"
+                   ng-repeat="(project, versions) in env.projectVersions | orderBy:'project' track by $index">
+                <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
+                  <div ng-repeat="rc in versionInfo.replicationControllers">
+                    <div class="environment-deploy-version-and-pods">
+                      <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink" class=""
+                         title="View the Replication Controller from project {{project}} of version {{version}}">
+                        <i class="fa fa-cubes"></i>
+                        {{rc.$name}}
+                        : {{version}}
+                      </a>
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
                     <span class="pull-right">
                       <a ng-show="rc.$podCounters.podsLink" href="{{rc.$podCounters.podsLink}}" title="View pods">
                         <span ng-show="rc.$podCounters.valid"
@@ -66,21 +71,22 @@
                               class="badge badge-warning">{{rc.$podCounters.error}}</span>
                       </a>
                     </span>
-                  </div>
-                  <div class="environment-deploy-build-info">
-                    <a href="{{rc.$buildUrl}}" target="builds" ng-show="rc.$buildUrl && rc.$buildId" class="="
-                       title="View the build which created this Replication Controller">
-                      <i class="fa fa-tasks"></i>
-                      Build #{{rc.$buildId}}
-                    </a>
-                    &nbsp;
-                    &nbsp;
-                    &nbsp;
-                    <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="pull-right"
-                       title="View the source code for the commit which created this Replication Controller - commit: {{rc.$gitCommit}}">
-                      <i class="fa fa-code-fork"></i>
-                      Commit {{rc.$gitCommit | limitTo:7}}
-                    </a>
+                    </div>
+                    <div class="environment-deploy-build-info">
+                      <a href="{{rc.$buildUrl}}" target="builds" ng-show="rc.$buildUrl && rc.$buildId" class="="
+                         title="View the build which created this Replication Controller">
+                        <i class="fa fa-tasks"></i>
+                        Build #{{rc.$buildId}}
+                      </a>
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="pull-right"
+                         title="View the source code for the commit which created this Replication Controller - commit: {{rc.$gitCommit}}">
+                        <i class="fa fa-code-fork"></i>
+                        Commit {{rc.$gitCommit | limitTo:7}}
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -88,7 +94,12 @@
           </div>
         </div>
       </div>
+
+      <div class="row">
+        <h4 class="project-overview-title">Pipelines</h4>
+      </div>
     </div>
+
   </div>
   <ng-include src="'pendingPipelines.html'"/>
 </div>

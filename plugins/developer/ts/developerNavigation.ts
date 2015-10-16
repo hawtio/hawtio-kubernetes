@@ -213,17 +213,17 @@ module Developer {
 
     return activateCurrent([
       {
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
+        //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
+        label: "Overview",
+        title: "View the overview of this project, its actiity, environments and pipelines"
+      },
+      pipelines,
+      {
         id: "builds",
         href: buildsLink,
         label: "Builds",
         title: "View the builds for this project"
-      },
-      pipelines,
-      {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
-        //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
-        label: "Environments",
-        title: "View the environments for this project"
       },
       {
         isValid: () => jenkinsLink(),

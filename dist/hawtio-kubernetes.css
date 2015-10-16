@@ -488,6 +488,10 @@ img.icon-selected-app {
 .row-header {
     padding-bottom: 20px;
 }
+
+.project-overview-title {
+    padding-left: 80px;
+}
 /*
 
 .raw-json-view {
