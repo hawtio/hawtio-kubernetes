@@ -112,6 +112,10 @@ module Kubernetes {
       case "Namespaces":
         urlTemplate = UrlHelpers.join('namespaces');
         break;
+      case WatchTypes.OAUTH_CLIENTS:
+      case "OAuthClients":
+      case "OAuthClient":
+        return UrlHelpers.join('oauthclients');
       case WatchTypes.PROJECTS:
       case "Projects":
         urlTemplate = UrlHelpers.join('projects');
@@ -227,7 +231,13 @@ module Kubernetes {
     var params = <any> {
       namespace: currentKubernetesNamespace
     }
-    if (thing === "namespaces") {
+    switch (thing) {
+      case WatchTypes.NAMESPACES:
+      case WatchTypes.OAUTH_CLIENTS:
+      case WatchTypes.NODES:
+      case WatchTypes.PROJECTS:
+      case WatchTypes.OAUTH_CLIENTS:
+      case WatchTypes.PERSISTENT_VOLUMES:
       params = {};
     }
 
