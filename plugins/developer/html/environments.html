@@ -31,6 +31,14 @@
     </div>
 
     <div ng-show="entity.environments.length">
+
+      <div class="pull-right" n>
+        <a href="{{entity.$build.url}}" class="btn btn-default" target="browse">
+            <i class="{{entity.$build.iconClass}}"></i>
+            {{entity.$build.label}}
+        </a>
+      </div>
+
       <div class="row">
         <h4 class="project-overview-title">Environments</h4>
       </div>

@@ -52,6 +52,7 @@ module Developer {
                     if (hasObjectChanged(data, $scope.entityChangedCache)) {
                       log.info("entity has changed!");
                       $scope.entity = data;
+                      $scope.entity.$build = (data.$fabric8CodeViews || {})['fabric8.link.browseGogs.view'];
                       $scope.model.setProject($scope.entity);
                     }
                     updateEnvironmentWatch();
