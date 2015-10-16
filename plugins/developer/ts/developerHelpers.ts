@@ -30,7 +30,7 @@ module Developer {
   /**
    * Lets load the project versions for the given namespace
    */
-  export function loadProjectVersions($scope, $http, project, env, ns) {
+  export function loadProjectVersions($scope, $http, project, env, ns, answer) {
     var url = Kubernetes.resourcesUriForKind(Kubernetes.WatchTypes.REPLICATION_CONTROLLERS, ns) + "?labelSelector=project";
 
     var projectAnnotation = "project";
@@ -43,7 +43,8 @@ module Developer {
           var projectNamespace = project.$namespace;
           var projectName = project.$name;
 
-          env.projectVersions = projectInfos;
+          answer[ns] = projectInfos;
+          //env.projectVersions = projectInfos;
           angular.forEach(data.items, (item) => {
             var metadata = item.metadata || {};
             var name = metadata.name;
@@ -88,7 +89,6 @@ module Developer {
               loadProjectPodCounters($scope, $http, project, item, selector, ns, projectName);
             }
           });
-          Core.$apply($scope);
         }
       }).
       error(function (data, status, headers, config) {

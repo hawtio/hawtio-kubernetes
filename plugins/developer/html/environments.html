@@ -57,7 +57,7 @@
                 </a>
               </div>
               <div class="environment-deploy-block"
-                   ng-repeat="(project, versions) in env.projectVersions | orderBy:'project' track by $index">
+                   ng-repeat="(project, versions) in envVersions[env.namespace] | orderBy:'project' track by $index">
                 <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
                   <div ng-repeat="rc in versionInfo.replicationControllers">
                     <div class="environment-deploy-version-and-pods">

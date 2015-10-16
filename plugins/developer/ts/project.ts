@@ -18,7 +18,7 @@ module Developer {
         $scope.schema = KubernetesSchema;
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
         $scope.entityChangedCache = {};
-        $scope.envEntityChangedCache = {};
+        $scope.envVersionsCache = {};
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
@@ -28,6 +28,7 @@ module Developer {
         $scope.jobId = $scope.id;
         $scope.pendingPipelinesOnly = true;
 
+/*
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();
         });
@@ -35,11 +36,12 @@ module Developer {
         $scope.$on('$routeUpdate', ($event) => {
           updateData();
         });
+*/
 
-        updateData();
 
 
-        function updateData() {
+        $scope.$keepPolling = () => Kubernetes.keepPollingModel;
+        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           $scope.item = null;
           if ($scope.id) {
             var url = Kubernetes.buildConfigRestUrl($scope.id);
@@ -59,16 +61,21 @@ module Developer {
                   }
                   $scope.model.fetched = true;
                   Core.$apply($scope);
+                  next();
                 }).
                 error(function (data, status, headers, config) {
                   log.warn("Failed to load " + url + " " + data + " " + status);
+                  next();
                 });
             }
           } else {
             $scope.model.fetched = true;
+            next();
             Core.$apply($scope);
           }
-        }
+        });
+
+        $scope.fetch();
 
 
         /**
@@ -86,21 +93,15 @@ module Developer {
               }
             }
 
+            var envVersions = {};
             angular.forEach(project.environments, (env) => {
               var ns = env.namespace;
-              if (ns) {
-                var entityCache = $scope.envEntityChangedCache[ns];
-                if (!entityCache) {
-                  entityCache = {};
-                  $scope.envEntityChangedCache[ns] = entityCache;
-                }
-                var projectVersions = loadProjectVersions($scope, $http, project, env, ns);
-                if (hasObjectChanged(projectVersions, entityCache)) {
-                  log.info("project versions has changed!");
-                  env.projectVersions = projectVersions;
-                }
-              }
+              loadProjectVersions($scope, $http, project, env, ns, envVersions);
             });
+            if (hasObjectChanged(envVersions, $scope.envVersionsCache)) {
+              log.info("project versions has changed!");
+              $scope.envVersions = envVersions;
+            }
           }
         }
       }]);

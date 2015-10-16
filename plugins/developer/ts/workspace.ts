@@ -21,17 +21,8 @@ module Developer {
         $scope.breadcrumbConfig = createWorkspaceBreadcrumbs();
         $scope.subTabConfig = Developer.createWorkspaceSubNavBars();
 
-        $scope.$on('kubernetesModelUpdated', function () {
-          updateData();
-        });
-
-        $scope.$on('$routeUpdate', ($event) => {
-          updateData();
-        });
-
-        updateData();
-
-        function updateData() {
+        $scope.$keepPolling = () => Kubernetes.keepPollingModel;
+        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
           $scope.item = null;
           if ($scope.id) {
             var url = UrlHelpers.join(Kubernetes.resourcesUriForKind("Projects"), $scope.id);
@@ -51,6 +42,8 @@ module Developer {
             $scope.model.fetched = true;
             Core.$apply($scope);
           }
-        }
+        });
+
+        $scope.fetch();
       }]);
 }
