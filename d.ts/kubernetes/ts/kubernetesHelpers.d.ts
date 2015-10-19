@@ -96,6 +96,7 @@ declare module Kubernetes {
      */
     function createPodCounters(selector: any, pods: any, outputPods?: any[], podLinkQuery?: any, podLinkUrl?: any): {
         podsLink: string;
+        ready: number;
         valid: number;
         waiting: number;
         error: number;

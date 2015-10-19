@@ -25,7 +25,8 @@
 <script type="text/ng-template" id="podCountsAndLinkTemplate.html">
   <div class="ngCellText" title="Number of running pods for this controller">
     <a ng-show="row.entity.$podCounters.podsLink" href="{{row.entity.$podCounters.podsLink}}" title="View pods">
-      <span ng-show="row.entity.$podCounters.valid" class="badge badge-success">{{row.entity.$podCounters.valid}}</span>
+      <span ng-show="row.entity.$podCounters.ready" class="badge badge-success">{{row.entity.$podCounters.ready}}</span>
+      <span ng-show="row.entity.$podCounters.valid" class="badge badge-info">{{row.entity.$podCounters.valid}}</span>
       <span ng-show="row.entity.$podCounters.waiting" class="badge">{{row.entity.$podCounters.waiting}}</span>
       <span ng-show="row.entity.$podCounters.error" class="badge badge-warning">{{row.entity.$podCounters.error}}</span>
     </a>
@@ -66,7 +67,7 @@
          title="Protocol {{row.entity.spec.protocol}}">
         {{row.entity.$host}}
       </a>
-      <span ng-hide="row.entity.$connectUrl && row.entity.$podCounters.valid">{{row.entity.spec.portalIP || row.entity.spec.clusterIP}}:{{port}}</span>
+      <span ng-hide="row.entity.$connectUrl && row.entity.$podCounters.ready">{{row.entity.spec.portalIP || row.entity.spec.clusterIP}}:{{port}}</span>
     </div>
   </div>
 </script>

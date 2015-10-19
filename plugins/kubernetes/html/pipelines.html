@@ -112,7 +112,8 @@
                     <div class="pipeline-pod-counts" ng-show="step.$podCounters">pods:
                       <a ng-show="step.$podCounters.podsLink" target="pods" href="{{step.$podCounters.podsLink}}"
                          title="View pods for this deployment">
-                        <span class="badge badge-success">{{step.$podCounters.valid}}</span>
+                        <span class="badge badge-success">{{step.$podCounters.ready}}</span>
+                        <span class="badge badge-info">{{step.$podCounters.valid}}</span>
                         <span ng-show="step.$podCounters.waiting" class="badge">{{step.$podCounters.waiting}}</span>
                         <span ng-show="step.$podCounters.error"
                               class="badge badge-warning">{{step.$podCounters.error}}</span>

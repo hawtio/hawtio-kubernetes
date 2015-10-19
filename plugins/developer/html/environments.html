@@ -72,8 +72,10 @@
                       &nbsp;
                     <span class="pull-right">
                       <a ng-show="rc.$podCounters.podsLink" href="{{rc.$podCounters.podsLink}}" title="View pods">
+                        <span ng-show="rc.$podCounters.ready"
+                              class="badge badge-success">{{rc.$podCounters.ready}}</span>
                         <span ng-show="rc.$podCounters.valid"
-                              class="badge badge-success">{{rc.$podCounters.valid}}</span>
+                              class="badge badge-info">{{rc.$podCounters.valid}}</span>
                         <span ng-show="rc.$podCounters.waiting" class="badge">{{rc.$podCounters.waiting}}</span>
                         <span ng-show="rc.$podCounters.error"
                               class="badge badge-warning">{{rc.$podCounters.error}}</span>

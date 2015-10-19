@@ -625,6 +625,7 @@ module Kubernetes {
     }
     var answer = {
       podsLink: "",
+      ready: 0,
       valid: 0,
       waiting: 0,
       error: 0
@@ -641,7 +642,11 @@ module Kubernetes {
           if (status) {
             var lower = status.toLowerCase();
             if (lower.startsWith("run")) {
-              answer.valid += 1;
+              if (isReady(pod)) {
+                answer.ready += 1;
+              } else {
+                answer.valid += 1;
+              }
             } else if (lower.startsWith("wait") || lower.startsWith("pend")) {
               answer.waiting += 1;
             } else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
