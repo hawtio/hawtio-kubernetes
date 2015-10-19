@@ -943,10 +943,13 @@ module Kubernetes {
       });
   }
 
-  export function statusTextToCssClass(text) {
+  export function statusTextToCssClass(text, ready = false) {
     if (text) {
       var lower = text.toLowerCase();
       if (lower.startsWith("run") || lower.startsWith("ok")) {
+        if (!ready) {
+          return "fa fa-spinner fa-spin green";
+        }
         return 'fa fa-play-circle green';
       } else if (lower.startsWith("wait") || lower.startsWith("pend")) {
         return 'fa fa-download';
@@ -961,6 +964,21 @@ module Kubernetes {
 
   export function podStatus(pod) {
     return getStatus(pod);
+  }
+
+  export function isReady(pod) {
+    var status = pod.status || {};
+    var answer = false;
+    angular.forEach(status.conditions, (condition) => {
+      var t = condition.type;
+      if (t && t === "Ready") {
+        var status = condition.status;
+        if (status === "True") {
+          answer = true;
+        }
+      }
+    });
+    return answer;
   }
 
   export function createAppViewPodCounters(appView) {
@@ -1016,7 +1034,7 @@ module Kubernetes {
         }
         pod.idAbbrev = abbrev;
       }
-      pod.statusClass = statusTextToCssClass(podStatus(pod));
+      pod.statusClass = statusTextToCssClass(podStatus(pod), isReady(pod));
     });
 
     var services = appView.services || [];

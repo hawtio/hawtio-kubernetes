@@ -119,7 +119,7 @@
     <i class="fa {{entity.$statusCss}}"></i>
     <span ng-show="data">{{data}}</span>
     <!-- in table -->
-    <span ng-show="entity.$jolokiaUrl" ng-controller="Kubernetes.ConnectController">
+    <span ng-show="entity.$jolokiaUrl && entity.$ready" ng-controller="Kubernetes.ConnectController">
       <a class="clickable"
          ng-click="doConnect(row.entity)"
          title="Open a new window and connect to this container">

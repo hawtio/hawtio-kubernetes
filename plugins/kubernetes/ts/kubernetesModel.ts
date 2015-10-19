@@ -215,7 +215,8 @@ module Kubernetes {
         this.discoverPodConnections(pod);
         pod.$containerPorts = [];
 
-        var startTime = (pod.status || {}).startTime;
+        var podStatus = pod.status || {};
+        var startTime = podStatus.startTime;
         pod.$startTime = null;
         if (startTime) {
           pod.$startTime = new Date(startTime);
@@ -227,7 +228,9 @@ module Kubernetes {
           pod.$createdTime = new Date(createdTime);
           pod.$age = pod.$createdTime.relative();
         }
-        pod.$statusCss = statusTextToCssClass((pod.status || {}).phase);
+        var ready = isReady(pod);
+        pod.$ready = ready;
+        pod.$statusCss = statusTextToCssClass(podStatus.phase, ready);
 
         var maxRestartCount = 0;
         angular.forEach(Core.pathGet(pod, ["status", "containerStatuses"]), (status) => {
@@ -275,7 +278,7 @@ module Kubernetes {
           });
         });
         pod.$imageNames = imageNames;
-        var podStatus = (pod.status || {});
+        var podStatus = podStatus;
         var podSpec = (pod.spec || {});
         pod.$podIP = podStatus.podIP;
         pod.$host = podSpec.host || podSpec.nodeName || podStatus.hostIP;
