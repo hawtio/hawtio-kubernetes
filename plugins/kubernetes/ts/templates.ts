@@ -1,11 +1,16 @@
 /// <reference path="kubernetesPlugin.ts"/>
 
 module Kubernetes {
-  export var TemplateController = controller("TemplateController", ["$scope", "KubernetesModel", "$location", "marked", "$templateCache", "$modal", ($scope, KubernetesModel, $location, marked, $templateCache, $modal) => {
+  export var TemplateController = controller("TemplateController", [
+    "$scope", "$location", "$http", "$timeout", "$routeParams", "marked", "$templateCache", "$modal", "KubernetesModel", "KubernetesState", "KubernetesApiURL",
+    ($scope, $location, $http, $timeout, $routeParams, marked, $templateCache, $modal, KubernetesModel, KubernetesState, KubernetesApiURL) => {
     var model = $scope.model = KubernetesModel;
-    $scope.filterText = "";
+    $scope.filterText = $location.search()["q"];
 
     $scope.watch = watches[WatchTypes.TEMPLATES];
+
+    $scope.targetNamespace = $routeParams.targetNamespace;
+    initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
     reloadDataIfNoWatch();
 
