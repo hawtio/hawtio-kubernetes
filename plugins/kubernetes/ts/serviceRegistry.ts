@@ -60,6 +60,21 @@ module Kubernetes {
       return serviceLinkUrl(service);
     }
 
+    /**
+     * Returns the service link for the given service name if its ready (has at least one ready pod)
+     *
+     * @param serviceName the name of the service
+     * @return {null}
+     */
+    public serviceReadyLink(serviceName: string): string {
+      var service = this.findService(serviceName);
+      if (readyPodCount(service)) {
+        return serviceLinkUrl(service);
+      } else {
+        return null;
+      }
+    }
+
     private getModel():KubernetesModelService {
       var answer = this.model;
       // lets allow lazy load so we can be invoked before the injector has been created

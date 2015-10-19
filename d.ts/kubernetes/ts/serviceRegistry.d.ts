@@ -27,6 +27,13 @@ declare module Kubernetes {
          * @return {null}
          */
         serviceLink(serviceName: string): string;
+        /**
+         * Returns the service link for the given service name if its ready (has at least one ready pod)
+         *
+         * @param serviceName the name of the service
+         * @return {null}
+         */
+        serviceReadyLink(serviceName: string): string;
         private getModel();
     }
 }

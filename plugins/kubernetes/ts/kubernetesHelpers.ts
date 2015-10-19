@@ -543,6 +543,19 @@ module Kubernetes {
   }
 
   /**
+   * Returns the number of pods that are ready
+   */
+  export function readyPodCount(service) {
+    var count = 0;
+    angular.forEach((service || {}).$pods, (pod)=> {
+      if (pod.$ready) {
+        count++;
+      }
+    });
+    return count;
+  }
+
+  /**
    * Returns the service link URL for either the service name or the service object
    */
   export function serviceLinkUrl(service) {

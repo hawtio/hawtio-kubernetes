@@ -82,6 +82,10 @@ declare module Kubernetes {
     function labelsToString(labels: any, seperatorText?: string): string;
     function initShared($scope: any, $location: any, $http: any, $timeout: any, $routeParams: any, KubernetesModel: any, KubernetesState: any, KubernetesApiURL: any): void;
     /**
+     * Returns the number of pods that are ready
+     */
+    function readyPodCount(service: any): number;
+    /**
      * Returns the service link URL for either the service name or the service object
      */
     function serviceLinkUrl(service: any): any;
