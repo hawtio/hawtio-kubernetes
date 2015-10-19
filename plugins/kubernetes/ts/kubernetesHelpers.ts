@@ -31,6 +31,7 @@ module Kubernetes {
   export var kibanaServiceName = "kibana";
   export var fabric8ForgeServiceName = "fabric8-forge";
   export var gogsServiceName = "gogs";
+  export var jenkinsServiceName = "jenkins";
   export var apimanServiceName = 'apiman';
   export var isOpenShift = true;
 

@@ -21,6 +21,7 @@ declare module Kubernetes {
     var kibanaServiceName: string;
     var fabric8ForgeServiceName: string;
     var gogsServiceName: string;
+    var jenkinsServiceName: string;
     var apimanServiceName: string;
     var isOpenShift: boolean;
     function kubernetesNamespacePath(): string;
