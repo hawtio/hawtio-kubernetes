@@ -10,7 +10,7 @@ module Developer {
   _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
     $routeProvider.when(context, route('workspaces.html', false))
                   .when("/namespaces", route('workspaces.html', false))
-                  .when("/home", route('home.html', false))
+                  //.when("/home", route('home.html', false))
                   .when(UrlHelpers.join(context, '/:namespace'), route('projects.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/detail'), route('workspace.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/jenkinsJob'), route('jenkinsJobs.html', false))
@@ -28,7 +28,7 @@ module Developer {
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/tools'), route('tools.html', false))
                   .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false))
                   .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false))
-                  .otherwise("/home");
+                  .otherwise("/workspaces");
   }]);
   
 

@@ -1,6 +1,7 @@
 /// <reference path="../../includes.ts"/>
 module Developer {
 
+/*
   function homeBreadcrumb() {
     return {
       href: "/home",
@@ -8,6 +9,7 @@ module Developer {
       title: "Go to the home page"
     }
   }
+*/
   function developBreadcrumb() {
     return {
       href: "/workspaces",
@@ -37,17 +39,20 @@ module Developer {
   }
 
   export function createWorkspacesBreadcrumbs(developPerspective) {
+/*
     if (developPerspective) {
       return [
-        homeBreadcrumb(),
+        //homeBreadcrumb(),
         developBreadcrumb()
       ];
     } else {
       return [
-        homeBreadcrumb(),
+        //homeBreadcrumb(),
         operateBreadcrumb()
       ];
     }
+*/
+    return [];
   }
 
 
@@ -60,7 +65,7 @@ module Developer {
 
   export function createWorkspaceBreadcrumbs(children = null, workspaceName = null) {
     var answer = [
-      homeBreadcrumb(),
+      //homeBreadcrumb(),
       developBreadcrumb()
     ];
     if (!workspaceName) {
@@ -120,7 +125,7 @@ module Developer {
         workspaceName = Kubernetes.currentKubernetesNamespace();
       }
       return activateCurrent([
-        homeBreadcrumb(),
+        //homeBreadcrumb(),
         operateBreadcrumb(),
         {
           href: UrlHelpers.join(namespacesLink, ns, "apps"),
