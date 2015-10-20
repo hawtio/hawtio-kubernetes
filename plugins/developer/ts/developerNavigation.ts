@@ -20,8 +20,8 @@ module Developer {
   function operateBreadcrumb() {
     return {
       href: "/namespaces",
-      label: "Operate",
-      title: "View all the Runtime Namespaces"
+      label: "Manage",
+      title: "Manage the namespaces and resources inside them"
     };
   }
 
