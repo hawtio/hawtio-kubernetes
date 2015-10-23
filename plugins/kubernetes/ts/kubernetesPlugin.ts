@@ -88,6 +88,7 @@ module Kubernetes {
   _module.filter('kubernetesPageLink', () => entityPageLink);
 
   _module.run(['viewRegistry', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
+
     log.debug("Running");
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
     var builder = HawtioNav.builder();
