@@ -9,6 +9,7 @@ declare module Developer {
     function createBuildStatusBackgroundClass(result: any): string;
     function enrichJenkinsBuild(job: any, build: any): any;
     function jenkinsLink(): any;
+    function forgeReadyLink(): any;
     function enrichJenkinsPipelineJob(job: any, projectId: any, jobId: any): void;
     function enrichJenkinsStages(build: any, projectId: any, jobName: any): any;
     function enrichJenkinsStage(stage: any, build?: any): void;

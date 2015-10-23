@@ -160,6 +160,14 @@ module Developer {
     return null;
   }
 
+  export function forgeReadyLink() {
+    var ServiceRegistry = Kubernetes.inject("ServiceRegistry");
+    if (ServiceRegistry) {
+      return ServiceRegistry.serviceReadyLink(Kubernetes.fabric8ForgeServiceName);
+    }
+    return null;
+  }
+
   export function enrichJenkinsPipelineJob(job, projectId, jobId) {
     if (job) {
       job.$project = projectId;

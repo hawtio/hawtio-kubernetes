@@ -199,7 +199,8 @@ module Developer {
 
   export function createProjectSubNavBars(projectName, jenkinsJobId = null) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
-    var buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "builds");
+    var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName);
+    var buildsLink = UrlHelpers.join(projectLink, "builds");
     var pipelines = null;
     if (!jenkinsJobId) {
       jenkinsJobId = projectName;
@@ -216,7 +217,7 @@ module Developer {
     }
 
 
-    return activateCurrent([
+    var answer = [
       {
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
         //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
@@ -246,8 +247,28 @@ module Developer {
         label: "Detail",
         title: "View the project detail"
       }
-    ]);
+    ];
+
+    var context = {
+      workspaceName: workspaceName,
+      projectName: projectName,
+      projectLink: projectLink,
+      jenkinsJobId: jenkinsJobId
+
+    };
+    angular.forEach(customProjectSubTabFactories, (fn) => {
+      if (angular.isFunction(fn)) {
+        var subtab = fn(context);
+        if (subtab) {
+          answer.push(subtab);
+        }
+      }
+    });
+
+    return activateCurrent(answer);
   }
+
+  export var customProjectSubTabFactories = [];
 
   export function createJenkinsBreadcrumbs(projectName, jobId, buildId) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();

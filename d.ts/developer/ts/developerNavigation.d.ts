@@ -9,6 +9,7 @@ declare module Developer {
     function createProjectBreadcrumbs(projectName?: any, children?: any, workspaceName?: any): any;
     function createWorkspaceSubNavBars(): any;
     function createProjectSubNavBars(projectName: any, jenkinsJobId?: any): any;
+    var customProjectSubTabFactories: any[];
     function createJenkinsBreadcrumbs(projectName: any, jobId: any, buildId: any): any;
     function createJenkinsSubNavBars(projectName: any, jenkinsJobId: any, buildId: any, extraOption?: any): any;
     function createEnvironmentSubNavBars($scope: any, $location: any, $routeParams: any): any;
