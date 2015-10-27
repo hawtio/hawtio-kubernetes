@@ -17,7 +17,7 @@ module Kubernetes {
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
-        $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id);
+        $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id, null, $scope);
 
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();

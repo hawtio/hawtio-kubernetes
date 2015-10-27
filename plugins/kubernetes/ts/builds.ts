@@ -78,7 +78,7 @@ module Kubernetes {
 
       Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
       $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.buildConfigId);
-      $scope.subTabConfig = Developer.createProjectSubNavBars($scope.buildConfigId);
+      $scope.subTabConfig = Developer.createProjectSubNavBars($scope.buildConfigId, null, $scope);
 
       $scope.$keepPolling = () => keepPollingModel;
       $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {

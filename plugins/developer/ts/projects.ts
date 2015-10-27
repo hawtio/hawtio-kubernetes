@@ -97,8 +97,8 @@ module Developer {
               deleteSelected(selected, selected.shift());
             }
           },
-          title: 'Delete Build Configs?',
-          action: 'The following Build Configs will be deleted:',
+          title: 'Delete Projects',
+          action: 'The following Projects will be deleted:',
           okText: 'Delete',
           okClass: 'btn-danger',
           custom: "This operation is permanent once completed!",
@@ -108,6 +108,9 @@ module Developer {
 
       function deleteEntity(selection, nextCallback) {
         var name = (selection || {}).$name;
+        var jenkinsJob = selection.$jenkinsJob;
+        var publicJenkinsUrl = jenkinsLink();
+        //var jenkinsUrl = Core.pathGet(selection, ["$fabric8Views", "fabric8.link.jenkins.job", "url"]);
         if (name) {
           console.log("About to delete build config: " + name);
           var url = Kubernetes.buildConfigRestUrl(name);
@@ -117,9 +120,28 @@ module Developer {
             }).
             error(function (data, status, headers, config) {
               log.warn("Failed to delete build config on " + url + " " + data + " " + status);
+              nextCallback();
             });
         } else {
           console.log("warning: no name for selection: " + angular.toJson(selection));
+        }
+
+        if (jenkinsJob && publicJenkinsUrl) {
+          var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceName, UrlHelpers.join("job", jenkinsJob, "doDelete"));
+          var body = "";
+          var config = {
+            headers: {
+              'Content-Type': "text/plain"
+            }
+          };
+          log.info("posting to jenkinsUrl: " + url);
+          $http.post(url, body, config).
+            success(function (data, status, headers, config) {
+              log.info("Managed to delete " + url);
+            }).
+            error(function (data, status, headers, config) {
+              log.warn("Failed to delete jenkins job at " + url + " " + data + " " + status);
+            });
         }
       }
 

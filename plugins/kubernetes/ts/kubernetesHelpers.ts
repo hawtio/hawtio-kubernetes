@@ -263,10 +263,6 @@ module Kubernetes {
     return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/deploymentconfigs");
   }
 
-  export function buildsLogsRestURL() {
-    return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/proxy/buildlogs");
-  }
-
   export function buildsRestURL() {
     return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/builds");
   }
@@ -802,7 +798,7 @@ module Kubernetes {
   }
 
   export function buildLogsRestUrl(id) {
-    return UrlHelpers.join(buildsLogsRestURL(), id);
+    return UrlHelpers.join(buildsRestURL(), id, "log");
   }
 
   /**
@@ -1374,7 +1370,7 @@ module Kubernetes {
       var nameArrayLength = nameArray.length;
       build.$shortName = (nameArrayLength > 4) ? nameArray.slice(0, nameArrayLength - 4).join("-") : name.substring(0, 30);
 
-      var labels = getLabels(route);
+      var labels = getLabels(build);
       var configId = labels.buildconfig;
       build.$configId = configId;
       if (configId) {
@@ -1388,8 +1384,10 @@ module Kubernetes {
       }
       if (name) {
         //build.$viewLink = UrlHelpers.join("kubernetes/builds", name);
-        build.$viewLink = UrlHelpers.join("workspaces", currentKubernetesNamespace(), "projects", configId, "builds", name);
-        build.$logsLink = UrlHelpers.join("kubernetes/buildLogs", name);
+        var projectLink = UrlHelpers.join("workspaces", currentKubernetesNamespace(), "projects", configId);
+        build.$viewLink = UrlHelpers.join(projectLink, "builds", name);
+        //build.$logsLink = UrlHelpers.join("kubernetes/buildLogs", name);
+        build.$logsLink = UrlHelpers.join(projectLink, "buildLogs", name);
       }
       var podName = build.podName;
       if (podName && namespace) {

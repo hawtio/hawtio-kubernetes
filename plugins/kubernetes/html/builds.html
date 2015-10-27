@@ -2,7 +2,7 @@
   <script type="text/ng-template" id="buildLinkTemplate.html">
     <div class="ngCellText">
       <a title="View details for this build: {{row.entity.$name}}"
-         href="{{baseUri}}/kubernetes/builds/{{row.entity.metadata.name}}">
+         href="{{row.entity.$viewLink}}">
         <!--
                 <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
         -->
@@ -38,7 +38,7 @@
     </div>
   </script>
   <script type="text/ng-template" id="buildStatusTemplate.html">
-    <div class="ngCellText" ng-switch="row.entity.status">
+    <div class="ngCellText" ng-switch="row.entity.status.phase">
       <span ng-switch-when="New" class="text-primary">
         <i class="fa fa-spin fa-spinner"></i> New
       </span>

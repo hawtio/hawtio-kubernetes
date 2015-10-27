@@ -92,6 +92,8 @@ module Developer {
     var project = $routeParams.project;
     if (workspaceName && project) {
       var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", project);
+      $scope.$projectLink = projectLink;
+      $scope.$projectNamespaceLink = UrlHelpers.join(projectLink, "namespace", ns);
       namespacesLink = UrlHelpers.join(projectLink, "namespace");
       // TODO use the logical name?
       var envName = ns;
@@ -197,25 +199,30 @@ module Developer {
     return UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId);
   }
 
-  export function createProjectSubNavBars(projectName, jenkinsJobId = null) {
+  export function createProjectSubNavBars(projectName, jenkinsJobId = null, $scope = null) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName);
     var buildsLink = UrlHelpers.join(projectLink, "builds");
-    var pipelines = null;
     if (!jenkinsJobId) {
       jenkinsJobId = projectName;
     }
+    var jenkinsBuildLink = null;
+    var pipelinesLink = null;
     if (projectName && jenkinsJobId) {
-      buildsLink = createBuildsLink(workspaceName, projectName, jenkinsJobId);
-      var pipelinesLink = UrlHelpers.join(buildsLink, "pipelines");
-      pipelines = {
-        id: "pipelines",
-        href: pipelinesLink,
-        label: "Pipelines",
-        title: "View the pipeline builds for this project"
-      };
+      jenkinsBuildLink = createBuildsLink(workspaceName, projectName, jenkinsJobId);
+      pipelinesLink = UrlHelpers.join(jenkinsBuildLink, "pipelines");
     }
 
+    function isJenkinsBuild() {
+      var answer = jenkinsLink() && jenkinsBuildLink;;
+      if (answer && $scope) {
+        var entity = $scope.entity || $scope.buildConfig;
+        if (entity) {
+          return answer && entity.$jenkinsJob;
+        }
+      }
+      return answer;
+    }
 
     var answer = [
       {
@@ -224,15 +231,28 @@ module Developer {
         label: "Overview",
         title: "View the overview of this project, its actiity, environments and pipelines"
       },
-      pipelines,
       {
-        id: "builds",
+        isValid: () => isJenkinsBuild() && pipelinesLink,
+        id: "pipelines",
+        href: pipelinesLink,
+        label: "Pipelines",
+        title: "View the pipeline builds for this project"
+      },
+      {
+        isValid: () => !isJenkinsBuild(),
         href: buildsLink,
         label: "Builds",
         title: "View the builds for this project"
       },
       {
-        isValid: () => jenkinsLink(),
+        isValid: () => isJenkinsBuild(),
+        id: "builds",
+        href: jenkinsBuildLink,
+        label: "Builds",
+        title: "View the Jenkins builds for this project"
+      },
+      {
+        isValid: () => isJenkinsBuild(),
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId, "metrics"),
         label: "Metrics",
         title: "View the metrics for this project"

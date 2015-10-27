@@ -45,7 +45,6 @@ declare module Kubernetes {
     function createResource(thing: string, urlTemplate: string, $resource: ng.resource.IResourceService, KubernetesModel: any): ng.resource.IResourceClass;
     function imageRepositoriesRestURL(): string;
     function deploymentConfigsRestURL(): string;
-    function buildsLogsRestURL(): string;
     function buildsRestURL(): string;
     function buildConfigHooksRestURL(): string;
     function buildConfigsRestURL(): string;

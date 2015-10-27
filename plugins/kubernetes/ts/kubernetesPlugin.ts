@@ -23,23 +23,12 @@ module Kubernetes {
       .when(UrlHelpers.join(context, 'templates'), route('templates.html', false))
       .when(UrlHelpers.join(context, 'hosts'), route('hosts.html', false))
       .when(UrlHelpers.join(context, 'hosts/:id'), route('host.html', true))
-      .when(UrlHelpers.join(context, 'builds'), route('builds.html', false))
-      .when(UrlHelpers.join(context, 'builds/:id'), route('build.html', true))
-      .when(UrlHelpers.join(context, 'buildLogs/:id'), route('buildLogs.html', true))
-      .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
-      .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
-      .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
-      .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
-      .when(UrlHelpers.join(context, 'deploymentConfigs'), route('deploymentConfigs.html', false))
-      .when(UrlHelpers.join(context, 'deploymentConfigs/:id'), route('deploymentConfig.html', true))
-      .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
       .when(UrlHelpers.join(context, 'pipelines'), route('pipelines.html', false))
       .when(UrlHelpers.join(context, 'overview'), route('overview.html', true))
       .when(context, {redirectTo: "/workspaces"});
 
 
-    var contexts = [context, "/workspaces/:workspace/projects/:project"];
-    angular.forEach(contexts, (context) => {
+    angular.forEach([context, "/workspaces/:workspace/projects/:project"], (context) => {
       $routeProvider
         .when(UrlHelpers.join(context, '/namespace/:namespace/podCreate'), route('podCreate.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/podEdit/:id'), route('podEdit.html', false))
@@ -57,9 +46,19 @@ module Kubernetes {
         .when(UrlHelpers.join(context, '/namespace/:namespace/apps'), route('apps.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/templates/:targetNamespace'), route('templates.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace'), route('apps.html', false))
+        .when(UrlHelpers.join(context, 'builds'), route('builds.html', false))
+        .when(UrlHelpers.join(context, 'builds/:id'), route('build.html', true))
+        .when(UrlHelpers.join(context, 'buildLogs/:id'), route('buildLogs.html', true))
+        .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
+        .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
+        .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
+        .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
+        .when(UrlHelpers.join(context, 'deploymentConfigs'), route('deploymentConfigs.html', false))
+        .when(UrlHelpers.join(context, 'deploymentConfigs/:id'), route('deploymentConfig.html', true))
+        .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
     });
   }]);
-  
+
 
   _module.factory('AppLibraryURL', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
     return UrlHelpers.join(kubernetesApiUrl(), "/proxy", kubernetesNamespacePath(), "/services/app-library");
@@ -74,14 +73,14 @@ module Kubernetes {
   }]);
 
   _module.factory('ConnectDialogService', ['$rootScope', ($rootScope:ng.IRootScopeService) => {
-    return  {
-            dialog: new UI.Dialog(),
-            saveCredentials: false,
-            userName: null,
-            password: null,
-            jolokiaUrl: null,
-            containerName: null,
-            view: null
+    return {
+      dialog: new UI.Dialog(),
+      saveCredentials: false,
+      userName: null,
+      password: null,
+      jolokiaUrl: null,
+      containerName: null,
+      view: null
     };
   }]);
 
@@ -93,83 +92,83 @@ module Kubernetes {
     viewRegistry['kubernetes'] = templatePath + 'layoutKubernetes.html';
     var builder = HawtioNav.builder();
     var apps = builder.id('kube-apps')
-                      .href(() => UrlHelpers.join(context, 'apps'))
-                      .title(() => 'Apps')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'apps'))
+      .title(() => 'Apps')
+      .build();
 
     var services = builder.id('kube-services')
-                      .href(() => UrlHelpers.join(context, 'services'))
-                      .title(() => 'Services')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'services'))
+      .title(() => 'Services')
+      .build();
 
     var controllers = builder.id('kube-controllers')
-                      .href(() => UrlHelpers.join(context, 'replicationControllers'))
-                      .title(() => 'Controllers')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'replicationControllers'))
+      .title(() => 'Controllers')
+      .build();
 
     var pods = builder.id('kube-pods')
-                      .href(() => UrlHelpers.join(context, 'pods'))
-                      .title(() => 'Pods')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'pods'))
+      .title(() => 'Pods')
+      .build();
 
     var events = builder.id('kube-events')
-                      .href(() => UrlHelpers.join(context, 'events'))
-                      .title(() => 'Events')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'events'))
+      .title(() => 'Events')
+      .build();
 
     var hosts = builder.id('kube-hosts')
-                      .href(() => UrlHelpers.join(context, 'hosts'))
-                      .title(() => 'Hosts')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'hosts'))
+      .title(() => 'Hosts')
+      .build();
 
     var overview = builder.id('kube-overview')
-                          .href(() => UrlHelpers.join(context, 'overview'))
-                          .title(() => 'Diagram')
-                          .build();
+      .href(() => UrlHelpers.join(context, 'overview'))
+      .title(() => 'Diagram')
+      .build();
 
     var builds = builder.id('kube-builds')
-                      .href(() => UrlHelpers.join(context, 'builds'))
-                      .title(() => 'Builds')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'builds'))
+      .title(() => 'Builds')
+      .build();
 
     var buildConfigs = builder.id('kube-buildConfigs')
-                      .href(() => UrlHelpers.join(context, 'buildConfigs'))
-                      .title(() => 'Build Configs')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'buildConfigs'))
+      .title(() => 'Build Configs')
+      .build();
 
     var deploys = builder.id('kube-deploys')
-                      .href(() => UrlHelpers.join(context, 'deploymentConfigs'))
-                      .title(() => 'Deploys')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'deploymentConfigs'))
+      .title(() => 'Deploys')
+      .build();
 
     var imageRepositories = builder.id('kube-imageRepositories')
-                      .href(() => UrlHelpers.join(context, 'imageRepositories'))
-                      .title(() => 'Registries')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'imageRepositories'))
+      .title(() => 'Registries')
+      .build();
 
     var pipelines = builder.id('kube-pipelines')
-                      .href(() => UrlHelpers.join(context, 'pipelines'))
-                      .title(() => 'Pipelines')
-                      .build();
+      .href(() => UrlHelpers.join(context, 'pipelines'))
+      .title(() => 'Pipelines')
+      .build();
 
     var repos = builder.id('kube-repos')
-                      .href(() => "/forge/repos")
-                      .isValid(() => ServiceRegistry.hasService(fabric8ForgeServiceName) && ServiceRegistry.hasService(gogsServiceName) )
-                      .title(() => 'Repositories')
-                      .build();
+      .href(() => "/forge/repos")
+      .isValid(() => ServiceRegistry.hasService(fabric8ForgeServiceName) && ServiceRegistry.hasService(gogsServiceName))
+      .title(() => 'Repositories')
+      .build();
 
     var mainTab = builder.id('kubernetes')
-                         .rank(200)
-                         .defaultPage({
-                           rank: 20,
-                           isValid: (yes, no) => {
-                               yes();
-                           }
-                         })
-                         .href(() => context)
-                         .title(() => 'Kubernetes')
-                         .tabs(apps, services, controllers, pods, events, hosts, overview)
-                         .build();
+      .rank(200)
+      .defaultPage({
+        rank: 20,
+        isValid: (yes, no) => {
+          yes();
+        }
+      })
+      .href(() => context)
+      .title(() => 'Kubernetes')
+      .tabs(apps, services, controllers, pods, events, hosts, overview)
+      .build();
     HawtioNav.add(mainTab);
 
     HawtioNav.add({
@@ -182,13 +181,13 @@ module Kubernetes {
 
 
     var projectsTab = builder.id('openshift')
-                         .rank(100)
-                         .href(() => UrlHelpers.join(context, 'buildConfigs') + '?sub-tab=kube-buildConfigs')
-                         .title(() => 'Projects')
-                          // lets disable the pipelines view for now
-                          // pipelines,
-                         .tabs(repos, buildConfigs, builds,  deploys, imageRepositories)
-                         .build();
+      .rank(100)
+      .href(() => UrlHelpers.join(context, 'buildConfigs') + '?sub-tab=kube-buildConfigs')
+      .title(() => 'Projects')
+      // lets disable the pipelines view for now
+      // pipelines,
+      .tabs(repos, buildConfigs, builds, deploys, imageRepositories)
+      .build();
 
     HawtioNav.add(projectsTab);
   }]);
@@ -246,12 +245,12 @@ module Kubernetes {
             return;
           }
         })
-      .fail((response) => {
-        log.debug("Error fetching OAUTH config: ", response);
-      })
-      .always(() => {
-        next();
-      });
+        .fail((response) => {
+          log.debug("Error fetching OAUTH config: ", response);
+        })
+        .always(() => {
+          next();
+        });
     }
   }, true);
 
