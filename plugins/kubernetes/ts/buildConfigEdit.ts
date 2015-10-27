@@ -5,8 +5,8 @@
 module Kubernetes {
 
   export var BuildConfigEditController = controller("BuildConfigEditController",
-    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "K8SClientFactory",
-      ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
+    ["$scope", "$element", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "K8SClientFactory",
+      ($scope, $element, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL, K8SClientFactory) => {
 
         $scope.kubernetes = KubernetesState;
@@ -16,9 +16,18 @@ module Kubernetes {
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
         $scope.specConfig = KubernetesSchema.definitions.os_build_BuildConfigSpec;
 
+        $scope.specConfig.controls = ['source', '*'];
+
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
         $scope.buildConfigClient = K8SClientFactory.create("buildconfigs", $scope.namespace);
+
+        $element.on('$destroy', () => {
+          $scope.$destroy();
+        });
+        $scope.$on('$destroy', () => {
+          K8SClientFactory.destroy($scope.buildConfigClient);
+        });
 
 /*
         $scope.$on('kubernetesModelUpdated', function () {
