@@ -57,6 +57,12 @@ module Kubernetes {
         .when(UrlHelpers.join(context, 'deploymentConfigs/:id'), route('deploymentConfig.html', true))
         .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
     });
+
+    angular.forEach([context, "/workspaces/:workspace", "/workspaces/:workspace/projects/:project"], (context) => {
+      $routeProvider
+        .when(UrlHelpers.join(context, 'buildConfigEdit'), route('buildConfigEdit.html', true))
+        .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
+    });
   }]);
 
 

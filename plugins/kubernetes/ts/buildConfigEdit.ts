@@ -5,27 +5,61 @@
 module Kubernetes {
 
   export var BuildConfigEditController = controller("BuildConfigEditController",
-    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
+    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "K8SClientFactory",
       ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL, K8SClientFactory) => {
 
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
         $scope.id = $routeParams["id"];
         $scope.schema = KubernetesSchema;
         $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
+        $scope.specConfig = KubernetesSchema.definitions.os_build_BuildConfigSpec;
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
+        $scope.buildConfigClient = K8SClientFactory.create("buildconfigs", $scope.namespace);
+
+/*
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();
         });
 
+*/
         $scope.$on('$routeUpdate', ($event) => {
           updateData();
         });
 
+        $scope.save = () => {
+          log.info("Saving!");
+
+
+          var entity = $scope.entity;
+          var spec = (entity || {}).spec || {};
+
+          // TODO update the jenkins job name!
+
+          // lets delete lots of cruft
+          var strategy = spec.strategy || {};
+          delete strategy["dockerStrategy"];
+          delete strategy["sourceStrategy"];
+
+          delete spec["revision"];
+          delete spec["output"];
+          delete spec["resources"];
+
+          log.info(angular.toJson(entity, true));
+
+          $scope.buildConfigClient.put(entity, (obj) => {
+            log.info("build config created!");
+          })
+        };
+
         updateData();
+
+
+        var jenkinsUrl = Developer.jenkinsLink();
+        var jobName = "";
 
         function updateData() {
           $scope.item = null;
@@ -36,6 +70,7 @@ module Kubernetes {
                 if (data) {
                   $scope.entity = data;
                 }
+                $scope.spec = ($scope.entity || {}).spec || {};
                 $scope.fetched = true;
                 Core.$apply($scope);
               }).
@@ -45,38 +80,40 @@ module Kubernetes {
           } else {
             $scope.fetched = true;
 
-            // TODO default to the right registry URL...
-            var defaultRegistry = "172.30.17.189:5000";
-
             $scope.entity = {
               "apiVersion": "v1",
               "kind": "BuildConfig",
               "metadata": {
                 "name": "",
                 "labels": {
-                  "name": ""
                 }
               },
-              "parameters": {
-                "output": {
-                  "imageTag": "",
-                  "registry": defaultRegistry
-                },
+              "spec": {
                 "source": {
-                  "git": {
-                    "uri": ""
-                  },
                   "type": "Git"
                 },
                 "strategy": {
-                  "stiStrategy": {
-                    "builderImage": "fabric8/base-sti"
-                  },
-                  "type": "STI"
+                    "type": "Custom",
+                    "customStrategy": {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "fabric8/openshift-s2i-jenkins-trigger"
+                        },
+                        "env": [
+                            {
+                                "name": "BASE_URI",
+                                "value": jenkinsUrl
+                            },
+                            {
+                                "name": "JOB_NAME",
+                                "value": jobName
+                            }
+                        ]
+                    }
                 }
-              },
-              "triggers": []
+              }
             };
+            $scope.spec = $scope.entity.spec;
             Core.$apply($scope);
           }
         }

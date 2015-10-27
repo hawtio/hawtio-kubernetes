@@ -1,9 +1,17 @@
-<div ng-controller="Kubernetes.BuildConfigController">
+<div ng-controller="Kubernetes.BuildConfigEditController">
+  <div class="row">
+    <div hawtio-breadcrumbs></div>
+  </div>
+
+  <div class="row">
+    <div hawtio-tabs></div>
+  </div>
+
   <div class="row">
     <div class="col-md-12">
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
-              href="{{baseUri}}/kubernetes/buildConfigs"><i class="fa fa-list"></i></a>
+         href="{{baseUri}}/kubernetes/buildConfigs"><i class="fa fa-list"></i></a>
       <button class="btn btn-primary pull-right"
               title="Saves changes to this build configuration"
               ng-click="save()">
@@ -19,7 +27,27 @@
         </div>
       </div>
       <div ng-show="fetched">
-        <div hawtio-form-2="config" entity="entity"></div>
+
+        <form ng-disabled="config.mode == 0" class="form-horizontal">
+          <fieldset>
+            <legend ng-show="config.label || config.description" ng-hide="config.hideLegend"
+                    class="ng-binding"></legend>
+            <div class="row">
+              <div class="clearfix col-md-12">
+                <div class="form-group">
+                  <label class="control-label">Name</label>
+                  <input ntype="text" class="form-control" placeholder="project name" ng-model="entity.metadata.name">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+
+
+        <!--
+                <div hawtio-form-2="config" entity="entity"></div>
+        -->
+        <div hawtio-form-2="specConfig" entity="spec"></div>
       </div>
     </div>
   </div>
