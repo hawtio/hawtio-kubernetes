@@ -40,8 +40,17 @@ module Kubernetes {
 
         strategy.controls = ['type', '*'];
         strategy.properties['type'] = {
-          type: 'string',
-          enum: ['Custom', 'Docker', 'Source']
+          type: 'text',
+          enum: [{
+            'value': 'Custom',
+            'label': 'Custom'
+          }, {
+            'value': 'Docker',
+            'label': 'Docker'
+          }, {
+            'value': 'Source',
+            'label': 'Source'
+          }]
         };
         strategy.properties['customStrategy']['control-group-attributes'] = {
           'ng-show': "entity.type == 'Custom'"
@@ -56,7 +65,16 @@ module Kubernetes {
         buildTriggerPolicy.controls = ['type', '*'];
         buildTriggerPolicy.properties['type'] = {
           type: 'string',
-          enum: ['Github', 'Image Change', 'Generic']
+          enum: [{
+            'value': 'Github',
+            'label': 'Github'
+          }, {
+            'value': 'ImageChange',
+            'label': 'Image Change'
+          }, {
+            'value': 'Generic',
+            'label': 'Generic'
+          }]
         };
         buildTriggerPolicy.properties['generic']['control-group-attributes'] = {
           'ng-show': "entity.type == 'Generic'"
@@ -65,7 +83,7 @@ module Kubernetes {
           'ng-show': "entity.type == 'Github'"
         };
         buildTriggerPolicy.properties['imageChange']['control-group-attributes'] = {
-          'ng-show': "entity.type == 'Image Change'"
+          'ng-show': "entity.type == 'ImageChange'"
         };
 
         // re-arranging the controls
