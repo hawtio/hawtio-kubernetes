@@ -17,6 +17,7 @@ module Kubernetes {
         var resources = SchemaRegistry.getSchema('io.fabric8.kubernetes.api.model.ResourceRequirements');
         var revision = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.SourceRevision');
         var strategy = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildStrategy');
+        var buildTriggerPolicy = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildTriggerPolicy');
 
         // $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
         //$scope.specConfig = KubernetesSchema.definitions.os_build_BuildConfigSpec;
@@ -50,6 +51,21 @@ module Kubernetes {
         };
         strategy.properties['sourceStrategy']['control-group-attributes'] = {
           'ng-show': "entity.type == 'Source'"
+        };
+
+        buildTriggerPolicy.controls = ['type', '*'];
+        buildTriggerPolicy.properties['type'] = {
+          type: 'string',
+          enum: ['Github', 'Image Change', 'Generic']
+        };
+        buildTriggerPolicy.properties['generic']['control-group-attributes'] = {
+          'ng-show': "entity.type == 'Generic'"
+        };
+        buildTriggerPolicy.properties['github']['control-group-attributes'] = {
+          'ng-show': "entity.type == 'Github'"
+        };
+        buildTriggerPolicy.properties['imageChange']['control-group-attributes'] = {
+          'ng-show': "entity.type == 'Image Change'"
         };
 
         // re-arranging the controls
