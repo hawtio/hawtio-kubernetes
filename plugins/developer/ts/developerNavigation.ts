@@ -214,9 +214,9 @@ module Developer {
     }
 
     function isJenkinsBuild() {
-      var answer = jenkinsLink() && jenkinsBuildLink;;
+      var answer = jenkinsLink() && jenkinsBuildLink;
       if (answer && $scope) {
-        var entity = $scope.entity || $scope.buildConfig;
+        var entity = Developer.projectForScope($scope);
         if (entity) {
           return answer && entity.$jenkinsJob;
         }
@@ -273,8 +273,8 @@ module Developer {
       workspaceName: workspaceName,
       projectName: projectName,
       projectLink: projectLink,
-      jenkinsJobId: jenkinsJobId
-
+      jenkinsJobId: jenkinsJobId,
+      $scope: $scope
     };
     angular.forEach(customProjectSubTabFactories, (fn) => {
       if (angular.isFunction(fn)) {

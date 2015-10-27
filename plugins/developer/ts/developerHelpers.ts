@@ -27,6 +27,12 @@ module Developer {
     return !oldJson || json !== oldJson;
   }
 
+  export function projectForScope($scope) {
+    if ($scope) {
+      return $scope.entity || $scope.buildConfig || ($scope.model || {}).project;
+    }
+    return null;
+  }
   /**
    * Lets load the project versions for the given namespace
    */

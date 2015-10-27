@@ -17,6 +17,7 @@ declare module Developer {
      * Returns true if the value hasn't changed from the last cached JSON version of this object
      */
     function hasObjectChanged(value: any, state: any): boolean;
+    function projectForScope($scope: any): any;
     /**
      * Lets load the project versions for the given namespace
      */
