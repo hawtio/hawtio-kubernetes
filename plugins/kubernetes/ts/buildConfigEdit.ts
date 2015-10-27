@@ -42,15 +42,14 @@ module Kubernetes {
           type: 'string',
           enum: ['Custom', 'Docker', 'Source']
         };
-        // TODO this requires some support in hawtio-forms
         strategy.properties['customStrategy']['control-group-attributes'] = {
-          'ng-show': "entity.strategy.type == 'Custom'"
+          'ng-show': "entity.type == 'Custom'"
         };
         strategy.properties['dockerStrategy']['control-group-attributes'] = {
-          'ng-show': "entity.strategy.type == 'Docker'"
+          'ng-show': "entity.type == 'Docker'"
         };
         strategy.properties['sourceStrategy']['control-group-attributes'] = {
-          'ng-show': "entity.strategy.type == 'Source'"
+          'ng-show': "entity.type == 'Source'"
         };
 
         // re-arranging the controls
