@@ -8,7 +8,7 @@ module Kubernetes {
 
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
-        $scope.id = $routeParams["id"];
+        $scope.id = $routeParams["project"] || $routeParams["id"];
         $scope.schema = KubernetesSchema;
         var specConfig = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildConfigSpec');
         var gitBuildSource = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.GitBuildSource');
@@ -206,9 +206,17 @@ module Kubernetes {
               success(function (data, status, headers, config) {
                 if (data) {
                   $scope.entity = data;
+
+                  var buildConfig = angular.copy(data);
+                  var sortedBuilds = null;
+                  Kubernetes.enrichBuildConfig(buildConfig, sortedBuilds);
+                  $scope.buildConfig = buildConfig;
                 }
                 $scope.spec = ($scope.entity || {}).spec || {};
                 $scope.fetched = true;
+
+                // lets update the tabs
+                $scope.subTabConfig = Developer.createProjectSubNavBars($scope.projectId, null, $scope);
                 Core.$apply($scope);
               }).
               error(function (data, status, headers, config) {

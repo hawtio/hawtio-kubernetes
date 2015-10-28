@@ -263,9 +263,9 @@ module Developer {
         title: "View the tools for this project"
       },
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "detail"),
-        label: "Detail",
-        title: "View the project detail"
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
+        label: "Settings",
+        title: "View the project configuration"
       }
     ];
 

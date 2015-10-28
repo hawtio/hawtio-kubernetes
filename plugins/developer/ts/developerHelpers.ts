@@ -29,7 +29,7 @@ module Developer {
 
   export function projectForScope($scope) {
     if ($scope) {
-      return $scope.entity || $scope.buildConfig || ($scope.model || {}).project;
+      return $scope.buildConfig || $scope.entity || ($scope.model || {}).project;
     }
     return null;
   }

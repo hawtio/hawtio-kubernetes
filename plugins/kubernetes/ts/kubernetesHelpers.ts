@@ -455,8 +455,14 @@ module Kubernetes {
     }
     $scope.forgeEnabled = isForgeEnabled();
 
-    $scope.breadcrumbConfig = Developer.createEnvironmentBreadcrumbs($scope, $location, $routeParams);
-    $scope.subTabConfig = Developer.createEnvironmentSubNavBars($scope, $location, $routeParams);
+    $scope.projectId = $routeParams["project"];
+    if ($scope.projectId) {
+      $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.projectId);
+      $scope.subTabConfig = Developer.createProjectSubNavBars($scope.projectId, null, $scope);
+    } else {
+      $scope.breadcrumbConfig = Developer.createEnvironmentBreadcrumbs($scope, $location, $routeParams);
+      $scope.subTabConfig = Developer.createEnvironmentSubNavBars($scope, $location, $routeParams);
+    }
 
     $scope.codeMirrorOptions = {
       lineWrapping : true,
@@ -1119,7 +1125,7 @@ module Kubernetes {
 
       if (name) {
         buildConfig.$viewLink = UrlHelpers.join("workspaces", ns, "projects", name, "environments");
-        buildConfig.$editLink = UrlHelpers.join("workspaces", ns, "projects", name, "buildConfigEdit", name);
+        buildConfig.$editLink = UrlHelpers.join("workspaces", ns, "projects", name, "buildConfigEdit");
 
         angular.forEach([false, true], (flag) => {
           angular.forEach(buildConfig.triggers, (trigger) => {
