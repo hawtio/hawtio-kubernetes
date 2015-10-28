@@ -185,7 +185,7 @@ module Kubernetes {
         function updateData() {
           $scope.item = null;
           if ($scope.id) {
-            var url = buildConfigRestUrl;
+            var url = buildConfigRestUrl($scope.id);
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {
