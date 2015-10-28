@@ -24,8 +24,7 @@ module Developer {
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
-        $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id, null, $scope);
-
+        updateTabs();
         // this is used for the pendingPipelines view
         $scope.jobId = $scope.id;
         $scope.pendingPipelinesOnly = true;
@@ -60,6 +59,7 @@ module Developer {
                       $scope.model.setProject($scope.entity);
                     }
                     updateEnvironmentWatch();
+                    updateTabs();
                   }
                   $scope.model.fetched = true;
                   Core.$apply($scope);
@@ -106,5 +106,10 @@ module Developer {
             });
           }
         }
+
+        function updateTabs() {
+          $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id, null, $scope);
+        }
+
       }]);
 }
