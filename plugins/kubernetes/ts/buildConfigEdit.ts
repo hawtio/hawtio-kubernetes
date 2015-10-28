@@ -30,6 +30,13 @@ module Kubernetes {
         Core.pathSet(customStrategy, ["properties", "pullSecret", "type"], "string");
         Core.pathSet(buildSource, ["properties", "sourceSecret", "type"], "string");
 
+        var getSecrets = () => {
+          return $scope.secrets;
+        }
+
+        Core.pathSet(customStrategy, ["properties", "pullSecret", "enum"], getSecrets);
+        Core.pathSet(buildSource, ["properties", "sourceSecret", "enum"], getSecrets);
+
         $scope.customStrategy = customStrategy;
         $scope.buildSource = buildSource;
 
@@ -273,8 +280,6 @@ module Kubernetes {
               property['enum'] = $scope.secrets;
             }
           });
-          // TODO - take this out when you can supply a function for enums
-          $scope.specConfig.foo = Date.now();
         }
 
         function onSecrets(secrets) {
