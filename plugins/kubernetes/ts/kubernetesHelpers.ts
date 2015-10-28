@@ -1608,4 +1608,38 @@ module Kubernetes {
     return JSON.stringify(o, null, 2); // spacing level = 2
   }
 
+
+  export function watch($scope: any, $element: any, kind, ns, fn) {
+/*
+    var injectorName = "KubernetesAPI";
+    var KubernetesAPI = inject(injectorName);
+    if (!KubernetesAPI) {
+      log.warn("No injected object found for: " + injectorName)
+    } else {
+*/
+      var connection = KubernetesAPI.watch({
+        kind: kind,
+        namespace: ns,
+        success: function (objects) {
+          fn(objects);
+          Core.$apply($scope);
+        }
+      });
+      $element.on('$destroy', () => {
+        console.log("Static controller[" + kind + ", " + ns + "] element destroyed");
+        $scope.$destroy();
+      });
+      $scope.$on('$destroy', () => {
+        console.log("Static controller[" + kind + ", " + ns + "] scope destroyed");
+        connection.disconnect();
+      });
+      var oldDeleteScopeFn = $scope.deleteScope;
+      $scope.deleteScope = function () {
+        $element.remove();
+        if (angular.isFunction(oldDeleteScopeFn)) {
+          oldDeleteScopeFn();
+        }
+      }
+  }
+
 }

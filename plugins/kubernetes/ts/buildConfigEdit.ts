@@ -19,6 +19,19 @@ module Kubernetes {
         var strategy = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildStrategy');
         var buildTriggerPolicy = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildTriggerPolicy');
 
+        var customStrategy = strategy.properties['customStrategy'] || {};
+
+        // lets configure secret picker
+        var secretProperties = [
+          Core.pathGet(customStrategy, ["properties", "pullSecret"]),
+          Core.pathGet(buildSource, ["properties", "sourceSecret"])
+        ];
+
+        $scope.customStrategy = customStrategy;
+        $scope.buildSource = buildSource;
+
+        $scope.secrets = [];
+
         // $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
         //$scope.specConfig = KubernetesSchema.definitions.os_build_BuildConfigSpec;
         //
@@ -53,7 +66,7 @@ module Kubernetes {
             'label': 'Source'
           }]
         };
-        strategy.properties['customStrategy']['control-group-attributes'] = {
+        customStrategy['control-group-attributes'] = {
           'ng-show': "entity.type == 'Custom'"
         };
         strategy.properties['dockerStrategy']['control-group-attributes'] = {
@@ -130,6 +143,8 @@ module Kubernetes {
         */
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+
+        watch($scope, $element, "secrets", $scope.namespace, onSecrets);
 
         $scope.specConfig = specConfig;
 
@@ -238,6 +253,36 @@ module Kubernetes {
             $scope.spec = $scope.entity.spec;
             Core.$apply($scope);
           }
+        }
+
+        updateSecretProperties();
+
+        function updateSecretProperties() {
+          angular.forEach(secretProperties, (property) => {
+            if (property) {
+              property["enum"] = $scope.secrets;
+            }
+          });
+        }
+
+        function onSecrets(secrets) {
+          var array = [];
+          angular.forEach(secrets, (secret) => {
+            var name = getName(secret);
+            if (name) {
+              array.push({
+                label: name,
+                value: name,
+                "attributes": {
+                  "title": name
+                },
+                $secret: secret
+              });
+            }
+          });
+          $scope.secrets = _.sortBy(array, "label");
+
+          updateSecretProperties();
         }
       });
 }
