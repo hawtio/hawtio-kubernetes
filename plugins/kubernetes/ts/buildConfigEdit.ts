@@ -27,6 +27,9 @@ module Kubernetes {
           Core.pathGet(buildSource, ["properties", "sourceSecret"])
         ];
 
+        Core.pathSet(customStrategy, ["properties", "pullSecret", "type"], "string");
+        Core.pathSet(buildSource, ["properties", "sourceSecret", "type"], "string");
+
         $scope.customStrategy = customStrategy;
         $scope.buildSource = buildSource;
 
@@ -148,7 +151,6 @@ module Kubernetes {
 
         watch($scope, $element, "secrets", $scope.namespace, onSecrets);
 
-        $scope.specConfig = specConfig;
 
         $scope.buildConfigClient = K8SClientFactory.create("buildconfigs", $scope.namespace);
 
@@ -265,14 +267,14 @@ module Kubernetes {
           }
         }
 
-        updateSecretProperties();
-
         function updateSecretProperties() {
           angular.forEach(secretProperties, (property) => {
             if (property) {
-              property["enum"] = $scope.secrets;
+              property['enum'] = $scope.secrets;
             }
           });
+          // TODO - take this out when you can supply a function for enums
+          $scope.specConfig.foo = Date.now();
         }
 
         function onSecrets(secrets) {
@@ -294,5 +296,8 @@ module Kubernetes {
 
           updateSecretProperties();
         }
-      });
+
+        $scope.specConfig = specConfig;
+  });
+
 }
