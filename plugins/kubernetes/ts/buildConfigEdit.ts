@@ -22,6 +22,7 @@ module Kubernetes {
         // $scope.config = KubernetesSchema.definitions.os_build_BuildConfig;
         //$scope.specConfig = KubernetesSchema.definitions.os_build_BuildConfigSpec;
         //
+        specConfig.style = HawtioForms.FormStyle.STANDARD;
         specConfig.properties['triggers']['label-attributes'] = {
           style: 'display: none;'
         };
