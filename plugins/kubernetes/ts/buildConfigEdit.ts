@@ -10,6 +10,8 @@ module Kubernetes {
         $scope.model = KubernetesModel;
         $scope.id = $routeParams["project"] || $routeParams["id"];
         $scope.schema = KubernetesSchema;
+
+
         var specConfig = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildConfigSpec');
         var gitBuildSource = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.GitBuildSource');
         var buildSource = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildSource');
@@ -17,25 +19,44 @@ module Kubernetes {
         var resources = SchemaRegistry.getSchema('io.fabric8.kubernetes.api.model.ResourceRequirements');
         var revision = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.SourceRevision');
         var strategy = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildStrategy');
+        var customStrategy = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.CustomBuildStrategy');
         var buildTriggerPolicy = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildTriggerPolicy');
-
-        var customStrategy = strategy.properties['customStrategy'] || {};
-
-        // lets configure secret picker
-        var secretProperties = [
-          Core.pathGet(customStrategy, ["properties", "pullSecret"]),
-          Core.pathGet(buildSource, ["properties", "sourceSecret"])
-        ];
-
-        Core.pathSet(customStrategy, ["properties", "pullSecret", "type"], "string");
-        Core.pathSet(buildSource, ["properties", "sourceSecret", "type"], "string");
 
         var getSecrets = () => {
           return $scope.secrets;
-        }
+        };
 
-        Core.pathSet(customStrategy, ["properties", "pullSecret", "enum"], getSecrets);
-        Core.pathSet(buildSource, ["properties", "sourceSecret", "enum"], getSecrets);
+
+        var secretSchemaType = "fabric8_SecretReference";
+        var secretSchemaRef = "#/definitions/" + secretSchemaType;
+        var secretSchemaJavaType = "io.fabric8.console.SecretReference";
+
+        var secretNameElement: HawtioForms.FormElement = {
+          "type": "string",
+          "enum": getSecrets
+        };
+
+        var secretSchema: HawtioForms.FormConfiguration = {
+          "type": "object",
+          properties: {
+            "name": secretNameElement
+          },
+          javaType: secretSchemaJavaType
+        };
+        SchemaRegistry.addSchema(secretSchemaType, secretSchema);
+
+        // lets switch to the new secrets types:
+        angular.forEach([
+          Core.pathGet(customStrategy, ["properties", "pullSecret"]),
+          Core.pathGet(buildSource, ["properties", "sourceSecret"]),
+        ], (schemaType) => {
+          if (schemaType) {
+            schemaType["type"] = secretSchemaType;
+            schemaType["$ref"] = secretSchemaRef;
+            schemaType["javaType"] = secretSchemaJavaType;
+          }
+        });
+
 
         $scope.customStrategy = customStrategy;
         $scope.buildSource = buildSource;
@@ -274,14 +295,6 @@ module Kubernetes {
           }
         }
 
-        function updateSecretProperties() {
-          angular.forEach(secretProperties, (property) => {
-            if (property) {
-              property['enum'] = $scope.secrets;
-            }
-          });
-        }
-
         function onSecrets(secrets) {
           var array = [];
           angular.forEach(secrets, (secret) => {
@@ -298,8 +311,6 @@ module Kubernetes {
             }
           });
           $scope.secrets = _.sortBy(array, "label");
-
-          updateSecretProperties();
         }
 
         $scope.specConfig = specConfig;
