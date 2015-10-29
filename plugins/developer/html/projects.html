@@ -76,12 +76,16 @@
                        css-class="input-xxlarge"
                        placeholder="Filter projects..."></hawtio-filter>
       </span>
+      <div class="pull-right inline-block"
+            ng-show="model.serviceApps && model.serviceApps.length"
+            ng-include="'plugins/kubernetes/html/serviceApps.html'"></div>
+      <span class="pull-right">&nbsp;</span>
       <button ng-show="fetched"
               title="Delete the selected build configuration"
               class="btn btn-danger pull-right"
               ng-disabled="tableConfig.selectedItems.length == 0"
               ng-click="deletePrompt(tableConfig.selectedItems)">
-        <i class="fa fa-remove"></i> Delete
+              <i class="fa fa-remove"></i> Delete
       </button>
 
       <button ng-show="model.fetched"

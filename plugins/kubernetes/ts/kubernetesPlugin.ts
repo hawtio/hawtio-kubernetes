@@ -177,6 +177,7 @@ module Kubernetes {
       .build();
     HawtioNav.add(mainTab);
 
+    /*
     HawtioNav.add({
       id: 'k8sAppSwitcher',
       title: () => '', // not used as 'template' below overrides this
@@ -184,7 +185,7 @@ module Kubernetes {
       context: true,
       template: () => $templateCache.get(UrlHelpers.join(templatePath, 'serviceApps.html'))
     });
-
+    */
 
     var projectsTab = builder.id('openshift')
       .rank(100)

@@ -1,11 +1,11 @@
-<li class="dropdown context" ng-controller="Kubernetes.Services">
-  <a href="" class="dropdown-toggle" data-toggle="dropdown">
-    Open <b class="caret"></b>
+<div class="dropdown" ng-controller="Kubernetes.Services">
+  <a href="" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    Tools <b class="caret"></b>
   </a>
-  <ul class="dropdown-menu k8sServiceApp-menu">
+  <ul class="dropdown-menu right k8sServiceApp-menu">
     <li class="k8sServiceApp" 
         ng-repeat="service in model.serviceApps | filter:filterTemplates | orderBy:'metadata.name' track by $index">
-      <a href="{{service.$connectUrl}}"
+        <a href="{{service.$connectUrl}}"
          target="_blank"
          title="Click to open this app">
         <img style="width: 32px; height: 32px;" ng-src="{{service.$iconUrl}}">&nbsp;
@@ -13,4 +13,4 @@
       </a>
     </li>
   </ul>
-</li>
+</div>

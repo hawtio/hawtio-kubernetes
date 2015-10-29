@@ -36,7 +36,7 @@ module Kubernetes {
           "enum": getSecrets
         };
 
-        var secretSchema: HawtioForms.FormConfiguration = {
+        var secretSchema: HawtioForms.FormConfiguration = <any> {
           "type": "object",
           properties: {
             "name": secretNameElement
