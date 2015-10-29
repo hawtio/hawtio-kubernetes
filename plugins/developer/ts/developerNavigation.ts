@@ -172,6 +172,12 @@ module Developer {
       label: "Settings",
       title: "View the settings of this project"
     }];
+    if (!projectName) {
+      var children = [{
+        label: "New Project",
+        title: "Lets make a new project"
+      }];
+    }
     return createProjectBreadcrumbs(projectName, children, workspaceName);
   }
 
@@ -297,18 +303,13 @@ module Developer {
   }
 
   export function createProjectSettingsSubNavBars(projectName, jenkinsJobId = null) {
+    if (!projectName) {
+      return [];
+    }
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName);
     if (!jenkinsJobId) {
       jenkinsJobId = projectName;
-    }
-    // TODO we should switch to just using project namespace URLs for forge commands!
-    var forgePath = jenkinsJobId;
-    if (forgePath) {
-      var idx = forgePath.indexOf("-");
-      if (idx > 0) {
-        forgePath = forgePath.substring(0, idx) + "/" + forgePath.substring(idx + 1);
-      }
     }
     var answer = [
       {
@@ -317,7 +318,7 @@ module Developer {
         title: "View the core project configuration"
       },
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "forge/command/devops-edit/user", forgePath),
+        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "forge/command/devops-edit"),
         label: "Pipeline",
         title: "View the DevOps and pipeline configuration"
       }
