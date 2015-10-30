@@ -550,6 +550,14 @@ img.icon-selected-app {
   line-height: 13px;
 }
 
+.log-panel {
+}
+
+.log-panel-inner {
+  font-family: monospace;
+  line-height: 13px;
+}
+
 tbody .ngCellText i {
   margin-right: 5px;
 }

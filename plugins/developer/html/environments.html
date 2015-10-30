@@ -34,8 +34,8 @@
 
       <div class="pull-right" n>
         <a href="{{entity.$build.url}}" class="btn btn-default" target="browse">
-            <i class="{{entity.$build.iconClass}}"></i>
-            {{entity.$build.label}}
+          <i class="{{entity.$build.iconClass}}"></i>
+          {{entity.$build.label}}
         </a>
       </div>
 
@@ -111,5 +111,22 @@
     </div>
 
   </div>
-  <ng-include src="'pendingPipelines.html'"/>
+
+  <div>
+    <ng-include src="'pendingPipelines.html'"/>
+  </div>
+
+  <div ng-controller="Developer.JenkinsLogController">
+    <div ng-show="selectedBuild.$jobId && selectedBuild.id" title="logs for job: {{selectedBuild.$jobId}} build: {{selectedBuild.id}}">
+      <div class="row">
+        <h4 class="project-overview-title">Logs</h4>
+      </div>
+
+      <div class="log-panel" scroll-glue>
+        <div class="log-panel-inner">
+          <p ng-repeat="log in log.logs track by $index" ng-bind-html="log"></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

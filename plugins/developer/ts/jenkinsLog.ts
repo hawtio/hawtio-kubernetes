@@ -15,8 +15,6 @@ module Developer {
         $scope.model = KubernetesModel;
 
         $scope.id = $routeParams["id"];
-        $scope.jobId = $routeParams["job"];
-        $scope.buildId = $routeParams["build"];
         $scope.schema = KubernetesSchema;
         $scope.entityChangedCache = {};
 
@@ -30,20 +28,39 @@ module Developer {
           updateJenkinsLink();
           Core.$apply($scope);
         });
+/*
 
+        $scope.$on('jenkinsSelectedBuild', (event, build) => {
+          log.info("==== jenkins build selected! " + build.id + " " + build.$jobId);
+          $scope.selectedBuild = build;
+        });
+
+        $scope.$watch('selectedBuild', () => {
+          log.info("jeningsLog updated selected build! " + getJobId() + "/" + getBuildId());
+        });
+*/
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-        $scope.breadcrumbConfig = createJenkinsBreadcrumbs($scope.id, $scope.jobId, $scope.buildId);
-        $scope.subTabConfig = createJenkinsSubNavBars($scope.id, $scope.jobId, $scope.buildId, {
+        $scope.breadcrumbConfig = createJenkinsBreadcrumbs($scope.id, getJobId(), getBuildId());
+        $scope.subTabConfig = createJenkinsSubNavBars($scope.id, getJobId(), getBuildId(), {
           label: "Log",
           title: "Views the logs of this build"
         });
 
+        function getJobId() {
+          // lets allow the parent scope to be used too for when this is used as a panel
+          return $routeParams["job"] || ($scope.selectedBuild || {}).$jobId;
+        }
+
+        function getBuildId() {
+          // lets allow the parent scope to be used too for when this is used as a panel
+          return $routeParams["build"] || ($scope.selectedBuild || {}).id;
+        }
 
         function updateJenkinsLink() {
           var jenkinsUrl = jenkinsLink();
           if (jenkinsUrl) {
-            $scope.$viewJenkinsBuildLink = UrlHelpers.join(jenkinsUrl, "job", $scope.jobId, $scope.buildId);
+            $scope.$viewJenkinsBuildLink = UrlHelpers.join(jenkinsUrl, "job", getJobId(), getBuildId());
             $scope.$viewJenkinsLogLink = UrlHelpers.join($scope.$viewJenkinsBuildLink, "console");
           }
         }
@@ -51,9 +68,16 @@ module Developer {
         var querySize = 50000;
 
         $scope.$keepPolling = () => Kubernetes.keepPollingModel;
+
         $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-          if ($scope.jobId) {
-            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "fabric8/logHtml?tail=1&start=" + $scope.log.start + "&size=" + querySize));
+          var buildId = getBuildId();
+          var jobId = getJobId();
+          //log.info("=== jenkins log querying job " + jobId + " build " + buildId + " selected build " +  $scope.selectedBuild);
+          if (jobId && buildId) {
+            $scope.buildId = buildId;
+            $scope.jobId = jobId;
+
+            var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", jobId, buildId, "fabric8/logHtml?tail=1&start=" + $scope.log.start + "&size=" + querySize));
             if ($scope.log.firstIdx !== null) {
               url += "&first=" + $scope.log.firstIdx;
             }
@@ -147,8 +171,9 @@ module Developer {
           }
         });
 
-        $scope.fetch();
-
+        if (angular.isFunction($scope.fetch)) {
+          $scope.fetch();
+        }
 
 
         function replaceClusterIpFunction() {

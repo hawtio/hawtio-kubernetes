@@ -7,8 +7,8 @@
 module Developer {
 
   export var ProjectController = controller("ProjectController",
-    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
-      ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
+    ["$scope", "$element", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
+      ($scope, $element, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
 
         $scope.kubernetes = KubernetesState;
@@ -29,55 +29,31 @@ module Developer {
         $scope.jobId = $scope.id;
         $scope.pendingPipelinesOnly = true;
 
-/*
-        $scope.$on('kubernetesModelUpdated', function () {
-          updateData();
+        $scope.$on('jenkinsSelectedBuild', (event, build) => {
+          $scope.selectedBuild = build;
         });
 
-        $scope.$on('$routeUpdate', ($event) => {
-          updateData();
-        });
-*/
+        Kubernetes.watch($scope, $element, "buildconfigs", $scope.namespace, onBuildConfigs);
 
-
-
-        $scope.$keepPolling = () => Kubernetes.keepPollingModel;
-        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-          $scope.item = null;
-          if ($scope.id) {
-            var url = Kubernetes.buildConfigRestUrl($scope.id);
-            if (!$scope.entity || Kubernetes.keepPollingModel) {
-              $http.get(url).
-                success(function (data, status, headers, config) {
-                  if (data) {
-                    var sortedBuilds = null;
-                    Kubernetes.enrichBuildConfig(data, sortedBuilds);
-                    if (hasObjectChanged(data, $scope.entityChangedCache)) {
-                      log.info("entity has changed!");
-                      $scope.entity = data;
-                      $scope.entity.$build = (data.$fabric8CodeViews || {})['fabric8.link.browseGogs.view'];
-                      $scope.model.setProject($scope.entity);
-                    }
-                    updateEnvironmentWatch();
-                    updateTabs();
-                  }
-                  $scope.model.fetched = true;
-                  Core.$apply($scope);
-                  next();
-                }).
-                error(function (data, status, headers, config) {
-                  log.warn("Failed to load " + url + " " + data + " " + status);
-                  next();
-                });
+        function onBuildConfigs(buildConfigs) {
+          angular.forEach(buildConfigs, (data) => {
+            var name = Kubernetes.getName(data);
+            if (name === $scope.id) {
+              var sortedBuilds = null;
+              Kubernetes.enrichBuildConfig(data, sortedBuilds);
+              if (hasObjectChanged(data, $scope.entityChangedCache)) {
+                log.info("entity has changed!");
+                $scope.entity = data;
+                $scope.entity.$build = (data.$fabric8CodeViews || {})['fabric8.link.browseGogs.view'];
+                $scope.model.setProject($scope.entity);
+              }
+              updateEnvironmentWatch();
+              updateTabs();
             }
-          } else {
-            $scope.model.fetched = true;
-            next();
-            Core.$apply($scope);
-          }
-        });
-
-        $scope.fetch();
+          });
+          $scope.model.fetched = true;
+          Core.$apply($scope);
+        }
 
 
         /**

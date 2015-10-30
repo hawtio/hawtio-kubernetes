@@ -40,6 +40,16 @@ module Developer {
 
         updateData();
 
+        $scope.selectBuild = (build) => {
+          var id = build.id;
+          if (id) {
+            if (id !== $scope.selectedBuildId) {
+              $scope.selectedBuildId = id;
+              $scope.$emit("jenkinsSelectedBuild", build);
+            }
+          }
+        };
+
         function updateData() {
           if ($scope.jobId) {
             var queryPath = "fabric8/stages/";
@@ -55,6 +65,11 @@ module Developer {
                     if (hasObjectChanged(data, $scope.entityChangedCache)) {
                       log.info("entity has changed!");
                       $scope.model.job = data;
+
+                      var builds = data.builds;
+                      if (builds && builds.length) {
+                        $scope.selectBuild(builds[0]);
+                      }
                     }
                   }
                   $scope.model.fetched = true;
