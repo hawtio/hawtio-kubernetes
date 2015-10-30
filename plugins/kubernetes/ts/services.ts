@@ -4,6 +4,10 @@
 
 module Kubernetes {
 
+  export var ServiceApps = _module.controller('Kubernetes.ServiceApps', ($scope, KubernetesModel) => {
+    $scope.model = KubernetesModel;
+  });
+
   export var Services = controller("Services",
     ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.resource.IResourceClass, KubernetesPods:ng.resource.IResourceClass, KubernetesState,

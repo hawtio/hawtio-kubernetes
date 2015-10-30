@@ -4,6 +4,10 @@
     <li ng-repeat="breadcrumb in subTabConfig" ng-show="isValid(breadcrumb)"
         class="{{breadcrumb.active ? 'active' : ''}}"
         title="{{breadcrumb.title}}">
-      <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+        <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+    </li>
   </ul>
+<div class="pull-right inline-block"
+        ng-show="model.serviceApps && model.serviceApps.length"
+        ng-include="'plugins/kubernetes/html/serviceApps.html'"></div>
 </div>
