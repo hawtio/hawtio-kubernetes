@@ -409,6 +409,11 @@ module Developer {
         title: "View the nodes for this workspace"
       },
       {
+        href: UrlHelpers.join(namespacesLink, ns, "overview"),
+        label: "Overview",
+        title: "View all the objects in this workspace and their relationship"
+      },
+      {
         href: UrlHelpers.join(namespacesLink, ns, "angryPods"),
         label: "Angry Pods",
         title: "Try the Angry Pods game!"
