@@ -217,10 +217,34 @@ module Kubernetes {
           delete spec["output"];
           delete spec["resources"];
 
+          var strategyPullSecretName = Core.pathGet(spec, ["strategy", "customStrategy", "pullSecret", "name"]);
+          var sourceSecretName = Core.pathGet(spec, ["source", "sourceSecret", "name"]);
+          log.info("sourceSecretName: " + sourceSecretName);
+          log.info("strategyPullSecretName: " + strategyPullSecretName);
+          if (!strategyPullSecretName && sourceSecretName) {
+            Core.pathSet(spec, ["strategy", "customStrategy", "pullSecret", "name"], sourceSecretName);
+          }
+
+/*
+          // TODO hack until the put deals with updates
+          var metadata = entity.metadata;
+          if (metadata) {
+            delete metadata["resourceVersion"];
+          }
+*/
+
           log.info(angular.toJson(entity, true));
 
           $scope.buildConfigClient.put(entity, (obj) => {
             log.info("build config created!");
+
+            var link = Developer.editPipelineLink($scope.namespace, getName(entity));
+            if (link) {
+              log.info("Navigating to: "+ link);
+              $location.path(link);
+            } else {
+              log.warn("Could not find the edit pipeline link!");
+            }
           })
         };
 

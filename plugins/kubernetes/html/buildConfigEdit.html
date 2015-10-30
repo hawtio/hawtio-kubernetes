@@ -11,6 +11,7 @@
     <div class="col-md-12">
       <button class="btn btn-primary pull-right"
               title="Saves changes to this project configuration"
+              ng-disabled="!entity.metadata.name"
               ng-click="save()">
         Save Changes
       </button>
@@ -33,7 +34,7 @@
               <div class="clearfix col-md-12">
                 <div class="form-group">
                   <label class="control-label">Name</label>
-                  <input ntype="text" class="form-control" placeholder="project name" ng-model="entity.metadata.name">
+                  <input type="text" class="form-control" placeholder="project name" ng-model="entity.metadata.name" required>
                 </div>
               </div>
             </div>

@@ -318,12 +318,26 @@ module Developer {
         title: "View the core project configuration"
       },
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "forge/command/devops-edit"),
+        href: editPipelineLink(workspaceName, projectName),
         label: "Pipeline",
         title: "View the DevOps and pipeline configuration"
       }
     ];
     return activateCurrent(answer);
+  }
+
+  export function editPipelineLinkScope($scope) {
+    return editPipelineLink($scope.namespace, $scope.projectId || $scope.projectName || $scope.project);
+  }
+
+  export function editPipelineLink(workspaceName, projectName) {
+    if (!projectName) {
+      return "";
+    }
+    if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
+    }
+    return UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "forge/command/devops-edit");
   }
 
   export var customProjectSubTabFactories = [];

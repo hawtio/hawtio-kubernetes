@@ -11,6 +11,8 @@ declare module Developer {
     function createWorkspaceSubNavBars(): any;
     function createProjectSubNavBars(projectName: any, jenkinsJobId?: any, $scope?: any): any;
     function createProjectSettingsSubNavBars(projectName: any, jenkinsJobId?: any): any;
+    function editPipelineLinkScope($scope: any): string;
+    function editPipelineLink(workspaceName: any, projectName: any): string;
     var customProjectSubTabFactories: any[];
     function createJenkinsBreadcrumbs(projectName: any, jobId: any, buildId: any): any;
     function createJenkinsSubNavBars(projectName: any, jenkinsJobId: any, buildId: any, extraOption?: any): any;
