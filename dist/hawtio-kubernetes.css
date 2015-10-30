@@ -544,17 +544,21 @@ img.icon-selected-app {
   border-top: 1px solid #d4d4d4;
 }
 
-.log-window-inner {
-  position: static;
-  font-family: monospace;
+.log-window-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
   line-height: 13px;
 }
 
 .log-panel {
+  position: static;
+  height: 200px;
+  overflow: auto;
+  border: 1px solid #d4d4d4;
+  padding: 3px;
 }
 
-.log-panel-inner {
-  font-family: monospace;
+.log-panel-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
   line-height: 13px;
 }
 

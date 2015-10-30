@@ -26,8 +26,10 @@
     </div>
   </div>
   <div ng-show="model.fetched">
-    <div ng-hide="entity.environments.length" class="align-center">
-      <p class="alert alert-info">There are no environments currently available.</p>
+    <div ng-hide="entity.environments.length" class="align-center row">
+      <div class="col-md-12">
+        <p class="alert alert-info">There are no environments currently available.</p>
+      </div>
     </div>
 
     <div ng-show="entity.environments.length">
@@ -118,6 +120,7 @@
 
   <div ng-controller="Developer.JenkinsLogController">
     <div ng-show="selectedBuild.$jobId && selectedBuild.id" title="logs for job: {{selectedBuild.$jobId}} build: {{selectedBuild.id}}">
+    <div>
       <div class="row">
         <h4 class="project-overview-title">Logs</h4>
       </div>
