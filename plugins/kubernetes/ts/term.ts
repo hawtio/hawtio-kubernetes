@@ -88,7 +88,7 @@ module Kubernetes {
         log.debug("element: ", element);
         var body = element.find('.terminal-body');
         log.debug("body: ", body);
-        body.append($compile('<kubernetes-container-terminal pod="podLink" container="containerName" command="/bin/bash -i"></kubernetes-container-terminal>')(scope));
+        body.append($compile('<kubernetes-container-terminal pod="podLink" container="containerName" command="bash"></kubernetes-container-terminal>')(scope));
       }
     };
   });
