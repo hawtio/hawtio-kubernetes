@@ -26,7 +26,7 @@
       </div>
       <div ng-show="fetched">
 
-        <form ng-disabled="config.mode == 0" class="form-horizontal">
+        <form name="nameForm" ng-disabled="config.mode == 0" class="form-horizontal">
           <fieldset>
             <legend ng-show="config.label || config.description" ng-hide="config.hideLegend"
                     class="ng-binding"></legend>
@@ -34,7 +34,11 @@
               <div class="clearfix col-md-12">
                 <div class="form-group">
                   <label class="control-label">Name</label>
-                  <input type="text" class="form-control" placeholder="project name" ng-model="entity.metadata.name" required>
+                  <input type="text" class="form-control" placeholder="project name" pattern="[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*" ng-model="entity.metadata.name" required>
+
+                  <p class="form-warning bg-danger" ng-show="nameForm.$error.pattern">
+                    Project name must be a lower case DNS name with letters, numbers and dots or dashes such as `example.com`
+                  </p>
                 </div>
               </div>
             </div>

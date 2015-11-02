@@ -613,3 +613,8 @@ kubernetes-container-terminal .terminal-actions {
 .log-error {
     color: red;
 }
+
+
+.form-warning.bg-danger {
+    padding: 8px;
+}
