@@ -36,21 +36,18 @@ module Developer {
   /**
    * Lets load the project versions for the given namespace
    */
-  export function loadProjectVersions($scope, $http, project, env, ns, answer, caches) {
-    var url = Kubernetes.resourcesUriForKind(Kubernetes.WatchTypes.REPLICATION_CONTROLLERS, ns) + "?labelSelector=project";
-
+  export function loadProjectVersions($scope, $element, project, env, ns, answer, caches) {
     var projectAnnotation = "project";
     var versionAnnotation = "version";
-
-    $http.get(url).
-      success(function (data, status, headers, config) {
+    var watchedNsNames = {};
+    Kubernetes.watch($scope, $element, "replicationcontrollers", ns, (data) => {
         if (data) {
           var projectInfos = {};
           var projectNamespace = project.$namespace;
           var projectName = project.$name;
 
           //env.projectVersions = projectInfos;
-          angular.forEach(data.items, (item) => {
+          angular.forEach(data, (item) => {
             var metadata = item.metadata || {};
             var name = metadata.name;
             var labels = metadata.labels || {};
@@ -91,7 +88,10 @@ module Developer {
             var spec = item.spec || {};
             var selector = spec.selector;
             if (selector) {
-              loadProjectPodCounters($scope, $http, project, item, selector, ns, projectName);
+              if (!watchedNsNames[name]) {
+                watchedNsNames[name] = true;
+                loadProjectPodCounters($scope, $element, project, item, selector, ns, projectName);
+              }
             }
           });
 
@@ -105,29 +105,22 @@ module Developer {
             answer[ns] = projectInfos;
           }
         }
-      }).
-      error(function (data, status, headers, config) {
-        log.warn("Failed to load " + url + " " + data + " " + status);
       });
   }
 
-  function loadProjectPodCounters($scope, $http, project, rc, selector, ns, projectName) {
+  function loadProjectPodCounters($scope, $element, project, rc, selector, ns, projectName) {
     var selectorText = Kubernetes.labelsToString(selector, ",");
-    var url = Kubernetes.resourcesUriForKind(Kubernetes.WatchTypes.PODS, ns) + "?labelSelector=" + encodeURIComponent(selectorText);
     var podLinkUrl = UrlHelpers.join(projectLink(projectName), "namespace", ns, "pods");
-    $http.get(url).
-      success(function (data, status, headers, config) {
+
+    Kubernetes.watch($scope, $element, "pods", ns, (data) => {
         if (data) {
-          var pods = data.items;
+          var pods = data;
           if (pods) {
             rc.pods = [];
             rc.$podCounters = Kubernetes.createPodCounters(selector, pods, rc.pods, selectorText, podLinkUrl);
           }
         }
-      }).
-      error(function (data, status, headers, config) {
-        log.warn("Failed to load " + url + " " + data + " " + status);
-      });
+      }, selector);
   }
 
 }

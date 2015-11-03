@@ -77,8 +77,8 @@ module Developer {
               if (!caches) {
                 caches = {};
                 $scope.envNSCaches[ns] = caches;
+                loadProjectVersions($scope, $element, project, env, ns, $scope.envVersions, caches);
               }
-              loadProjectVersions($scope, $http, project, env, ns, $scope.envVersions, caches);
             });
           }
         }

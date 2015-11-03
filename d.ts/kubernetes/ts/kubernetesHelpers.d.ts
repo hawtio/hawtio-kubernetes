@@ -184,5 +184,5 @@ declare module Kubernetes {
      * Lets remove any enriched data to leave the original json intact
      */
     function toRawJson(item: any): string;
-    function watch($scope: any, $element: any, kind: any, ns: any, fn: any): void;
+    function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): void;
 }

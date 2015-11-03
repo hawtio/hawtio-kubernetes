@@ -21,5 +21,5 @@ declare module Developer {
     /**
      * Lets load the project versions for the given namespace
      */
-    function loadProjectVersions($scope: any, $http: any, project: any, env: any, ns: any, answer: any, caches: any): void;
+    function loadProjectVersions($scope: any, $element: any, project: any, env: any, ns: any, answer: any, caches: any): void;
 }

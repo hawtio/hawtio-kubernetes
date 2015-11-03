@@ -1615,17 +1615,11 @@ module Kubernetes {
   }
 
 
-  export function watch($scope: any, $element: any, kind, ns, fn) {
-/*
-    var injectorName = "KubernetesAPI";
-    var KubernetesAPI = inject(injectorName);
-    if (!KubernetesAPI) {
-      log.warn("No injected object found for: " + injectorName)
-    } else {
-*/
+  export function watch($scope: any, $element: any, kind, ns, fn, labelSelector = null) {
       var connection = KubernetesAPI.watch({
         kind: kind,
         namespace: ns,
+        labelSelector: labelSelector,
         success: function (objects) {
           fn(objects);
           Core.$apply($scope);
