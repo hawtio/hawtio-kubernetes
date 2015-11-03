@@ -35,10 +35,11 @@ module Developer {
           $scope.selectedBuild = build;
         });
 
-        $scope.$watch('selectedBuild', () => {
-          log.info("jeningsLog updated selected build! " + getJobId() + "/" + getBuildId());
-        });
 */
+
+        $scope.$watch('selectedBuild', () => {
+          $scope.fetch();
+        });
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = createJenkinsBreadcrumbs($scope.id, getJobId(), getBuildId());
@@ -74,6 +75,14 @@ module Developer {
           var jobId = getJobId();
           //log.info("=== jenkins log querying job " + jobId + " build " + buildId + " selected build " +  $scope.selectedBuild);
           if (jobId && buildId) {
+            if ($scope.buildId !== buildId || $scope.jobId !== jobId) {
+              // lets clear the query
+              $scope.log = {
+                html: "",
+                start: 0,
+                firstIdx: null
+              };
+            }
             $scope.buildId = buildId;
             $scope.jobId = jobId;
 
@@ -161,6 +170,7 @@ module Developer {
                 }).
                 error(function (data, status, headers, config) {
                   log.warn("Failed to load " + url + " " + data + " " + status);
+                  next();
                 });
             }
           } else {

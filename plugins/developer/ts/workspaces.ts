@@ -61,7 +61,7 @@ module Developer {
           $http.get(url).
             success(function (data, status, headers, config) {
               if (data) {
-                $scope.model.workspaces = enrichWorkspaces(data.items);
+                $scope.model.workspaces = _.sortBy(enrichWorkspaces(data.items), "$name");
                 $scope.model.fetched = true;
               }
               Core.$apply($scope);

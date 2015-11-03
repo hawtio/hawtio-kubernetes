@@ -56,8 +56,7 @@
         </div>
         <div ng-show="model.workspaces.length">
           <div ng-show="mode == 'list'">
-            <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
-                   hawtio-simple-table="tableConfig"></table>
+            <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
           </div>
 
           <div ng-hide="mode == 'list'">
