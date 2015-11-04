@@ -63,12 +63,18 @@
                 <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
                   <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
                     <div class="environment-deploy-version-and-pods">
-                      <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink" class=""
+                      <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
                          title="View the Replication Controller from project {{project}} of version {{version}}">
                         <i class="fa fa-cubes"></i>
                         {{rc.$name}}
                         : {{version}}
                       </a>
+                      <span ng-hide="rc.$viewLink"
+                         title="View the Replication Controller from project {{project}} of version {{version}}">
+                        <i class="fa fa-cubes"></i>
+                        {{rc.$name}}
+                        : {{version}}
+                      </span>
                       &nbsp;
                       &nbsp;
                       &nbsp;
