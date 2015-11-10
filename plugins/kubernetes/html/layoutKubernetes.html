@@ -112,6 +112,22 @@
     </a>
   </div>
 </script>
+<script type="text/ng-template" id="connectTemplate.html">
+    <span ng-show="entity.$jolokiaUrl && entity.$ready" ng-controller="Kubernetes.ConnectController">
+      <a class="clickable"
+         ng-click="doConnect(row.entity)"
+         title="Open a new window and connect to this container">
+        <i class="fa fa-sign-in"></i>
+      </a>
+    </span>
+</script>
+<script type="text/ng-template" id="termTemplate.html">
+    <span ng-show="entity.status.phase === 'Running'" ng-controller="Kubernetes.TermController">
+      <span ng-repeat="container in entity.spec.containers" ng-show="canConnectTo(container)">
+        <i class="fa fa-television clickable" title="Open up a terminal to {{container.name}}" ng-click="openTerminal(entity.metadata.selfLink, container.name)"></i>
+      </span>
+    </span>
+</script>
 <script type="text/ng-template" id="statusTemplate.html">
   <div class="ngCellText nowrap" ng-init="entity=row.entity" ng-controller="Kubernetes.PodStatus"
        title="Pod {{entity.metadata.name}} is {{entity.status.phase}}">
@@ -120,18 +136,8 @@
     <i class="fa {{entity.$statusCss}}"></i>
     <span ng-show="data">{{data}}</span>
     <!-- in table -->
-    <span ng-show="entity.$jolokiaUrl && entity.$ready" ng-controller="Kubernetes.ConnectController">
-      <a class="clickable"
-         ng-click="doConnect(row.entity)"
-         title="Open a new window and connect to this container">
-        <i class="fa fa-sign-in"></i>
-      </a>
-    </span>
-    <span ng-show="entity.status.phase === 'Running'" ng-controller="Kubernetes.TermController">
-      <span ng-repeat="container in entity.spec.containers" ng-show="canConnectTo(container)">
-        <i class="fa fa-television clickable" title="Open up a terminal to {{container.name}}" ng-click="openTerminal(entity.metadata.selfLink, container.name)"></i>
-      </span>
-    </span>
+    <span ng-include="'connectTemplate.html'"></span>
+    <span ng-include="'termTemplate.html'"></span>
   </div>
 </script>
 <script type="text/ng-template" id="resizeDialog.html">
