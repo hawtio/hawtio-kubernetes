@@ -9,7 +9,10 @@ module Kubernetes {
   _module.factory('CustomWebSockets', (userDetails:any) => {
     return function CustomWebSocket(url, protocols) {
       var paths = url.split('?');
-      var url = getWSUrl(paths[0], userDetails);
+      if (!_.startsWith(paths[0], masterApiUrl())) {
+        paths[0] = UrlHelpers.join(masterApiUrl(), paths[0]);
+      }
+      url = KubernetesAPI.wsUrl(paths[0]);
       url.search(paths[1] + '&access_token=' + userDetails.token);
       log.debug("Using ws url: ", url.toString());
       return new WebSocket(url.toString(), protocols);

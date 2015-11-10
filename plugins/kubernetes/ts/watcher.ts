@@ -2,349 +2,14 @@
 
 module Kubernetes {
   var log = Logger.get('kubernetes-watcher');
-  var apiUrl = UrlHelpers.join('api', 'v1');
 
-  var namespaceType = WatchTypes.NAMESPACES;
+  var k8sTypes = KubernetesAPI.NamespacedTypes.k8sTypes;
+  var osTypes  = KubernetesAPI.NamespacedTypes.osTypes;
 
-  var k8sTypes = NamespacedTypes.k8sTypes;
-  var osTypes  = NamespacedTypes.osTypes;
-
-  var baseWatch = <any> {
-    url: <string> undefined,
-    connectTime: <Number> undefined,
-    objects: <ObjectMap> {},
-    objectArray: <Array<any>> [],
-    customizers: <Array<(obj:any) => void>>[],
-    onAddActions: <Array<(obj:any) => void>> [],
-    onModifiedActions: <Array<(obj:any) => void>> [],
-    onDeletedActions: <Array<(obj:any) => void>> [],
-    socket: <WebSocket> undefined,
-    connected: false
-  }
-
-  var namespaceWatch = <any> _.assign(_.cloneDeep(baseWatch), {
-    selected: undefined,
-    connectTime: <Number> undefined,
-    url: UrlHelpers.join(apiUrl, WatchTypes.NAMESPACES),
-  });
-
-  export var watches = <any> {};
-  _.forEach(k8sTypes, (type) => {
-    watches[type] = _.assign(_.cloneDeep(baseWatch), {
-      prefix: () => kubernetesApiPrefix(),
-      valid: () => true
-    });
-  });
-  _.forEach(osTypes, (type) => {
-    watches[type] = _.assign(_.cloneDeep(baseWatch), {
-      prefix: () => openshiftApiPrefix(),
-      valid: () => isOpenShift || (type === "templates" || type === "buildconfigs")
-    });
-  });
-
-  hawtioPluginLoader.registerPreBootstrapTask({
-    name: 'KubernetesWatcherInit',
-    depends: ['hawtio-oauth'],
-    task: (next) => {
-      isOpenShift = true;
-
-      function watchNamespaces() {
-        var uri = new URI(masterApiUrl());
-        uri.path(namespaceWatch.url);
-        var url = uri.toString();
-        HawtioOAuth.authenticatedHttpRequest({
-          url: uri.toString()
-        }).done((data) => {
-          _.forEach(data.items, (namespace:any) => {
-            if (!namespace.metadata.uid) {
-              namespace.metadata.uid = namespace.metadata.namespace + '/' + namespace.metadata.name;
-            }
-            namespaceWatch.objects[namespace.metadata.uid] = namespace;
-          });
-          namespaceWatch.objectArray.length = 0;
-          _.forIn(namespaceWatch.objects, (object, key) => {
-            namespaceWatch.objectArray.push(object);
-          });
-          next();
-        }).fail((xHr, textStatus, errorThrown) => {
-          log.warn(textStatus, ": ", errorThrown);
-          HawtioOAuth.doLogout();
-        });
-      }
-
-
-      var rootUri = new URI(masterApiUrl());
-      rootUri.path("/").query("");
-      var rootUriText = rootUri.toString();
-      log.info("About to query root paths: " + masterApiUrl());
-      HawtioOAuth.authenticatedHttpRequest({
-        url: rootUriText
-      }).done((data) => {
-        if (data) {
-          var paths = data.paths;
-          if (paths) {
-            isOpenShift = false;
-            angular.forEach(paths, (path) => {
-              if (angular.isString(path) && (path === "/oapi" || path === "oapi")) {
-                isOpenShift = true;
-              }
-            });
-          }
-          log.info("isOpenShift " + isOpenShift + " with paths " + paths);
-        }
-        watchNamespaces();
-      }).fail((xHr, textStatus, errorThrown) => {
-        log.warn("Failed to find root paths: " + textStatus, ": ", errorThrown);
-        watchNamespaces();
-      });
-
-
-    }
-  });
-
-  export function getWSUrl(watchUrl, userDetails) {
-    var apiUrl = masterApiUrl();
-    var uri;
-    if (!apiUrl || apiUrl === "/") {
-      // lets avoid using a relative path if no master url is specified
-      // as we are probably serving up static content from inside /api/v1/namespaces/default/services/fabric8 or something like that
-      uri = new URI(UrlHelpers.join(apiUrl, watchUrl));
-    } else {
-      uri = new URI(apiUrl);
-      uri.path(watchUrl);
-    }
-    if (uri.protocol() === "https") {
-      uri.protocol('wss');
-    } else {
-      uri.protocol('ws');
-    }
-    return uri;
-  }
-
-  function createWatch(type, watch, userDetails, $scope, onMessage = (event) => {}, onClose = (event) => {}, onOpen = (event) => {}) {
-    var watchUrl = watch.url;
-    var uri = getWSUrl(watchUrl, userDetails);
-    uri.query(<any> {
-      watch: true,
-      access_token: userDetails.token
-    });
-    watch.retries = 0;
-    var onOpenInternal = (event) => {
-      watch.retries = 0;
-      watch.connectTime = new Date().getTime();
-      watch.connected = true;
-      onOpen(event);
-    };
-    var onMessageInternal = (event) => {
-      // log.debug(type, " onmessage: ", event);
-      var data = angular.fromJson(event.data);
-      //log.debug(type, " data: ", data);
-      switch (data.type) {
-        case WatchActions.ADDED:
-        case WatchActions.MODIFIED:
-          var obj = data.object;
-          if (watch.customizers.length > 0) {
-            _.forEach(watch.customizers, (customizer:(obj:any) => void) => {
-              customizer(obj);
-            });
-          }
-          if (!data.object.metadata.uid) {
-            data.object.metadata.uid = data.object.metadata.namespace + '/' + data.object.metadata.name;
-          }
-          watch.objects[data.object.metadata.uid] = data.object;
-          break;
-        case WatchActions.DELETED:
-          delete watch.objects[data.object.metadata.uid];
-          break;
-        default:
-          log.info("Unknown event type: ", data.type);
-          return;
-      }
-      watch.objectArray.length = 0;
-      _.forIn(watch.objects, (object, uid) => {
-        watch.objectArray.push(object);
-      });
-      onMessage(data);
-      // execute any watch actions
-      switch (data.type) {
-        case WatchActions.ADDED:
-          _.forEach(watch.onAddActions, (action:any) => action(data.object));
-          break;
-        case WatchActions.MODIFIED:
-          _.forEach(watch.onModifiedActions, (action:any) => action(data.object));
-          break;
-        case WatchActions.DELETED:
-          _.forEach(watch.onDeletedActions, (action:any) => action(data.object));
-          break;
-      }
-      Core.$apply($scope);
-    };
-    var onCloseInternal = (event) => {
-      watch.connected = false;
-      if (watch.retries < 3 && watch.connectTime && new Date().getTime() - watch.connectTime > 5000) {
-        setTimeout(() => {
-          watch.retries = watch.retries + 1;
-          log.debug("watch ", type, " disconnected, retry #", watch.retries);
-          var ws = watch.socket = new WebSocket(uri.toString());
-          ws.onopen = onOpenInternal;
-          ws.onmessage = onMessageInternal;
-          ws.onclose = onCloseInternal;
-        }, 5000);
-      } else {
-        onClose(event);
-      }
-    }
-    var ws = watch.socket = new WebSocket(uri.toString());
-    ws.onopen = onOpenInternal;
-    ws.onmessage = onMessageInternal;
-    ws.onclose = onCloseInternal;
-  }
-
-  /*
-     _module.run(['WatcherService', '$rootScope', (WatcherService:WatcherService, $rootScope) => {
-     log.debug("Started watcher service");
-
-//		Kubernetes.keepPollingModel = false;
-
-// some usage examples
-//		WatcherService.addCustomizer('pods', (pod) => {
-//			pod.SomeValue = 'foobar';
-//		});
-//		$rootScope.pods = WatcherService.getObjects('pods');
-//		$rootScope.podMap = WatcherService.getObjectMap('pods');
-//
-//		$rootScope.$watchCollection('pods', (newValue) => {
-//		  log.debug("pods changed: ", newValue);
-//		});
-//
-//		$rootScope.$watch('podMap', (newValue) => {
-//		  log.debug("pod map changed: ", newValue);
-//		}, true);
-}]);
-   */
-
-_module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (userDetails, $rootScope, $timeout) => {
-  var self = <any> {
-    hasWebSocket: false
-  };
-
-  try {
-    if (!WebSocket)  {
-      return self;
-    }
-  } catch (err) {
-    return self;
-  }
-
-  self.setNamespace = (namespace: string) => {
-    if (namespace !== namespaceWatch.selected) {
-      log.debug("Namespace changed, shutting down existing watches");
-      _.forIn(watches, (watch, type) => {
-        if (watch.socket) {
-          watch.socket.close();
-        }
-      });
-      log.debug("Setting namespace watch to: ", namespace);
-      namespaceWatch.selected = namespace;
-      if (!namespace) {
-        delete localStorage[Constants.NAMESPACE_STORAGE_KEY];
-      } else {
-        localStorage[Constants.NAMESPACE_STORAGE_KEY] = namespace;
-      }
-      if (namespace) {
-        _.forIn(watches, (watch, type) => {
-          // reset the object rather than re-assigning them
-          // ensures that any watches in controllers won't
-          // be watching a stale object
-          if (watch.valid()) {
-            watch.url = UrlHelpers.join(watch.prefix(), Kubernetes.namespacePathForKind(type, namespace));
-            watch.connectTime = <Number> undefined;
-            _.forEach(_.keys(watch.objects), (uid) => {
-              _.forEach(watch.onDeletedActions, (action:any) => action(watch.objects[uid]));
-              delete watch.objects[uid];
-            });
-            watch.objectArray.length = 0;
-            watch.socket = <WebSocket> undefined;
-          }
-        });
-        _.forIn(watches, (watch, type) => {
-          if (watch.valid()) {
-            createWatch(type, watch, userDetails, $rootScope);
-          }
-        });
-      }
-      $rootScope.$broadcast("WatcherNamespaceChanged", namespace);
-    }
-  };
-
-  createWatch(WatchTypes.NAMESPACES, namespaceWatch, userDetails, $rootScope, (event) => {
-    // log.debug("Got event: ", event);
-    switch (event.type) {
-      case WatchActions.ADDED:
-      case WatchActions.MODIFIED:
-        if (!namespaceWatch.selected) {
-          self.setNamespace(event.object.metadata.name);
-        }
-        break;
-      case WatchActions.DELETED:
-        var next = <any> _.first(namespaceWatch.objectArray);
-        if (next) {
-          self.setNamespace(next.metadata.name);
-        } else {
-          self.setNamespace(undefined);
-        }
-        break;
-      default:
-        log.debug("Unknown namespace event type: ", event.type);
-        return;
-    }
-  }, (event) => {
-    log.debug("Namespace watch closed");
-    self.setNamespace(undefined);
-  });
-
-  self.setNamespace(localStorage[Constants.NAMESPACE_STORAGE_KEY] || defaultNamespace);
-
-  self.hasWebSocket = true;
-
-  self.getNamespace = () => namespaceWatch.selected;
-
-  self.addCustomizer = (type: string, customizer: (obj:any) => void) => {
-    if (type in watches) {
-      watches[type].customizers.push(customizer);
-      _.forEach(watches[type].objectArray, (obj) => customizer(obj));
-    }
-  }
-
-  self.getTypes = () => {
-    return k8sTypes.concat([WatchTypes.NAMESPACES]).concat(osTypes);
-  }
-
-  self.getObjectMap = (type: string) => {
-    if (type === WatchTypes.NAMESPACES) {
-      return namespaceWatch.objects;
-    }
-    if (type in watches) {
-      return watches[type].objects;
-    } else {
-      return undefined;
-    }
-  }
-
-  self.getObjects = (type:string) => {
-    if (type === WatchTypes.NAMESPACES) {
-      return namespaceWatch.objectArray;
-    }
-    if (type in watches) {
-      return watches[type].objectArray;
-    } else {
-      return undefined;
-    }
-  }
-
-  self.listeners = <Array<(ObjectMap) => void>> [];
+  var self = <any> {};
 
   var updateFunction = () => {
+    
     log.debug("Objects changed, firing listeners");
     var objects = <ObjectMap>{};
     _.forEach(self.getTypes(), (type:string) => {
@@ -354,48 +19,166 @@ _module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (use
       listener(objects);
     });
   };
-
   var debouncedUpdate = _.debounce(updateFunction, 500, { trailing: true });
+
+  var namespaceWatch = {
+    selected: undefined,
+    watch: undefined,
+    objects: [],
+    objectMap: {},
+    watches: {}
+  };
+
+  hawtioPluginLoader.registerPreBootstrapTask({
+    name: 'KubernetesWatcherInit',
+    depends: ['hawtio-oauth'],
+    task: (next) => {
+      isOpenShift = true;
+      var booted = false;
+
+      function watchNamespaces() {
+        if (isOpenShift) {
+          log.info("Backend is an Openshift instance");
+        } else {
+          log.info("Backend is a vanilla Kubernetes instance");
+        }
+        namespaceWatch.watch = KubernetesAPI.watch({
+          kind: KubernetesAPI.WatchTypes.NAMESPACES,
+          success: (objects) => {
+            namespaceWatch.objects = objects;
+            if (!booted) {
+              booted = true;
+              self.setNamespace(localStorage[Constants.NAMESPACE_STORAGE_KEY] || defaultNamespace);
+              next();
+            }
+            log.debug("Got namespaces: ", namespaceWatch.objects);
+          }, error: (jqXHR, text, status) => {
+            var error = KubernetesAPI.getErrorObject(jqXHR);
+            if (!error) {
+              log.warn("Error fetching namespaces: ", text, ": ", status);
+            } else {
+              log.warn("Error fetching namespaces: ", error);
+            }
+            // TODO is this necessary?
+            //HawtioOAuth.doLogout();
+            if (!booted) {
+              booted = true;
+              next();
+            }
+          }
+        });
+      };
+
+      var rootUri = new URI(masterApiUrl()).path("/oapi").query("").toString();
+      log.debug("Checking for an openshift backend");
+      HawtioOAuth.authenticatedHttpRequest({
+        url: rootUri,
+        success: (data) => {
+          if (data) {
+            isOpenShift = true;
+          }
+          watchNamespaces();
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+          var error = KubernetesAPI.getErrorObject(jqXHR);
+          if (!error) {
+            log.debug("Failed to find root paths: ", textStatus, ": ", errorThrown);
+          } else {
+            log.debug("Failed to find root paths: ", error);
+          }
+          isOpenShift = false;
+          watchNamespaces();
+        }
+      });
+    }
+  });
+
+  // TODO this needs to go over into KubernetesAPI
+  function namespaced(kind:string) {
+    switch (kind) {
+      case KubernetesAPI.WatchTypes.POLICIES:
+      case KubernetesAPI.WatchTypes.OAUTH_CLIENTS:
+      case KubernetesAPI.WatchTypes.NODES:
+      case KubernetesAPI.WatchTypes.PERSISTENT_VOLUMES:
+      case KubernetesAPI.WatchTypes.PROJECTS:
+        return false;
+
+      default:
+        return true;
+    }
+  }
+
+  self.setNamespace = (namespace: string) => {
+    if (namespaceWatch.selected) {
+      log.debug("Stopping current watches");
+      _.forOwn(namespaceWatch.watches, (watch, key) => {
+        log.debug("Disconnecting watch: ", key);
+        watch.disconnect();
+      });
+      _.forEach(_.keys(namespaceWatch.watches), (key) => {
+        log.debug("Deleting kind: ", key);
+        delete namespaceWatch.watches[key];
+      });
+    }
+    namespaceWatch.selected = namespace;
+    if (namespace) {
+      _.forEach(self.getTypes(), (kind:string) => {
+        if (kind === KubernetesAPI.WatchTypes.NAMESPACES) {
+          return;
+        }
+        var watch = <any> KubernetesAPI.watch({
+          kind: kind,
+          namespace: namespaced(kind) ? namespace : undefined,
+          success: (objects) => {
+            watch.objects = objects;
+            debouncedUpdate();
+          }
+        });
+        namespaceWatch.watches[kind] = watch;
+      });
+    }
+  };
+
+  self.hasWebSocket = true;
+
+  self.getNamespace = () => namespaceWatch.selected;
+
+  self.getTypes = () => {
+    return _.filter(k8sTypes.concat([WatchTypes.NAMESPACES]).concat(osTypes), (kind:string) => {
+      // filter out stuff we don't care about yet
+      switch(kind) {
+        case KubernetesAPI.WatchTypes.OAUTH_CLIENTS:
+        case KubernetesAPI.WatchTypes.IMAGE_STREAMS:
+        case KubernetesAPI.WatchTypes.POLICIES:
+        case KubernetesAPI.WatchTypes.ROLES:
+        case KubernetesAPI.WatchTypes.ROLE_BINDINGS:
+          return false;
+
+        default:
+          return true;
+      }
+    });
+  }
+
+  self.getObjects = (kind: string) => {
+    if (kind === WatchTypes.NAMESPACES) {
+      return namespaceWatch.objects;
+    }
+    if (kind in namespaceWatch.watches) {
+      return namespaceWatch.watches[kind].objects;
+    } else {
+      return undefined;
+    }
+  }
+
+  self.listeners = <Array<(ObjectMap) => void>> [];
 
   // listener gets notified after a bunch of changes have occurred
   self.registerListener = (fn:(objects:ObjectMap) => void) => {
     self.listeners.push(fn);
-    _.forEach(self.getTypes(), (type) => {
-      self.addAction(type, WatchActions.ANY, debouncedUpdate)
-    });
   }
 
-  // function to watch individual actions on the k8s objects
-  self.addAction = (type: string, action: string, fn: (obj:any) => void) => {
-    var watch = <any> undefined;
-    if (type === WatchTypes.NAMESPACES) {
-      watch = namespaceWatch;
-    } else {
-      watch = watches[type];
-    }
-    if (watch) {
-      switch (action) {
-        case WatchActions.ANY:
-          _.forEach(watch.objectArray, (obj) => fn(obj));
-          watch.onAddActions.push(fn);
-          watch.onDeletedActions.push(fn);
-          watch.onModifiedActions.push(fn);
-          break;
-        case WatchActions.ADDED:
-          _.forEach(watch.objectArray, (obj) => fn(obj));
-          watch.onAddActions.push(fn);
-          break;
-        case WatchActions.MODIFIED:
-          watch.onModifiedActions.push(fn);
-          break;
-        case WatchActions.DELETED:
-          watch.onDeletedActions.push(fn);
-          break;
-        default:
-          log.debug("Attempting to add unknown action: ", action);
-      }
-    }
-  }
-  return self;
+_module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (userDetails, $rootScope, $timeout) => {
+    return self;
 }]);
 }
