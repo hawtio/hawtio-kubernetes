@@ -1617,7 +1617,7 @@ module Kubernetes {
 
 
   export function watch($scope: any, $element: any, kind, ns, fn, labelSelector = null) {
-      var connection = KubernetesAPI.watch({
+     var connection = KubernetesAPI.watch({
         kind: kind,
         namespace: ns,
         labelSelector: labelSelector,

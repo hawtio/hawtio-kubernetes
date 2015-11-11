@@ -59,6 +59,11 @@ module Developer {
     HawtioNav.add(workspacesTab);
   }]);
 
+  _module.filter('asTrustedHtml', ['$sce', function ($sce) {
+    return function (text) {
+      return $sce.trustAsHtml(text);
+    };
+  }]);
 
   hawtioPluginLoader.addModule(pluginName);
 

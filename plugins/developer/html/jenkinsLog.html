@@ -27,7 +27,7 @@
   </div>
   <div class="log-window" scroll-glue>
     <div class="log-window-inner" >
-      <p ng-repeat="log in log.logs | filter:log.filterText track by $index" ng-bind-html="log"></p>
+      <p ng-repeat="log in log.logs | filter:log.filterText track by $index" ng-bind-html="log | asTrustedHtml"></p>
     </div>
   </div>
 </div>

@@ -7,9 +7,9 @@
 module Developer {
 
   export var JenkinsLogController = controller("JenkinsLogController",
-    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "ServiceRegistry",
+    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "$modal", "KubernetesApiURL", "ServiceRegistry",
       ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL, ServiceRegistry) => {
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, $modal, KubernetesApiURL, ServiceRegistry) => {
 
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
@@ -67,6 +67,44 @@ module Developer {
         }
 
         var querySize = 50000;
+
+        $scope.approve = (url, operation) => {
+          var modal = $modal.open({
+            templateUrl: UrlHelpers.join(templatePath, 'jenkinsApproveModal.html'),
+            controller: ['$scope', '$modalInstance', ($scope, $modalInstance) => {
+              $scope.operation = operation;
+              $scope.header = operation + "?";
+              $scope.ok = () => {
+                modal.close();
+                postToJenkins(url, operation);
+              };
+              $scope.cancel = () => {
+                modal.dismiss();
+              };
+            }]
+          });
+        };
+
+        function postToJenkins(uri, operation) {
+          var url =  Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, uri);
+          if (url) {
+            var body = null;
+            var config = {
+              headers: {
+              }
+            };
+            log.info("posting to jenkinsUrl: " + url);
+            $http.post(url, body, config).
+            success(function (data, status, headers, config) {
+              log.info("Managed to " + operation + " at " + url);
+            }).
+            error(function (data, status, headers, config) {
+              log.warn("Failed " + operation + " job at " + url + " " + data + " " + status);
+            });
+          } else {
+            log.warn("Cannot post to jenkins URI: " + uri + " as no jenkins found!");
+          }
+        }
 
         $scope.$keepPolling = () => Kubernetes.keepPollingModel;
 
@@ -238,6 +276,30 @@ module Developer {
           addReplaceFn("FAILURE", "<span class='log-error'>FAILURE</span>");
           addReplaceFn("SUCCESS", "<span class='log-success'>SUCCESS</span>");
 
+          // lets try convert the Proceed / Abort links
+          replacements.push((text) => {
+            var prefix = "<a href='#' onclick=\"new Ajax.Request('";
+            var idx = 0;
+            while (idx >= 0) {
+              idx = text.indexOf(prefix, idx);
+              if (idx >= 0) {
+                var start = idx + prefix.length;
+                var endQuote = text.indexOf("'", start + 1);
+                if (endQuote <= 0) {
+                  break;
+                }
+                var endDoubleQuote = text.indexOf('"', endQuote + 1);
+                if (endDoubleQuote <= 0) {
+                  break;
+                }
+                var url = text.substring(start, endQuote);
+                // TODO using $compile is a tad complex, for now lets cheat with a little onclick ;)
+                //text = text.substring(0, idx) + "<a class='btn btn-default btn-lg' ng-click=\"approve('" + url + "')\"" + text.substring(endDoubleQuote + 1);
+                text = text.substring(0, idx) + "<a class='btn btn-default btn-lg' onclick=\"Developer.clickApprove(this, '" + url + "')\"" + text.substring(endDoubleQuote + 1);
+              }
+            }
+            return text;
+          });
           return function(text) {
             var answer = text;
             angular.forEach(replacements, (fn) => {
@@ -264,4 +326,11 @@ module Developer {
           return text;
         }
       }]);
+
+  export function clickApprove(element, url) {
+    var $scope: any = angular.element(element).scope();
+    if ($scope) {
+      $scope.approve(url, element.text);
+    }
+  }
 }

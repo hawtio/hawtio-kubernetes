@@ -127,7 +127,7 @@ module Developer {
         }
 
         if (jenkinsJob && publicJenkinsUrl) {
-          var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceName, UrlHelpers.join("job", jenkinsJob, "doDelete"));
+          var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", jenkinsJob, "doDelete"));
           var body = "";
           var config = {
             headers: {
