@@ -33,6 +33,10 @@ module Developer {
           $scope.selectedBuild = build;
         });
 
+        // TODO this should be unnecessary but seems sometiems this watch doesn't always trigger unless you hit reload on this page
+        if ($scope.model.buildconfigs) {
+          onBuildConfigs($scope.model.buildconfigs);
+        }
         Kubernetes.watch($scope, $element, "buildconfigs", $scope.namespace, onBuildConfigs);
 
         function onBuildConfigs(buildConfigs) {
