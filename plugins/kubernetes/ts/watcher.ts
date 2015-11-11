@@ -52,13 +52,8 @@ module Kubernetes {
               next();
             }
             log.debug("Got namespaces: ", namespaceWatch.objects);
-          }, error: (jqXHR, text, status) => {
-            var error = KubernetesAPI.getErrorObject(jqXHR);
-            if (!error) {
-              log.warn("Error fetching namespaces: ", text, ": ", status);
-            } else {
-              log.warn("Error fetching namespaces: ", error);
-            }
+          }, error: (error:any) => {
+            log.warn("Error fetching namespaces: ", error);
             // TODO is this necessary?
             //HawtioOAuth.doLogout();
             if (!booted) {

@@ -5,4 +5,5 @@
 /// <reference path="developerNavigation.d.ts" />
 declare module Developer {
     var JenkinsLogController: ng.IModule;
+    function clickApprove(element: any, url: any): void;
 }
