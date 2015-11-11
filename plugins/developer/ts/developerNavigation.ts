@@ -271,11 +271,13 @@ module Developer {
         label: "Metrics",
         title: "View the metrics for this project"
       },
+/*
       {
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "tools"),
         label: "Tools",
         title: "View the tools for this project"
       },
+*/
       {
         href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
         label: "Settings",
