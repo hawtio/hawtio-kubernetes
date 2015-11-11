@@ -618,3 +618,14 @@ kubernetes-container-terminal .terminal-actions {
 .form-warning.bg-danger {
     padding: 8px;
 }
+
+/* TODO lets work around some ui-bootstrap / patternfly css gremlins */
+.modal .modal-dialog {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+/* lets set this to the same size as modal-dialog */
+.modal {
+    width: 600px;
+}
