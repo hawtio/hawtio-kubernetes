@@ -70,7 +70,7 @@
                         : {{version}}
                       </a>
                       <span ng-hide="rc.$viewLink"
-                         title="View the Replication Controller from project {{project}} of version {{version}}">
+                            title="View the Replication Controller from project {{project}} of version {{version}}">
                         <i class="fa fa-cubes"></i>
                         {{rc.$name}}
                         : {{version}}
@@ -125,17 +125,34 @@
   </div>
 
   <div ng-controller="Developer.JenkinsLogController">
-    <div ng-show="selectedBuild.$jobId && selectedBuild.id" title="logs for job: {{selectedBuild.$jobId}} build: {{selectedBuild.id}}">
-    <div>
-      <div class="row">
-        <h4 class="project-overview-title">Logs</h4>
-      </div>
+    <div ng-show="selectedBuild.$jobId && selectedBuild.id"
+         title="logs for job: {{selectedBuild.$jobId}} build: {{selectedBuild.id}}">
+      <div>
+        <div class="row">
+          <h4 class="project-overview-title">Logs</h4>
+        </div>
 
-      <div class="log-panel" scroll-glue>
-        <div class="log-panel-inner">
-          <p ng-repeat="log in log.logs track by $index" ng-bind-html="log | asTrustedHtml"></p>
+        <div class="log-panel" scroll-glue>
+          <div class="log-panel-inner">
+            <p ng-repeat="log in log.logs track by $index" ng-bind-html="log | asTrustedHtml"></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <div ng-controller="Wiki.HistoryController">
+    <div class="row">
+      <h4 class="project-overview-title">Commits</h4>
+    </div>
+
+    <div ng-show="logs.length || true">
+      <div class="row">
+        <div class="col-md-12">
+          <table class="table-condensed table-striped" hawtio-simple-table="gridOptions"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
