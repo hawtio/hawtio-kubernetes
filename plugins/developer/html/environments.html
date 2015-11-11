@@ -142,11 +142,11 @@
   </div>
 
   <div ng-controller="Wiki.HistoryController">
-    <div class="row">
-      <h4 class="project-overview-title">Commits</h4>
-    </div>
+    <div ng-show="logs.length">
+      <div class="row">
+        <h4 class="project-overview-title">Commits</h4>
+      </div>
 
-    <div ng-show="logs.length || true">
       <div class="row">
         <div class="col-md-12">
           <table class="table-condensed table-striped" hawtio-simple-table="gridOptions"></table>
