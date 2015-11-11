@@ -446,7 +446,6 @@ img.icon-selected-app {
     background-color: rgb(238, 238, 238);
     */
     padding-top: 5px;
-    padding-bottom: 20px;
     vertical-align: top;
 }
 
@@ -496,6 +495,7 @@ img.icon-selected-app {
 
 .project-overview-title {
     padding-left: 80px;
+    padding-top: 18px;
 }
 /*
 
