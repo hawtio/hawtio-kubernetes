@@ -642,7 +642,7 @@ module Kubernetes {
       }
       if (foundContainerPort && podId && isRunning(currentState)) {
         entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(), "/api/", Kubernetes.defaultApiVersion, "namespaces", entity.metadata.namespace , "/pods/",
-                                              podId + ":" + foundContainerPort, "/proxy/jolokia/");
+                                              "https:" + podId + ":" + foundContainerPort, "/proxy/jolokia/");
       }
     }
   }
