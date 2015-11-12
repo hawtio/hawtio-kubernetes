@@ -641,8 +641,29 @@ module Kubernetes {
         });
       }
       if (foundContainerPort && podId && isRunning(currentState)) {
-        entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(), "/api/", Kubernetes.defaultApiVersion, "namespaces", entity.metadata.namespace , "/pods/",
-                                              "https:" + podId + ":" + foundContainerPort, "/proxy/jolokia/");
+        if (!Kubernetes.isOpenShift) {
+          // TODO temp workaround for k8s on GKE https://github.com/kubernetes/kubernetes/issues/17172
+          entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(), 
+              "api", 
+              Kubernetes.defaultApiVersion, 
+              "proxy",
+              "namespaces", 
+              entity.metadata.namespace , 
+              "pods",
+              //"https:" + podId + ":" + foundContainerPort,
+              podId + ":" + foundContainerPort,
+              "jolokia/");
+        } else {
+          entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(), 
+              "api", 
+              Kubernetes.defaultApiVersion, 
+              "namespaces", 
+              entity.metadata.namespace , 
+              "pods",
+              "https:" + podId + ":" + foundContainerPort,
+              "proxy/jolokia/");
+
+        }
       }
     }
   }
