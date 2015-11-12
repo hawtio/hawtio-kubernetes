@@ -114,7 +114,7 @@
       </div>
 
       <div class="row">
-        <h4 class="project-overview-title">Pipelines</h4>
+        <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">Pipelines</a></h4>
       </div>
     </div>
 
@@ -129,7 +129,7 @@
          title="logs for job: {{selectedBuild.$jobId}} build: {{selectedBuild.id}}">
       <div>
         <div class="row">
-          <h4 class="project-overview-title">Logs</h4>
+          <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/log/{{selectedBuild.id}}">Logs</a></h4>
         </div>
 
         <div class="log-panel" scroll-glue>
@@ -144,7 +144,7 @@
   <div ng-controller="Wiki.HistoryController">
     <div ng-show="logs.length">
       <div class="row">
-        <h4 class="project-overview-title">Commits</h4>
+        <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/wiki/history//">Commits</a></h4>
       </div>
 
       <div class="row">

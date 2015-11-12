@@ -497,6 +497,11 @@ img.icon-selected-app {
     padding-left: 80px;
     padding-top: 18px;
 }
+
+.project-overview-title a {
+    color: black;
+}
+
 /*
 
 .raw-json-view {
