@@ -9,11 +9,8 @@ module Kubernetes {
     "$scope", "localStorage", "userDetails", "ConnectDialogService", "$browser",
     ($scope, localStorage, userDetails, ConnectDialogService, $browser:ng.IBrowserService) => {
 
-      var base:any = document.querySelector('base');
-      var baseHref = base && base.href || '';
-
       $scope.doConnect = (entity) => {
-        var connectUrl:any = new URI(baseHref).path('/java/index.html');
+        var connectUrl:any = new URI().path(UrlHelpers.join(HawtioCore.documentBase(), '/java/index.html'));
         var returnTo = new URI().toString();
         var title = entity.metadata.name || 'Untitled Container';
         var token = userDetails.token || '';
