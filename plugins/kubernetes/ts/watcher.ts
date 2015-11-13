@@ -31,60 +31,92 @@ module Kubernetes {
 
   hawtioPluginLoader.registerPreBootstrapTask({
     name: 'KubernetesWatcherInit',
-    depends: ['hawtio-oauth'],
+    depends: ['KubernetesApiDiscovery'],
     task: (next) => {
-      isOpenShift = true;
       var booted = false;
-
-      function watchNamespaces() {
-        if (isOpenShift) {
-          log.info("Backend is an Openshift instance");
-        } else {
-          log.info("Backend is a vanilla Kubernetes instance");
-        }
-        namespaceWatch.watch = KubernetesAPI.watch({
-          kind: KubernetesAPI.WatchTypes.NAMESPACES,
-          success: (objects) => {
-            namespaceWatch.objects = objects;
-            if (!booted) {
-              booted = true;
-              self.setNamespace(localStorage[Constants.NAMESPACE_STORAGE_KEY] || defaultNamespace);
-              next();
-            }
-            log.debug("Got namespaces: ", namespaceWatch.objects);
-          }, error: (error:any) => {
-            log.warn("Error fetching namespaces: ", error);
-            // TODO is this necessary?
-            //HawtioOAuth.doLogout();
-            if (!booted) {
-              booted = true;
-              next();
-            }
+      if (isOpenShift) {
+        log.info("Backend is an Openshift instance");
+      } else {
+        log.info("Backend is a vanilla Kubernetes instance");
+      }
+      namespaceWatch.watch = KubernetesAPI.watch({
+        kind: KubernetesAPI.WatchTypes.NAMESPACES,
+        success: (objects) => {
+          namespaceWatch.objects = objects;
+          if (!booted) {
+            booted = true;
+            self.setNamespace(localStorage[Constants.NAMESPACE_STORAGE_KEY] || defaultNamespace);
+            next();
           }
-        });
-      };
-
-      var rootUri = new URI(masterApiUrl()).path("/oapi").query("").toString();
-      log.debug("Checking for an openshift backend");
-      HawtioOAuth.authenticatedHttpRequest({
-        url: rootUri,
-        success: (data) => {
-          if (data) {
-            isOpenShift = true;
+          log.debug("Got namespaces: ", namespaceWatch.objects);
+        }, error: (error:any) => {
+          log.warn("Error fetching namespaces: ", error);
+          // TODO is this necessary?
+          //HawtioOAuth.doLogout();
+          if (!booted) {
+            booted = true;
+            next();
           }
-          watchNamespaces();
-        },
-        error: (jqXHR, textStatus, errorThrown) => {
-          var error = KubernetesAPI.getErrorObject(jqXHR);
-          if (!error) {
-            log.debug("Failed to find root paths: ", textStatus, ": ", errorThrown);
-          } else {
-            log.debug("Failed to find root paths: ", error);
-          }
-          isOpenShift = false;
-          watchNamespaces();
         }
       });
+    }
+  });
+
+  hawtioPluginLoader.registerPreBootstrapTask({
+    name: 'KubernetesApiDiscovery',
+    depends: ['hawtio-oauth'],
+    task: (next) => {
+      isOpenShift = false;
+
+      var userProfile = HawtioOAuth.getUserProfile();
+      log.debug("User profile: ", userProfile);
+      if (userProfile && userProfile.provider === "hawtio-google-oauth") {
+        log.debug("Possibly running on GCE");
+        // api master is on GCE
+        $.ajax({
+          url: UrlHelpers.join(masterApiUrl(), 'api', 'v1', 'namespaces'),
+          complete: (jqXHR, textStatus) => {
+            if (textStatus === "success") {
+              log.debug("jqXHR: ", jqXHR);
+              userProfile.oldToken = userProfile.token;
+              userProfile.token = undefined;
+              $.ajaxSetup({
+                beforeSend: (request) => {
+
+                }
+              });
+            }
+            next();
+          },
+          beforeSend: (request) => {
+
+          }
+        });
+      } else {
+        log.debug("Not running on GCE");
+        // double-check if we're on vanilla k8s or openshift
+        var rootUri = new URI(masterApiUrl()).path("/oapi").query("").toString();
+        log.debug("Checking for an openshift backend");
+        HawtioOAuth.authenticatedHttpRequest({
+          url: rootUri,
+          success: (data) => {
+            if (data) {
+              isOpenShift = true;
+            }
+            next();
+          },
+          error: (jqXHR, textStatus, errorThrown) => {
+            var error = KubernetesAPI.getErrorObject(jqXHR);
+            if (!error) {
+              log.debug("Failed to find root paths: ", textStatus, ": ", errorThrown);
+            } else {
+              log.debug("Failed to find root paths: ", error);
+            }
+            isOpenShift = false;
+            next();
+          }
+        });
+      }
     }
   });
 
@@ -139,7 +171,7 @@ module Kubernetes {
   self.getNamespace = () => namespaceWatch.selected;
 
   self.getTypes = () => {
-    return _.filter(k8sTypes.concat([WatchTypes.NAMESPACES]).concat(osTypes), (kind:string) => {
+    var filter = (kind:string) => {
       // filter out stuff we don't care about yet
       switch(kind) {
         case KubernetesAPI.WatchTypes.OAUTH_CLIENTS:
@@ -152,7 +184,12 @@ module Kubernetes {
         default:
           return true;
       }
-    });
+    }
+    var answer = k8sTypes.concat([WatchTypes.NAMESPACES]);
+    if (isOpenShift) {
+      answer = answer.concat(osTypes);
+    }
+    return _.filter(answer, filter);
   }
 
   self.getObjects = (kind: string) => {
