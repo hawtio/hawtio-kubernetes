@@ -12,21 +12,21 @@ module Developer {
 */
   function developBreadcrumb() {
     return {
-      href: "/workspaces",
+      href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces"),
       label: "Develop",
       title: "View all the developer workspaces"
     };
   }
   function operateBreadcrumb() {
     return {
-      href: "/namespaces",
+      href: UrlHelpers.join(HawtioCore.documentBase(), "/namespaces"),
       label: "Manage",
       title: "Manage the namespaces and resources inside them"
     };
   }
 
   export function workspaceLink() {
-    return UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace());
+    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace());
   }
 
   export function projectLink(projectId) {
@@ -74,7 +74,7 @@ module Developer {
     if (workspaceName) {
       answer.push(
         {
-          href: "/workspaces/" + workspaceName,
+          href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces/", workspaceName),
           label: workspaceName,
           title: "View the workspace: " + workspaceName
         }
@@ -87,11 +87,11 @@ module Developer {
 
   export function createEnvironmentBreadcrumbs($scope, $location, $routeParams) {
     var ns = Kubernetes.currentKubernetesNamespace();
-    var namespacesLink = "/kubernetes/namespace";
+    var namespacesLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace");
     var workspaceName = $routeParams.workspace;
     var project = $routeParams.project;
     if (workspaceName && project) {
-      var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", project);
+      var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", project);
       $scope.$projectLink = projectLink;
       $scope.$projectNamespaceLink = UrlHelpers.join(projectLink, "namespace", ns);
       namespacesLink = UrlHelpers.join(projectLink, "namespace");
@@ -147,7 +147,7 @@ module Developer {
       if (projectName) {
         answer.push(
           {
-            href: UrlHelpers.join("/workspaces", workspaceName, "projects"),
+            href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects"),
             label: "Projects",
             title: "View all the projects"
           }
@@ -155,7 +155,7 @@ module Developer {
 
         answer.push(
           {
-            href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
+            href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName),
             label: projectName,
             title: "View the project: " + projectName
           }
@@ -185,23 +185,23 @@ module Developer {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     return activateCurrent([
       {
-        href: UrlHelpers.join("/workspaces", workspaceName),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
         label: "Projects",
         title: "View the projects for this workspace"
       },
       {
         isValid: () => jenkinsLink(),
-        href: UrlHelpers.join("/workspaces", workspaceName, "jenkinsJob"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "jenkinsJob"),
         label: "Builds",
         title: "View the projects for this workspace"
       },
       {
-        href: UrlHelpers.join("/kubernetes/namespace", workspaceName, "apps"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
         title: "View the runtime environment for this workspace"
       },
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "detail"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "detail"),
         label: "Detail",
         title: "View the workspace detail"
       }
@@ -210,12 +210,12 @@ module Developer {
 
   function createBuildsLink(workspaceName, projectName, jenkinsJobId) {
     workspaceName = workspaceName || Kubernetes.currentKubernetesNamespace();
-    return UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId);
+    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId);
   }
 
   export function createProjectSubNavBars(projectName, jenkinsJobId = null, $scope = null) {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
-    var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName);
+    var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName);
     var buildsLink = UrlHelpers.join(projectLink, "builds");
     if (!jenkinsJobId) {
       jenkinsJobId = projectName;
@@ -240,7 +240,7 @@ module Developer {
 
     var answer = [
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "environments"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
         //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
         label: "Overview",
         title: "View the overview of this project, its actiity, environments and pipelines"
@@ -267,7 +267,7 @@ module Developer {
       },
       {
         isValid: () => isJenkinsBuild(),
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId, "metrics"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId, "metrics"),
         label: "Metrics",
         title: "View the metrics for this project"
       },
@@ -279,7 +279,7 @@ module Developer {
       },
 */
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
         label: "Settings",
         title: "View the project configuration"
       }
@@ -309,13 +309,13 @@ module Developer {
       return [];
     }
     var workspaceName = Kubernetes.currentKubernetesNamespace();
-    var projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectName);
+    var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName);
     if (!jenkinsJobId) {
       jenkinsJobId = projectName;
     }
     var answer = [
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
         label: "Core",
         title: "View the core project configuration"
       },
@@ -339,7 +339,7 @@ module Developer {
     if (!workspaceName) {
       workspaceName = Kubernetes.currentKubernetesNamespace();
     }
-    return UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "forge/command/devops-edit");
+    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "forge/command/devops-edit");
   }
 
   export var customProjectSubTabFactories = [];
@@ -379,9 +379,9 @@ module Developer {
     var ns = Kubernetes.currentKubernetesNamespace();
     var workspaceName = $routeParams.workspace;
     var project = $routeParams.project;
-    var projectLink = "/kubernetes";
+    var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes");
     if (workspaceName && project) {
-      projectLink = UrlHelpers.join("/workspaces", workspaceName, "projects", project);
+      projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", project);
     }
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([
@@ -406,7 +406,7 @@ module Developer {
         title: "View the pods for this workspace"
       },
       {
-        href: UrlHelpers.join("/kubernetes/hosts"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/hosts"),
         label: "Nodes",
         title: "View the nodes for this workspace"
       },
