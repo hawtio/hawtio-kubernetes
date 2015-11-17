@@ -61,9 +61,9 @@
 </script>
 <script type="text/ng-template" id="portalAddress.html">
   <div class="ngCellText">
-    <div ng-repeat="port in row.entity.$ports">
+    <div ng-repeat="port in row.entity.$ports track by $index">
       <a target="_blank" href="{{row.entity.$connectUrl}}"
-         ng-show="row.entity.$connectUrl && row.entity.$podCounters.valid"
+         ng-show="row.entity.$connectUrl && (row.entity.$podCounters.valid || row.entity.$podCounters.ready)"
          title="Protocol {{row.entity.spec.protocol}}">
         {{row.entity.$host}}
       </a>
