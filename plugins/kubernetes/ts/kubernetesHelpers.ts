@@ -192,7 +192,7 @@ module Kubernetes {
 
     var successInternal = (data) => {
       log.debug(action, data);
-      if (!isUpdate) {
+      if (!isUpdate && KubernetesModel[kind]) {
         KubernetesModel[kind].push(data);
       }
       if (success) {
