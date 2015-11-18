@@ -127,6 +127,7 @@ module Kubernetes {
       case KubernetesAPI.WatchTypes.OAUTH_CLIENTS:
       case KubernetesAPI.WatchTypes.NODES:
       case KubernetesAPI.WatchTypes.PERSISTENT_VOLUMES:
+      case KubernetesAPI.WatchTypes.PERSISTENT_VOLUME_CLAIMS:
       case KubernetesAPI.WatchTypes.PROJECTS:
         return false;
 
@@ -139,6 +140,9 @@ module Kubernetes {
     if (namespaceWatch.selected) {
       log.debug("Stopping current watches");
       _.forOwn(namespaceWatch.watches, (watch, key) => {
+        if (!watch.namespace) {
+          return;
+        }
         log.debug("Disconnecting watch: ", key);
         watch.disconnect();
       });
@@ -153,15 +157,17 @@ module Kubernetes {
         if (kind === KubernetesAPI.WatchTypes.NAMESPACES) {
           return;
         }
-        var watch = <any> KubernetesAPI.watch({
+        if (!namespaceWatch.watches[kind]) {
+          var watch = <any> KubernetesAPI.watch({
           kind: kind,
           namespace: namespaced(kind) ? namespace : undefined,
           success: (objects) => {
             watch.objects = objects;
             debouncedUpdate();
           }
-        });
-        namespaceWatch.watches[kind] = watch;
+          });
+          namespaceWatch.watches[kind] = watch;
+        }
       });
     }
   };
