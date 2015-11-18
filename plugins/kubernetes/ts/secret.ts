@@ -28,9 +28,34 @@ module Kubernetes {
           updateData();
         });
 
-        $scope.checkFieldExists = (key) => {
-          return $scope.entity.properties[key];
-        }
+        $scope.checkFieldUnique = (key) => {
+          var answer = $scope.entity.properties[key] ? false : true;
+          log.info("invoked checkFieldUnique(" + key + ") and got answer: " + answer);
+          return answer;
+        };
+
+        $scope.addFieldDialog = {
+          controller: null,
+          newReplicas: 0,
+          dialog: new UI.Dialog(),
+          onOk: () => {
+            $scope.addFieldDialog.dialog.close();
+            $scope.addDataField();
+          },
+          open: (controller) => {
+            var addFieldDialog = $scope.addFieldDialog;
+            addFieldDialog.dialog.open();
+
+            $timeout(() => {
+              $('#newDataName').focus();
+            }, 50);
+          },
+          close: () => {
+            $scope.addFieldDialog.dialog.close();
+          }
+        };
+
+
 
         $scope.entityChanged = () => {
           $scope.changed = true;
