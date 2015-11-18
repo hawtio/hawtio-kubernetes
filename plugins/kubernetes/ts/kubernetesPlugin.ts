@@ -7,7 +7,7 @@ declare var KeycloakConfig:any;
 
 module Kubernetes {
 
-  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'restmod', 'ui.codemirror', 'kubernetesUI']);
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'ui.codemirror', 'ui.validate','kubernetesUI']);
   export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
@@ -38,6 +38,9 @@ module Kubernetes {
         .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers/:id'), route('replicationController.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerCreate'), route('replicationControllerCreate.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerEdit/:id'), route('replicationControllerEdit.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/secrets'), route('secrets.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/secrets/:id'), route('secret.html', false))
+        .when(UrlHelpers.join(context, '/namespace/:namespace/secretCreate'), route('secret.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/services'), route('services.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/services/:id'), route('service.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/serviceCreate'), route('serviceCreate.html', false))

@@ -406,6 +406,11 @@ module Developer {
         title: "View the pods for this workspace"
       },
       {
+        href: UrlHelpers.join(namespacesLink, ns, "secrets"),
+        label: "Secrets",
+        title: "View the secrets for this workspace"
+      },
+      {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/hosts"),
         label: "Nodes",
         title: "View the nodes for this workspace"
@@ -423,6 +428,17 @@ module Developer {
     ]);
   }
 
+
+  export function namespaceLink($scope, $routeParams, path = null) {
+    var ns = Kubernetes.currentKubernetesNamespace();
+    var workspaceName = $routeParams.workspace;
+    var project = $routeParams.project;
+    var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes");
+    if (workspaceName && project) {
+      projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", project);
+    }
+    return UrlHelpers.join(projectLink, "namespace", ns, path);
+  }
 
   /**
    * Removes the URL query string if its inside the given text

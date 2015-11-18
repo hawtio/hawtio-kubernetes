@@ -36,6 +36,7 @@
 /// <reference path="d.ts/kubernetes/ts/utilHelpers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/hosts.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/imageRepositories.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/kubernetesNavigation.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/schema.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesSchema.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesServices.d.ts"/>
@@ -49,6 +50,8 @@
 /// <reference path="d.ts/kubernetes/ts/replicationController.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationControllerEdit.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationControllers.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/secret.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/secrets.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/service.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/serviceEdit.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/serviceRegistry.d.ts"/>

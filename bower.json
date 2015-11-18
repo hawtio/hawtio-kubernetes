@@ -21,8 +21,8 @@
   "dependencies": {
     "angular-nvd3": "~1.0.2",
     "angular-resource": "~1.4.7",
-    "angular-restmod": "~1.1.8",
     "angular-ui-codemirror": "~0.3.0",
+    "angular-ui-validate": "~1.2.1",
     "angularjs-scroll-glue": "~0.0.1",
     "hawtio-core": "~2.0.16",
     "hawtio-forms": "~2.0.15",
