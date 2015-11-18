@@ -137,16 +137,22 @@ module Kubernetes {
   }
 
   self.setNamespace = (namespace: string) => {
+    if (namespace === namespaceWatch.selected) {
+      return;
+    }
     if (namespaceWatch.selected) {
       log.debug("Stopping current watches");
       _.forOwn(namespaceWatch.watches, (watch, key) => {
-        if (!watch.namespace) {
+        if (!namespaced(key)) {
           return;
         }
         log.debug("Disconnecting watch: ", key);
         watch.disconnect();
       });
       _.forEach(_.keys(namespaceWatch.watches), (key) => {
+        if (!namespaced(key)) {
+          return;
+        }
         log.debug("Deleting kind: ", key);
         delete namespaceWatch.watches[key];
       });
@@ -158,6 +164,7 @@ module Kubernetes {
           return;
         }
         if (!namespaceWatch.watches[kind]) {
+          log.debug("Creating watch for kind: ", kind);
           var watch = <any> KubernetesAPI.watch({
           kind: kind,
           namespace: namespaced(kind) ? namespace : undefined,

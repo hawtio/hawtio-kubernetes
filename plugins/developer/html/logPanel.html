@@ -1,0 +1,7 @@
+<div class="log-panel" ng-controller="Developer.JenkinsLogController" scroll-glue>
+  <div class="log-panel-inner">
+    <p ng-repeat="log in log.logs track by $index" ng-bind-html="log | asTrustedHtml"></p>
+  </div>
+</div>
+
+

@@ -52,11 +52,13 @@ module Developer {
           // lets allow the parent scope to be used too for when this is used as a panel
           return $routeParams["job"] || ($scope.selectedBuild || {}).$jobId;
         }
+        $scope.getJobId = getJobId;
 
         function getBuildId() {
           // lets allow the parent scope to be used too for when this is used as a panel
           return $routeParams["build"] || ($scope.selectedBuild || {}).id;
         }
+        $scope.getBuildId = getBuildId;
 
         function updateJenkinsLink() {
           var jenkinsUrl = jenkinsLink();

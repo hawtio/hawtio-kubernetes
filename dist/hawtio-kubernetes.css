@@ -351,6 +351,8 @@ img.icon-selected-app {
 
 .pipeline-build-block {
     background-color: rgb(238, 238, 238);
+    display: inline-block;
+    width: 100%;
 }
 
 .pipeline-build {
@@ -381,6 +383,19 @@ img.icon-selected-app {
     margin-left: 20px;
     margin-right: 20px;
     color: black;
+}
+
+.widget-body > .pipeline-panel,
+.widget-body > .pipeline-panel > *,
+.widget-body > .pipeline-panel > * > *,
+.widget-body > .pipeline-panel > * > *  > *,
+.widget-body > .pipeline-panel > * > *  > * > * {
+  height: 100%;
+  vertical-align: middle;
+}
+
+.pipeline-block {
+  width: 100%;
 }
 
 .build-fail {
@@ -556,9 +571,10 @@ img.icon-selected-app {
 
 .log-panel {
   position: static;
-  height: 200px;
+  height: 100%;
+  width: 100%;
   overflow: auto;
-  border: 1px solid #d4d4d4;
+  border: none;
   padding: 3px;
 }
 

@@ -1,0 +1,17 @@
+<div class="pipeline-panel" ng-controller="Developer.PipelinesController">
+  <div ng-hide="model.fetched">
+    <div class="align-center">
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+  <div ng-show="model.fetched">
+    <div ng-hide="model.job.builds.length" class="align-center">
+      <p class="alert alert-info">There are no pipelines for this job.</p>
+    </div>
+    <div ng-show="model.job.builds.length">
+      <div class="pipeline-build-block" ng-repeat="build in model.job.builds | filter:model.filterText track by $index">
+        <div pipeline-view></div>
+      </div>
+    </div>
+  </div>
+</div>
