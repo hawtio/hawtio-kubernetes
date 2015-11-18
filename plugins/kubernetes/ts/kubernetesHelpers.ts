@@ -1647,4 +1647,16 @@ module Kubernetes {
       }
   }
 
+  export function createKubernetesClient(kind, ns = null) {
+    var K8SClientFactory = inject("K8SClientFactory");
+    if (!K8SClientFactory) {
+      log.warn("Could not find injected K8SClientFactory!");
+      return null;
+    }
+    if (!ns) {
+      ns = Kubernetes.currentKubernetesNamespace();
+    }
+    return K8SClientFactory.create(kind, ns);
+  }
+
 }

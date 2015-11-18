@@ -16,7 +16,10 @@ module Kubernetes {
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         selectSubNavBar($scope, "Secrets", $scope.id ? "Edit Secret: " + $scope.id : "Create Secret");
 
-        var kubeClient = $scope.client = K8SClientFactory.create("secrets", Kubernetes.currentKubernetesNamespace());
+        var kubeClient = createKubernetesClient("secrets");
+
+        $scope.sshKeys = ["ssh-key", "ssh-key.pub"];
+        $scope.httpsKeys = ["username", "password"];
 
         var secretLabels = {
           "ssh-key": "SSH private key",
@@ -47,6 +50,16 @@ module Kubernetes {
 
         $scope.checkFieldUnique = (key) => {
           var answer = $scope.entity.properties[key] ? false : true;
+          return answer;
+        };
+
+        $scope.hasAllKeys = (keys) => {
+          var answer = keys && keys.length
+          angular.forEach(keys, (key) => {
+            if (!$scope.entity.properties[key]) {
+              answer = false;
+            }
+          });
           return answer;
         };
 

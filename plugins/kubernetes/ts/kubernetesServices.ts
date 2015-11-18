@@ -46,8 +46,4 @@ module Kubernetes {
     return KubernetesModel['servicesResource'];
   }]);
 
-  _module.factory('KubernetesBuilds', ['restmod', (restmod) => {
-    return restmod.model(buildConfigsRestURL());
-  }]);
-
 }

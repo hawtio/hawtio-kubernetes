@@ -16,11 +16,13 @@ module Kubernetes {
 
     $scope.$createSecretLink = Developer.namespaceLink($scope, $routeParams, "secretCreate");
 
+    var kubeClient = createKubernetesClient("secrets");
+
     $scope.tableConfig = {
       data: 'model.secrets',
-      showSelectionCheckbox: false,
+      showSelectionCheckbox: true,
       enableRowClickSelection: false,
-      multiSelect: false,
+      multiSelect: true,
       selectedItems: [],
       filterOptions: {
         filterText: $location.search()["q"] || ''
@@ -39,6 +41,35 @@ module Kubernetes {
         },
       ]
     };
+
+    $scope.deletePrompt = (selected) => {
+       UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
+         collection: selected,
+         index: 'metadata.name',
+         onClose: (result:boolean) => {
+           if (result) {
+             function deleteSelected(selected, next) {
+               if (next) {
+                 kubeClient.delete(next, () => {
+                   deleteSelected(selected, selected.shift());
+                 });
+               } else {
+                 // TODO
+                 // updateData();
+               }
+             }
+
+             deleteSelected(selected, selected.shift());
+           }
+         },
+         title: 'Delete Secrets',
+         action: 'The following Secrets will be deleted:',
+         okText: 'Delete',
+         okClass: 'btn-danger',
+         custom: "This operation is permanent once completed!",
+         customClass: "alert alert-warning"
+       }).open();
+     };
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
   }]);
