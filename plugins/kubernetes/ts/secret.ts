@@ -18,6 +18,19 @@ module Kubernetes {
 
         var kubeClient = $scope.client = K8SClientFactory.create("secrets", Kubernetes.currentKubernetesNamespace());
 
+        var secretLabels = {
+          "ssh-key": "SSH private key",
+          "ssh-key.pub": "SSH public key",
+          "ca.crt": "CA Certificate",
+          ".dockercfg": "Docker config"
+        };
+        var secretTooltips = {
+          "ssh-key": "SSH private key text contents",
+          "ca.crt": "Certificate Authority (CA) Certificate",
+          ".dockercfg": "Docker configuration token"
+        };
+
+
         $scope.$on('kubernetesModelUpdated', function () {
           if ($scope.id && !$scope.secret) {
             updateData();
@@ -28,9 +41,12 @@ module Kubernetes {
           updateData();
         });
 
+        $scope.propertyKeys = () => {
+          return _.keys(secretLabels);
+        };
+
         $scope.checkFieldUnique = (key) => {
           var answer = $scope.entity.properties[key] ? false : true;
-          log.info("invoked checkFieldUnique(" + key + ") and got answer: " + answer);
           return answer;
         };
 
@@ -121,18 +137,6 @@ module Kubernetes {
                 Core.notification('error', "Failed to secret " + name + "\n" + err);
               });
           }
-        };
-
-        var secretLabels = {
-          "ssh-key": "SSH private key",
-          "ssh-key.pub": "SSH public key",
-          "ca.crt": "CA Certificate",
-          ".dockercfg": "Docker config"
-        };
-        var secretTooltips = {
-          "ssh-key": "SSH private key text contents",
-          "ca.crt": "Certificate Authority (CA) Certificate",
-          ".dockercfg": "Docker configuration token"
         };
 
         updateData();
