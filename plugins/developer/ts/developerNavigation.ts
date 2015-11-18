@@ -320,6 +320,11 @@ module Developer {
         title: "View the core project configuration"
       },
       {
+        href: projectWorkspaceLink(workspaceName, projectName, "forge/secrets"),
+        label: "Secrets",
+        title: "View or change the secrets used to edit project source code in the source control system"
+      },
+      {
         href: editPipelineLink(workspaceName, projectName),
         label: "Pipeline",
         title: "View the DevOps and pipeline configuration"
@@ -333,13 +338,17 @@ module Developer {
   }
 
   export function editPipelineLink(workspaceName, projectName) {
+    return projectWorkspaceLink(workspaceName, projectName, "forge/command/devops-edit");
+  }
+
+  export function projectWorkspaceLink(workspaceName, projectName, path) {
     if (!projectName) {
       return "";
     }
     if (!workspaceName) {
       workspaceName = Kubernetes.currentKubernetesNamespace();
     }
-    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "forge/command/devops-edit");
+    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, path);
   }
 
   export var customProjectSubTabFactories = [];
