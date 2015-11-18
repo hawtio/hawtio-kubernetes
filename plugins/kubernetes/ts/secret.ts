@@ -49,9 +49,19 @@ module Kubernetes {
           return _.keys(secretLabels);
         };
 
-        $scope.checkFieldUnique = (key) => {
-          var answer = $scope.entity.properties[key] ? false : true;
+        $scope.checkNameUnique = (value) => {
+          var answer = true;
+          angular.forEach($scope.model.secrets, (secret) => {
+            var name = getName(secret);
+            if (value === name) {
+              answer = false;
+            }
+          });
           return answer;
+        };
+
+        $scope.checkFieldUnique = (key) => {
+          return $scope.entity.properties[key] ? false : true;
         };
 
         $scope.hasAllKeys = (keys) => {
@@ -143,8 +153,8 @@ module Kubernetes {
             var data = {};
             angular.forEach(entity.properties, (property) => {
               var key = property.key;
-              var value = property.value;
-              if (key && value) {
+              var value = property.value || "";
+              if (key) {
                 data[key] = value.encodeBase64();
               }
             });
