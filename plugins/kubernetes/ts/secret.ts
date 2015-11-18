@@ -25,7 +25,8 @@ module Kubernetes {
           "ssh-key": "SSH private key",
           "ssh-key.pub": "SSH public key",
           "ca.crt": "CA Certificate",
-          ".dockercfg": "Docker config"
+          ".dockercfg": "Docker config",
+          "username": "User name"
         };
         var secretTooltips = {
           "ssh-key": "SSH private key text contents",
@@ -54,7 +55,7 @@ module Kubernetes {
         };
 
         $scope.hasAllKeys = (keys) => {
-          var answer = keys && keys.length
+          var answer = keys && keys.length;
           angular.forEach(keys, (key) => {
             if (!$scope.entity.properties[key]) {
               answer = false;
@@ -90,14 +91,25 @@ module Kubernetes {
           $scope.changed = true;
         };
 
+        $scope.addFields = (keys) => {
+          log.info("Adding fields " + keys);
+          angular.forEach(keys, (key) => addField(key));
+          Core.$apply($scope);
+        };
+
+        function addField(key) {
+          var property = createProperty(key, "");
+          $scope.entity.properties[key] = property;
+          $scope.entity.newDataKey = "";
+          $scope.showAddDataFieldForm = false;
+          $scope.entityChanged();
+          log.info("Added key '" + key + "'");
+        }
+
         $scope.addDataField = () => {
           var key = $scope.entity.newDataKey;
           if (key) {
-            var property = createProperty(key, "");
-            $scope.entity.properties[key] = property;
-            $scope.entity.newDataKey = "";
-            $scope.showAddDataFieldForm = false;
-            $scope.entityChanged();
+            addField(key);
             Core.$apply($scope);
           }
         };
@@ -163,12 +175,22 @@ module Kubernetes {
           if (lines > rows) {
             rows = lines;
           }
+          var type = "textarea";
+          if (key === "username") {
+            type = "text";
+            if (!text) {
+              text = "admin";
+            }
+          } else if (key === "password") {
+            type = "password";
+          }
           var property = {
             key: key,
             label: label,
             tooltip: tooltip,
             rows: rows,
-            value: text
+            value: text,
+            type: type
           };
           return property;
         }

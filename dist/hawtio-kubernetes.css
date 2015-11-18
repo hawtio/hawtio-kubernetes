@@ -634,3 +634,8 @@ kubernetes-container-terminal .terminal-actions {
 .modal {
     width: 600px;
 }
+
+.btn.btn-padding {
+    margin-left: 5px;
+    margin-right: 5px;
+}
