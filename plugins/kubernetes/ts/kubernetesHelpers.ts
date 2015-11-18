@@ -1653,7 +1653,9 @@ module Kubernetes {
       log.warn("Could not find injected K8SClientFactory!");
       return null;
     }
-    if (!ns) {
+    if (kind === "projects") {
+      ns = null;
+    } else if (!ns) {
       ns = Kubernetes.currentKubernetesNamespace();
     }
     return K8SClientFactory.create(kind, ns);
