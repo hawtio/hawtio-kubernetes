@@ -189,7 +189,7 @@ module Kubernetes {
           if (key === "username") {
             type = "text";
             if (!text) {
-              text = "admin";
+              text = currentUserName();
             }
           } else if (key === "password") {
             type = "password";

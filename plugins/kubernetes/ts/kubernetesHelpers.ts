@@ -1659,4 +1659,13 @@ module Kubernetes {
     return K8SClientFactory.create(kind, ns);
   }
 
+
+  export function currentUserName() {
+    var userDetails = HawtioOAuth.getUserProfile();
+    var answer = null;
+    if (userDetails) {
+      answer = getName(userDetails);
+    }
+    return answer || "admin";
+  }
 }

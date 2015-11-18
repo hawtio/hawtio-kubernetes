@@ -186,4 +186,5 @@ declare module Kubernetes {
     function toRawJson(item: any): string;
     function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): void;
     function createKubernetesClient(kind: any, ns?: any): any;
+    function currentUserName(): any;
 }
