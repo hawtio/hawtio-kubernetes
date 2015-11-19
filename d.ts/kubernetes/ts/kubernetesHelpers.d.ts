@@ -24,6 +24,8 @@ declare module Kubernetes {
     var jenkinsServiceName: string;
     var apimanServiceName: string;
     var isOpenShift: boolean;
+    var sshSecretDataKeys: string[];
+    var httpsSecretDataKeys: string[];
     function kubernetesNamespacePath(): string;
     function apiPrefix(): string;
     function osApiPrefix(): string;
