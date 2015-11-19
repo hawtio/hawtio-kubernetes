@@ -13,6 +13,7 @@ declare module Developer {
     function createProjectSettingsSubNavBars(projectName: any, jenkinsJobId?: any): any;
     function editPipelineLinkScope($scope: any): string;
     function editPipelineLink(workspaceName: any, projectName: any): string;
+    function projectSecretsLink(workspaceName: any, projectName: any): string;
     function projectWorkspaceLink(workspaceName: any, projectName: any, path: any): string;
     var customProjectSubTabFactories: any[];
     function createJenkinsBreadcrumbs(projectName: any, jobId: any, buildId: any): any;

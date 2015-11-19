@@ -238,7 +238,7 @@ module Kubernetes {
           $scope.buildConfigClient.put(entity, (obj) => {
             log.info("build config created!");
 
-            var link = Developer.editPipelineLink($scope.namespace, getName(entity));
+            var link = Developer.projectSecretsLink($scope.namespace, getName(entity));
             if (link) {
               log.info("Navigating to: "+ link);
               $location.path(link);

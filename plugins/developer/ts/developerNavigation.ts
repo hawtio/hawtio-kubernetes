@@ -320,7 +320,7 @@ module Developer {
         title: "View the core project configuration"
       },
       {
-        href: projectWorkspaceLink(workspaceName, projectName, "forge/secrets"),
+        href: projectSecretsLink(workspaceName, projectName),
         label: "Secrets",
         title: "View or change the secrets used to edit project source code in the source control system"
       },
@@ -339,6 +339,10 @@ module Developer {
 
   export function editPipelineLink(workspaceName, projectName) {
     return projectWorkspaceLink(workspaceName, projectName, "forge/command/devops-edit");
+  }
+
+  export function projectSecretsLink(workspaceName, projectName) {
+    return projectWorkspaceLink(workspaceName, projectName, "forge/secrets");
   }
 
   export function projectWorkspaceLink(workspaceName, projectName, path) {
