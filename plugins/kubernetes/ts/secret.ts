@@ -18,6 +18,9 @@ module Kubernetes {
 
         var kubeClient = createKubernetesClient("secrets");
 
+        var onSaveUrl = $location.search()["savedUrl"];
+        var createKind = $location.search()["kind"];
+
         $scope.sshKeys = ["ssh-key", "ssh-key.pub"];
         $scope.httpsKeys = ["username", "password"];
 
@@ -165,8 +168,14 @@ module Kubernetes {
 
             kubeClient.put($scope.secret,
               (data) => {
-                var secretsLink = Developer.namespaceLink($scope, $routeParams, "secrets");
+                var secretsLink = onSaveUrl || Developer.namespaceLink($scope, $routeParams, "secrets");
+                var params = {};
+                if (onSaveUrl) {
+                  params['secret'] = name;
+                }
                 $location.path(secretsLink);
+                $location.search(params);
+                log.info("navigating to URL: " + secretsLink + " with params " + angular.toJson($location.search()));
               },
               (err) => {
                 Core.notification('error', "Failed to secret " + name + "\n" + err);
@@ -230,6 +239,11 @@ module Kubernetes {
               }
             });
           } else {
+            if (createKind === "ssh") {
+              $scope.addFields($scope.sshKeys);
+            } else if (createKind === "https") {
+              $scope.addFields($scope.httpsKeys);
+            }
             $scope.fetched = true;
             Core.$apply($scope);
           }
