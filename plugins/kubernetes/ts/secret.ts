@@ -21,8 +21,8 @@ module Kubernetes {
         var onSaveUrl = $location.search()["savedUrl"];
         var createKind = $location.search()["kind"];
 
-        $scope.sshKeys = ["ssh-key", "ssh-key.pub"];
-        $scope.httpsKeys = ["username", "password"];
+        $scope.sshKeys = sshSecretDataKeys;
+        $scope.httpsKeys = httpsSecretDataKeys;
 
         var secretLabels = {
           "ssh-key": "SSH private key",

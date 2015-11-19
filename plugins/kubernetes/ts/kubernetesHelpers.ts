@@ -35,6 +35,10 @@ module Kubernetes {
   export var apimanServiceName = 'apiman';
   export var isOpenShift = true;
 
+  export var sshSecretDataKeys = ["ssh-key", "ssh-key.pub"];
+  export var httpsSecretDataKeys = ["username", "password"];
+
+
   export function kubernetesNamespacePath() {
     var ns = currentKubernetesNamespace();
     if (ns) {
