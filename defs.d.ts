@@ -9,6 +9,8 @@
 /// <reference path="d.ts/developer/ts/home.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsJob.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsJobs.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/kubernetesPlugin.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/kubernetesModel.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsLog.d.ts"/>
 /// <reference path="d.ts/developer/ts/jenkinsMetrics.d.ts"/>
 /// <reference path="d.ts/developer/ts/navbar.d.ts"/>
@@ -19,7 +21,6 @@
 /// <reference path="d.ts/developer/ts/projects.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspace.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspaces.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/kubernetesPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/breadcrumbs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/build.d.ts"/>
@@ -32,7 +33,6 @@
 /// <reference path="d.ts/kubernetes/ts/deploymentConfig.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/deploymentConfigs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/events.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/kubernetesModel.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/host.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/utilHelpers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/hosts.d.ts"/>
