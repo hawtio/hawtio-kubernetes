@@ -14,7 +14,7 @@ declare module Developer {
     function editPipelineLinkScope($scope: any): string;
     function editPipelineLink(workspaceName: any, projectName: any): string;
     function projectSecretsLink(workspaceName: any, projectName: any): string;
-    function projectWorkspaceLink(workspaceName: any, projectName: any, path: any): string;
+    function projectWorkspaceLink(workspaceName: any, projectName: any, path: any, ignoreBlankProject?: boolean): string;
     var customProjectSubTabFactories: any[];
     function createJenkinsBreadcrumbs(projectName: any, jobId: any, buildId: any): any;
     function createJenkinsSubNavBars(projectName: any, jenkinsJobId: any, buildId: any, extraOption?: any): any;

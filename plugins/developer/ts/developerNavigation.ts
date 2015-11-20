@@ -342,11 +342,11 @@ module Developer {
   }
 
   export function projectSecretsLink(workspaceName, projectName) {
-    return projectWorkspaceLink(workspaceName, projectName, "forge/secrets");
+    return projectWorkspaceLink(workspaceName, projectName, "forge/secrets", false);
   }
 
-  export function projectWorkspaceLink(workspaceName, projectName, path) {
-    if (!projectName) {
+  export function projectWorkspaceLink(workspaceName, projectName, path, ignoreBlankProject = true) {
+    if (ignoreBlankProject && !projectName) {
       return "";
     }
     if (!workspaceName) {
