@@ -337,6 +337,13 @@ module Developer {
     return editPipelineLink($scope.namespace, $scope.projectId || $scope.projectName || $scope.project);
   }
 
+  export function createProjectLink(workspaceName = null) {
+    if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
+    }
+    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "/forge/createProject");
+  }
+
   export function editPipelineLink(workspaceName, projectName) {
     return projectWorkspaceLink(workspaceName, projectName, "forge/command/devops-edit");
   }
