@@ -33,7 +33,8 @@ module Kubernetes {
 
         var secretNameElement: HawtioForms.FormElement = {
           "type": "string",
-          "enum": getSecrets
+          "enum": getSecrets,
+          required: true
         };
 
         var secretSchema: HawtioForms.FormConfiguration = <any> {
@@ -46,9 +47,10 @@ module Kubernetes {
         SchemaRegistry.addSchema(secretSchemaType, secretSchema);
 
         // lets switch to the new secrets types:
+        var sourceSecretProperty = Core.pathGet(buildSource, ["properties", "sourceSecret"]);
         angular.forEach([
           Core.pathGet(customStrategy, ["properties", "pullSecret"]),
-          Core.pathGet(buildSource, ["properties", "sourceSecret"]),
+          sourceSecretProperty,
         ], (schemaType) => {
           if (schemaType) {
             schemaType["type"] = secretSchemaType;
@@ -57,8 +59,13 @@ module Kubernetes {
           }
         });
 
-        schemaSetRequired(customStrategy, 'pullSecret');
-
+        // lets try make the buildSource's sourceSecret mandatory
+        //schemaSetRequired(customStrategy, 'pullSecret');
+        schemaSetRequired(buildSource, 'sourceSecret');
+        if (sourceSecretProperty) {
+          Core.pathSet(sourceSecretProperty, ['properties', 'required'], true);
+          Core.pathSet(sourceSecretProperty, ['properties', 'input-attributes', 'required'], true);
+        }
 
 
         $scope.customStrategy = customStrategy;
@@ -338,6 +345,31 @@ module Kubernetes {
             }
           });
           $scope.secrets = _.sortBy(array, "label");
+
+          var specSourceSecretNamePath = ['spec', 'source', 'sourceSecret', 'name'];
+          if (!Core.pathGet($scope.entity, specSourceSecretNamePath)) {
+            var defaultSecretName = findDefaultImportSecretName(secrets);
+            Core.pathSet($scope.entity, specSourceSecretNamePath, defaultSecretName);
+          }
+        }
+
+        function findDefaultImportSecretName(secrets) {
+          var answer = null;
+          angular.forEach(secrets, (secret) => {
+            var name = getName(secret);
+            if (!answer && name && name.startsWith("jenkins-login")) {
+              answer = name;
+            }
+          });
+          if (!answer) {
+            angular.forEach(secrets, (secret) => {
+              var name = getName(secret);
+              if (!answer && name && name.startsWith("jenkins-token")) {
+                answer = name;
+              }
+            });
+          }
+          return answer;
         }
 
         $scope.specConfig = specConfig;
