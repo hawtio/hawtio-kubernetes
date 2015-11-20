@@ -16,6 +16,8 @@ module Developer {
 
         ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
 
+        var kubeClient = Kubernetes.createKubernetesClient("projects");
+
         $scope.developerPerspective = Core.trimLeading($location.url(), "/").startsWith("workspace");
 
         $scope.tableConfig = {
@@ -55,26 +57,50 @@ module Developer {
         $scope.breadcrumbConfig = createWorkspacesBreadcrumbs($scope.developerPerspective);
         $scope.subTabConfig = Developer.createWorkspacesSubNavBars($scope.developerPerspective);
 
-        $scope.$keepPolling = () => Kubernetes.keepPollingModel;
-        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-          var url = Kubernetes.resourcesUriForKind("Projects");
-          $http.get(url).
-            success(function (data, status, headers, config) {
-              if (data) {
-                $scope.model.workspaces = _.sortBy(enrichWorkspaces(data.items), "$name");
-                $scope.model.fetched = true;
-              }
-              Core.$apply($scope);
-              next();
-            }).
-            error(function (data, status, headers, config) {
-              log.warn("Failed to load " + url + " " + data + " " + status);
-              Core.$apply($scope);
-              next();
-            });
+        $scope.$on('kubernetesModelUpdated', function () {
+          updateData();
+          Core.$apply($scope);
         });
 
-        $scope.fetch();
+        updateData();
+
+        $scope.deletePrompt = (selected) => {
+           UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
+             collection: selected,
+             index: 'metadata.name',
+             onClose: (result:boolean) => {
+               if (result) {
+                 function deleteSelected(selected, next) {
+                   if (next) {
+                     kubeClient.delete(next, () => {
+                       deleteSelected(selected, selected.shift());
+                     });
+                   } else {
+                     // TODO
+                     // updateData();
+                   }
+                 }
+
+                 deleteSelected(selected, selected.shift());
+               }
+             },
+             title: 'Delete Namespaces',
+             action: 'The following Namespaces will be deleted:',
+             okText: 'Delete',
+             okClass: 'btn-danger',
+             custom: "This operation is permanent once completed!",
+             customClass: "alert alert-warning"
+           }).open();
+         };
+
+
+        function updateData() {
+          var projects = $scope.model.projects;
+          if (projects) {
+            $scope.model.workspaces = _.sortBy(enrichWorkspaces(projects), "$name");
+            $scope.model.fetched = true;
+          }
+        }
 
       }]);
 }

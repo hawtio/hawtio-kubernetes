@@ -34,13 +34,16 @@
                        placeholder="Filter namespaces..."></hawtio-filter>
       </span>
       <span class="pull-right">&nbsp;</span>
-      <button ng-show="id"
-              class="btn btn-primary pull-right"
-              ng-click="id = undefined"><i class="fa fa-list"></i></button>
+      <button class="btn btn-danger pull-right"
+              title="Deletes the selected workspaces"
+              ng-disabled="!tableConfig.selectedItems.length"
+              ng-click="deletePrompt(tableConfig.selectedItems)">
+        <i class="fa fa-remove"></i> Delete
+      </button>
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-primary pull-right"
          title="Create a new workspace"
-         href="{{baseUri}}/workspaces/create"><i class="fa fa-plus"></i> Create Namespace</a>
+         href="{{baseUri}}/workspaces/create"><i class="fa fa-plus"></i> Create</a>
     </div>
   </div>
   <div class="row">
