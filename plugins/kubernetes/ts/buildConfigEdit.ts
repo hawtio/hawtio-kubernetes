@@ -57,6 +57,9 @@ module Kubernetes {
           }
         });
 
+        schemaSetRequired(customStrategy, 'pullSecret');
+
+
 
         $scope.customStrategy = customStrategy;
         $scope.buildSource = buildSource;

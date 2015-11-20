@@ -51,6 +51,7 @@
 /// <reference path="d.ts/kubernetes/ts/replicationController.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationControllerEdit.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationControllers.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/schemaHelpers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/secret.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/secrets.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/service.d.ts"/>
