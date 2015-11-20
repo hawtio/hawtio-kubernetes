@@ -105,7 +105,6 @@ module Kubernetes {
         };
 
         $scope.addFields = (keys) => {
-          log.info("Adding fields " + keys);
           angular.forEach(keys, (key) => addField(key));
           Core.$apply($scope);
         };
@@ -116,7 +115,6 @@ module Kubernetes {
           $scope.entity.newDataKey = "";
           $scope.showAddDataFieldForm = false;
           $scope.entityChanged();
-          log.info("Added key '" + key + "'");
         }
 
         $scope.addDataField = () => {
