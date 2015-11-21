@@ -352,6 +352,11 @@ module Developer {
     return projectWorkspaceLink(workspaceName, projectName, "forge/secrets", false);
   }
 
+  export function secretsNamespaceLink(workspaceName, projectName, secretsNamespace) {
+    var prefix = projectWorkspaceLink(workspaceName, projectName, "") || "kubernetes";
+    return UrlHelpers.join(prefix, "namespace", secretsNamespace, "secrets");
+  }
+
   export function projectWorkspaceLink(workspaceName, projectName, path, ignoreBlankProject = true) {
     if (ignoreBlankProject && !projectName) {
       return "";

@@ -15,6 +15,7 @@ declare module Developer {
     function createProjectLink(workspaceName?: any): string;
     function editPipelineLink(workspaceName: any, projectName: any): string;
     function projectSecretsLink(workspaceName: any, projectName: any): string;
+    function secretsNamespaceLink(workspaceName: any, projectName: any, secretsNamespace: any): string;
     function projectWorkspaceLink(workspaceName: any, projectName: any, path: any, ignoreBlankProject?: boolean): string;
     var customProjectSubTabFactories: any[];
     function createJenkinsBreadcrumbs(projectName: any, jobId: any, buildId: any): any;
