@@ -178,6 +178,7 @@ declare module Kubernetes {
      * Returns the current kubernetes selected namespace or the default one
      */
     function currentKubernetesNamespace(): any;
+    function setCurrentKubernetesNamespace(ns: any): void;
     /**
      * Configures the json schema
      */
