@@ -446,9 +446,9 @@ module Kubernetes {
     $scope.viewTemplates = () => {
       var returnTo = $location.url();
       $location.path('/kubernetes/templates').search({'returnTo': returnTo});
-    }
+    };
 
-    $scope.namespace = $routeParams.namespace || KubernetesState.selectedNamespace || defaultNamespace;
+    $scope.namespace = $routeParams.namespace || $scope.namespace || KubernetesState.selectedNamespace || defaultNamespace;
     if ($scope.namespace != KubernetesState.selectedNamespace) {
       KubernetesState.selectedNamespace = $scope.namespace;
 
@@ -457,6 +457,8 @@ module Kubernetes {
         $scope.model.fetched = false;
       }
     }
+    Kubernetes.setCurrentKubernetesNamespace($scope.namespace);
+
     $scope.forgeEnabled = isForgeEnabled();
 
     $scope.projectId = $routeParams["project"] || $scope.projectId || $scope.id;
@@ -1571,6 +1573,13 @@ module Kubernetes {
       return KubernetesState.selectedNamespace || defaultNamespace;
     }
     return defaultNamespace;
+  }
+
+  export function setCurrentKubernetesNamespace(ns) {
+    if (ns) {
+      var KubernetesState = inject("KubernetesState") || {};
+      KubernetesState.selectedNamespace = ns;
+    }
   }
 
   /**
