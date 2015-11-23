@@ -183,6 +183,40 @@ module Kubernetes {
         };
         */
 
+        $scope.entity = {
+          "apiVersion": "v1",
+          "kind": "BuildConfig",
+          "metadata": {
+            "name": "",
+            "labels": {
+            }
+          },
+          "spec": {
+            "source": {
+              "type": "Git"
+            },
+            "strategy": {
+                "type": "Custom",
+                "customStrategy": {
+                    "from": {
+                        "kind": "DockerImage",
+                        "name": "fabric8/openshift-s2i-jenkins-trigger"
+                    },
+                    "env": [
+                        {
+                            "name": "BASE_URI",
+                            "value": jenkinsUrl
+                        },
+                        {
+                            "name": "JOB_NAME",
+                            "value": jobName
+                        }
+                    ]
+                }
+            }
+          }
+        };
+
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectSettingsBreadcrumbs($scope.projectId);
         $scope.subTabConfig = Developer.createProjectSettingsSubNavBars($scope.projectId);
@@ -291,39 +325,6 @@ module Kubernetes {
           } else {
             $scope.fetched = true;
 
-            $scope.entity = {
-              "apiVersion": "v1",
-              "kind": "BuildConfig",
-              "metadata": {
-                "name": "",
-                "labels": {
-                }
-              },
-              "spec": {
-                "source": {
-                  "type": "Git"
-                },
-                "strategy": {
-                    "type": "Custom",
-                    "customStrategy": {
-                        "from": {
-                            "kind": "DockerImage",
-                            "name": "fabric8/openshift-s2i-jenkins-trigger"
-                        },
-                        "env": [
-                            {
-                                "name": "BASE_URI",
-                                "value": jenkinsUrl
-                            },
-                            {
-                                "name": "JOB_NAME",
-                                "value": jobName
-                            }
-                        ]
-                    }
-                }
-              }
-            };
             $scope.spec = $scope.entity.spec;
             Core.$apply($scope);
           }
@@ -347,7 +348,7 @@ module Kubernetes {
           $scope.secrets = _.sortBy(array, "label");
 
           var specSourceSecretNamePath = ['spec', 'source', 'sourceSecret', 'name'];
-          if (!Core.pathGet($scope.entity, specSourceSecretNamePath)) {
+          if ($scope.entity && !Core.pathGet($scope.entity, specSourceSecretNamePath)) {
             var defaultSecretName = findDefaultImportSecretName(secrets);
             Core.pathSet($scope.entity, specSourceSecretNamePath, defaultSecretName);
           }
