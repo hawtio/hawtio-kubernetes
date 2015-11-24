@@ -31,7 +31,7 @@ module Kubernetes {
         var secretSchemaRef = "#/definitions/" + secretSchemaType;
         var secretSchemaJavaType = "io.fabric8.console.SecretReference";
 
-        var secretNameElement: HawtioForms.FormElement = {
+        var secretNameElement = <HawtioForms.FormElement> {
           "type": "string",
           "enum": getSecrets,
           required: true
