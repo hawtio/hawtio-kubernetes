@@ -265,7 +265,23 @@ module Kubernetes {
     function applyObjects(objects) {
       _.forEach(objects, (object:any) => {
         log.debug("Object: ", object);
-        updateOrCreateObject(object, KubernetesModel);
+
+        var kind = getKind(object);
+        var name = getName(object);
+        var ns = getNamespace(object);
+
+        if (kind && name) {
+          var pluralKind = kind.toLowerCase() + "s"
+          var kubeClient = Kubernetes.createKubernetesClient(pluralKind, ns);
+          kubeClient.put(object,
+            (data) => {
+              log.info("updated " + kind + " name: " + name + (ns ? " ns: " + ns: ""));
+            },
+            (err) => {
+              log.warn("Failed to update " + kind + " name: " + name + (ns ? " ns: " + ns: "") + " error: " + angular.toJson(err));
+            });
+        }
+        //updateOrCreateObject(object, KubernetesModel);
       });
       goBack();
     }
