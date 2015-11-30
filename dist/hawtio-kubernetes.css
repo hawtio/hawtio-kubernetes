@@ -655,3 +655,13 @@ kubernetes-container-terminal .terminal-actions {
     margin-left: 5px;
     margin-right: 5px;
 }
+
+.k8s-badge-version {
+    background-color: darkblue;
+}
+.k8s-badge-project {
+    background-color: darkblue;
+}
+.k8s-badge-package {
+    background-color: darkred;
+}

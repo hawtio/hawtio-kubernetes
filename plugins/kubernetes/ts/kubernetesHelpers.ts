@@ -1542,9 +1542,9 @@ module Kubernetes {
 
 
   var labelColors = {
-    'version': 'background-blue',
-    'name': 'background-light-green',
-    'container': 'background-light-grey'
+    'version': 'k8s-badge-version',
+    'project': 'k8s-badge-project',
+    'package': 'k8s-badge-package'
   };
 
   export function containerLabelClass(labelType:string) {

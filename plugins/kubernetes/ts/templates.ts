@@ -240,7 +240,7 @@ module Kubernetes {
                   name: name
                 }
               }
-            }
+            };
             routes.push(route);
           }
         });
@@ -271,7 +271,7 @@ module Kubernetes {
         var ns = getNamespace(object);
 
         if (kind && name) {
-          var pluralKind = kind.toLowerCase() + "s"
+          var pluralKind = kind.toLowerCase() + "s";
           var kubeClient = Kubernetes.createKubernetesClient(pluralKind, ns);
           kubeClient.put(object,
             (data) => {
