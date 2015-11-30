@@ -223,6 +223,34 @@ module Kubernetes {
     self.listeners.push(fn);
   }
 
+  var projectsHandle = <any> undefined;
+
+  // kick off the project watcher a bit sooner also
+  hawtioPluginLoader.registerPreBootstrapTask({
+    name: 'ProjectsWatcher',
+    depends: ['KubernetesApiDiscovery'],
+    task: (next) => {
+      if (isOpenShift) {
+        projectsHandle = KubernetesAPI.watch({
+          kind: KubernetesAPI.WatchTypes.PROJECTS,
+          namespace: undefined,
+          success: (objects) => {
+            if (self.listeners && self.listeners.length) {
+              log.debug("got projects: ", objects);
+              _.forEach(self.listeners, (listener:(objects:ObjectMap) => void) => {
+                listener({
+                  projects: objects
+                });
+              });
+            }
+          }
+        });
+      }
+      next();
+    }
+  });
+
+
 _module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (userDetails, $rootScope, $timeout) => {
     return self;
 }]);
