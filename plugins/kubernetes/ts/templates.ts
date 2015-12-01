@@ -263,6 +263,8 @@ module Kubernetes {
     };
 
     function applyObjects(objects) {
+      var projectClient = Kubernetes.createKubernetesClient("projects");
+
       _.forEach(objects, (object:any) => {
         log.debug("Object: ", object);
 
@@ -271,6 +273,25 @@ module Kubernetes {
         var ns = getNamespace(object);
 
         if (kind && name) {
+          if (ns && ns !== currentKubernetesNamespace()) {
+            var project = {
+              apiVersion: Kubernetes.defaultApiVersion,
+              kind: "Project",
+              metadata: {
+                name: ns,
+                labels: {
+                }
+              }
+            };
+            projectClient.put(project,
+              (data) => {
+                log.info("Created namespace: " + ns)
+              },
+              (err) => {
+                log.warn("Failed to create namespace: " + ns + ": " + angular.toJson(err));
+              });
+          }
+
           var pluralKind = kind.toLowerCase() + "s";
           var kubeClient = Kubernetes.createKubernetesClient(pluralKind, ns);
           kubeClient.put(object,
