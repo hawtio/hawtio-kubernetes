@@ -1,6 +1,7 @@
 .nowrap {
   white-space: nowrap;
 }
+
 .kubernetes-overview {
   width: 100%;
   height: 100%;
@@ -33,6 +34,7 @@
   transition: background 0.5s;
   z-index: 1000;
 }
+
 .kubernetes-host-container {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -46,6 +48,7 @@
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
+
 .kubernetes-pod-node {
   display: block;
   margin: 0;
@@ -58,26 +61,32 @@
   box-shadow: none;
   vertical-align: middle;
 }
+
 .css-table {
   display: table;
   width: 100%;
   height: 100%;
 }
+
 .css-table-row {
   display: table-row;
   height: inherit;
 }
+
 .css-table-cell {
   display: table-cell;
   vertical-align: middle;
   height: inherit;
 }
+
 .kubernetes-pod-node i {
   font-size: 24px;
 }
+
 .kubernetes-overview-services {
   width: 200px;
 }
+
 .kubernetes-service-node {
   display: block;
   margin-bottom: 10px;
@@ -86,6 +95,7 @@
   padding: 0;
   line-height: 48px;
 }
+
 .node-header {
   padding-right: 10px;
   white-space: nowrap;
@@ -93,6 +103,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .kubernetes-service-node .node-body {
   display: inline;
   padding-left: 10px;
@@ -100,10 +111,12 @@
   font-size: 20px;
   float: left;
 }
+
 .kubernetes-service-node .node-header {
   display: inline;
   float: right;
 }
+
 .kubernetes-replicationController-node {
   border-radius: 64px;
   display: block;
@@ -115,344 +128,429 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .kubernetes-overview-cell .app-icon-medium {
   width: 48px;
   height: 48px;
 }
+
+
 .kubernetes-replicationController-node img {
   width: 64px;
 }
+
 .kubernetes-node:hover,
 .kubernetes-node.hovered {
   background: #ddddff;
 }
+
 .pod-status-cell {
   width: 80px;
   line-height: 20px;
 }
+
 .pod-label-cell {
   float: right;
   text-align: right;
   min-height: 48px;
 }
+
 .pod-label-cell .ngCellText {
   white-space: normal;
 }
+
 .ngCellText .app-icon-small {
   width: 24px;
   vertical-align: middle;
 }
+
 .filter-header {
-  padding-bottom: 10px;
+    padding-bottom: 10px;
 }
+
 .app-name {
-  padding-left: 10px;
+    padding-left: 10px;
 }
+
 .profile-selector-name .app-name {
-  padding-left: 4px;
+    padding-left: 4px;
 }
+
+
 img.icon-small-app {
-  width: 24px;
-  height: 24px;
-  vertical-align: text-bottom;
+    width: 24px;
+    height: 24px;
+    vertical-align: text-bottom;
 }
+
 .profile-selector-name {
-  line-height: 24px;
+    line-height: 24px;
 }
+
 img.icon-selected-app {
-  width: 64px;
-  height: 64px;
-  vertical-align: middle;
+    width: 64px;
+    height: 64px;
+    vertical-align: middle;
 }
+
 .selected-app-name {
-  line-height: 36px;
-  padding-left: 5px;
+    line-height: 36px;
+    padding-left: 5px;
 }
+
 .service-view-rectangle {
-  position: relative;
-  margin-left: 0;
-  margin-right: 0px;
-  margin-bottom: 15px;
-  margin-top: 0;
-  background-color: #fafafa;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #eeeeee;
+    position: relative;
+    margin-left: 0;
+    margin-right: 0px;
+    margin-bottom: 15px;
+    margin-top: 0;
+    background-color: #fafafa;
+
+    border-width:  1px;
+    border-style: solid;
+    border-color: #eeeeee;
 }
+
 .service-view-header {
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 8px;
-  padding-bottom: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 8px;
+    padding-bottom: 5px;
 }
+
 .service-view-header .pull-right {
   position: relative;
 }
+
 .service-view-header .pull-right .service-view-header-delete {
   position: absolute;
   top: -7px;
   right: -14px;
 }
+
 .service-view-header-delete .red {
   opacity: 0.5;
   transition: opacity 1s;
   font-size: larger;
 }
+
 .service-view-header-delete:hover .red {
   opacity: 1;
 }
+
 .service-view-icon img {
-  width: 32px;
-  height: 32px;
-  padding-right: 6px;
+    width: 32px;
+    height: 32px;
+    padding-right: 6px;
 }
+
 .service-view-name {
-  font-size: larger;
-  font-weight: bold;
+    font-size: larger;
+    font-weight: bold;
 }
+
 .service-view-address {
-  padding-left: 30px;
+    padding-left: 30px;
 }
+
 .service-view-detail-header {
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-top: 5px;
-  padding-bottom: 0px;
-  height: 20px;
-  min-height: 20px;
-  max-height: 20px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 5px;
+    padding-bottom: 0px;
+    height: 20px;
+    min-height: 20px;
+    max-height: 20px;
 }
+
 .service-view-detail-header .span4,
 .service-view-detail-header .value {
-  height: 20px;
-  min-height: 20px;
-  max-height: 20px;
+    height: 20px;
+    min-height: 20px;
+    max-height: 20px;
 }
+
 /*
 .service-view-detail-header a {
     color: black;
 }
 */
+
 .service-view-detail-rectangle {
-  background-color: #eeeeee;
-  min-height: 32px;
-  padding-left: 20px;
-  padding-right: 20px;
+    background-color: #eeeeee;
+    min-height: 32px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
+
 .service-view-detail-rectangle .value {
-  font-weight: 600;
+    font-weight: 600;
 }
+
 .service-view-detail-pod-box {
-  background-color: #eeeeee;
-  display: inline-block;
-  font-size: smaller;
+    background-color: #eeeeee;
+    display: inline-block;
+    font-size: smaller;
 }
+
 .service-view-detail-pod-summary,
 .service-view-detail-pod-summary-expand {
-  display: inline-block;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  background-color: #ffffff;
+    display: inline-block;
+
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    margin-right: 8px;
+    margin-bottom: 8px;
+
+    background-color: #ffffff;
 }
+
 .service-view-detail-pod-summary table td,
 .service-view-detail-pod-summary-expand table td {
-  padding-left: 10px;
-  padding-right: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
-.service-view-detail-pod-status,
-.service-view-detail-pod-connect {
-  line-height: 36px;
-  padding-right: 20px;
+
+.service-view-detail-pod-template {
 }
-.service-view-detail-pod-status i,
-.service-view-detail-pod-connect i {
-  font-size: 36px;
-  display: inline-block;
-  vertical-align: middle;
+
+.service-view-detail-pod-counts {
 }
+
+.service-view-detail-pod-status, .service-view-detail-pod-connect {
+    line-height: 36px;
+    padding-right: 20px;
+}
+
+.service-view-detail-pod-status i, .service-view-detail-pod-connect i {
+    font-size: 36px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .service-view-detail-pod-expand {
-  color: #a0a0a0;
-  font-size: 18px;
-  padding-right: 0px;
+    color: #a0a0a0;
+    font-size: 18px;
+    padding-right: 0px;
 }
+
+.service-view-detail-pod-id {
+}
+
 .kubernetes-view .filter-header {
   margin-bottom: 1em;
 }
+
 .controller-pod-counts {
-  padding-right: 16px;
-  padding-top: 8px;
+    padding-right: 16px;
+    padding-top: 8px;
 }
+
 .pipeline-build-block {
-  background-color: #eeeeee;
-  display: inline-block;
-  width: 100%;
+    background-color: rgb(238, 238, 238);
+    display: inline-block;
+    width: 100%;
 }
+
 .pipeline-build {
-  background: white;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
+    background: white;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
+
 .pipeline-deploy {
-  background: white;
-  border: 5px solid;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-  color: black;
+    background: white;
+    border:5px solid;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    color: black;
 }
+
 .widget-body > .pipeline-panel,
 .widget-body > .pipeline-panel > *,
 .widget-body > .pipeline-panel > * > *,
-.widget-body > .pipeline-panel > * > * > *,
-.widget-body > .pipeline-panel > * > * > * > * {
+.widget-body > .pipeline-panel > * > *  > *,
+.widget-body > .pipeline-panel > * > *  > * > * {
   height: 100%;
   vertical-align: middle;
 }
+
 .pipeline-block {
   width: 100%;
 }
+
 .build-fail {
-  border-color: lightcoral;
+    border-color: lightcoral;
 }
+
 .build-success {
-  border-color: lightgreen;
+    border-color: lightgreen;
 }
+
 .build-pending {
-  border-color: khaki;
+    border-color: khaki;
 }
+
 .build-aborted {
-  border-color: silver;
+    border-color: silver;
 }
+
 .build-not-started {
-  border-color: lightblue;
+    border-color: lightblue;
 }
+
+
 .pipeline-build a {
-  color: black;
+    color: black;
 }
 .pipeline-deploy a {
-  color: black;
+    color: black;
 }
+
 .pipeline-pod-counts {
-  padding-right: 16px;
-  padding-top: 8px;
+    padding-right: 16px;
+    padding-top: 8px;
 }
+
 .pipeline-row {
-  background: lightgrey;
-  height: 80px;
-  display: inline;
-  border-radius: 4px;
-  text-align: center;
-  vertical-align: middle;
-  border: 20px;
-  margin: 5px;
+    background: lightgrey;
+    border-radius: 4px;
+    height: 80px;
+    display: inline;
+    border-radius: 4px;
+    text-align: center;
+    vertical-align: middle;
+    border: 20px;
+    margin: 5px;
 }
+
 .pipeline-arrow {
-  font-size: 1.2em;
+    font-size: 1.2em;
 }
+
 .icon-heading {
-  font-size: 24px;
+    font-size: 24px;
 }
+
+
 .environment-row a {
-  color: black;
+    color: black;
 }
+
 .environment-rows {
-  /*
+    /*
     background-color: rgb(238, 238, 238);
     */
-  padding-top: 5px;
-  vertical-align: top;
+    padding-top: 5px;
+    vertical-align: top;
 }
+
 .environment-name-block {
-  width: 200px;
+    width: 200px;
 }
-.environment-row,
-.environment-name-block,
-.environment-deploy-block {
-  background: white;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
+
+.environment-row, .environment-name-block, .environment-deploy-block {
+    background: white;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
+
 .environment-name-block {
-  padding-top: 0px;
+    padding-top: 0px;
 }
+
 .environment-block {
-  vertical-align: top;
+    vertical-align: top;
 }
+
 .environment-row {
-  border: 1px solid;
-  border-color: silver;
+    border: 1px solid;
+    border-color: silver;
 }
+
 .environment-deploy-block {
-  border: 1px dashed;
-  border-color: silver;
+    border:1px dashed;
+    border-color: silver;
 }
+
 .environment-deploy-version-and-pods {
-  padding-bottom: 5px;
+    padding-bottom: 5px;
 }
+
 .row-header {
-  padding-bottom: 20px;
+    padding-bottom: 20px;
 }
+
 .project-overview-title {
-  padding-left: 80px;
-  padding-top: 18px;
+    padding-left: 80px;
+    padding-top: 18px;
 }
+
 .project-overview-title a {
-  color: black;
+    color: black;
 }
+
 /*
 
 .raw-json-view {
     width: 90%; height: 700px;
 }
 */
+
 .raw-json-view .CodeMirror {
-  height: 90%;
+    height: 90%;
 }
+
 .k8sServiceApp-menu {
   width: 260px;
 }
+
 .k8sServiceApp > a {
   padding-top: 5px !important;
   padding-bottom: 5px !important;
   line-height: 32px !important;
 }
+
 .k8sServiceApp > a > img {
   vertical-align: bottom;
 }
+
 .k8sServiceApp > a > span {
   font-size: 14px;
   line-height: 32px;
 }
+
 .breadcrumb-tabs {
-  padding-top: 5px;
+    padding-top: 5px;
 }
+
 .log-window {
   position: absolute;
   overflow: auto;
@@ -465,10 +563,12 @@ img.icon-selected-app {
   width: auto;
   border-top: 1px solid #d4d4d4;
 }
+
 .log-window-inner * {
   font-family: "DroidSansMonoRegular", monospace;
   line-height: 13px;
 }
+
 .log-panel {
   position: static;
   height: 100%;
@@ -477,13 +577,16 @@ img.icon-selected-app {
   border: none;
   padding: 3px;
 }
+
 .log-panel-inner * {
   font-family: "DroidSansMonoRegular", monospace;
   line-height: 13px;
 }
+
 tbody .ngCellText i {
   margin-right: 5px;
 }
+
 .terminal-window {
   position: fixed;
   bottom: 0;
@@ -492,58 +595,73 @@ tbody .ngCellText i {
   background: white;
   border: 1px solid #d4d4d4;
 }
+
 .terminal-body .terminal-wrapper > .terminal * {
   font-family: 'DroidSansMonoRegular';
 }
+
 .terminal-title > h5 {
   display: inline-block;
   margin-left: 5px;
 }
+
 .terminal-title > i {
   font-size: 16px;
   margin-right: 5px;
   margin-top: 7px;
 }
+
 .terminal-window.minimized {
   height: 33px;
 }
+
 kubernetes-container-terminal .terminal-wrapper {
   display: block !important;
 }
+
 kubernetes-container-terminal .terminal-actions {
   position: absolute !important;
 }
+
 .log-success {
-  color: green;
+    color: green;
 }
+
 .log-warn {
-  color: orange;
+    color: orange
 }
+
 .log-error {
-  color: red;
+    color: red;
 }
+
+
 .form-warning.bg-danger {
-  padding: 8px;
+    padding: 8px;
 }
+
 /* TODO lets work around some ui-bootstrap / patternfly css gremlins */
 .modal .modal-dialog {
-  margin-top: 0px;
-  margin-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
+
 /* lets set this to the same size as modal-dialog */
 .modal {
-  width: 600px;
+    width: 600px;
 }
+
 .btn.btn-padding {
-  margin-left: 5px;
-  margin-right: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
+
 .k8s-badge-version {
-  background-color: darkblue;
+    background-color: darkblue;
 }
 .k8s-badge-project {
-  background-color: darkblue;
+    background-color: darkblue;
 }
 .k8s-badge-package {
-  background-color: darkred;
+    background-color: darkred;
 }
