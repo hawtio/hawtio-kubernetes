@@ -30,9 +30,6 @@
   </div>
 
   <div ng-show="model.fetched" style="float: none; position: static;">
-    <!-- required so we can load up builds for the dashboard to load -->
-    <div ng-controller="Developer.PipelinesController"></div>
-
 
     <div ng-hide="entity.environments.length" class="align-center row">
       <div class="col-md-12">
@@ -40,7 +37,6 @@
       </div>
     </div>
 
-    <!--
     <div ng-show="entity.environments.length">
 
       <div class="pull-right">
@@ -50,44 +46,42 @@
         </a>
       </div>
 
-      <div class="row">
-        <h4 class="project-overview-title">Environments</h4>
-      </div>
-
       <div class="row" title="{{env.description}}">
         <div class="col-md-12 environment-rows">
+          <h4 class="project-overview-title">Environments</h4>
           <div ng-repeat="env in entity.environments | filter:filterTemplates track by $index"
             class="inline-block environment-block" ng-include="'plugins/developer/html/environmentPanel.html'">
           </div>
         </div>
       </div>
-      -->
 
-      <!--
       <div class="row">
-        <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">Pipelines</a></h4>
+        <div class="col-md-12">
+          <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">Pipelines</a></h4>
+          <div ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
+        </div>
       </div>
-      -->
 
-      <!--
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/log/{{selectedBuild.id}}">Logs</a></h4>
+          <div style="height: 250px;" ng-include="'plugins/developer/html/logPanel.html'"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/wiki/history//">Commits</a></h4>
+          <div ng-include="'plugins/wiki/html/projectCommitsPanel.html'"></div>
+        </div>
+      </div>
+
     </div>
-  </div>
-  -->
 
+  <!--
   <div ng-include="'plugins/wiki/html/overviewDashboard.html'"></div>
-
-  <!-- TODO -->
-  <!--
-  <div ng-hide="true" ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
   -->
 
-  <!--
-  <div ng-include="'plugins/developer/html/logPanel.html'"></div>
-  -->
 
-  <!-- TODO -->
-  <!--
-  <div ng-hide="true" ng-include="'plugins/wiki/html/projectCommitsPanel.html'"></div>
-  -->
 
 </div>
