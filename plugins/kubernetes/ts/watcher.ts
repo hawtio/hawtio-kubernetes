@@ -192,6 +192,12 @@ module Kubernetes {
         case KubernetesAPI.WatchTypes.POLICIES:
         case KubernetesAPI.WatchTypes.ROLES:
         case KubernetesAPI.WatchTypes.ROLE_BINDINGS:
+        case KubernetesAPI.WatchTypes.POLICY_BINDINGS:
+        case KubernetesAPI.WatchTypes.PERSISTENT_VOLUME_CLAIMS:
+        case KubernetesAPI.WatchTypes.PERSISTENT_VOLUMES:
+        case KubernetesAPI.WatchTypes.ENDPOINTS:
+        case KubernetesAPI.WatchTypes.RESOURCE_QUOTAS:
+        case KubernetesAPI.WatchTypes.SERVICE_ACCOUNTS:
           return false;
 
         default:
