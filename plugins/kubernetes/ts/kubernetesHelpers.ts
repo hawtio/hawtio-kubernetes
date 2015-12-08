@@ -1348,6 +1348,19 @@ module Kubernetes {
         }
         buildConfig.environments.push(env);
       });
+      if (!buildConfig.environments.length) {
+        // lets create a single environment
+        var ens = ns;
+        var env = {
+          namespace: ens,
+          label: "Current",
+          description: "The environemnt that this project is built and run inside",
+          iconClass: "fa fa-cloud",
+          url: UrlHelpers.join("/workspaces", ns, "projects", name, "namespace", ens)
+        };
+        buildConfig.environments.push(env);
+
+      }
 
       buildConfig.environments = buildConfig.environments.reverse();
 
