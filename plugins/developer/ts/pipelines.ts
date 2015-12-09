@@ -54,7 +54,8 @@ module Developer {
     };
 
     function updateData() {
-      if ($scope.jobId) {
+      var entity = $scope.entity;
+      if ($scope.jobId && (!entity || entity.$jenkinsJob)) {
         var queryPath = "fabric8/stages/";
         if ($scope.model.pendingOnly) {
           queryPath = "fabric8/pendingStages/";

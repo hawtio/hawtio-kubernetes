@@ -67,7 +67,15 @@ module Developer {
 
         var project = labels[projectAnnotation];
         var version = labels[versionAnnotation];
-        if (project && version) {
+
+        // lets try the S2I defaults...
+        if (!project) {
+          project = labels["app"];
+        }
+        if (!version) {
+          version = annotations["openshift.io/deployment-config.latest-version"]
+        }
+        if (project && version && project === projectName) {
           var projects = projectInfos[project];
           if (!projects) {
             projects = {
@@ -97,6 +105,23 @@ module Developer {
           item.$gitCommit = annotations["fabric8.io/git-commit"];
           item.$gitUrl = annotations["fabric8.io/git-url"];
           item.$gitBranch = annotations["fabric8.io/git-branch"];
+          if (!item.$gitCommit) {
+            // lets see if we can find the commit id from a S2I image name
+            var containers = spec.containers;
+            if (containers && containers.length) {
+              var container = containers[0];
+              if (container) {
+                var image = container.image;
+                if (image) {
+                  var prefix = "@sha256:";
+                  var idx = image.indexOf(prefix);
+                  if (idx > 0) {
+                    item.$gitCommit = image.substring(idx + prefix.length);
+                  }
+                }
+              }
+            }
+          }
 
           if (selector) {
             var selectorText = Kubernetes.labelsToString(selector, ",");

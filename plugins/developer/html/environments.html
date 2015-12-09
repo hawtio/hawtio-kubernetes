@@ -55,14 +55,14 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" ng-show="entity.$jenkinsJob">
         <div class="col-md-12">
           <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">Pipelines</a></h4>
           <div ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" ng-show="entity.$jenkinsJob">
         <div class="col-md-12">
           <h4 class="project-overview-title"><a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/log/{{selectedBuild.id}}">Logs</a></h4>
           <div style="height: 250px;" ng-include="'plugins/developer/html/logPanel.html'"></div>
