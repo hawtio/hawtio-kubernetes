@@ -181,7 +181,7 @@ module Kubernetes {
       .build();
     HawtioNav.add(mainTab);
 
-    /*
+    /* test
     HawtioNav.add({
       id: 'k8sAppSwitcher',
       title: () => '', // not used as 'template' below overrides this
