@@ -107,20 +107,8 @@ module Developer {
           item.$gitBranch = annotations["fabric8.io/git-branch"];
           if (!item.$gitCommit) {
             // lets see if we can find the commit id from a S2I image name
-            var containers = spec.containers;
-            if (containers && containers.length) {
-              var container = containers[0];
-              if (container) {
-                var image = container.image;
-                if (image) {
-                  var prefix = "@sha256:";
-                  var idx = image.indexOf(prefix);
-                  if (idx > 0) {
-                    item.$gitCommit = image.substring(idx + prefix.length);
-                  }
-                }
-              }
-            }
+            // TODO needs this issue fixed to find it via an OpenShift annotation:
+            // https://github.com/openshift/origin/issues/6241
           }
 
           if (selector) {
