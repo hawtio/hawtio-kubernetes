@@ -91,7 +91,7 @@ module Developer {
         $iconClass = "fa fa-exclamation-circle red";
       } else if (result === "ABORTED" || result === "INTERUPTED") {
         $iconClass = "fa fa-circle grey";
-      } else if (result === "SUCCESS") {
+      } else if (result === "SUCCESS" || result === "COMPLETE" || result === "COMPLETED") {
         $iconClass = "fa fa-check-circle green";
       } else if (result === "NOT_STARTED") {
         $iconClass = "fa fa-circle-thin grey";
@@ -107,7 +107,7 @@ module Developer {
         $iconClass = "build-fail";
       } else if (result === "ABORTED" || result === "INTERUPTED") {
         $iconClass = "build-aborted";
-      } else if (result === "SUCCESS") {
+      } else if (result === "SUCCESS" || result === "COMPLETE" || result === "COMPLETED") {
         $iconClass = "build-success";
       } else if (result === "NOT_STARTED") {
         $iconClass = "build-not-started";

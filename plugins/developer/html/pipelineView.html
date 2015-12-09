@@ -5,7 +5,7 @@
       <a href="{{build.$viewLink}}" title="View the build details inside Jenkins">
         {{build.displayName}}
       </a>
-      <span class="buildParameters pull-right">
+      <span class="buildParameters pull-right" ng-show="$parameterText">
         <i class="fa fa-ellipsis-v" title="build parameters: {{build.$parameterText}}"></i>
       </span>
     </div>
