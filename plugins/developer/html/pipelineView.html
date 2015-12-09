@@ -2,7 +2,7 @@
   <div class="pipeline-build inline-block"
        title="{{build.description || 'Pipeline build number ' + build.displayName}}">
     <div class="buildName">
-      <a href="{{build.$viewLink}}" title="View the build details inside Jenkins">
+      <a href="{{build.$viewLink}}" title="View the build details">
         {{build.displayName}}
       </a>
       <span class="buildParameters pull-right" ng-show="$parameterText">

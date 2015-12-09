@@ -112,8 +112,8 @@ module Developer {
               var resultUpperCase = result.toUpperCase();
 
               var description = "";
-              var $viewLink = "";
-              var $logLink = "";
+              var $viewLink = build.$viewLink;
+              var $logLink = build.$logsLink;
               var $timestamp = build.$creationDate;
               var duration = buildStatus.duration;
               if (duration) {
