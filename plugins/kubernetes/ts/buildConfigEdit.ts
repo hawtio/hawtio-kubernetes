@@ -11,6 +11,10 @@ module Kubernetes {
         $scope.id = $routeParams["project"] || $routeParams["id"];
         $scope.schema = KubernetesSchema;
 
+        var mode = $scope.$eval('mode') || 'edit';
+
+        log.debug("Mode: ", mode);
+
 
         var specConfig = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.BuildConfigSpec');
         var gitBuildSource = SchemaRegistry.getSchema('io.fabric8.openshift.api.model.GitBuildSource');
@@ -66,7 +70,6 @@ module Kubernetes {
           Core.pathSet(sourceSecretProperty, ['properties', 'required'], true);
           Core.pathSet(sourceSecretProperty, ['properties', 'input-attributes', 'required'], true);
         }
-
 
         $scope.customStrategy = customStrategy;
         $scope.buildSource = buildSource;
@@ -216,6 +219,21 @@ module Kubernetes {
             }
           }
         };
+
+        $scope.$watch('entity.spec.source.git.uri', (val) => {
+          if (!val) {
+            return;
+          }
+          var lastBit = val.match(/[^\/]+$/)[0];
+          if (lastBit) {
+            var name = lastBit.replace(/\.git$/, '');
+            log.debug("name: ", name);
+            if (!Core.isBlank(name) 
+              && Core.isBlank(Core.pathGet($scope.entity, ['metadata', 'name']))) {
+              Core.pathSet($scope.entity, ['metadata', 'name'], name);
+            }
+          }
+        });
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectSettingsBreadcrumbs($scope.projectId);
@@ -371,6 +389,37 @@ module Kubernetes {
             });
           }
           return answer;
+        }
+
+        switch (mode) {
+          case 'create':
+            delete specConfig.tabs;
+            _.forIn(buildSource.properties, (property:any, name:string) => {
+              if (name !== 'git') {
+                log.info("Hiding property: ", name);
+                property.hidden = true;
+              }
+            });
+            _.forIn(gitBuildSource.properties, (property:any, name:string) => {
+              if (name !== 'uri') {
+                log.info("Hiding property: ", name);
+                property.hidden = true;
+              } else {
+                property.label = "Git URL";
+                property['input-attributes'] = {
+                  'required': true
+                }
+              }
+            }); 
+            _.forIn(specConfig.properties, (property:any, name:string) => {
+              if (name !== 'source') {
+                log.info("Hiding property: ", name);
+                property.hidden = true;
+              }
+            });
+            break;
+          case 'edit':
+          default:
         }
 
         $scope.specConfig = specConfig;

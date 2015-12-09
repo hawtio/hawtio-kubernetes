@@ -1,4 +1,4 @@
-<div ng-init="mode='edit'">
+<div ng-init="mode='create'">
   <div ng-controller="Kubernetes.BuildConfigEditController">
     <div class="row">
       <div hawtio-breadcrumbs></div>
@@ -27,30 +27,30 @@
         </div>
         <div ng-show="fetched">
 
+          <p class="hero-unit">
+            Create a project by entering or copy/pasting the Git URL for a repository, and give the project a name.  By default the name will be based on the repository name.
+          </p>
+
+          <div hawtio-form-2="specConfig" entity="spec"></div>
+
           <form name="nameForm" ng-disabled="config.mode == 0" class="form-horizontal">
             <fieldset>
-              <legend ng-show="config.label || config.description" ng-hide="config.hideLegend"
-                class="ng-binding"></legend>
               <div class="row">
                 <div class="clearfix col-md-12">
                   <div class="form-group">
                     <label class="control-label">Name</label>
-                    <input type="text" class="form-control" placeholder="project name" pattern="[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*" ng-model="entity.metadata.name" required>
+                    <input type="text" class="form-control" pattern="[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*" ng-model="entity.metadata.name" required>
 
                     <p class="form-warning bg-danger" ng-show="nameForm.$error.pattern">
                       Project name must be a lower case DNS name with letters, numbers and dots or dashes such as `example.com`
                     </p>
+                    <p class="help-block">Name of this project</p>
                   </div>
                 </div>
               </div>
             </fieldset>
           </form>
 
-
-          <!--
-          <div hawtio-form-2="config" entity="entity"></div>
-          -->
-          <div hawtio-form-2="specConfig" entity="spec"></div>
         </div>
       </div>
     </div>

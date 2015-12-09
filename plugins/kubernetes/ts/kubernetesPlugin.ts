@@ -56,7 +56,6 @@ module Kubernetes {
         .when(UrlHelpers.join(context, 'buildConfigs'), route('buildConfigs.html', false))
         .when(UrlHelpers.join(context, 'buildConfigs/:id'), route('buildConfig.html', true))
         .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
-        .when(UrlHelpers.join(context, 'buildConfigCreate'), route('buildConfigCreate.html', true))
         .when(UrlHelpers.join(context, 'deploymentConfigs'), route('deploymentConfigs.html', false))
         .when(UrlHelpers.join(context, 'deploymentConfigs/:id'), route('deploymentConfig.html', true))
         .when(UrlHelpers.join(context, 'imageRepositories'), route('imageRepositories.html', false))
@@ -66,6 +65,7 @@ module Kubernetes {
       $routeProvider
         .when(UrlHelpers.join(context, 'buildConfigEdit'), route('buildConfigEdit.html', true))
         .when(UrlHelpers.join(context, 'buildConfigEdit/:id'), route('buildConfigEdit.html', true))
+        .when(UrlHelpers.join(context, 'importProject'), route('importProject.html', true))
     });
   }]);
 
