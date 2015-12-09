@@ -1392,6 +1392,7 @@ module Kubernetes {
   export function enrichBuild(build) {
     if (build) {
       var metadata = build.metadata || {};
+      var annotations = metadata.annotations || {};
       var name = getName(build);
       var namespace = getNamespace(build);
       build.$name = name;
@@ -1420,10 +1421,11 @@ module Kubernetes {
         //build.$logsLink = UrlHelpers.join("kubernetes/buildLogs", name);
         build.$logsLink = UrlHelpers.join(projectLink, "buildLogs", name);
       }
+      build.podName = build.podName || annotations["openshift.io/build.pod-name"];
       var podName = build.podName;
       if (podName && namespace) {
         var podNameArray = podName.split("-");
-        var podNameArrayLength = podNameArray.length
+        var podNameArrayLength = podNameArray.length;
         build.$podShortName = (podNameArrayLength > 5) ? podNameArray[podNameArrayLength - 5] : podName.substring(0, 30);
         build.$podLink = UrlHelpers.join("kubernetes/namespace", namespace, "pods", podName);
       }

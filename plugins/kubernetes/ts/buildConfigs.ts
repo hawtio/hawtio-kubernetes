@@ -130,22 +130,6 @@ module Kubernetes {
       }
 
       function updateData() {
-/*
-        var url = buildConfigsRestURL();
-        $http.get(url).
-          success(function (data, status, headers, config) {
-            if (data) {
-              //console.log("got data " + angular.toJson(data, true));
-              var sortedBuilds = null;
-              $scope.buildConfigs = enrichBuildConfigs(data.items, sortedBuilds);
-              $scope.fetched = true;
-              Core.$apply($scope);
-            }
-          }).
-          error(function (data, status, headers, config) {
-            log.warn("Failed to load " + url + " " + data + " " + status);
-          });
-*/
       }
 
       updateData();

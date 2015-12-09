@@ -15,7 +15,7 @@ module Kubernetes {
       });
 
       $scope.tableConfig = {
-        data: 'builds',
+        data: 'model.builds',
         showSelectionCheckbox: true,
         enableRowClickSelection: false,
         multiSelect: true,
@@ -57,20 +57,20 @@ module Kubernetes {
           },
 */
           {
-            field: 'parameters.source.git.uri',
+            field: 'spec.source.git.uri',
             displayName: 'Repository',
             cellTemplate: $templateCache.get("buildRepositoryTemplate.html")
           },
           {
-            field: 'parameters.strategy.type',
+            field: 'spec.strategy.type',
             displayName: 'Strategy'
           },
           {
-            field: 'parameters.strategy.stiStrategy.image',
+            field: 'spec.strategy.sourceStrategy.from.name',
             displayName: 'Source Image'
           },
           {
-            field: 'parameters.output.imageTag',
+            field: 'spec.output.to.name',
             displayName: 'Output Image'
           }]
       };
@@ -79,6 +79,28 @@ module Kubernetes {
       $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.buildConfigId);
       $scope.subTabConfig = Developer.createProjectSubNavBars($scope.buildConfigId, null, $scope);
 
+      $scope.$on('kubernetesModelUpdated', function () {
+        updateData();
+      });
+
+      function updateData() {
+        if ($scope.model) {
+          var builds = $scope.model.builds;
+          var buildConfigId = $scope.buildConfigId;
+
+          enrichBuilds(builds);
+          $scope.fetched = true;
+
+          if (buildConfigId) {
+            $scope.buildConfig = $scope.model.getBuildConfig(buildConfigId);
+          }
+        }
+      }
+
+      updateData();
+
+
+      /*
       $scope.$keepPolling = () => keepPollingModel;
       $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
         var url = buildsRestURL();
@@ -104,5 +126,6 @@ module Kubernetes {
       });
 
       $scope.fetch();
+      */
     }]);
 }

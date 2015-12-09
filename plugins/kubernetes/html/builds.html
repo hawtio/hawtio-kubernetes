@@ -27,13 +27,13 @@
   </script>
   <script type="text/ng-template" id="buildRepositoryTemplate.html">
     <div class="ngCellText">
-      <a ng-show="row.entity.parameters.source.git.uri" target="gitRepository"
+      <a ng-show="row.entity.spec.source.git.uri" target="gitRepository"
          title="View the git based source repository"
-         href="{{row.entity.parameters.source.git.uri}}">
-        {{row.entity.parameters.source.git.uri}}
+         href="{{row.entity.spec.source.git.uri}}">
+        {{row.entity.spec.source.git.uri}}
       </a>
-      <span ng-hide="row.entity.parameters.source.git.uri">
-        {{row.entity.parameters.source.git.uri}}
+      <span ng-hide="row.entity.spec.source.git.uri">
+        {{row.entity.spec.source.git.uri}}
       </span>
     </div>
   </script>
@@ -77,7 +77,7 @@
   <div class="row filter-header">
     <div class="col-md-12" >
       <span ng-show="!id">
-        <hawtio-filter ng-show="builds.length"
+        <hawtio-filter ng-show="model.builds.length"
                        ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter builds..."></hawtio-filter>
@@ -99,12 +99,11 @@
         </div>
       </div>
       <div ng-show="fetched">
-        <div ng-hide="builds.length" class="align-center">
+        <div ng-hide="model.builds.length" class="align-center">
           <p class="alert alert-info">There are no builds currently running.</p>
         </div>
-        <div ng-show="builds.length">
-          <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
-                 hawtio-simple-table="tableConfig"></table>
+        <div ng-show="model.builds.length">
+          <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
         </div>
       </div>
     </div>
