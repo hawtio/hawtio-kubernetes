@@ -154,6 +154,19 @@ module Developer {
                               var v1 = history[0].v1Compatibility;
                               if (v1) {
                                 var data = angular.fromJson(v1);
+                                var env = Core.pathGet(data, ["config", "Env"]);
+                                angular.forEach(env, (envExp) => {
+                                  if (envExp) {
+                                    var values = envExp.split("=");
+                                    if (values.length === 2 && values[0] == "OPENSHIFT_BUILD_NAME") {
+                                      var buildName = values[1];
+                                      if (buildName) {
+                                        item.$buildId = buildName;
+                                        item.$buildUrl = Developer.projectWorkspaceLink(ns, projectName, "buildLogs/" + buildName);
+                                      }
+                                    }
+                                  }
+                                });
                                 var labels = Core.pathGet(data, ["config", "Labels"]);
                                 if (labels) {
                                   item.$gitCommit = labels["io.openshift.build.commit.id"] || item.$gitCommit;
