@@ -50,7 +50,10 @@
           &nbsp;
           &nbsp;
           <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="pull-right"
-            title="View the source code for the commit which created this Replication Controller - commit: {{rc.$gitCommit}}">
+            title="{{rc.$gitCommit}}
+{{rc.$gitCommitAuthor}}
+{{rc.$gitCommitDate}}
+{{rc.$gitCommitMessage}}">
             <i class="fa fa-code-fork"></i>
             Commit {{rc.$gitCommit | limitTo:7}}
           </a>
