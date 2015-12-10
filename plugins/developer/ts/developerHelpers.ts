@@ -54,6 +54,8 @@ module Developer {
       pods: []
     };
 
+    var imageStreamTags = [];
+
     function updateModel() {
       var projectInfos = {};
 
@@ -100,15 +102,80 @@ module Developer {
               log.warn("Missing project data! " + projectNamespace + " name " + projectName);
             }
           }
-          item.$buildId = annotations["fabric8.io/build-id"];
-          item.$buildUrl = annotations["fabric8.io/build-url"];
-          item.$gitCommit = annotations["fabric8.io/git-commit"];
-          item.$gitUrl = annotations["fabric8.io/git-url"];
-          item.$gitBranch = annotations["fabric8.io/git-branch"];
+          item.$buildId = annotations["fabric8.io/build-id"] || item.$buildId;
+          item.$buildUrl = annotations["fabric8.io/build-url"] || item.$buildUrl;
+          item.$gitCommit = annotations["fabric8.io/git-commit"] || item.$gitCommit;
+          item.$gitUrl = annotations["fabric8.io/git-url"] || item.$gitUrl;
+          item.$gitBranch = annotations["fabric8.io/git-branch"] || item.$gitBranch;
           if (!item.$gitCommit) {
-            // lets see if we can find the commit id from a S2I image name
-            // TODO needs this issue fixed to find it via an OpenShift annotation:
-            // https://github.com/openshift/origin/issues/6241
+            var image = getImage(item);
+            if (image) {
+              if (!$scope.$isWatchImages) {
+                $scope.$isWatchImages = true;
+                Kubernetes.watch($scope, $element, "images", null, (data) => {
+                  imageStreamTags = data;
+                  checkForMissingMetadata();
+                });
+              } else {
+                checkForMissingMetadata();
+              }
+            }
+
+            function getImage(item) {
+              var image = "";
+              // lets see if we can find the commit id from a S2I image name
+              // TODO needs this issue fixed to find it via an OpenShift annotation:
+              // https://github.com/openshift/origin/issues/6241
+              var containers = Core.pathGet(item, ["spec", "template", "spec", "containers"]);
+              if (containers && containers.length) {
+                var container = containers[0];
+                if (container) {
+                  image = container.image;
+                }
+              }
+              return image;
+            }
+
+            function checkForMissingMetadata() {
+              angular.forEach(projects.versions, (vi) => {
+                angular.forEach(vi.replicationControllers, (item, name) => {
+                  if (!item.$gitCommit) {
+                    var image = getImage(item);
+                    if (image) {
+                      angular.forEach(imageStreamTags, (imageStreamTag) => {
+                        var imageName = imageStreamTag.dockerImageReference;
+                        if (imageName && imageName === image) {
+                          var foundISTag = imageStreamTag;
+                          var manifestJSON = imageStreamTag.dockerImageManifest;
+                          if (manifestJSON) {
+                            var manifest = angular.fromJson(manifestJSON) || {};
+                            var history = manifest.history;
+                            if (history && history.length) {
+                              var v1 = history[0].v1Compatibility;
+                              if (v1) {
+                                var data = angular.fromJson(v1);
+                                var labels = Core.pathGet(data, ["config", "Labels"]);
+                                if (labels) {
+                                  item.$gitCommit = labels["io.openshift.build.commit.id"] || item.$gitCommit;
+                                  item.$gitCommitAuthor = labels["io.openshift.build.commit.author"] || item.$gitCommitAuthor;
+                                  item.$gitCommitDate = labels["io.openshift.build.commit.date"] || item.$gitCommitDate;
+                                  item.$gitCommitMessage = labels["io.openshift.build.commit.message"] || item.$gitCommitMessage;
+                                  item.$gitBranch = labels["io.openshift.build.commit.ref"] || item.$gitBranch;
+
+                                  if (!item.$gitUrl && item.$gitCommit) {
+                                    item.$gitUrl = Developer.projectWorkspaceLink(ns, projectName, "wiki/commitDetail///" + item.$gitCommit);
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      });
+                    }
+                  }
+                });
+              });
+            }
           }
 
           if (selector) {
@@ -117,8 +184,6 @@ module Developer {
             item.pods = [];
             item.$podCounters = Kubernetes.createPodCounters(selector, status.pods, item.pods, selectorText, podLinkUrl);
           }
-        } else {
-          log.warn("Missing project version metadata for RC " + ns + " / " + name + " project: " + project + " version: " + version);
         }
       });
 
