@@ -92,6 +92,10 @@ declare module Kubernetes {
      */
     function serviceLinkUrl(service: any): any;
     /**
+     * Returns the total number of counters for the podCounters object
+     */
+    function podCounterTotal($podCounters: any): number;
+    /**
      * Given the list of pods lets iterate through them and find all pods matching the selector
      * and return counters based on the status of the pod
      */

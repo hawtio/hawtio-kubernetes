@@ -622,6 +622,21 @@ module Kubernetes {
     return "";
   }
 
+
+  /**
+   * Returns the total number of counters for the podCounters object
+   */
+  export function podCounterTotal($podCounters) {
+    var answer = 0;
+    if ($podCounters) {
+      angular.forEach(["ready", "valid", "waiting", "error"], (name) => {
+        var value = $podCounters[name] || 0;
+        answer += value;
+      });
+    }
+    return answer;
+  }
+
   /**
    * Given the list of pods lets iterate through them and find all pods matching the selector
    * and return counters based on the status of the pod

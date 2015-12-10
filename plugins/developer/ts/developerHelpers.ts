@@ -187,8 +187,33 @@ module Developer {
         }
       });
 
+      // lets check for a project name if we have lots of RCs with no pods, lets remove them!
+      angular.forEach(projectInfos, (project, projectName) => {
+        var rcsNoPods = [];
+        var rcsWithPods = [];
+        angular.forEach(project.versions, (versionInfo) => {
+          var rcs = versionInfo.replicationControllers;
+          angular.forEach(rcs, (item, name) => {
+            var count = Kubernetes.podCounterTotal(item.$podCounters);
+            if (count) {
+              rcsWithPods.push(name);
+            } else {
+              rcsNoPods.push(() => {
+                delete rcs[name];
+              });
+            }
+          });
+        });
+        if (rcsWithPods.length) {
+          // lets remove all the empty RCs
+          angular.forEach(rcsNoPods, (fn) => {
+            fn();
+          });
+        }
+      });
+
       if (hasObjectChanged(projectInfos, cache)) {
-        log.info("project versions has changed!");
+        log.debug("project versions has changed!");
         answer[ns] = projectInfos;
       }
     }
