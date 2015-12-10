@@ -19,7 +19,7 @@ module Kubernetes {
       listener(objects);
     });
   };
-  var debouncedUpdate = _.debounce(updateFunction, 500, { trailing: true });
+  var debouncedUpdate = _.debounce(updateFunction, 75, { trailing: true });
 
   var namespaceWatch = {
     selected: undefined,
