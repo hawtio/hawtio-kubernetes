@@ -1040,7 +1040,7 @@ module Kubernetes {
       if (!answer) {
         answer = {
           labelText: selectorText,
-          podsLink: Core.url("/kubernetes/pods?q=" + encodeURIComponent(selectorText)),
+          podsLink: UrlHelpers.join("/kubernetes/namespace/", pod.metadata.namespace, "pods?q=" + encodeURIComponent(selectorText)),
           valid: 0,
           waiting: 0,
           error: 0
