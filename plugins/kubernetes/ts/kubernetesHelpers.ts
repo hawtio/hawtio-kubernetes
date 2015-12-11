@@ -953,7 +953,7 @@ module Kubernetes {
         if (count > 1) {
           query = "(" + query + ")";
         }
-        query = 'kubernetes.namespace:"' + namespace + '" AND kubernetes.pod_name:' + query;
+        query = 'kubernetes.namespace_name:"' + namespace + '" AND kubernetes.pod_name:' + query;
         link += "?_a=(query:(query_string:(query:'" + query + "')))";
         var newWindow = $window.open(link, "viewLogs");
       }
