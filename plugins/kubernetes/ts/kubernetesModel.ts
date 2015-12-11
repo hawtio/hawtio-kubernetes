@@ -292,7 +292,8 @@ module Kubernetes {
         if (!service.$podCounters) {
           service.$podCounters = {};
         }
-        _.assign(service.$podCounters, selector ? createPodCounters(selector, this.pods, service.$pods) : {});
+        var podLinkUrl = UrlHelpers.join("/kubernetes/namespace", service.metadata.namespace, "pods");
+        _.assign(service.$podCounters, selector ? createPodCounters(selector, this.pods, service.$pods, Kubernetes.labelsToString(selector, ","), podLinkUrl) : {});
         service.$podCount = service.$pods.length;
 
         var selectedPods = service.$pods;
@@ -440,8 +441,8 @@ module Kubernetes {
           appViews.forEach((appView) => {
             appView.replicationControllers.forEach((replicationController) => {
               var repSelector = getSelector(replicationController);
-              if (repSelector && 
-                  selectorMatches(repSelector, getSelector(service)) && 
+              if (repSelector &&
+                  selectorMatches(repSelector, getSelector(service)) &&
                   getNamespace(service) === getNamespace(replicationController)) {
                 matchesApp = appView;
               }
@@ -643,22 +644,22 @@ module Kubernetes {
       if (foundContainerPort && podId && isRunning(currentState)) {
         if (!Kubernetes.isOpenShift) {
           // TODO temp workaround for k8s on GKE https://github.com/kubernetes/kubernetes/issues/17172
-          entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(), 
-              "api", 
-              Kubernetes.defaultApiVersion, 
+          entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(),
+              "api",
+              Kubernetes.defaultApiVersion,
               "proxy",
-              "namespaces", 
-              entity.metadata.namespace , 
+              "namespaces",
+              entity.metadata.namespace ,
               "pods",
               //"https:" + podId + ":" + foundContainerPort,
               podId + ":" + foundContainerPort,
               "jolokia/");
         } else {
-          entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(), 
-              "api", 
-              Kubernetes.defaultApiVersion, 
-              "namespaces", 
-              entity.metadata.namespace , 
+          entity.$jolokiaUrl = UrlHelpers.join(Kubernetes.masterApiUrl(),
+              "api",
+              Kubernetes.defaultApiVersion,
+              "namespaces",
+              entity.metadata.namespace ,
               "pods",
               "https:" + podId + ":" + foundContainerPort,
               "proxy/jolokia/");
