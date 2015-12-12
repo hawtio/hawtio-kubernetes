@@ -36,6 +36,7 @@ module Kubernetes {
         var terminalId = UrlHelpers.join(podLink, containerName);
         if (terminalId in self.terminals) {
           log.debug("Already a terminal with id: ", terminalId);
+          self.raiseTerminal(terminalId);
           return terminalId;
         }
         var scope = $rootScope.$new();
@@ -65,6 +66,7 @@ module Kubernetes {
         angular.forEach(self.terminals, (value, key) => {
           if (key === id) {
             value.el.css('z-index', '4000');
+            value.el.find('.terminal').focus();
           } else {
             value.el.css('z-index', '3000');
           }
