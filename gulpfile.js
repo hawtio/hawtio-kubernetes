@@ -5,11 +5,12 @@ var gulp = require('gulp'),
     fs = require('fs'),
     path = require('path'),
     url = require('url'),
-    uri = require('URIjs'),
+    uri = require('urijs'),
     urljoin = require('url-join'),
     s = require('underscore.string'),
     stringifyObject = require('stringify-object'),
-    hawtio = require('hawtio-node-backend');
+    hawtio = require('hawtio-node-backend'),
+    del = require('del');
 
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');
@@ -45,8 +46,7 @@ gulp.task('path-adjust', function() {
 });
 
 gulp.task('clean-defs', function() {
-  return gulp.src('defs.d.ts', { read: false })
-    .pipe(plugins.clean());
+  return del('defs.d.ts');
 });
 
 gulp.task('tsc', ['clean-defs'], function() {
@@ -108,8 +108,7 @@ gulp.task('concat', ['template'], function() {
 });
 
 gulp.task('clean', ['concat'], function() {
-  return gulp.src(['templates.js', 'compiled.js', './site/'], { read: false })
-    .pipe(plugins.clean());
+  return del(['templates.js', 'compiled.js', './site/']);
 });
 
 gulp.task('watch-less', function() {
