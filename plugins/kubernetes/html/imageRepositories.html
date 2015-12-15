@@ -42,7 +42,7 @@
           <a class="btn btn-primary" href="{{baseUri}}/kubernetes/imageRepositoryCreate"><i class="fa fa-plus"></i> Create Image Repository</a>
         </div>
         <div ng-show="imageRepositories.length">
-          <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
+          <table class="table table-bordered table-striped" ui-if="kubernetes.selectedNamespace"
                  hawtio-simple-table="tableConfig"></table>
         </div>
       </div>

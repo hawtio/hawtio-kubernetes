@@ -113,7 +113,7 @@
           <a class="btn btn-primary" href="{{baseUri}}/kubernetes/buildConfigCreate"><i class="fa fa-wrench"></i> Add Build Configuration</a>
         </div>
         <div ng-show="model.buildconfigs.length">
-          <table class="table table-condensed table-striped" ui-if="kubernetes.selectedNamespace"
+          <table class="table table-bordered table-striped" ui-if="kubernetes.selectedNamespace"
                  hawtio-simple-table="tableConfig"></table>
         </div>
       </div>

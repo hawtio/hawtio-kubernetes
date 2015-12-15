@@ -260,7 +260,7 @@
           </div>
           <div ng-show="model.apps.length">
             <div ng-show="mode == 'list'">
-              <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
+              <table class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
             </div>
             <div ng-show="mode == 'detail'">
               <div class="app-detail" ng-repeat="item in model.apps | filter:tableConfig.filterOptions.filterText | orderBy:'$name' track by $index">
