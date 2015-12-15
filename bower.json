@@ -28,7 +28,7 @@
     "hawtio-forms": "~2.0.15",
     "hawtio-oauth": "~2.0.21",
     "hawtio-template-cache": "*",
-    "hawtio-ui": "~2.0.54",
+    "hawtio-ui": "~2.0.67",
     "hawtio-utilities": "~2.0.21",
     "kubernetes-container-terminal": "~0.0.3",
     "term.js": "~0.0.3",
