@@ -194,4 +194,5 @@ declare module Kubernetes {
     function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): void;
     function createKubernetesClient(kind: any, ns?: any): any;
     function currentUserName(): any;
+    function createNamespace(ns: any): void;
 }

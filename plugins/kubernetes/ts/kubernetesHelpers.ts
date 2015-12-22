@@ -1713,4 +1713,26 @@ module Kubernetes {
     }
     return answer || "admin";
   }
+
+  export function createNamespace(ns) {
+    var projectClient = Kubernetes.createKubernetesClient("projects");
+    if (ns && ns !== currentKubernetesNamespace()) {
+      var project = {
+        apiVersion: Kubernetes.defaultApiVersion,
+        kind: "Project",
+        metadata: {
+          name: ns,
+          labels: {
+          }
+        }
+      };
+      projectClient.put(project,
+        (data) => {
+          log.info("Created namespace: " + ns)
+        },
+        (err) => {
+          log.warn("Failed to create namespace: " + ns + ": " + angular.toJson(err));
+        });
+    }
+  }
 }

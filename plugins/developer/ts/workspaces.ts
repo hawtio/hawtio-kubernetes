@@ -93,6 +93,41 @@ module Developer {
            }).open();
          };
 
+        $scope.checkNamespaceUnique = (value) => {
+          var answer = true;
+          angular.forEach($scope.model.workspaces, (secret) => {
+            var name = Kubernetes.getName(secret);
+            if (value === name) {
+              answer = false;
+            }
+          });
+          return answer;
+        };
+
+        $scope.createNamespaceDialog = {
+          controller: null,
+          newNamespaceName: "",
+          dialog: new UI.Dialog(),
+          onOk: () => {
+            var createNamespaceDialog = $scope.createNamespaceDialog;
+            createNamespaceDialog.dialog.close();
+
+            var name = createNamespaceDialog.newNamespaceName;
+            Kubernetes.createNamespace(name);
+          },
+          open: (controller) => {
+            var createNamespaceDialog = $scope.createNamespaceDialog;
+            createNamespaceDialog.dialog.open();
+            createNamespaceDialog.newNamespaceName = "";
+
+            $timeout(() => {
+              $('#newDataName').focus();
+            }, 50);
+          },
+          close: () => {
+            $scope.createNamespaceDialog.dialog.close();
+          }
+        };
 
         function updateData() {
           var projects = $scope.model.projects;
