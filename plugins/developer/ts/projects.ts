@@ -144,6 +144,7 @@ module Developer {
         }
       }
 
+/*
       $scope.$keepPolling = () => Kubernetes.keepPollingModel;
       $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
         var url = Kubernetes.buildConfigsRestURL();
@@ -165,5 +166,6 @@ module Developer {
       });
 
       $scope.fetch();
+*/
     }]);
 }
