@@ -84,7 +84,7 @@ module Navigation {
       restrict: 'E',
       replace: true,
       template: `
-        <div ng-show="subTabConfig" class="col-sm-3 col-md-2 col-sm-pull-9 col-md-pull-10 sidebar-pf sidebar-pf-left" viewport-height style="position: fixed;"
+        <div ng-show="subTabConfig && subTabConfig.length" class="col-sm-3 col-md-2 col-sm-pull-9 col-md-pull-10 sidebar-pf sidebar-pf-left" viewport-height style="position: fixed;"
              ng-controller="Developer.NavBarController">
           <ul class="nav nav-pills nav-stacked">
             <li ng-repeat="breadcrumb in subTabConfig" ng-show="isValid(breadcrumb)"
