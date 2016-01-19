@@ -130,8 +130,8 @@
 
   </head>
 
-  <body>
-    <nav class="navbar navbar-default navbar-pf" role="navigation">
+  <body style="padding-top: 26px;">
+    <nav class="navbar navbar-default navbar-fixed-top navbar-pf" role="navigation">
       <div class="navbar-header" hawtio-extension name="hawtio-header">
         <a class="navbar-brand" href="/"><img src="img/hawtio_logo.svg"></a>
       </div>
@@ -148,10 +148,14 @@
     </nav>
 
     <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
-      <div ng-include src="viewPartial"></div>
+      <div class="row" style="margin-left: -20px; margin-right: -20px">
+        <div hawtio-main-outlet ng-class="getClass()">
+          <hawtio-breadcrumbs-outlet></hawtio-breadcrumbs-outlet>
+          <div ng-include src="viewPartial"></div>
+        </div>
+        <hawtio-tabs-outlet></hawtio-tabs-outlet>
+      </div>
     </div>
-
-    <div hawtio-extension name="hawtio-global"></div>
 
     <script src="dist/hawtio-kubernetes.js"></script>
 

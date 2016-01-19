@@ -4,9 +4,11 @@
 
 module Kubernetes {
 
-  _module.directive("hawtioTabs", () => {
+  _module.directive("hawtioTabs", ['HawtioSubTabs', (HawtioSubTabs) => {
     return {
-      templateUrl: Kubernetes.templatePath + 'tabs.html'
+      link: (scope, element, attrs) => {
+        HawtioSubTabs.apply(scope.$eval('subTabConfig'));
+      }
     };
-  });
+  }]);
 }
