@@ -241,6 +241,17 @@ module Developer {
     var answer = [
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
+        isActive: (subTab, path) => {
+          console.log("subTab: ", subTab, " path: ", path);
+          if (path === subTab.href) {
+            return true;
+          }
+          var rootPath = subTab.href.replace(/\/environments/, '');
+          if (path === rootPath) {
+            return true;
+          }
+          return false;
+        },
         //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
         label: "Dashboard",
         title: "View the project dashboard for the activity, environments and pipelines"
@@ -491,13 +502,22 @@ module Developer {
     if ($location) {
       var path = trimQuery($location.path());
       var found = false;
+      function makeActive(item) {
+        item.active = true;
+        found = true;
+      }
       angular.forEach(navBarItems, (item) => {
         if (item) {
-          var href = item.href;
-          var trimHref = trimQuery(href);
-          if (!found && trimHref && trimHref === path) {
-            item.active = true;
-            found = true;
+          if (angular.isFunction(item.isActive)) {
+            if (!found && item.isActive(item, path)) {
+              makeActive(item);
+            }
+          } else {
+            var href = item.href;
+            var trimHref = trimQuery(href);
+            if (!found && trimHref && trimHref === path) {
+              makeActive(item);
+            }
           }
         }
       });

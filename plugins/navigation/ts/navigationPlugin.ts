@@ -41,14 +41,14 @@ module Navigation {
     return {
       restrict: 'A',
       link: (scope, element, attr) => {
-        log.debug("Window: ", $window);
-        log.debug("element: ", element);
+        // log.debug("Window: ", $window);
+        // log.debug("element: ", element);
         var win = $($window);
         var resizeFunc = () => {
           var viewportHeight = win.innerHeight();
-          log.debug("Viewport height: ", viewportHeight);
+          // log.debug("Viewport height: ", viewportHeight);
           var elTop = element.offset().top;
-          log.debug("Element top: ", elTop);
+          // log.debug("Element top: ", elTop);
           var height = viewportHeight - elTop;
           element.css('height', height);
         };
@@ -67,7 +67,7 @@ module Navigation {
       link: (scope, element, attrs) => {
         scope.HawtioSubTabs = HawtioSubTabs;
         scope.$watchCollection('HawtioSubTabs.get()', (subTabConfig) => {
-          log.debug("subTabConfig: ", subTabConfig);
+          // log.debug("subTabConfig: ", subTabConfig);
           if (subTabConfig && subTabConfig.length > 0) {
             element.attr('class', 'col-sm-9 col-md-10 col-sm-push-3 col-md-push-2');
           } else {
