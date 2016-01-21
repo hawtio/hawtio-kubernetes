@@ -87,10 +87,14 @@ module Navigation {
         <div ng-show="subTabConfig && subTabConfig.length" class="col-sm-3 col-md-2 col-sm-pull-9 col-md-pull-10 sidebar-pf sidebar-pf-left" viewport-height style="position: fixed;"
              ng-controller="Developer.NavBarController">
           <ul class="nav nav-pills nav-stacked">
-            <li ng-repeat="breadcrumb in subTabConfig" ng-show="isValid(breadcrumb)"
-                class="{{breadcrumb.active ? 'active' : ''}}"
-                title="{{breadcrumb.title}}">
-                <a href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
+            <li ng-repeat="subTab in subTabConfig" ng-show="isValid(subTab)"
+                class="{{subTab.active ? 'active' : ''}}"
+                title="{{subTab.title}}">
+                <a href="{{subTab.href}}">
+                  <i ng-show="subTab.class" ng-class="subTab.class"></i>
+                  <img ng-show="subTab.icon" ng-src="{{subTab.icon}}" style="max-width: 16px; margin-right: 10px;">
+                  {{subTab.label}}
+                </a>
             </li>
           </ul>
           <!--
