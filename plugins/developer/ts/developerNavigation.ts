@@ -296,7 +296,13 @@ module Developer {
       if (angular.isFunction(fn)) {
         var subtab = fn(context);
         if (subtab) {
-          answer.push(subtab);
+          if (angular.isArray(subtab)) {
+            angular.forEach(subtab, (t) => {
+              answer.push(t);
+            });
+          } else {
+            answer.push(subtab);
+          }
         }
       }
     });
