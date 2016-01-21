@@ -242,8 +242,8 @@ module Developer {
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
         //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
-        label: "Overview",
-        title: "View the overview of this project, its actiity, environments and pipelines"
+        label: "Dashboard",
+        title: "View the project dashboard for the activity, environments and pipelines"
       },
       {
         isValid: () => isJenkinsBuild() && pipelinesLink,
