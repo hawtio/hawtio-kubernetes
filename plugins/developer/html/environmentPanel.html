@@ -57,6 +57,14 @@
             <i class="fa fa-code-fork"></i>
             Commit {{rc.$gitCommit | limitTo:7}}
           </a>
+          <span ng-hide="rc.$gitUrl || !rc.$gitCommit" class="pull-right"
+            title="{{rc.$gitCommit}}
+{{rc.$gitCommitAuthor}}
+{{rc.$gitCommitDate}}
+{{rc.$gitCommitMessage}}">
+            <i class="fa fa-code-fork"></i>
+            Commit {{rc.$gitCommit | limitTo:7}}
+          </span>
         </div>
       </div>
     </div>
