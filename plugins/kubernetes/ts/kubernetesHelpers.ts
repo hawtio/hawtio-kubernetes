@@ -572,7 +572,7 @@ module Kubernetes {
   /**
    * Returns the service link URL for either the service name or the service object
    */
-  export function serviceLinkUrl(service) {
+  export function serviceLinkUrl(service, httpOnly = false) {
     if (angular.isObject(service)) {
       var portalIP = service.$host;
       // lets assume no custom port for now for external routes
@@ -604,10 +604,12 @@ module Kubernetes {
           return "https://" + portalIP;
         } else if (hasHttp) {
           return "http://" + portalIP;
-        } else if (port) {
-          return protocol + portalIP + ":" + port + "/";
-        } else {
-          return protocol + portalIP;
+        } else if (!httpOnly) {
+          if (port) {
+            return protocol + portalIP + ":" + port + "/";
+          } else {
+            return protocol + portalIP;
+          }
         }
       }
     } else if (service) {

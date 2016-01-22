@@ -120,7 +120,7 @@ module Developer {
                     service["$host"] = Core.pathGet(route, ["spec", "host"]);
                     item.$services.push(service);
                     if (!rcLink) {
-                      var url = Kubernetes.serviceLinkUrl(service);
+                      var url = Kubernetes.serviceLinkUrl(service, true);
                       if (url) {
                         // TODO find icon etc?
                         rcLink = {

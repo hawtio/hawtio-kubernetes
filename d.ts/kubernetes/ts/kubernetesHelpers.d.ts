@@ -90,7 +90,7 @@ declare module Kubernetes {
     /**
      * Returns the service link URL for either the service name or the service object
      */
-    function serviceLinkUrl(service: any): any;
+    function serviceLinkUrl(service: any, httpOnly?: boolean): any;
     /**
      * Returns the total number of counters for the podCounters object
      */
