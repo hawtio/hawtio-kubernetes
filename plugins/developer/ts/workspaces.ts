@@ -16,7 +16,13 @@ module Developer {
 
         ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
 
-        var kubeClient = Kubernetes.createKubernetesClient("projects");
+        var kubeClient = Kubernetes.isOpenShift ? Kubernetes.createKubernetesClient("projects") : Kubernetes.createKubernetesClient('namespaces');
+        kubeClient.watch((objects) => {
+          if (objects) {
+            $scope.model.workspaces = _.sortBy(enrichWorkspaces(objects), "$name");
+            $scope.model.fetched = true;
+          }
+        });
 
         $scope.developerPerspective = Core.trimLeading($location.url(), "/").startsWith("workspace");
 
@@ -56,13 +62,6 @@ module Developer {
 
         $scope.breadcrumbConfig = createWorkspacesBreadcrumbs($scope.developerPerspective);
         $scope.subTabConfig = Developer.createWorkspacesSubNavBars($scope.developerPerspective);
-
-        $scope.$on('kubernetesModelUpdated', function () {
-          updateData();
-          Core.$apply($scope);
-        });
-
-        updateData();
 
         $scope.deletePrompt = (selected) => {
            UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
@@ -128,14 +127,6 @@ module Developer {
             $scope.createNamespaceDialog.dialog.close();
           }
         };
-
-        function updateData() {
-          var projects = $scope.model.projects;
-          if (projects) {
-            $scope.model.workspaces = _.sortBy(enrichWorkspaces(projects), "$name");
-            $scope.model.fetched = true;
-          }
-        }
 
       }]);
 }
