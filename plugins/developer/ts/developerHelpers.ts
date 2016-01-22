@@ -51,13 +51,16 @@ module Developer {
 
     var status = {
       rcs: [],
-      pods: []
+      pods: [],
+      routes: [],
+      services: []
     };
 
     var imageStreamTags = [];
 
     function updateModel() {
       var projectInfos = {};
+      var model = $scope.model || {};
 
       angular.forEach(status.rcs, (item) => {
         var metadata = item.metadata || {};
@@ -101,6 +104,36 @@ module Developer {
             } else {
               log.warn("Missing project data! " + projectNamespace + " name " + projectName);
             }
+
+            item.$services = [];
+            var rcLink = null;
+            status.services.forEach((service) => {
+              var repSelector = Kubernetes.getSelector(item);
+              var serviceSelector = Kubernetes.getSelector(service);
+              if (serviceSelector && repSelector &&
+                Kubernetes.selectorMatches(serviceSelector, repSelector) &&
+                Kubernetes.getNamespace(service) === Kubernetes.getNamespace(item)) {
+                status.routes.forEach((route) => {
+                  var serviceName = Kubernetes.getName(service);
+                  if (serviceName === Kubernetes.getName(route)) {
+                    service["$route"] = route;
+                    service["$host"] = Core.pathGet(route, ["spec", "host"]);
+                    item.$services.push(service);
+                    if (!rcLink) {
+                      var url = Kubernetes.serviceLinkUrl(service);
+                      if (url) {
+                        // TODO find icon etc?
+                        rcLink = {
+                          name: serviceName,
+                          href: url
+                        };
+                      }
+                    }
+                  }
+                });
+              }
+            });
+            item["$serviceLink"] = rcLink;
           }
           item.$buildId = annotations["fabric8.io/build-id"] || item.$buildId;
           item.$buildUrl = annotations["fabric8.io/build-url"] || item.$buildUrl;
@@ -234,6 +267,18 @@ module Developer {
     Kubernetes.watch($scope, $element, "replicationcontrollers", ns, (data) => {
       if (data) {
         status.rcs = data;
+        updateModel();
+      }
+    });
+    Kubernetes.watch($scope, $element, "services", ns, (data) => {
+      if (data) {
+        status.services = data;
+        updateModel();
+      }
+    });
+    Kubernetes.watch($scope, $element, "routes", ns, (data) => {
+      if (data) {
+        status.routes = data;
         updateModel();
       }
     });

@@ -25,6 +25,14 @@
             {{rc.$name}}
             : {{version}}
           </span>
+          <span class="pull-right" ng-show="rc.$serviceLink.href">
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            <a target="test-service" href="{{rc.$serviceLink.href}}" title="Open this service in a new tab">
+              <i class="fa fa-external-link"></i>
+            </a>
+          </span>
           &nbsp;
           &nbsp;
           &nbsp;
