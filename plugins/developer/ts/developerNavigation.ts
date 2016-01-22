@@ -254,6 +254,7 @@ module Developer {
         },
         //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
         label: "Dashboard",
+        class: "fa fa-tachometer",
         title: "View the project dashboard for the activity, environments and pipelines"
       },
       {
@@ -261,12 +262,14 @@ module Developer {
         id: "pipelines",
         href: pipelinesLink,
         label: "Pipelines",
+        class: "fa fa-ellipsis-h",
         title: "View the pipeline builds for this project"
       },
       {
         isValid: () => !isJenkinsBuild(),
         href: buildsLink,
         label: "Builds",
+        class: "fa fa-bars",
         title: "View the builds for this project"
       },
       {
@@ -274,12 +277,14 @@ module Developer {
         id: "builds",
         href: jenkinsBuildLink,
         label: "Builds",
+        class: "fa fa-bars",
         title: "View the Jenkins builds for this project"
       },
       {
         isValid: () => isJenkinsBuild(),
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId, "metrics"),
         label: "Metrics",
+        class: "fa fa-bar-chart",
         title: "View the metrics for this project"
       },
 /*
@@ -292,6 +297,7 @@ module Developer {
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
         label: "Settings",
+        class: "fa fa-cog",
         title: "View the project configuration"
       }
     ];
