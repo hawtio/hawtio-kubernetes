@@ -1716,19 +1716,21 @@ module Kubernetes {
     return answer || "admin";
   }
 
-  export function createNamespace(ns) {
-    var projectClient = Kubernetes.createKubernetesClient("projects");
+  export function createNamespace(ns, client?) {
+    if (!client) {
+      client = isOpenShift ? Kubernetes.createKubernetesClient('projects') : Kubernetes.createKubernetesClient('namespaces');
+    }
     if (ns && ns !== currentKubernetesNamespace()) {
-      var project = {
+      var object = {
         apiVersion: Kubernetes.defaultApiVersion,
-        kind: "Project",
+        kind: isOpenShift ? 'Project' : 'Namespace',
         metadata: {
           name: ns,
           labels: {
           }
         }
       };
-      projectClient.put(project,
+      client.put(object,
         (data) => {
           log.info("Created namespace: " + ns)
         },

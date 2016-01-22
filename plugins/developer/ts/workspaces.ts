@@ -112,7 +112,7 @@ module Developer {
             createNamespaceDialog.dialog.close();
 
             var name = createNamespaceDialog.newNamespaceName;
-            Kubernetes.createNamespace(name);
+            Kubernetes.createNamespace(name, kubeClient);
           },
           open: (controller) => {
             var createNamespaceDialog = $scope.createNamespaceDialog;
