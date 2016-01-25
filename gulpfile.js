@@ -10,6 +10,7 @@ var gulp = require('gulp'),
     s = require('underscore.string'),
     stringifyObject = require('stringify-object'),
     hawtio = require('hawtio-node-backend'),
+    argv = require('yargs').argv,
     del = require('del');
 
 var plugins = gulpLoadPlugins({});
@@ -21,7 +22,7 @@ var config = {
   less: ['plugins/**/*.less'],
   templates: ['plugins/**/*.html'],
   templateModule: pkg.name + '-templates',
-  dist: './dist/',
+  dist: argv.out || './dist/',
   js: pkg.name + '.js',
   css: pkg.name + '.css',
   tsProject: plugins.typescript.createProject({
@@ -85,7 +86,7 @@ gulp.task('less', function () {
       title: 'less file compilation error'
     }))
     .pipe(plugins.concat(config.css))
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest(config.dist));
 });
 
 gulp.task('template', ['tsc'], function() {
