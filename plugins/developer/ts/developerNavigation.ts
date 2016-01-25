@@ -298,7 +298,19 @@ module Developer {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
         label: "Settings",
         class: "fa fa-cog",
-        title: "View the project configuration"
+        title: "View the project configuration",
+        isActive: (subTab, path) => {
+          if (_.endsWith(path, '/buildConfigEdit')) {
+            return true;
+          }
+          if (_.endsWith(path, '/forge/secrets')) {
+            return true;
+          }
+          if (_.endsWith(path, '/forge/command/devops-edit')) {
+            return true;
+          }
+          return false;
+        }
       }
     ];
 

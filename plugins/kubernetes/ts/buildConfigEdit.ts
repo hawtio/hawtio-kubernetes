@@ -237,7 +237,8 @@ module Kubernetes {
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = Developer.createProjectSettingsBreadcrumbs($scope.projectId);
-        $scope.subTabConfig = Developer.createProjectSettingsSubNavBars($scope.projectId);
+        $scope.subTabConfig = Developer.createProjectSubNavBars($scope.projectId);
+        $scope.tabs = Developer.createProjectSettingsSubNavBars($scope.projectId);
 
         watch($scope, $element, "secrets", $scope.namespace, onSecrets);
 
