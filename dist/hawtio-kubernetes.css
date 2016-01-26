@@ -411,6 +411,33 @@ kubernetes-container-terminal .terminal-actions {
   background-color: darkred;
 }
 
+.project-dashboard .card-pf-title {
+  margin-right: 1em;
+}
+.project-dashboard .no-border {
+  border: none;
+  margin-bottom: 0;
+}
+.project-dashboard .no-top-margin {
+  margin-top: 0;
+}
+.project-dashboard .full-card-width {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.project-dashboard .card-pf .panel-group {
+  border-width: 0;
+}
+.project-dashboard .card-pf .panel-group .panel {
+  box-shadow: none;
+}
+.project-dashboard .card-pf .panel-group .panel.panel-default {
+  border-width: 0;
+}
+.project-dashboard .card-pf .panel-group .panel.panel-default .log-panel {
+  border: 1px solid #d4d4d4;
+}
+
 .kubernetes-overview {
   width: 100%;
   height: 100%;

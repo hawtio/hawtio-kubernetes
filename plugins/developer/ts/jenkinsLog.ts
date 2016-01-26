@@ -22,7 +22,7 @@ module Developer {
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
 
-    $scope.id = $routeParams["id"];
+    $scope.id = $scope.$eval('build.id') || $routeParams["id"];
     $scope.schema = KubernetesSchema;
     $scope.entityChangedCache = {};
 
