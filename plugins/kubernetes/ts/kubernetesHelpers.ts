@@ -598,6 +598,14 @@ module Kubernetes {
             }
           }
         });
+        if (!hasHttps && !hasHttp && port) {
+          // lets treat 8080 as http which is a common service to export
+          if (port === 8080) {
+            hasHttp = true;
+          } else if (port === 8443) {
+            hasHttps = true;
+          }
+        }
       }
       if (portalIP) {
         if (hasHttps) {
