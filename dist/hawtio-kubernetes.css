@@ -316,34 +316,6 @@ img.icon-selected-app {
 .breadcrumb-tabs {
   padding-top: 5px;
 }
-.log-window {
-  position: absolute;
-  overflow: auto;
-  top: 159px;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  padding-left: 10px;
-  height: auto;
-  width: auto;
-  border-top: 1px solid #d4d4d4;
-}
-.log-window-inner * {
-  font-family: "DroidSansMonoRegular", monospace;
-  line-height: 13px;
-}
-.log-panel {
-  position: static;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-  border: none;
-  padding: 3px;
-}
-.log-panel-inner * {
-  font-family: "DroidSansMonoRegular", monospace;
-  line-height: 13px;
-}
 tbody .ngCellText i {
   margin-right: 5px;
 }
@@ -387,6 +359,9 @@ kubernetes-container-terminal .terminal-actions {
 }
 .form-warning.bg-danger {
   padding: 8px;
+}
+legend {
+  border-bottom: none;
 }
 /* TODO lets work around some ui-bootstrap / patternfly css gremlins */
 .modal .modal-dialog {
@@ -433,9 +408,37 @@ kubernetes-container-terminal .terminal-actions {
 }
 .project-dashboard .card-pf .panel-group .panel.panel-default {
   border-width: 0;
+  border-top-width: 1px;
 }
 .project-dashboard .card-pf .panel-group .panel.panel-default .log-panel {
   border: 1px solid #d4d4d4;
+}
+
+.filter-header .btn,
+.filter-header form {
+  margin-top: 1.05em;
+  margin-bottom: 1em;
+}
+
+.log-window {
+  border-top: 1px solid #d4d4d4;
+  overflow: auto;
+}
+.log-window-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
+  line-height: 13px;
+}
+.log-panel {
+  position: static;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  border: none;
+  padding: 3px;
+}
+.log-panel-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
+  line-height: 13px;
 }
 
 .kubernetes-overview {
