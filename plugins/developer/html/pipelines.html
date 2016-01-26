@@ -1,11 +1,6 @@
 <div class="row" ng-controller="Developer.PipelinesController">
-  <div class="row">
-    <div hawtio-breadcrumbs></div>
-  </div>
-
-  <div class="row">
-    <div hawtio-tabs></div>
-  </div>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
 
   <div class="row filter-header">
     <div class="col-md-4">
@@ -27,7 +22,7 @@
 
     </div>
   </div>
-  <div class="row">
+  <div class="row" ng-init="hideLogs = true">
     <div class="col-md-12">
       <div ng-hide="model.fetched">
         <div class="align-center">

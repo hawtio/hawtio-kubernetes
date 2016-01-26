@@ -56,11 +56,16 @@
 
           </div>
         </div>
-        <div class="row">
+        <div class="row" ng-show="hideLogs && !build.building">
+          <div class="col-md-12">
+            <a href="{{build.$logLink}}" class="pull-right">View Full Log</a>
+          </div>
+        </div>
+        <div class="row" ng-hide="hideLogs && !build.building">
           <div class="col-md-12">
             <h4 class="inline-block">Logs</h4>
             <a href="{{build.$logLink}}" class="pull-right">View Full Log</a>
-            <div style="height: 250px;" ng-init="selectedBuild = build" ng-include="'plugins/developer/html/logPanel.html'"></div>
+            <div style="height: 250px;" ng-include="'plugins/developer/html/logPanel.html'"></div>
           </div>
         </div>
 

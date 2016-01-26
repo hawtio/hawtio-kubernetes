@@ -22,6 +22,8 @@ module Developer {
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
 
+    $scope.selectedBuild = $scope.$eval('build') || $scope.$eval('selectedBuild');
+
     $scope.id = $scope.$eval('build.id') || $routeParams["id"];
     $scope.schema = KubernetesSchema;
     $scope.entityChangedCache = {};
@@ -40,17 +42,15 @@ module Developer {
       updateJenkinsLink();
       Core.$apply($scope);
     });
-    /*
 
-       $scope.$on('jenkinsSelectedBuild', (event, build) => {
-       log.info("==== jenkins build selected! " + build.id + " " + build.$jobId);
-       $scope.selectedBuild = build;
-       });
-
-     */
+    $scope.$on('jenkinsSelectedBuild', (event, build) => {
+      log.info("==== jenkins build selected! " + build.id + " " + build.$jobId);
+      $scope.selectedBuild = build;
+    });
 
 
-    $scope.$watch('selectedBuild', () => {
+    $scope.$watch('selectedBuild', (selectedBuild) => {
+      log.info("Selected build updated: ", selectedBuild);
       $scope.fetch();
     });
 
@@ -124,6 +124,12 @@ module Developer {
     $scope.$keepPolling = () => Kubernetes.keepPollingModel;
 
     $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
+      if ($scope.$eval('hideLogs && !build.building')) {
+        log.debug("Log hidden, not fetching logs");
+        return;
+      } else {
+        log.debug("Fetching logs for build: ", $scope.$eval('build'));
+      }
       var buildId = getBuildId();
       var jobId = getJobId();
       //log.info("=== jenkins log querying job " + jobId + " build " + buildId + " selected build " +  $scope.selectedBuild);
@@ -218,7 +224,7 @@ module Developer {
                 updateJenkinsLink();
               }
               $scope.log.fetched = true;
-              Core.$apply($scope);
+              // Core.$apply($scope);
               next();
             }).
           error(function (data, status, headers, config) {

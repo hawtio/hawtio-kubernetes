@@ -41,19 +41,17 @@ module Developer {
       updateData();
     });
 
-    updateData();
-
     $scope.selectBuild = (build) => {
       var id = build.id;
       if (id) {
         if (id !== $scope.selectedBuildId) {
           $scope.selectedBuildId = id;
-          $scope.$emit("jenkinsSelectedBuild", build);
+          $scope.$broadcast("jenkinsSelectedBuild", build);
         }
       }
     };
 
-    function updateData() {
+    var updateData = _.debounce(() => {
       var entity = $scope.entity;
       if ($scope.jobId) {
         if ((!entity || entity.$jenkinsJob)) {
@@ -159,6 +157,9 @@ module Developer {
         $scope.model.fetched = true;
         Core.$apply($scope);
       }
-    }
+    }, 50);
+
+    updateData();
+
   });
 }
