@@ -242,7 +242,7 @@ module Developer {
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
         isActive: (subTab, path) => {
-          console.log("subTab: ", subTab, " path: ", path);
+          //console.log("subTab: ", subTab, " path: ", path);
           if (path === subTab.href) {
             return true;
           }

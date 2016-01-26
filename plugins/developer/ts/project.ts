@@ -23,7 +23,7 @@ module Developer {
         $scope.envVersions = {};
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-        $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
+        $scope.breadcrumbConfig = []; //Developer.createProjectBreadcrumbs($scope.id);
         updateTabs();
         // this is used for the pendingPipelines view
         $scope.jobId = $scope.id;
