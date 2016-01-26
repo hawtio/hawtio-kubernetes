@@ -62,17 +62,18 @@
       <div class="row row-cards-pf">
         <div class="col-md-12">
           <div class="card-pf">
-            <div class="card-pf-heading">
+            <div class="card-pf-heading no-border">
               <h2 class="card-pf-title inline-block">Active Pipelines</h4>
               <a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">View All Pipelines >></a>
             </div>
-            <div class="card-pf-body">
-              <div ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
+            <div class="card-pf-body no-top-margin">
+              <div class="full-card-width" ng-controller="Developer.PipelinesController" ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
             </div>
           </div>
         </div>
       </div>
 
+      <!--
       <div class="row row-cards-pf" ng-show="entity.$jenkinsJob">
         <div class="col-md-12">
           <div class="card-pf">
@@ -86,6 +87,7 @@
           </div>
         </div>
       </div>
+      -->
 
       <div class="row row-cards-pf">
         <div class="col-md-12">
