@@ -240,6 +240,12 @@ module Developer {
 
     var answer = [
       {
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
+        label: "All Projects",
+        class: 'fa fa-angle-double-left',
+        title: "View the projects for this workspace"
+      },
+      {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
         isActive: (subTab, path) => {
           //console.log("subTab: ", subTab, " path: ", path);

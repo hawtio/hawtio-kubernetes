@@ -61,7 +61,7 @@ module Developer {
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
         $scope.breadcrumbConfig = createWorkspacesBreadcrumbs($scope.developerPerspective);
-        $scope.subTabConfig = Developer.createWorkspacesSubNavBars($scope.developerPerspective);
+        $scope.subTabConfig = []; //Developer.createWorkspacesSubNavBars($scope.developerPerspective);
 
         $scope.deletePrompt = (selected) => {
            UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
