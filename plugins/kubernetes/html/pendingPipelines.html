@@ -1,12 +1,15 @@
 <div class="pipeline-panel">
   <div ng-hide="model.fetched">
     <div class="align-center">
-      <i class="fa fa-spinner fa-spin"></i>
+      <div class="spinner spinner-lg"></div>
     </div>
   </div>
   <div ng-show="model.fetched">
     <div ng-hide="model.job.builds.length" class="align-center">
-      <p class="alert alert-info">There are no pipelines for this job.</p>
+      <div>
+        <h2>No Pipeline Available</h2>
+        <p>Pipeline is a kind of build which uses Jenkins Workflow internally which has multiple Stages.  You will see the active pipelines here after you add a build to this project</p>
+      </div>
     </div>
     <div ng-show="model.job.builds.length">
       <div ng-repeat="build in model.job.builds | filter:model.filterText track by $index">

@@ -19,7 +19,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="align-center">
-          <i class="fa fa-spinner fa-spin"></i>
+          <div class="spinner spinner-lg"></div>
         </div>
       </div>
     </div>
@@ -27,13 +27,7 @@
 
   <div ng-show="model.fetched" style="float: none; position: static;">
 
-    <div ng-hide="entity.environments.length" class="align-center row row-cards-pf">
-      <div class="col-md-12">
-        <p class="alert alert-info">There are no environments currently available.</p>
-      </div>
-    </div>
-
-    <div ng-show="entity.environments.length">
+    <div>
 
       <!--
       <div class="pull-right">
@@ -51,8 +45,15 @@
               <h2 class="card-pf-title inline-block">Environments Overview</h2>
             </div>
             <div class="card-pf-body">
-              <div ng-repeat="env in entity.environments | filter:filterTemplates track by $index"
-                class="inline-block environment-block" ng-include="'plugins/developer/html/environmentPanel.html'">
+              <div ng-hide="entity.environments.length">
+                <div class="col-md-12">
+                  <p class="alert alert-info">There are no environments currently available.</p>
+                </div>
+              </div>
+              <div ng-show="entity.environments.length">
+                <div ng-repeat="env in entity.environments | filter:filterTemplates track by $index"
+                  class="inline-block environment-block" ng-include="'plugins/developer/html/environmentPanel.html'">
+                </div>
               </div>
             </div>
           </div>
@@ -73,22 +74,6 @@
         </div>
       </div>
 
-      <!--
-      <div class="row row-cards-pf" ng-show="entity.$jenkinsJob">
-        <div class="col-md-12">
-          <div class="card-pf">
-            <div class="card-pf-heading">
-              <h2 class="card-pf-title inline-block">Logs</h2>
-              <a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/log/{{selectedBuild.id}}">View Full Log >></a>
-            </div>
-            <div class="card-pf-body">
-              <div style="height: 250px;" ng-include="'plugins/developer/html/logPanel.html'"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      -->
-
       <div class="row row-cards-pf">
         <div class="col-md-12">
           <div class="card-pf">
@@ -104,11 +89,4 @@
       </div>
 
     </div>
-
-  <!--
-  <div ng-include="'plugins/wiki/html/overviewDashboard.html'"></div>
-  -->
-
-
-
 </div>
