@@ -386,6 +386,15 @@ legend {
   background-color: darkred;
 }
 
+.project-dashboard .page-header-row {
+  background: white;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-top: -20px;
+  border-bottom: 1px solid #d1d1d1;
+  margin-bottom: 13px;
+  padding-bottom: 7px;
+}
 .project-dashboard .card-pf-title {
   margin-right: 1em;
 }
@@ -439,6 +448,19 @@ legend {
 .log-panel-inner * {
   font-family: "DroidSansMonoRegular", monospace;
   line-height: 13px;
+}
+
+.project-selector {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  list-style-type: none;
+}
+.project-selector a,
+.project-selector a:hover {
+  text-decoration: none;
+  color: #333333;
+  font-size: 13px;
+  line-height: 21px;
 }
 
 .kubernetes-overview {

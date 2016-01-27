@@ -246,6 +246,9 @@ module Developer {
         title: "View the projects for this workspace"
       },
       {
+        template: `<div ng-include="'plugins/developer/html/projectSelector.html'"></div>`
+      },
+      {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
         isActive: (subTab, path) => {
           //console.log("subTab: ", subTab, " path: ", path);

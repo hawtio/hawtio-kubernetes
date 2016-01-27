@@ -69,7 +69,7 @@ module Navigation {
         scope.$watchCollection('HawtioSubTabs.get()', (subTabConfig) => {
           // log.debug("subTabConfig: ", subTabConfig);
           if (subTabConfig && subTabConfig.length > 0) {
-            element.attr('class', 'col-sm-10 col-md-11 col-sm-push-2 col-md-push-1');
+            element.attr('class', 'col-sm-9 col-md-10 col-sm-push-1 col-md-push-2');
           } else {
             element.attr('class', 'col-md-12');
           }
@@ -84,17 +84,18 @@ module Navigation {
       restrict: 'E',
       replace: true,
       template: `
-        <div ng-show="subTabConfig && subTabConfig.length" class="col-sm-2 col-md-1 col-sm-pull-10 col-md-pull-11 sidebar-pf sidebar-pf-left" viewport-height style="position: fixed;"
+        <div ng-show="subTabConfig && subTabConfig.length" class="col-sm-3 col-md-2 col-sm-pull-9 col-md-pull-10 sidebar-pf sidebar-pf-left" viewport-height style="position: fixed;"
              ng-controller="Developer.NavBarController">
           <ul class="nav nav-pills nav-stacked">
             <li ng-repeat="subTab in subTabConfig" ng-show="isValid(subTab)"
                 class="{{subTab.active ? 'active' : ''}}"
                 title="{{subTab.title}}">
-                <a href="{{subTab.href}}">
+                <a ng-hide="subTab.template" href="{{subTab.href}}">
                   <i ng-show="subTab.class" ng-class="subTab.class"></i>
                   <img ng-show="subTab.icon" ng-src="{{subTab.icon}}" style="max-width: 16px; margin-right: 5px;">
                   {{subTab.label}}
                 </a>
+                <div ng-show="subTab.template" compile="subTab.template"></div>
             </li>
           </ul>
           <!--
