@@ -49,8 +49,12 @@
           </div>
           <div class="card-pf-body">
             <div ng-hide="entity.environments.length">
-              <div class="col-md-12">
-                <p class="alert alert-info">There are no environments currently available.</p>
+              <div class="row">
+                <div class="col-md-12 align-center">
+                  <h2>No Environment Available</h2>
+                  <p>Environment is a logical place where deployments happen which maps to a kubernetes / openshift namespace.  You will see environments here after you add a build.</p>
+                  <a class="btn btn-primary" ng-href="{{settingsLink}}"><i class="fa fa-plus"></i> New Build</a>
+                </div>
               </div>
             </div>
             <div ng-show="entity.environments.length">
@@ -65,7 +69,7 @@
 
     <div class="row row-cards-pf">
       <div class="col-md-12">
-        <div class="card-pf">
+        <div class="card-pf pipeline">
           <div class="card-pf-heading no-border">
             <h2 class="card-pf-title inline-block">Active Pipelines</h4>
             <a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">View All Pipelines >></a>

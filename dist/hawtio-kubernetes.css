@@ -234,51 +234,6 @@ img.icon-selected-app {
 .icon-heading {
   font-size: 24px;
 }
-.environment-row a {
-  color: black;
-}
-.environment-rows {
-  /*
-    background-color: rgb(238, 238, 238);
-    */
-  padding-top: 5px;
-  vertical-align: top;
-}
-.environment-name-block {
-  width: 200px;
-}
-.environment-row,
-.environment-name-block,
-.environment-deploy-block {
-  background: white;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.environment-name-block {
-  padding-top: 0px;
-}
-.environment-block {
-  vertical-align: top;
-}
-.environment-row {
-  border: 1px solid;
-  border-color: silver;
-}
-.environment-deploy-block {
-  border: 1px dashed;
-  border-color: silver;
-}
-.environment-deploy-version-and-pods {
-  padding-bottom: 5px;
-}
 .row-header {
   padding-bottom: 20px;
 }
@@ -386,6 +341,58 @@ legend {
   background-color: darkred;
 }
 
+.environment-row a {
+  color: black;
+}
+.environment-row .panel {
+  min-width: 255px;
+  min-height: 160px;
+}
+.environment-row .panel-group {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.environment-row .panel-title > a:before {
+  display: none;
+}
+.environment-rows {
+  /*
+    background-color: rgb(238, 238, 238);
+    */
+  padding-top: 5px;
+  vertical-align: top;
+}
+.environment-name-block {
+  width: 200px;
+}
+.environment-name-block,
+.environment-deploy-block {
+  background: white;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.environment-name-block {
+  padding-top: 0px;
+}
+.environment-block {
+  vertical-align: top;
+}
+.environment-deploy-block {
+  border: 1px dashed;
+  border-color: silver;
+}
+.environment-deploy-version-and-pods {
+  padding-bottom: 5px;
+}
+
 .project-dashboard .page-header-row {
   background: white;
   margin-left: -20px;
@@ -409,17 +416,17 @@ legend {
   margin-left: -20px;
   margin-right: -20px;
 }
-.project-dashboard .card-pf .panel-group {
+.project-dashboard .card-pf.pipeline .panel-group {
   border-width: 0;
 }
-.project-dashboard .card-pf .panel-group .panel {
+.project-dashboard .card-pf.pipeline .panel-group .panel {
   box-shadow: none;
 }
-.project-dashboard .card-pf .panel-group .panel.panel-default {
+.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default {
   border-width: 0;
   border-top-width: 1px;
 }
-.project-dashboard .card-pf .panel-group .panel.panel-default .log-panel {
+.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default .log-panel {
   border: 1px solid #d4d4d4;
 }
 

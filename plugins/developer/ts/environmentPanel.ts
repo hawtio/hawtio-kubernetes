@@ -8,6 +8,10 @@ module Developer {
     $scope.env = $scope.$eval('env');
     $scope.buildConfig = $scope.$eval('entity');
 
+    $scope.open = true;
+
+    $scope.toggle = () => $scope.open = !$scope.open;
+
     var caches = {};
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);

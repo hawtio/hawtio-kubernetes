@@ -1,80 +1,87 @@
+<div class="inline-block environment-row" ng-controller="Developer.EnvironmentPanelController">
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title inline-block">
+          <a href="{{env.url}}" title="namespace: {{env.namespace}}">
+            <!-- <i class="{{env.iconClass}}"></i>&nbsp; -->
+            {{env.label}}
+          </a>
+        </h2>
+      </div>
 
-<div class="environment-row" ng-controller="Developer.EnvironmentPanelController">
-  <div class="environment-name-block">
-    <a href="{{env.url}}" title="namespace: {{env.namespace}}">
-      <h3>
-        <i class="{{env.iconClass}}"></i>&nbsp;
-        {{env.label}}
-      </h3>
-    </a>
-  </div>
-  <div class="environment-deploy-block"
-    ng-repeat="(project, versions) in envVersions[env.namespace] | orderBy:'project' track by $index">
-    <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
-      <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
-        <div class="environment-deploy-version-and-pods">
-          <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
-            title="View the Replication Controller from project {{project}} of version {{version}}">
-            <i class="fa fa-cubes"></i>
-            {{rc.$name}}
-            : {{version}}
-          </a>
-          <span ng-hide="rc.$viewLink"
-            title="View the Replication Controller from project {{project}} of version {{version}}">
-            <i class="fa fa-cubes"></i>
-            {{rc.$name}}
-            : {{version}}
-          </span>
-          <span class="pull-right" ng-show="rc.$serviceLink.href">
-            &nbsp;
-            &nbsp;
-            &nbsp;
-            <a target="test-service" href="{{rc.$serviceLink.href}}" title="Open this service in a new tab">
-              <i class="fa fa-external-link"></i>
-            </a>
-          </span>
-          &nbsp;
-          &nbsp;
-          &nbsp;
-          <span class="pull-right">
-            <a ng-show="rc.$podCounters.podsLink" href="{{rc.$podCounters.podsLink}}" title="View pods">
-              <span ng-show="rc.$podCounters.ready"
-                class="badge badge-success">{{rc.$podCounters.ready}}</span>
-              <span ng-show="rc.$podCounters.valid"
-                class="badge badge-info">{{rc.$podCounters.valid}}</span>
-              <span ng-show="rc.$podCounters.waiting" class="badge">{{rc.$podCounters.waiting}}</span>
-              <span ng-show="rc.$podCounters.error"
-                class="badge badge-warning">{{rc.$podCounters.error}}</span>
-            </a>
-          </span>
+      <div class="panel-body">
+        <div class="environment-deploy-block"
+          ng-repeat="(project, versions) in envVersions[env.namespace] | orderBy:'project' track by $index">
+          <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
+            <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
+              <div class="environment-deploy-version-and-pods">
+                <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
+                  title="View the Replication Controller from project {{project}} of version {{version}}">
+                  <i class="fa fa-cubes"></i>
+                  {{rc.$name}}
+                  : {{version}}
+                </a>
+                <span ng-hide="rc.$viewLink"
+                  title="View the Replication Controller from project {{project}} of version {{version}}">
+                  <i class="fa fa-cubes"></i>
+                  {{rc.$name}}
+                  : {{version}}
+                </span>
+                <span class="pull-right" ng-show="rc.$serviceLink.href">
+                  &nbsp;
+                  &nbsp;
+                  &nbsp;
+                  <a target="test-service" href="{{rc.$serviceLink.href}}" title="Open this service in a new tab">
+                    <i class="fa fa-external-link"></i>
+                  </a>
+                </span>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                <span class="pull-right">
+                  <a ng-show="rc.$podCounters.podsLink" href="{{rc.$podCounters.podsLink}}" title="View pods">
+                    <span ng-show="rc.$podCounters.ready"
+                      class="badge badge-success">{{rc.$podCounters.ready}}</span>
+                    <span ng-show="rc.$podCounters.valid"
+                      class="badge badge-info">{{rc.$podCounters.valid}}</span>
+                    <span ng-show="rc.$podCounters.waiting" class="badge">{{rc.$podCounters.waiting}}</span>
+                    <span ng-show="rc.$podCounters.error"
+                      class="badge badge-warning">{{rc.$podCounters.error}}</span>
+                  </a>
+                </span>
+              </div>
+              <div class="environment-deploy-build-info">
+                <a href="{{rc.$buildUrl}}" target="builds" ng-show="rc.$buildUrl && rc.$buildId" class="="
+                  title="View the build which created this Replication Controller">
+                  <i class="fa fa-tasks"></i>
+                  Build #{{rc.$buildId}}
+                </a>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="pull-right"
+                  title="{{rc.$gitCommit}}
+                  {{rc.$gitCommitAuthor}}
+                  {{rc.$gitCommitDate}}
+                  {{rc.$gitCommitMessage}}">
+                  <i class="fa fa-code-fork"></i>
+                  Commit {{rc.$gitCommit | limitTo:7}}
+                </a>
+                <span ng-hide="rc.$gitUrl || !rc.$gitCommit" class="pull-right"
+                  title="{{rc.$gitCommit}}
+                  {{rc.$gitCommitAuthor}}
+                  {{rc.$gitCommitDate}}
+                  {{rc.$gitCommitMessage}}">
+                  <i class="fa fa-code-fork"></i>
+                  Commit {{rc.$gitCommit | limitTo:7}}
+                </span>
+              </div>
+            </div>
+          </div>
+
+
         </div>
-        <div class="environment-deploy-build-info">
-          <a href="{{rc.$buildUrl}}" target="builds" ng-show="rc.$buildUrl && rc.$buildId" class="="
-            title="View the build which created this Replication Controller">
-            <i class="fa fa-tasks"></i>
-            Build #{{rc.$buildId}}
-          </a>
-          &nbsp;
-          &nbsp;
-          &nbsp;
-          <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="pull-right"
-            title="{{rc.$gitCommit}}
-{{rc.$gitCommitAuthor}}
-{{rc.$gitCommitDate}}
-{{rc.$gitCommitMessage}}">
-            <i class="fa fa-code-fork"></i>
-            Commit {{rc.$gitCommit | limitTo:7}}
-          </a>
-          <span ng-hide="rc.$gitUrl || !rc.$gitCommit" class="pull-right"
-            title="{{rc.$gitCommit}}
-{{rc.$gitCommitAuthor}}
-{{rc.$gitCommitDate}}
-{{rc.$gitCommitMessage}}">
-            <i class="fa fa-code-fork"></i>
-            Commit {{rc.$gitCommit | limitTo:7}}
-          </span>
-        </div>
+
       </div>
     </div>
-  </div>
-</div>
