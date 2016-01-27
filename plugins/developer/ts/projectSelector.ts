@@ -3,21 +3,16 @@
 module Developer {
 
   _module.controller('Developer.ProjectSelector', ['$scope', '$routeParams', 'KubernetesModel', ($scope, $routeParams, KubernetesModel) => {
-
-    log.info("routeParams: ", $routeParams);
-
-    var projectId = $routeParams['id'] || $routeParams['projectId'];
+    var projectId = $routeParams['projectId'] || $routeParams['project'] || $routeParams['id'];
     if (projectId) {
       $scope.projectId = projectId;
       $scope.model = KubernetesModel
       $scope.$watch('model.buildconfigs', (buildconfigs) => {
         $scope.projects = buildconfigs;
-        log.info('projects: ', $scope.projects);
       });
+    } else {
+      log.info("no project ID in routeParams: ", $routeParams);
     }
-
-    log.info("projectId: ", projectId);
-
   }]);
 
 }
