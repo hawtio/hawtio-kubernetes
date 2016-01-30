@@ -14,14 +14,14 @@ module Developer {
     return {
       href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces"),
       label: "Develop",
-      title: "View all the developer workspaces"
+      title: "View all the apps for a project"
     };
   }
   function operateBreadcrumb() {
     return {
       href: UrlHelpers.join(HawtioCore.documentBase(), "/namespaces"),
       label: "Manage",
-      title: "Manage the namespaces and resources inside them"
+      title: "Manage the projects and resources inside them"
     };
   }
 
@@ -76,7 +76,7 @@ module Developer {
         {
           href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces/", workspaceName),
           label: workspaceName,
-          title: "View the workspace: " + workspaceName
+          title: "View the project: " + workspaceName
         }
       );
       return processChildren(answer, children);
@@ -148,8 +148,8 @@ module Developer {
         answer.push(
           {
             href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects"),
-            label: "Projects",
-            title: "View all the projects"
+            label: "Apps",
+            title: "View all the apps in this project"
           }
         );
 
@@ -170,12 +170,12 @@ module Developer {
   export function createProjectSettingsBreadcrumbs(projectName, workspaceName = null) {
     var children = [{
       label: "Settings",
-      title: "View the settings of this project"
+      title: "View the settings of this app"
     }];
     if (!projectName) {
       var children = [{
-        label: "New Project",
-        title: "Lets make a new project"
+        label: "New App",
+        title: "Lets make a new app"
       }];
     }
     return createProjectBreadcrumbs(projectName, children, workspaceName);
@@ -186,24 +186,24 @@ module Developer {
     return activateCurrent([
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
-        label: "Projects",
-        title: "View the projects for this workspace"
+        label: "Apps",
+        title: "View the apps in this project"
       },
       {
         isValid: () => jenkinsLink(),
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "jenkinsJob"),
         label: "Builds",
-        title: "View the projects for this workspace"
+        title: "View the builds in this project"
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
-        title: "View the runtime environment for this workspace"
+        title: "View the runtime resources in this project"
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "detail"),
         label: "Detail",
-        title: "View the workspace detail"
+        title: "View the project detail"
       }
     ]);
   }
@@ -241,9 +241,9 @@ module Developer {
     var answer = [
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
-        label: "All Projects",
+        label: "All Apps",
         class: 'fa fa-angle-double-left',
-        title: "View the projects for this workspace"
+        title: "View the apps in this project"
       },
       {
         template: `<div ng-include="'plugins/developer/html/projectSelector.html'"></div>`
@@ -264,7 +264,7 @@ module Developer {
         //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
         label: "Dashboard",
         class: "fa fa-tachometer",
-        title: "View the project dashboard for the activity, environments and pipelines"
+        title: "View the app dashboard for the activity, environments and pipelines"
       },
       {
         isValid: () => isJenkinsBuild() && pipelinesLink,
@@ -272,14 +272,14 @@ module Developer {
         href: pipelinesLink,
         label: "Pipelines",
         class: "fa fa-ellipsis-h",
-        title: "View the pipeline builds for this project"
+        title: "View the pipeline builds for this app"
       },
       {
         isValid: () => !isJenkinsBuild(),
         href: buildsLink,
         label: "Builds",
         class: "fa fa-bars",
-        title: "View the builds for this project"
+        title: "View the builds for this app"
       },
       {
         isValid: () => isJenkinsBuild(),
@@ -287,7 +287,7 @@ module Developer {
         href: jenkinsBuildLink,
         label: "Builds",
         class: "fa fa-bars",
-        title: "View the Jenkins builds for this project"
+        title: "View the Jenkins builds for this app"
       },
       {
         isValid: () => isJenkinsBuild(),
@@ -307,7 +307,7 @@ module Developer {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
         label: "Settings",
         class: "fa fa-cog",
-        title: "View the project configuration",
+        title: "View the app configuration",
         isActive: (subTab, path) => {
           if (_.endsWith(path, '/buildConfigEdit')) {
             return true;
@@ -361,12 +361,12 @@ module Developer {
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "buildConfigEdit"),
         label: "Core",
-        title: "View the core project configuration"
+        title: "View the core build configuration"
       },
       {
         href: projectSecretsLink(workspaceName, projectName),
         label: "Secrets",
-        title: "View or change the secrets used to edit project source code in the source control system"
+        title: "View or change the secrets used to edit source code in the source control system"
       },
       {
         href: editPipelineLink(workspaceName, projectName),
@@ -384,7 +384,7 @@ module Developer {
   }
 
   export function forgeProjectHasBuilder(name) {
-    var forgeProject = Kubernetes.inject("ForgeProject")
+    var forgeProject = Kubernetes.inject("ForgeProject");
     if (forgeProject) {
       return forgeProject.hasBuilder(name);
     }
@@ -392,7 +392,7 @@ module Developer {
   }
 
   export function forgeProjectHasPerspective(name) {
-    var forgeProject = Kubernetes.inject("ForgeProject")
+    var forgeProject = Kubernetes.inject("ForgeProject");
     if (forgeProject) {
       return forgeProject.hasPerspective(name);
     }
@@ -446,7 +446,7 @@ module Developer {
         id: "builds",
         href: createBuildsLink(workspaceName, projectName, jobId),
         label: "Builds",
-        title: "View the builds for this project"
+        title: "View the builds for this app"
       }
     ];
     if (buildId) {
