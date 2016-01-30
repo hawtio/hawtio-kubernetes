@@ -83,8 +83,8 @@ module Developer {
                  deleteSelected(selected, selected.shift());
                }
              },
-             title: 'Delete Namespaces',
-             action: 'The following Namespaces will be deleted:',
+             title: 'Delete Projects',
+             action: 'The following projects will be deleted:',
              okText: 'Delete',
              okClass: 'btn-danger',
              custom: "This operation is permanent once completed!",
