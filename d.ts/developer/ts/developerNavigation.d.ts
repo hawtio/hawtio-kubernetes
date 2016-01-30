@@ -11,9 +11,12 @@ declare module Developer {
     function createWorkspaceSubNavBars(): any;
     function createProjectSubNavBars(projectName: any, jenkinsJobId?: any, $scope?: any): any;
     function createProjectSettingsSubNavBars(projectName: any, jenkinsJobId?: any): any;
+    function forgeProjectHasBuilder(name: any): any;
+    function forgeProjectHasPerspective(name: any): any;
     function editPipelineLinkScope($scope: any): string;
     function createProjectLink(workspaceName?: any): string;
     function editPipelineLink(workspaceName: any, projectName: any): string;
+    function editMavenBuildLink(workspaceName: any, projectName: any): string;
     function projectSecretsLink(workspaceName: any, projectName: any): string;
     function secretsNamespaceLink(workspaceName: any, projectName: any, secretsNamespace: any): string;
     function projectWorkspaceLink(workspaceName: any, projectName: any, path: any, ignoreBlankProject?: boolean): string;

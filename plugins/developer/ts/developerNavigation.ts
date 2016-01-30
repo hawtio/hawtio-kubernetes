@@ -372,9 +372,31 @@ module Developer {
         href: editPipelineLink(workspaceName, projectName),
         label: "Pipeline",
         title: "View the DevOps and pipeline configuration"
+      },
+      {
+        isValid: () => forgeProjectHasBuilder("maven"),
+        href: editMavenBuildLink(workspaceName, projectName),
+        label: "Maven",
+        title: "View the Maven build configuration"
       }
     ];
     return activateCurrent(answer);
+  }
+
+  export function forgeProjectHasBuilder(name) {
+    var forgeProject = Kubernetes.inject("ForgeProject")
+    if (forgeProject) {
+      return forgeProject.hasBuilder(name);
+    }
+    return false;
+  }
+
+  export function forgeProjectHasPerspective(name) {
+    var forgeProject = Kubernetes.inject("ForgeProject")
+    if (forgeProject) {
+      return forgeProject.hasPerspective(name);
+    }
+    return false;
   }
 
   export function editPipelineLinkScope($scope) {
@@ -390,6 +412,10 @@ module Developer {
 
   export function editPipelineLink(workspaceName, projectName) {
     return projectWorkspaceLink(workspaceName, projectName, "forge/command/devops-edit");
+  }
+
+  export function editMavenBuildLink(workspaceName, projectName) {
+    return projectWorkspaceLink(workspaceName, projectName, "forge/command/fabric8-setup");
   }
 
   export function projectSecretsLink(workspaceName, projectName) {
