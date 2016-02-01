@@ -276,6 +276,8 @@ module Kubernetes {
     $scope.model = KubernetesModel;
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
+
+    $scope.subTabConfig = [];
   }]);
 
 }
