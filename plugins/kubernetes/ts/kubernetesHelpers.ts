@@ -475,6 +475,17 @@ module Kubernetes {
       $scope.$projectLink = Developer.projectLink($scope.projectId);
     }
 
+    $scope.link = (href) => {
+      if (!href) {
+        return href;
+      }
+      if ($scope.$projectLink) {
+        return Developer.namespaceLink($scope, $routeParams, href.replace(/^\/kubernetes/, ''));
+      } else {
+        return href;
+      }
+    }
+
     $scope.codeMirrorOptions = {
       lineWrapping : true,
       lineNumbers: true,
@@ -733,23 +744,35 @@ module Kubernetes {
   /**
    * Returns a link to the detail page for the given entity
    */
-  export function entityPageLink(entity) {
-    if (entity) {
-      var viewLink = entity["$viewLink"];
-      if (viewLink) {
-        return viewLink;
-      }
-      var id = getName(entity);
-      var kind = getKind(entity);
-      if (kind && id) {
-        var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
-        var namespace = getNamespace(entity);
-        if (namespace && !isIgnoreNamespaceKind(kind)) {
-          return Core.url(UrlHelpers.join('/kubernetes/namespace', namespace, path, id));
-        } else {
-          return Core.url(UrlHelpers.join('/kubernetes', path, id));
+  export function entityPageLink(obj) {
+    if (obj) {
+      function getLink(entity) {
+        var viewLink = entity["$viewLink"];
+        if (viewLink) {
+          return viewLink;
+        }
+        var id = getName(entity);
+        var kind = getKind(entity);
+        if (kind && id) {
+          var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
+          var namespace = getNamespace(entity);
+          if (namespace && !isIgnoreNamespaceKind(kind)) {
+            return Core.url(UrlHelpers.join('/kubernetes/namespace', namespace, path, id));
+          } else {
+            return Core.url(UrlHelpers.join('/kubernetes', path, id));
+          }
         }
       }
+      var baseLink = getLink(obj);
+      if (!HawtioCore.injector || !baseLink) {
+        return baseLink;
+      }
+      var $routeParams = HawtioCore.injector.get('$routeParams');
+      var projectId = $routeParams.project || $routeParams.project;
+      if (!projectId) {
+        return baseLink;
+      }
+      return UrlHelpers.join(Developer.projectLink(projectId), baseLink.replace(/^\/kubernetes\//, ''));
     }
     return null;
   }

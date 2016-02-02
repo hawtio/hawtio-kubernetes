@@ -481,6 +481,12 @@ module Developer {
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([
       {
+        href: UrlHelpers.join(projectLink, "environments"),
+        label: "<< Back To Project",
+        title: "Go back to the project view for this app",
+        isValid: () => project
+      },
+      {
         href: UrlHelpers.join(namespacesLink, ns, "apps"),
         label: "Apps",
         title: "View the apps for this workspace"
