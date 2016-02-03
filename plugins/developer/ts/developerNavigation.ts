@@ -482,44 +482,44 @@ module Developer {
     return activateCurrent([
       {
         href: UrlHelpers.join(projectLink, "environments"),
-        label: "<< Back To Project",
-        title: "Go back to the project view for this app",
+        label: "<< Back To App",
+        title: "Go back to the Dashboard for this App",
         isValid: () => project
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "apps"),
-        label: "Apps",
-        title: "View the apps for this workspace"
+        label: "Overview",
+        title: "Overview of all the apps for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "services"),
         label: "Services",
-        title: "View the apps for this workspace"
+        title: "View the apps for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "replicationControllers"),
         label: "Controllers",
-        title: "View the Replication Controllers for this workspace"
+        title: "View the Replication Controllers for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "pods"),
         label: "Pods",
-        title: "View the pods for this workspace"
+        title: "View the pods for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "secrets"),
         label: "Secrets",
-        title: "View the secrets for this workspace"
+        title: "View the secrets for this project"
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/hosts"),
         label: "Nodes",
-        title: "View the nodes for this workspace"
+        title: "View the nodes for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "overview"),
         label: "Overview",
-        title: "View all the objects in this workspace and their relationship"
+        title: "View all the objects in this project and their relationship"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "angryPods"),
