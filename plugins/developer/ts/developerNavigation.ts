@@ -518,7 +518,7 @@ module Developer {
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "overview"),
-        label: "Overview",
+        label: "Diagram",
         title: "View all the objects in this project and their relationship"
       },
       {
