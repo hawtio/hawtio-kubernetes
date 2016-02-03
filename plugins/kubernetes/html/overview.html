@@ -81,11 +81,11 @@
   </script>
   <script type="text/ng-template" id="overviewTemplate.html">
     <div class="kubernetes-overview"
-         hawtio-jsplumb
-         draggable="false"
-         layout="false"
-         node-sep="50"
-         rank-sep="300">
+        hawtio-jsplumb
+        draggable="false"
+        layout="false"
+        node-sep="50"
+        rank-sep="300">
       <div class="kubernetes-overview-row">
         <div class="kubernetes-overview-cell">
           <div class="kubernetes-overview services">
@@ -113,5 +113,5 @@
     <div hawtio-tabs></div>
   </div>
 
-  <kubernetes-overview ui-if="kubernetes.selectedNamespace"><{{baseUri}}/kubernetes-overview>
+  <kubernetes-overview></kubernetes-overview>
 </div>
