@@ -32,17 +32,17 @@
       <span class="pull-right">&nbsp;</span>
 
       <a class="btn btn-default pull-right"
-              ng-click="resizeDialog.open(item)"
-              title="Scale this controller, changing the number of pods you wish to run">
-        <i class="fa fa-server"></i> Scale
-      </a>
-      <span class="pull-right">&nbsp;</span>
-
-      <span class="pull-right">&nbsp;</span>
-      <a class="btn btn-primary pull-right"
          href="/kubernetes/namespace/{{item.metadata.namespace}}/events?q=kind%3DReplicationController%20name%3D{{item.metadata.name}}"
          title="View the events for this Replication Controller">
         <i class="fa fa-ellipsis-v"></i> Events
+      </a>
+
+      <span class="pull-right">&nbsp;&nbsp;&nbsp;</span>
+
+      <a class="btn btn-default pull-right"
+              ng-click="resizeDialog.open(item)"
+              title="Scale this controller, changing the number of pods you wish to run">
+        <i class="fa fa-server"></i> Scale
       </a>
 
       <span class="pull-right controller-pod-counts" ng-show="item.$podCounters">Pods:
