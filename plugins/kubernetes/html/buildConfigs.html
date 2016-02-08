@@ -82,14 +82,14 @@
 
       <a class="btn btn-primary pull-right" href="/workspaces/{{namespace}}/forge/createProject"
          ng-show="isLoggedIntoGogs()"
-         title="Create a new project and repository">
+         title="Create a new app and repository">
         <i class="fa fa-plus"></i> Create Project</a>
       </a>
       <span class="pull-right" ng-show="isLoggedIntoGogs()">&nbsp;</span>
 
       <a class="btn btn-primary pull-right" href="/workspaces/{{namespace}}/forge/repos"
          ng-hide="isLoggedIntoGogs()"
-         title="Sign in to gogs so that you can create a new project">
+         title="Sign in to gogs so that you can create a new app">
         <i class="fa fa-sign-in"></i> Sign In</a>
       </a>
       <span class="pull-right" ng-hide="isLoggedIntoGogs()">&nbsp;</span>

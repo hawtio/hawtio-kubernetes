@@ -96,8 +96,8 @@ module Developer {
               deleteSelected(selected, selected.shift());
             }
           },
-          title: 'Delete Projects',
-          action: 'The following Projects will be deleted:',
+          title: 'Delete Apps',
+          action: 'The following Apps will be deleted:',
           okText: 'Delete',
           okClass: 'btn-danger',
           custom: "This operation is permanent once completed!",
