@@ -120,21 +120,7 @@ module Kubernetes {
     }
   });
 
-  // TODO this needs to go over into KubernetesAPI
-  function namespaced(kind:string) {
-    switch (kind) {
-      case KubernetesAPI.WatchTypes.POLICIES:
-      case KubernetesAPI.WatchTypes.OAUTH_CLIENTS:
-      case KubernetesAPI.WatchTypes.NODES:
-      case KubernetesAPI.WatchTypes.PERSISTENT_VOLUMES:
-      case KubernetesAPI.WatchTypes.PERSISTENT_VOLUME_CLAIMS:
-      case KubernetesAPI.WatchTypes.PROJECTS:
-        return false;
-
-      default:
-        return true;
-    }
-  }
+  var customUrlHandlers = {};
 
   self.setNamespace = (namespace: string) => {
     if (namespace === namespaceWatch.selected) {
@@ -143,14 +129,14 @@ module Kubernetes {
     if (namespaceWatch.selected) {
       log.debug("Stopping current watches");
       _.forOwn(namespaceWatch.watches, (watch, key) => {
-        if (!namespaced(key)) {
+        if (!KubernetesAPI.namespaced(key)) {
           return;
         }
         log.debug("Disconnecting watch: ", key);
         watch.disconnect();
       });
       _.forEach(_.keys(namespaceWatch.watches), (key) => {
-        if (!namespaced(key)) {
+        if (!KubernetesAPI.namespaced(key)) {
           return;
         }
         log.debug("Deleting kind: ", key);
@@ -165,14 +151,19 @@ module Kubernetes {
         }
         if (!namespaceWatch.watches[kind]) {
           log.debug("Creating watch for kind: ", kind);
-          var watch = <any> KubernetesAPI.watch({
-          kind: kind,
-          namespace: namespaced(kind) ? namespace : undefined,
-          success: (objects) => {
-            watch.objects = objects;
-            debouncedUpdate();
+          var config = <any> {
+            kind: kind,
+            namespace: KubernetesAPI.namespaced(kind) ? namespace : undefined,
+            success: (objects) => {
+              watch.objects = objects;
+              debouncedUpdate();
+            }
+          };
+          if (kind in customUrlHandlers) {
+            config.urlFunction = customUrlHandlers[kind];
           }
-          });
+          var watch = <any> KubernetesAPI.watch(config);
+          watch.config = config;
           namespaceWatch.watches[kind] = watch;
         }
       });
@@ -182,6 +173,19 @@ module Kubernetes {
   self.hasWebSocket = true;
 
   self.getNamespace = () => namespaceWatch.selected;
+
+  self.registerCustomUrlFunction = (kind:string, url:(options:KubernetesAPI.K8SOptions) => string) => {
+    customUrlHandlers[kind] = url;
+    if (kind in namespaceWatch.watches) {
+      var watch = namespaceWatch.watches[kind];
+      var config = watch.config;
+      config.urlFunction = url;
+      watch.disconnect();
+      delete namespaceWatch.watches[kind];
+      watch = <any> KubernetesAPI.watch(config);
+      namespaceWatch.watches[kind] = watch;
+    }
+  }
 
   self.getTypes = () => {
     var filter = (kind:string) => {
@@ -207,6 +211,9 @@ module Kubernetes {
     var answer = k8sTypes.concat([WatchTypes.NAMESPACES]);
     if (isOpenShift) {
       answer = answer.concat(osTypes);
+    } else {
+      answer = answer.concat(KubernetesAPI.WatchTypes.TEMPLATES);
+      answer = answer.concat(KubernetesAPI.WatchTypes.BUILD_CONFIGS);
     }
     return _.filter(answer, filter);
   }

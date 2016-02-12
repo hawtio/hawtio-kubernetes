@@ -89,6 +89,7 @@ declare module Kubernetes {
         getObjectMap: (type: string) => ObjectMap;
         addAction: (type: string, action: string, fn: (obj: any) => void) => void;
         registerListener: (fn: (objects: ObjectMap) => void) => void;
+        registerCustomUrlFunction: (kind: string, url: (kind: string) => string) => void;
     }
     interface KubePod {
         id: string;

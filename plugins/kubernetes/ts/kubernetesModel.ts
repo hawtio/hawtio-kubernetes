@@ -70,7 +70,20 @@ module Kubernetes {
     public appFolders = [];
 
     public fetched = false;
-    public showRunButton = false;
+    public get showRunButton():boolean {
+      if (isOpenShift) {
+        return true;
+      }
+      return _.any(this.services, (service) => {
+        var name = getName(service);
+        if (name === "templates") {
+          var podCounters = service.$podCounters;
+          return podCounters && (podCounters.valid || podCounters.ready);
+        } else {
+          return false;
+        }
+      });
+    }
 
     public buildconfigs = [];
     public events = [];
@@ -426,16 +439,8 @@ module Kubernetes {
           });
         });
 
-        var hasTemplatesService = isOpenShift;
         var noMatches = [];
         this.services.forEach((service) => {
-          var name = getName(service);
-          if (name === "templates") {
-            var podCounters = service.$podCounters;
-            if (podCounters && podCounters.valid) {
-              hasTemplatesService = true;
-            }
-          }
           // now lets see if we can find an app with an RC of the same selector
           var matchesApp = null;
           appViews.forEach((appView) => {
@@ -479,8 +484,6 @@ module Kubernetes {
             });
           }
         });
-
-        this.showRunButton = hasTemplatesService;
 
         angular.forEach(this.routes, (route) => {
           var metadata = route.metadata || {};
@@ -669,6 +672,12 @@ module Kubernetes {
     }
   }
 
+  function getTemplateService(model) {
+    var key = createKey('default', 'templates', 'service');
+    var answer = model.servicesByKey[key];
+    log.debug("found template service: ", answer);
+    return answer;
+  }
 
   /**
    * Creates a model service which keeps track of all the pods, replication controllers and services along
@@ -686,6 +695,25 @@ module Kubernetes {
       $scope[type + 'Resource'] = createResource(type, urlTemplate, $resource, $scope);
     });
 
+    if (!isOpenShift) {
+      // register custom URL factories for templates/projects
+      watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.BUILD_CONFIGS, (options:KubernetesAPI.K8SOptions) => {
+        var templateService = getTemplateService($scope);
+        if (templateService) {
+          return UrlHelpers.join(templateService.proxyUrl, '/oapi/v1/namespaces/default/buildconfigs/');
+        }
+        return null;
+      });
+      // register custom URL factories for templates/projects
+      watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.TEMPLATES, (options:KubernetesAPI.K8SOptions) => {
+        var templateService = getTemplateService($scope);
+        if (templateService) {
+          return UrlHelpers.join(templateService.proxyUrl, '/oapi/v1/namespaces/default/templates/');
+        }
+        return null;
+      });
+    }
+
     // register for all updates on objects
 		watcher.registerListener((objects:ObjectMap) => {
 			var types = watcher.getTypes();
@@ -694,7 +722,7 @@ module Kubernetes {
 					case WatchTypes.SERVICES:
 						var items = populateKeys(objects[type]);
 						angular.forEach(items, (item) => {
-              item.proxyUrl = kubernetesProxyUrlForService(masterApiUrl(), item);
+              item.proxyUrl = kubernetesProxyUrlForService(kubernetesApiUrl(), item);
             });
 						$scope[type] = items;
 						break;
