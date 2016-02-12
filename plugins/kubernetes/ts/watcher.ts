@@ -182,7 +182,12 @@ module Kubernetes {
       config.urlFunction = url;
       watch.disconnect();
       delete namespaceWatch.watches[kind];
+      config.success = (objects) => {
+        watch.objects = objects;
+        debouncedUpdate();
+      }
       watch = <any> KubernetesAPI.watch(config);
+      watch.config = config;
       namespaceWatch.watches[kind] = watch;
     }
   }
