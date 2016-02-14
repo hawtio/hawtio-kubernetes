@@ -507,6 +507,11 @@ module Developer {
         title: "View the pods for this project"
       },
       {
+        href: UrlHelpers.join(namespacesLink, ns, "events"),
+        label: "Events",
+        title: "View the events for this project"
+      },
+      {
         href: UrlHelpers.join(namespacesLink, ns, "secrets"),
         label: "Secrets",
         title: "View the secrets for this project"

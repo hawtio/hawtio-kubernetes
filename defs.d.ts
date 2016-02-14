@@ -1,4 +1,5 @@
 /// <reference path="d.ts/includes.d.ts"/>
+/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>
 /// <reference path="d.ts/developer/ts/developerEnrichers.d.ts"/>
 /// <reference path="d.ts/developer/ts/developerHelpers.d.ts"/>
 /// <reference path="d.ts/developer/ts/developerNavigation.d.ts"/>
@@ -64,4 +65,3 @@
 /// <reference path="d.ts/kubernetes/ts/templates.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/watcher.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/term.d.ts"/>
-/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>
