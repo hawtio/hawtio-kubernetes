@@ -106,7 +106,7 @@ module Developer {
 
           var count = 0;
           var builds = _.sortBy($scope.metrics.builds || [], "number");
-          angular.forEach(builds, (build) => {
+          angular.forEach(builds, (build:any) => {
             var x = build.number;
             var y = build.duration / 1000;
             var date = Developer.asDate(build.timeInMillis);

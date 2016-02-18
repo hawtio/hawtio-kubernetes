@@ -565,7 +565,7 @@ module Kubernetes {
             $iconUrl: defaultIconUrl
           };
 
-          angular.forEach(this.appViews, (appView) => {
+          angular.forEach(this.appViews, (appView:any) => {
             try {
               var appPath = appView.appPath;
 
@@ -576,7 +576,7 @@ module Kubernetes {
                };
                */
 
-              var appInfo = angular.copy(defaultInfo);
+              var appInfo:any = angular.copy(defaultInfo);
               if (appPath) {
                 appInfo = appMap[appPath] || appInfo;
               }

@@ -63,7 +63,7 @@ module Kubernetes {
 		});
 	}]);
 
-  export var TopLevel = controller("TopLevel", ["$scope", "KubernetesVersion", "KubernetesState", ($scope, KubernetesVersion:ng.resource.IResourceClass, KubernetesState) => {
+  export var TopLevel = controller("TopLevel", ["$scope", "KubernetesVersion", "KubernetesState", ($scope, KubernetesVersion:ng.resource.IResourceClass<any>, KubernetesState) => {
 
     $scope.version = undefined;
 

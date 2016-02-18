@@ -80,7 +80,7 @@ module Kubernetes {
     return {
       restrict: 'A',
       scope: false,
-      link: (scope, element, attr) => {
+      link: (scope:any, element, attr) => {
         scope.close = () => {
           TerminalService.closeTerminal(scope.id);
         };

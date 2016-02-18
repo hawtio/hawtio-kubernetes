@@ -12,7 +12,7 @@ module Kubernetes {
 
   // main controller for the page
   export var Pods = controller("Pods", ["$scope", "KubernetesModel", "KubernetesPods", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
-    ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesPods:ng.resource.IResourceClass, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, KubernetesApiURL) => {
+    ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesPods:ng.resource.IResourceClass<any>, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, KubernetesApiURL) => {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;

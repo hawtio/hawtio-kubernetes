@@ -81,7 +81,7 @@ module Kubernetes {
       if (!answer) {
         var injector = HawtioCore.injector;
         if (injector) {
-          this.model = injector.get('KubernetesModel');
+          this.model = injector.get<KubernetesModelService>('KubernetesModel');
         }
       }
       answer = this.model;

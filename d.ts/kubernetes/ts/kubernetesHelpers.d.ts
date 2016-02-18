@@ -43,8 +43,8 @@ declare module Kubernetes {
     /**
      * Returns thevalue from the injector if its available or null
      */
-    function inject(name: any): any;
-    function createResource(thing: string, urlTemplate: string, $resource: ng.resource.IResourceService, KubernetesModel: any): ng.resource.IResourceClass;
+    function inject<T>(name: any): T;
+    function createResource(thing: string, urlTemplate: string, $resource: ng.resource.IResourceService, KubernetesModel: any): ng.resource.IResourceClass<ng.resource.IResource<any>>;
     function imageRepositoriesRestURL(): string;
     function deploymentConfigsRestURL(): string;
     function buildsRestURL(): string;
