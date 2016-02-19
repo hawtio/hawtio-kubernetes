@@ -524,7 +524,7 @@ module Kubernetes {
           }
         });
 
-        appViews = populateKeys(appViews).sortBy((appView) => appView._key);
+        appViews = _.sortBy(populateKeys(appViews), (appView) => appView._key);
 
         ArrayHelpers.sync(this.appViews, appViews, '$name');
 
@@ -558,7 +558,7 @@ module Kubernetes {
               folder.apps.push(appInfo);
             }
           });
-          this.appFolders = folders.sortBy("path");
+          this.appFolders = _.sortBy(folders, "path");
 
           var apps = [];
           var defaultInfo = {

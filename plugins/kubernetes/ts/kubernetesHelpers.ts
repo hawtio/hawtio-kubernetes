@@ -349,7 +349,7 @@ module Kubernetes {
     return true;
   }
 
-  export function getStrippedPathName():String {
+  export function getStrippedPathName():string {
     var pathName = Core.trimLeading((this.$location.path() || '/'), "#");
     pathName = pathName.replace(/^\//, '');
     return pathName;
@@ -357,10 +357,9 @@ module Kubernetes {
 
   export function linkContains(...words:String[]):boolean {
     var pathName = this.getStrippedPathName();
-    return words.all((word:string) => {
-      return pathName.has(word);
-    });
+    return _.every(words, (word:string) => pathName.indexOf(word) !== 0);
   }
+
 
   /**
    * Returns true if the given link is active. The link can omit the leading # or / if necessary.
@@ -383,7 +382,7 @@ module Kubernetes {
     if (!pathName.length) {
       return link === pathName;
     } else {
-      return pathName.startsWith(link);
+      return _.startsWith(pathName, link);
     }
   }
 

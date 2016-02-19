@@ -249,7 +249,7 @@ module Kubernetes {
             selectedApps = selectedApps.concat(apps);
           }
         });
-        $scope.appSelector.selectedApps = selectedApps.sortBy("name");
+        $scope.appSelector.selectedApps = _.sortBy(selectedApps, "name");
       },
 
       select: (app, flag) => {

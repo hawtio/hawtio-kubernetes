@@ -24,7 +24,7 @@ module Developer {
           }
         });
 
-        $scope.developerPerspective = Core.trimLeading($location.url(), "/").startsWith("workspace");
+        $scope.developerPerspective = _.startsWith(Core.trimLeading($location.url(), "/"), "workspace");
 
         $scope.tableConfig = {
           data: 'model.workspaces',

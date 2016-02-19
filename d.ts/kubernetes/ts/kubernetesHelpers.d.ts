@@ -67,7 +67,7 @@ declare module Kubernetes {
     function isKubernetes(workspace?: any): boolean;
     function isKubernetesTemplateManager(workspace?: any): boolean;
     function isAppView(workspace?: any): boolean;
-    function getStrippedPathName(): String;
+    function getStrippedPathName(): string;
     function linkContains(...words: String[]): boolean;
     /**
      * Returns true if the given link is active. The link can omit the leading # or / if necessary.
