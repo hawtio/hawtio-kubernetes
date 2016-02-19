@@ -239,7 +239,7 @@ module Kubernetes {
         pod.$age = null;
         if (createdTime) {
           pod.$createdTime = new Date(createdTime);
-          pod.$age = pod.$createdTime.relative();
+          pod.$age = humandate.relativeTime(pod.$createdTime);
         }
         var ready = isReady(pod);
         pod.$ready = ready;
@@ -594,8 +594,8 @@ module Kubernetes {
               apps.push(appView);
               appView.$podCounters = createAppViewPodCounters(appView);
               appView.$podCount = (appView.pods || []).length;
-              appView.$replicationControllersText = (appView.replicationControllers || []).map("_key").join(" ");
-              appView.$servicesText= (appView.services || []).map("_key").join(" ");
+              appView.$replicationControllersText = (appView.replicationControllers || []).map((i) => i["_key"]).join(" ");
+              appView.$servicesText= (appView.services || []).map((i) => i["_key"]).join(" ");
               appView.$serviceViews = createAppViewServiceViews(appView);
             } catch (e) {
               log.warn("Failed to update appViews: " + e);
