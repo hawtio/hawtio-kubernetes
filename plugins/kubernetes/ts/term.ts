@@ -30,9 +30,10 @@ module Kubernetes {
         position = position + dist;
       });
     }
+    var defaultTemplate = $templateCache.get(UrlHelpers.join(templatePath, 'termShell.html'));
     var self = {
       terminals: {},
-      newTerminal: (podLink, containerName) => {
+      newTerminal: (podLink, containerName, template = defaultTemplate) => {
         var terminalId = UrlHelpers.join(podLink, containerName);
         if (terminalId in self.terminals) {
           log.debug("Already a terminal with id: ", terminalId);
@@ -43,7 +44,6 @@ module Kubernetes {
         scope.podLink = podLink;
         scope.containerName = containerName;
         scope.id = terminalId;
-        var template = $templateCache.get(UrlHelpers.join(templatePath, 'termShell.html'));
         var el = $($compile(template)(scope));
         var term = {
           scope: scope,
@@ -90,9 +90,7 @@ module Kubernetes {
         scope.minimize = () => {
           element.toggleClass('minimized');
         }
-        log.debug("element: ", element);
         var body = element.find('.terminal-body');
-        log.debug("body: ", body);
         body.append($compile('<kubernetes-container-terminal pod="podLink" container="containerName" command="bash"></kubernetes-container-terminal>')(scope));
       }
     };

@@ -1,0 +1,10 @@
+<div class="terminal-window" pod-log-window ng-click="raise()">
+  <div class="terminal-title">
+    <h5>{{containerName}} logs</h5>
+    <i class="fa fa-remove pull-right clickable" title="Close and exit this log" ng-click="close()"></i>
+    <i class="fa fa-toggle-down pull-right clickable" title="Minimize this log" ng-click="minimize()"></i>
+  </div>
+  <div class="terminal-body">
+    <pod-log-display></pod-log-display>
+  </div>
+</div>

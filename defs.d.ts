@@ -48,6 +48,7 @@
 /// <reference path="d.ts/kubernetes/ts/pipelines.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/pod.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/podEdit.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/podLogs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/pods.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationController.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/replicationControllerEdit.d.ts"/>

@@ -618,3 +618,16 @@ legend {
 .pod-label-cell .ngCellText {
   white-space: normal;
 }
+
+.pod-log-viewport {
+  padding: 5px;
+  width: 575px;
+  height: 288px;
+  overflow-y: auto;
+}
+.pod-log-viewport .pod-log-lines {
+  max-width: 575px;
+}
+.pod-log-viewport .pod-log-lines * {
+  font-family: 'DroidSansMonoRegular';
+}

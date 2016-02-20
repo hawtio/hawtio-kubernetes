@@ -24,12 +24,6 @@
 
     <link rel="stylesheet" href="dist/hawtio-kubernetes.css" />
 
-    <!-- ES6/ES6 shim -->
-    <!--[if IE 8]>
-    <script src="libs/es5-dom-shim/__COMIPLE/a.ie8.js"></script>
-    <![endif]-->
-    <script src="libs/es5-dom-shim/__COMPILE/a.js"></script>
-
     <!-- bower:js -->
     <script src="libs/jquery/dist/jquery.js"></script>
     <script src="libs/angular/angular.js"></script>
@@ -145,6 +139,8 @@
           </ul>
         </li>
       </ul>
+      <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
+      <ul class="nav navbar-nav navbar-persistent" hawtio-sub-tabs></ul>
     </nav>
 
     <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
