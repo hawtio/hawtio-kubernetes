@@ -1,4 +1,5 @@
 /// <reference path="kubernetesPlugin.ts"/>
+/// <reference path="term.ts"/>
 
 module Kubernetes {
 
@@ -82,15 +83,7 @@ module Kubernetes {
       restrict: 'A',
       scope: false,
       link: (scope:any, element, attr) => {
-        scope.close = () => {
-          TerminalService.closeTerminal(scope.id);
-        };
-        scope.raise = () => {
-          TerminalService.raiseTerminal(scope.id);
-        };
-        scope.minimize = () => {
-          element.toggleClass('minimized');
-        }
+        addWindowActions(scope, element, TerminalService);
       }
     };
   });

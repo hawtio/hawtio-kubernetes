@@ -620,9 +620,10 @@ legend {
 }
 
 .pod-log-viewport {
-  padding: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
   width: 575px;
-  height: 288px;
+  height: 309px;
   overflow-y: auto;
 }
 .pod-log-viewport .pod-log-lines {
