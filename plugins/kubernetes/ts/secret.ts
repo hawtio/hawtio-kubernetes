@@ -184,7 +184,7 @@ module Kubernetes {
         updateData();
 
         function createProperty(key, text) {
-          var label = secretLabels[key] || key.humanize();
+          var label = secretLabels[key] || Core.humanizeValue(key);
           var tooltip = secretTooltips[key] || "Value of the " + label;
 
           var rows = 5;
