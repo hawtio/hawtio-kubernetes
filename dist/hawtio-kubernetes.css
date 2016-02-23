@@ -630,5 +630,31 @@ legend {
   max-width: 575px;
 }
 .pod-log-viewport .pod-log-lines * {
-  font-family: 'DroidSansMonoRegular';
+  font-family: monospace;
+  margin: 0;
+  line-height: 14px;
+}
+.pod-log-viewport .pod-log-lines * .black {
+  color: #222;
+}
+.pod-log-viewport .pod-log-lines * .red {
+  color: #f22;
+}
+.pod-log-viewport .pod-log-lines * .green {
+  color: #2f2;
+}
+.pod-log-viewport .pod-log-lines * .yellow {
+  color: #ff2;
+}
+.pod-log-viewport .pod-log-lines * .blue {
+  color: #22f;
+}
+.pod-log-viewport .pod-log-lines * .purple {
+  color: #f2f;
+}
+.pod-log-viewport .pod-log-lines * .cyan {
+  color: #2dd;
+}
+.pod-log-viewport .pod-log-lines * .white {
+  color: #ddd;
 }

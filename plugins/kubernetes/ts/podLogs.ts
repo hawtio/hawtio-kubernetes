@@ -5,6 +5,46 @@ module Kubernetes {
 
   var log = Logger.get("kubernetes-pod-logs");
 
+  _module.service("PodLogReplacements", () => {
+    return [];
+  });
+
+  _module.run((PodLogReplacements) => {
+    var log = Logger.get("pod-log-replacers");
+    // Add ANSI escape character replacer
+    // adapted from https://github.com/mmalecki/ansispan
+    var colors = {
+      '30': 'black',
+      '31': 'red',
+      '32': 'green',
+      '33': 'yellow',
+      '34': 'blue',
+      '35': 'purple',
+      '36': 'cyan',
+      '37': 'white' 
+    }
+    PodLogReplacements.push((msg) => {
+      if (!msg) {
+        return msg;
+      }
+      var end = "</span>";
+      _.forOwn(colors, (color, code) => {
+        var start = `<span class="` + color + `">`;
+        msg = msg.replace(new RegExp('\033\\[' + code + 'm', 'g'), start)
+        msg = msg.replace(new RegExp('\033\\[0;' + code + 'm', 'g'), start);
+      });
+      msg = msg.replace(/\033\[1m/g, '<b>').replace(/\033\[22m/g, '</b>');
+      msg = msg.replace(/\033\[3m/g, '<i>').replace(/\033\[23m/g, '</i>');
+      msg = msg.replace(/\033\[m/g, end);
+      msg = msg.replace(/\033\[0m/g, end);
+      msg = msg.replace(/\033\[39m/g, end);
+      msg = msg.replace(/\033\[2m/g, '<span>');
+      msg = msg.replace(/\033\[0;39m/g, end);
+      log.debug("Running replacement on message: ", msg);
+      return msg;
+    });
+  });
+
   _module.controller("Kubernetes.PodLogLinkController", ($scope, TerminalService, $templateCache) => {
 
     $scope.openLogs = (entity) => {
@@ -14,13 +54,13 @@ module Kubernetes {
 
   });
 
-  _module.directive('podLogDisplay', (userDetails) => {
+  _module.directive('podLogDisplay', (userDetails, PodLogReplacements) => {
     return {
       restrict: 'E',
       template: `
         <div class="pod-log-viewport" scroll-glue>
           <div class="pod-log-lines">
-            <p ng-repeat="message in messages track by $index">{{message}}</p>
+            <p ng-repeat="message in messages track by $index" ng-bind-html="message"></p>
           </div>
         </div>
       `,
@@ -48,7 +88,14 @@ module Kubernetes {
         var messages = [];
 
         var pullMessages = _.debounce(() => {
-          scope.messages = scope.messages.concat(_.remove(messages, () => true));
+          scope.messages = scope.messages.concat(_.remove(messages, () => true).map((msg) => {
+            PodLogReplacements.forEach((replFunc:any) => {
+              if (angular.isFunction(replFunc)) {
+                msg = replFunc(msg);
+              }
+            });
+            return msg;
+          }));
           Core.$apply(scope);
         }, 1000);
 
