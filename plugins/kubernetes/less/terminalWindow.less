@@ -1,0 +1,36 @@
+.terminal-window {
+  position: fixed;
+  bottom: 0;
+  background: white;
+  border: 1px solid #d4d4d4;
+  overflow: hidden;
+
+  .terminal-body {
+    overflow: auto;
+    .terminal-wrapper > .terminal * {
+      font-family: 'DroidSansMonoRegular';
+    }
+  }
+  .terminal-title {
+    border-bottom: 1px solid #d4d4d4;
+    > h5 {
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    > i {
+      font-size: 16px;
+      margin-right: 5px;
+      margin-top: 7px;
+    }
+  }
+}
+
+kubernetes-container-terminal .terminal-wrapper {
+  display: block !important;
+}
+
+kubernetes-container-terminal .terminal-actions {
+  position: absolute !important;
+}
+

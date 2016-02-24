@@ -90,15 +90,40 @@ module Kubernetes {
     var moved = false;
     var lastX = 0;
     var lastY = 0;
+    var header = element.find('.terminal-title');
+    var body = element.find('.terminal-body');
+    element.on('$destroy', () => {
+      $('#main').css({ display: 'inherit' });
+    });
+
+    var HEIGHT = 348;
+    var WIDTH = 600;
+    var TITLE_HEIGHT = 35;
+    var NAV_OFFSET = 46;
+
+    element.css({
+      height: HEIGHT,
+      width: WIDTH
+    });
+    header.css({
+      height: TITLE_HEIGHT
+    });
+    body.css({
+      position: 'absolute',
+      top: 35,
+      left: 0,
+      right: 0, 
+      bottom: 0
+    });
     scope.close = () => {
       TerminalService.closeTerminal(scope.id);
     };
     scope.raise = () => {
       TerminalService.raiseTerminal(scope.id);
-    }
+    };
     scope.mouseDown = (e) => {
       e.preventDefault();
-      if (element.hasClass('minimized')) {
+      if (element.hasClass('minimized') || element.hasClass('maximized')) {
         return;
       }
       scope.dragging = true;
@@ -141,8 +166,40 @@ module Kubernetes {
         lastY = e.clientY;
       }
     }
-    scope.minimize = () => {
+    scope.maximize = ($e) => {
+      $e.preventDefault();
       if (element.hasClass('minimized')) {
+        scope.minimize();
+      }
+      if (element.hasClass('maximized')) {
+        if (scope.offset) {
+          element.offset(scope.offset);
+        }
+        element.css({ 
+          height: HEIGHT, 
+          width: WIDTH 
+        });
+        $('#main').css({ display: 'inherit' });
+      } else {
+        $('#main').css({ display: 'none' });
+        scope.offset = element.offset();
+        element.css({ 
+          height: 'inherit', 
+          bottom: 0, 
+          width: '100%', 
+          top: NAV_OFFSET, 
+          left: 0 
+        });
+      }
+      element.toggleClass('maximized');
+    }
+    scope.minimize = ($e) => {
+      $e.preventDefault();
+      if (element.hasClass('maximized')) {
+        scope.maximize();
+      }
+      if (element.hasClass('minimized')) {
+        element.css({ height: HEIGHT });
         if (scope.offset) {
           element.offset(scope.offset);
           scope.docked = false;
@@ -150,7 +207,7 @@ module Kubernetes {
       } else {
         scope.offset = element.offset();
         scope.docked = true;
-        element.css({ top: "inherit", left: "inherit" });
+        element.css({ height: TITLE_HEIGHT, top: "inherit", left: "inherit" });
         TerminalService.positionTerminals();
       }
       element.toggleClass('minimized');

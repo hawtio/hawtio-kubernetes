@@ -58,10 +58,8 @@ module Kubernetes {
     return {
       restrict: 'E',
       template: `
-        <div class="pod-log-viewport" scroll-glue>
-          <div class="pod-log-lines">
-            <p ng-repeat="message in messages track by $index" ng-bind-html="message"></p>
-          </div>
+        <div class="pod-log-lines">
+          <p ng-repeat="message in messages track by $index" ng-bind-html="message"></p>
         </div>
       `,
       link: (scope:any, element, attr) => {

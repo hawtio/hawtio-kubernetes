@@ -274,35 +274,6 @@ img.icon-selected-app {
 tbody .ngCellText i {
   margin-right: 5px;
 }
-.terminal-window {
-  position: fixed;
-  bottom: 0;
-  height: 345px;
-  /* min-width: 443px; */
-  background: white;
-  border: 1px solid #d4d4d4;
-}
-.terminal-body .terminal-wrapper > .terminal * {
-  font-family: 'DroidSansMonoRegular';
-}
-.terminal-title > h5 {
-  display: inline-block;
-  margin-left: 5px;
-}
-.terminal-title > i {
-  font-size: 16px;
-  margin-right: 5px;
-  margin-top: 7px;
-}
-.terminal-window.minimized {
-  height: 33px;
-}
-kubernetes-container-terminal .terminal-wrapper {
-  display: block !important;
-}
-kubernetes-container-terminal .terminal-actions {
-  position: absolute !important;
-}
 .log-success {
   color: green;
 }
@@ -619,42 +590,66 @@ legend {
   white-space: normal;
 }
 
-.pod-log-viewport {
+.pod-log-lines * {
   padding-left: 5px;
   padding-right: 5px;
-  width: 575px;
-  height: 309px;
-  overflow-y: auto;
-}
-.pod-log-viewport .pod-log-lines {
-  max-width: 575px;
-}
-.pod-log-viewport .pod-log-lines * {
   font-family: monospace;
   margin: 0;
   line-height: 14px;
 }
-.pod-log-viewport .pod-log-lines * .black {
+.pod-log-lines * .black {
   color: #222;
 }
-.pod-log-viewport .pod-log-lines * .red {
+.pod-log-lines * .red {
   color: #f22;
 }
-.pod-log-viewport .pod-log-lines * .green {
+.pod-log-lines * .green {
   color: #2f2;
 }
-.pod-log-viewport .pod-log-lines * .yellow {
+.pod-log-lines * .yellow {
   color: #ff2;
 }
-.pod-log-viewport .pod-log-lines * .blue {
+.pod-log-lines * .blue {
   color: #22f;
 }
-.pod-log-viewport .pod-log-lines * .purple {
+.pod-log-lines * .purple {
   color: #f2f;
 }
-.pod-log-viewport .pod-log-lines * .cyan {
+.pod-log-lines * .cyan {
   color: #2dd;
 }
-.pod-log-viewport .pod-log-lines * .white {
+.pod-log-lines * .white {
   color: #ddd;
+}
+
+.terminal-window {
+  position: fixed;
+  bottom: 0;
+  background: white;
+  border: 1px solid #d4d4d4;
+  overflow: hidden;
+}
+.terminal-window .terminal-body {
+  overflow: auto;
+}
+.terminal-window .terminal-body .terminal-wrapper > .terminal * {
+  font-family: 'DroidSansMonoRegular';
+}
+.terminal-window .terminal-title {
+  border-bottom: 1px solid #d4d4d4;
+}
+.terminal-window .terminal-title > h5 {
+  display: inline-block;
+  margin-left: 5px;
+}
+.terminal-window .terminal-title > i {
+  font-size: 16px;
+  margin-right: 5px;
+  margin-top: 7px;
+}
+kubernetes-container-terminal .terminal-wrapper {
+  display: block !important;
+}
+kubernetes-container-terminal .terminal-actions {
+  position: absolute !important;
 }

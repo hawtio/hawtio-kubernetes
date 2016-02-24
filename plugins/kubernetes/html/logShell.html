@@ -2,9 +2,10 @@
   <div class="terminal-title" ng-mousedown="mouseDown($event)" ng-mouseup="mouseUp($event)" ng-mousemove="mouseMove($event)">
     <h5>{{containerName}} logs</h5>
     <i class="fa fa-remove pull-right clickable" title="Close and exit this log" ng-click="close()"></i>
-    <i class="fa fa-toggle-down pull-right clickable" title="Minimize this log" ng-click="minimize()"></i>
+    <i class="fa fa-square-o pull-right clickable" title="Maximize this log" ng-click="maximize($event)"></i>
+    <i class="fa fa-sort-desc pull-right clickable" title="Minimize this log" ng-click="minimize($event)"></i>
   </div>
-  <div class="terminal-body">
+  <div class="terminal-body" scroll-glue>
     <pod-log-display></pod-log-display>
   </div>
 </div>
