@@ -629,6 +629,26 @@ legend {
   border: 1px solid #d4d4d4;
   overflow: hidden;
 }
+.terminal-window .resize-dot {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #d4d4d4;
+  background: white;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  cursor: nwse-resize;
+  border-radius: 8px;
+  z-index: 10000;
+}
+.terminal-window.minimized .resize-dot,
+.terminal-window.maximized .resize-dot {
+  display: none;
+}
+.terminal-window.minimized .terminal-title,
+.terminal-window.maximized .terminal-title {
+  cursor: inherit;
+}
 .terminal-window .terminal-body {
   overflow: auto;
 }
@@ -636,6 +656,7 @@ legend {
   font-family: 'DroidSansMonoRegular';
 }
 .terminal-window .terminal-title {
+  cursor: move;
   border-bottom: 1px solid #d4d4d4;
 }
 .terminal-window .terminal-title > h5 {

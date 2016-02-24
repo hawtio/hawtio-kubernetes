@@ -5,6 +5,29 @@
   border: 1px solid #d4d4d4;
   overflow: hidden;
 
+  .resize-dot {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #d4d4d4;
+    background: white;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    cursor: nwse-resize;
+    border-radius: 8px;
+    z-index: 10000;
+  }
+
+  &.minimized .resize-dot,
+  &.maximized .resize-dot {
+    display: none;
+  }
+
+  &.minimized .terminal-title, 
+  &.maximized .terminal-title {
+    cursor: inherit;
+  }
+
   .terminal-body {
     overflow: auto;
     .terminal-wrapper > .terminal * {
@@ -12,6 +35,7 @@
     }
   }
   .terminal-title {
+    cursor: move;
     border-bottom: 1px solid #d4d4d4;
     > h5 {
       display: inline-block;

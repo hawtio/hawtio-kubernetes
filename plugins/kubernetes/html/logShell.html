@@ -1,4 +1,5 @@
 <div class="terminal-window" pod-log-window ng-mousedown="raise()">
+  <div class="resize-dot" ng-mousedown="startResize($event)" ng-hide="docked"></div>
   <div class="terminal-title" ng-mousedown="mouseDown($event)" ng-mouseup="mouseUp($event)" ng-mousemove="mouseMove($event)">
     <h5>{{containerName}} logs</h5>
     <i class="fa fa-remove pull-right clickable" title="Close and exit this log" ng-click="close()"></i>

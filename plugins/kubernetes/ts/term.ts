@@ -121,6 +121,52 @@ module Kubernetes {
     scope.raise = () => {
       TerminalService.raiseTerminal(scope.id);
     };
+    scope.$watch('docked', (docked) => {
+      if (docked) {
+        element.width(WIDTH);
+        if (!element.hasClass('minimized')) {
+          element.height(HEIGHT);
+        }
+      }
+    });
+    scope.startResize = (e) => {
+      e.preventDefault();
+      log.debug("Start resize");
+      scope.resizing = true;
+      element.on('mouseup', scope.stopResize);
+      $(document).on('mousemove', scope.doResize);
+      $(document).on('mouseleave', scope.stopResize);
+    };
+    scope.doResize = (e) => {
+      if (scope.resizing) {
+        log.debug("Resizing, e: ", e);
+        if (!moved) {
+          lastX = e.clientX;
+          lastY = e.clientY;
+          moved = true;
+          return;
+        }
+        var height = element.height();
+        var width = element.width();
+        var deltaX = e.clientX - lastX;
+        var deltaY = e.clientY - lastY;
+        var newHeight = height + deltaY;
+        var newWidth = width + deltaX;
+        if (newHeight > 35 && newWidth > 80) {
+          element.height(height + deltaY);
+          element.width(width + deltaX);
+        }
+        lastX = e.clientX;
+        lastY = e.clientY;
+      }
+    };
+    scope.stopResize = (e) => {
+      scope.resizing = false;
+      moved = false;
+      element.off('mouseup', scope.stopResize);
+      $(document).off('mousemove', scope.doResize);
+      $(document).off('mouseleave', scope.stopResize);
+    }
     scope.mouseDown = (e) => {
       e.preventDefault();
       if (element.hasClass('minimized') || element.hasClass('maximized')) {
@@ -135,7 +181,6 @@ module Kubernetes {
       e.preventDefault();
       scope.dragging = false;
       moved = false;
-
       var height = element.height();
       var offset = element.offset();
       var winHeight = $(window).height();
@@ -166,23 +211,37 @@ module Kubernetes {
         lastY = e.clientY;
       }
     }
+
+    function restoreWindow(scope, element) {
+      if (scope.offset) {
+        element.offset(scope.offset);
+        scope.docked = false;
+      }
+      if (scope.height) {
+        element.height(scope.height);
+      }
+      if (scope.width) {
+        element.width(scope.width);
+      }
+    }
+
+    function saveWindow(scope, element) {
+      scope.offset = element.offset();
+      scope.height = element.height();
+      scope.width = element.width();
+    }
+
     scope.maximize = ($e) => {
       $e.preventDefault();
       if (element.hasClass('minimized')) {
         scope.minimize();
       }
       if (element.hasClass('maximized')) {
-        if (scope.offset) {
-          element.offset(scope.offset);
-        }
-        element.css({ 
-          height: HEIGHT, 
-          width: WIDTH 
-        });
+        restoreWindow(scope, element);
         $('#main').css({ display: 'inherit' });
       } else {
+        saveWindow(scope, element);
         $('#main').css({ display: 'none' });
-        scope.offset = element.offset();
         element.css({ 
           height: 'inherit', 
           bottom: 0, 
@@ -199,13 +258,9 @@ module Kubernetes {
         scope.maximize();
       }
       if (element.hasClass('minimized')) {
-        element.css({ height: HEIGHT });
-        if (scope.offset) {
-          element.offset(scope.offset);
-          scope.docked = false;
-        }
+        restoreWindow(scope, element);
       } else {
-        scope.offset = element.offset();
+        saveWindow(scope, element);
         scope.docked = true;
         element.css({ height: TITLE_HEIGHT, top: "inherit", left: "inherit" });
         TerminalService.positionTerminals();
