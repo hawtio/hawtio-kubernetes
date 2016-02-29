@@ -12,9 +12,9 @@
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
               href="{{baseUri}}/kubernetes/hosts"><i class="fa fa-list"></i></a>
-      <a class="btn pull-right"
+      <a class="btn btn-default pull-right"
          ng-click="flipRaw()"
-         title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'From' : 'Raw'}}</a>
+         title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'Form' : 'Raw'}}</a>
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-primary pull-right"
               title="View all the pods on this host"
@@ -46,7 +46,7 @@
     <div ng-show="model.fetched && rawMode">
       <div class="row-fluid wiki-fixed form-horizontal">
         <div class="control-group editor-autoresize">
-          <textarea id="source" ui-codemirror="codeMirrorOptions" readonly="true" ng-model="rawModel" style="width: 90%; height: 700px"></textarea>
+          <div hawtio-editor="rawModel" mode="javascript" read-only="true"></div>
         </div>
       </div>
     </div>

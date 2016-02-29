@@ -23,9 +23,9 @@
       <a class="btn btn-default pull-right"
               href="{{baseUri}}/kubernetes/services?namespace={{item.metadata.namespace}}"><i class="fa fa-list"></i></a>
 
-      <a class="btn pull-right"
+      <a class="btn btn-default pull-right"
          ng-click="flipRaw()"
-         title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'From' : 'Raw'}}</a>
+         title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'Form' : 'Raw'}}</a>
       <span class="pull-right">&nbsp;</span>
 
       <a class="btn btn-primary pull-right"
@@ -55,7 +55,7 @@
 
   <div ng-show="model.fetched && rawMode">
     <div class="raw-json-view">
-      <textarea ui-codemirror="codeMirrorOptions" readonly="true" ng-model="rawModel" class="raw-json-view"></textarea>
+      <div hawtio-editor="rawModel" mode="javascript" read-only="true"></div>
     </div>
   </div>
 
