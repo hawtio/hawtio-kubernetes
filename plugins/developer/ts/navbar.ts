@@ -18,7 +18,6 @@ module Developer {
             } else {
               return angular.isUndefined(value) || value;
             }
-            return true;
           }
           return false;
         }

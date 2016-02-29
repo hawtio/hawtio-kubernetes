@@ -96,6 +96,12 @@ module Kubernetes {
 
   _module.filter('kubernetesPageLink', () => entityPageLink);
 
+  _module.filter('relativeTime', () => {
+    return (date) => {
+      return humandate.relativeTime(date);
+    }
+  });
+
   _module.run(['viewRegistry', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
 
     log.debug("Running");

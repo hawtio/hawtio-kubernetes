@@ -82,12 +82,12 @@
 </script>
 <script type="text/ng-template" id="firstTimestampTemplate.html">
   <div class="ngCellText" title="{{row.entity.$firstTimestamp}}">
-    {{row.entity.$firstTimestamp.relative()}}
+    {{row.entity.$firstTimestamp | relativeTime}}
   </div>
 </script>
 <script type="text/ng-template" id="lastTimestampTemplate.html">
   <div class="ngCellText" title="{{row.entity.$lastTimestamp}}">
-    {{row.entity.$lastTimestamp.relative()}}
+    {{row.entity.$lastTimestamp | relativeTime}}
   </div>
 </script>
 <script type="text/ng-template" id="eventKindTemplate.html">
