@@ -59,6 +59,8 @@ module Kubernetes {
       restrict: 'E',
       template: `
         <div class="pod-log-lines">
+          <p ng-hide="fetched">Please wait, fetching logs...</p>
+          <p ng-hide="messages.length || previous">View <a href="" ng-click="previous=!previous">previous container logs</a>?</p>
           <p ng-repeat="message in messages track by $index" ng-bind-html="message"></p>
         </div>
       `,
@@ -70,6 +72,8 @@ module Kubernetes {
           return;
         }
 
+        scope.fetched = false;
+        scope.previous = false;
         scope.messages = [];
 
         link = UrlHelpers.join(masterApiUrl(), link, 'log');
@@ -79,9 +83,6 @@ module Kubernetes {
           tailLines: 1000,
           access_token: userDetails.token
         });
-
-        log.debug("log display, link: ", link.toString(), " name: ", name);
-        // var out = element.find('.pod-log-lines');
 
         var messages = [];
 
@@ -94,20 +95,43 @@ module Kubernetes {
             });
             return msg;
           }));
+          if (!scope.fetched) {
+            scope.fetched = true;
+          }
           Core.$apply(scope);
         }, 1000);
 
-        var ws = new WebSocket(link.toString(), 'base64.binary.k8s.io');
-        ws.onmessage = (event) => {
-          try {
-            var message = window.atob(event.data);
-            messages.push(message);
-            pullMessages();
-          } catch (err) {
-            // we'll just ignore these
-            //log.debug("Failed to decode message: ", event.data, " error: ", err);
+        function initSocket(link) {
+          scope.fetched = false;
+          messages.length = 0;
+          scope.messages.length = 0;
+          var ws = new WebSocket(link.toString(), 'base64.binary.k8s.io');
+          ws.onmessage = (event) => {
+            try {
+              var message = window.atob(event.data);
+              messages.push(message);
+              pullMessages();
+            } catch (err) {
+              // we'll just ignore these
+              //log.debug("Failed to decode message: ", event.data, " error: ", err);
+            }
           }
+          return ws;
         }
+
+        var ws = initSocket(link);
+
+        scope.$watch('previous', (value, old) => {
+          if (value !== old) {
+            if (link.hasSearch('previous')) {
+              link.removeSearch('previous').addSearch('previous', scope.previous);
+            } else {
+              link.addSearch('previous', scope.previous);
+            }
+            ws.close();
+            ws = initSocket(link);
+          }
+        });
 
         element.on('$destroy', () => {
           if (ws) {
