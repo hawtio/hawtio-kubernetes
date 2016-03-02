@@ -435,8 +435,8 @@ legend {
 }
 .project-selector a,
 .project-selector a:hover {
+  color: #fff;
   text-decoration: none;
-  color: #333333;
   font-size: 13px;
   line-height: 21px;
 }
