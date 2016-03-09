@@ -97,7 +97,7 @@ module Navigation {
                 title="{{subTab.title}}">
                 <a ng-hide="subTab.template" href="{{subTab.href}}">
                   <i ng-show="subTab.class" ng-class="subTab.class"></i>
-                  <img ng-show="subTab.icon" ng-src="{{subTab.icon}}" style="max-width: 16px; margin-right: 5px;">
+                  <img ng-show="subTab.icon" ng-src="{{subTab.icon}}" style="max-width: 16px; margin-right: 13px;">
                   {{subTab.label}}
                 </a>
                 <div ng-show="subTab.template" compile="subTab.template"></div>
