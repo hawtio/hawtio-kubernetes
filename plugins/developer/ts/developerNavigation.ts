@@ -187,23 +187,27 @@ module Developer {
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
         label: "Apps",
+        class: "fa fa-rocket",
         title: "View the apps in this project"
       },
       {
         isValid: () => jenkinsLink(),
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "jenkinsJob"),
         label: "Builds",
+        class: "fa fa-code",
         title: "View the builds in this project"
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
+        class: "fa fa-gears",
         title: "View the runtime resources in this project"
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "detail"),
-        label: "Detail",
-        title: "View the project detail"
+        label: "Details",
+        class: "fa fa-gear",
+        title: "View the project details"
       }
     ]);
   }
@@ -489,46 +493,55 @@ module Developer {
       {
         href: UrlHelpers.join(namespacesLink, ns, "apps"),
         label: "Overview",
+        class: "fa fa-list",
         title: "Overview of all the apps for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "services"),
         label: "Services",
+        class: "fa fa-plug",
         title: "View the apps for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "replicationControllers"),
         label: "Controllers",
+        class: "fa fa-clone",
         title: "View the Replication Controllers for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "pods"),
         label: "Pods",
+        class: "fa fa-puzzle-piece",
         title: "View the pods for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "events"),
         label: "Events",
+        class: "fa fa-newspaper-o",
         title: "View the events for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "secrets"),
         label: "Secrets",
+        class: "fa fa-key",
         title: "View the secrets for this project"
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/hosts"),
         label: "Nodes",
+        class: "fa fa-server",
         title: "View the nodes for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "overview"),
         label: "Diagram",
+        class: "fa fa-sitemap",
         title: "View all the objects in this project and their relationship"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "angryPods"),
         label: "Angry Pods",
+        class: "fa fa-gamepad",
         title: "Try the Angry Pods game!"
       },
     ]);
