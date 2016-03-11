@@ -1,0 +1,14 @@
+<div class="ngCellText">
+  <span ng-repeat="controller in row.entity.replicationControllers">
+    <a ng-href="{{controller | kubernetesPageLink}}"
+      title="View controller details">
+      <span>{{controller.metadata.name || controller.id}}</span>
+    </a>
+    &nbsp;
+    <span class="pull-right">
+      <a class="badge badge-info" href="" ng-click="$emit('do-resize', controller)"
+        title="Resize the number of replicas of this controller">
+        {{controller.spec.replicas || 0}}</a>
+    </span>
+  </span>
+</div>

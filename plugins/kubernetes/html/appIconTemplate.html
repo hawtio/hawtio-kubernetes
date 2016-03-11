@@ -1,0 +1,10 @@
+<div class="ngCellText" title="{{row.entity.$info.description}}">
+  <a ng-href="row.entity.$appUrl">
+    <img ng-show="row.entity.$iconUrl" class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
+  </a>
+  <span class="app-name">
+    <a ng-click="row.entity.$select()">
+      {{row.entity.$info.name}}
+    </a>
+  </span>
+</div>
