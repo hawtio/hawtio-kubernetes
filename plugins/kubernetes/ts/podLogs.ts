@@ -59,9 +59,6 @@ module Kubernetes {
       restrict: 'E',
       template: `
         <div class="pod-log-lines">
-          <div class="centered scroll-indicator" ng-hide="atBottom" ng-click="atBottom = true">
-            <span class="fa fa-caret-down"></span>
-          </div>
           <p ng-hide="fetched">Please wait, fetching logs...</p>
           <p ng-hide="messages.length || previous">View <a href="" ng-click="previous=!previous">previous container logs</a>?</p>
           <p ng-repeat="message in messages track by $index" ng-bind-html="message"></p>
