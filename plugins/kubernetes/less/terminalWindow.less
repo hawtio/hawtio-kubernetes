@@ -59,3 +59,26 @@ kubernetes-container-terminal .terminal-actions {
   position: absolute !important;
 }
 
+.pod-log-window {
+  .scroll-indicator {
+    position: absolute;
+    bottom: 0;
+    line-height: 32px;
+    left: 20px;
+    right: 20px;
+    background-color: #ffffff;
+    border-top: 1px solid #d4d4d4;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    z-index: 10000;
+    opacity: 0.7;
+
+  }
+  .terminal-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+

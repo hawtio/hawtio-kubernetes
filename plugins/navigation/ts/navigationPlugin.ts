@@ -96,7 +96,7 @@ module Navigation {
                 class="list-group-item {{subTab.active ? 'active' : ''}}"
                 title="{{subTab.title}}">
                 <a ng-hide="subTab.template" href="{{subTab.href}}">
-                  <i ng-show="subTab.class" ng-class="subTab.class"></i>
+                  <span ng-show="subTab.class" ng-class="subTab.class"></span>
                   <img ng-show="subTab.icon" ng-src="{{subTab.icon}}" style="max-width: 16px; margin-right: 13px;">
                   {{subTab.label}}
                 </a>
