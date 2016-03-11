@@ -7,7 +7,7 @@
     <h5>{{containerName}} logs</h5>
     <i class="fa fa-remove pull-right clickable" title="Close and exit this log" ng-click="close()"></i>
     <i class="fa fa-square-o pull-right clickable" title="Maximize this log" ng-click="maximize($event)"></i>
-    <i class="fa fa-sort-desc pull-right clickable" title="Minimize this log" ng-click="minimize($event)"></i>
+    <i class="fa fa-sort-desc pull-right clickable" ng-hide="maximized()" title="Minimize this log" ng-click="minimize($event)"></i>
   </div>
   <div class="terminal-body" scroll-glue ng-model="atBottom">
     <pod-log-display></pod-log-display>

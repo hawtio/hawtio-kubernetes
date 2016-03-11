@@ -231,6 +231,10 @@ module Kubernetes {
       scope.width = element.width();
     }
 
+    scope.maximized = () => {
+      return element.hasClass('maximized');
+    }
+
     scope.maximize = ($e) => {
       $e.preventDefault();
       if (element.hasClass('minimized')) {
