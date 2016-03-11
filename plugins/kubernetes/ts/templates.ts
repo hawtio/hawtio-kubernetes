@@ -7,13 +7,8 @@ module Kubernetes {
     var model = $scope.model = KubernetesModel;
     $scope.filterText = $location.search()["q"];
 
-    // $scope.watch = watches[WatchTypes.TEMPLATES];
-
     $scope.targetNamespace = $routeParams.targetNamespace;
     initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-
-    // reloadDataIfNoWatch();
-
 
     $scope.$watchCollection('model.namespaces', () => {
       if (!$scope.targetNamespace) {
@@ -250,7 +245,6 @@ module Kubernetes {
         $scope.$on('WatcherNamespaceChanged', () => {
           log.debug("Namespace changed");
           setTimeout(() => {
-            // reloadDataIfNoWatch();
             applyObjects(objects);
             Core.$apply($scope);
           }, 500);
@@ -302,7 +296,6 @@ module Kubernetes {
               log.warn("Failed to update " + kind + " name: " + name + (ns ? " ns: " + ns: "") + " error: " + angular.toJson(err));
             });
         }
-        //updateOrCreateObject(object, KubernetesModel);
       });
       goBack();
     }
@@ -332,21 +325,6 @@ module Kubernetes {
         customClass: "alert alert-warning"
       }).open();
     };
-
-    /*
-    function reloadDataIfNoWatch() {
-      if (!$scope.watch || !$scope.watch.connected) {
-        // TODO register a handler of bad watches so we invoke this in a polling form automatically?
-        model.templatesResource.query((response) => {
-          if (response) {
-            var items = response.items;
-            model.templates = items;
-            Core.$apply($scope);
-          }
-        });
-      }
-    }
-    */
   }]);
 }
 

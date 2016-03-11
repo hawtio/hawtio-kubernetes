@@ -39,7 +39,6 @@ declare module Kubernetes {
     function resourcesUriForKind(type: any, ns?: any): string;
     function uriTemplateForKubernetesKind(type: any): string;
     function namespacePathForKind(type: any, ns: any): string;
-    function updateOrCreateObject(object: any, KubernetesModel: any, success?: (data) => void, error?: (error) => void): void;
     /**
      * Returns thevalue from the injector if its available or null
      */

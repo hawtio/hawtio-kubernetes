@@ -26,7 +26,19 @@ module Kubernetes {
               return;
             }
             log.debug("Dropped object: ", obj);
-            updateOrCreateObject(obj, model);
+            if (!KubernetesAPI.getNamespace(obj)) {
+              obj.metadata.namespace = model.currentNamespace();
+            }
+            KubernetesAPI.put({
+              object: obj,
+              success: (data) => {
+                Core.notification("success", "Applied " + file._file.name);
+              },
+              error: (err) => {
+                log.info("Got error applying", file._file.name, ": ", err);
+                Core.notification("warning", "Failed to apply " + file._file.name + ", error: " + err.message);
+              }
+            });
           }
         }
         reader.readAsText(file._file);

@@ -159,65 +159,6 @@ module Kubernetes {
     }
   }
 
-  export function updateOrCreateObject(object, KubernetesModel, success?: (data) => void, error?: (error) => void) {
-    var kind = getKind(object);
-    if (kind === "List") {
-      log.debug("Object is a list, deploying all objects");
-      _.forEach(object.items, (obj) => {
-        log.debug("Deploying: ", obj);
-        updateOrCreateObject(obj, KubernetesModel, success, error);
-      });
-      return;
-    }
-    if (!kind) {
-      log.debug("Object: ", object, " has no object type");
-      return;
-    }
-    kind = kind.toLowerCase().pluralize();
-    var resource = KubernetesModel[kind + 'Resource'];
-    if (!resource) {
-      var injector = HawtioCore.injector;
-      var $resource = injector ? injector.get<ng.resource.IResourceService>("$resource") : null;
-      if (!$resource) {
-        log.warn("Cannot create resource for " + kind + " due to missing $resource");
-        return;
-      }
-      resource = createResource(kind, uriTemplateForKubernetesKind(kind), $resource, KubernetesModel);
-      KubernetesModel[kind + 'Resource'] = resource;
-    }
-    var name = getName(object);
-    if (!name) {
-      log.debug("Object has no name: ", object);
-      return;
-    }
-
-    var isUpdate = _.any(KubernetesModel[kind], (n) => n === name)
-    var action = isUpdate ? "Modified" : "Added";
-
-    var successInternal = (data) => {
-      log.debug(action, data);
-      if (!isUpdate && KubernetesModel[kind]) {
-        KubernetesModel[kind].push(data);
-      }
-      if (success) {
-        success(data);
-      }
-    };
-    var errorInternal = (err) => {
-      log.debug("Failed to add/modify object: ", object, " error: ", err);
-      if (error) {
-        error(err);
-      }
-    }
-    if (isUpdate) {
-      log.debug("Object already exists, updating...");
-      resource.save({ id: name }, object, successInternal, errorInternal);
-    } else {
-      log.debug("Object doesn't exist, creating...");
-      resource.create({}, object, successInternal, errorInternal);
-    }
-  }
-
   /**
    * Returns thevalue from the injector if its available or null
    */
