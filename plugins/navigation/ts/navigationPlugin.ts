@@ -107,7 +107,11 @@ module Navigation {
       `,
       link: (scope, element, attrs) => {
         if (!initialized) {
-          (<any>$)().setupVerticalNavigation(false);
+          try {
+            (<any>$)().setupVerticalNavigation(false);
+          } catch (err) {
+            // ignore if we haven't loaded patternfly
+          }
           initialized = true;
         }
         scope.HawtioSubTabs = HawtioSubTabs;
@@ -156,7 +160,7 @@ module Navigation {
     };
   }]);
 
-  hawtioPluginLoader.addModule('patternfly');
+  //hawtioPluginLoader.addModule('patternfly');
   hawtioPluginLoader.addModule(pluginName);
 
 }

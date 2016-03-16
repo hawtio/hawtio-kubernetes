@@ -2,9 +2,14 @@
 /// <reference path="kubernetesHelpers.ts"/>
 /// <reference path="kubernetesPlugin.ts"/>
 /// <reference path="kubernetesModel.ts"/>
+
+declare var jsyaml:any;
+
 module Kubernetes {
 
   export var FileDropController = controller("FileDropController", ["$scope", "KubernetesModel", "FileUploader", '$http', ($scope, model:KubernetesModelService, FileUploader, $http:ng.IHttpService) => {
+
+      var log = Logger.get('kubernetes-file-uploader');
 
       var uploader = $scope.uploader = <FileUpload.FileUploader> new FileUploader(<FileUpload.IOptions>{
         autoUpload: false,
@@ -17,12 +22,26 @@ module Kubernetes {
         reader.onload = () => {
           if (reader.readyState === 2) {
             log.debug("File added: ", file);        
-            var json = reader.result;
+            var data = reader.result;
             var obj = null;
-            try {
-              obj = angular.fromJson(json);
-            } catch (err) {
-              log.debug("Failed to read dropped file ", file._file.name, ": ", err);
+            if (_.endsWith(file._file.name, '.json')) {
+              log.debug("Parsing JSON file");
+              try {
+                obj = angular.fromJson(data);
+              } catch (err) {
+                log.debug("Failed to read dropped file ", file._file.name, ": ", err);
+                return;
+              }
+            } else if (_.endsWith(file._file.name, '.yaml')) {
+              log.debug("Parsing YAML file");
+              try {
+                obj = jsyaml.load(data);
+              } catch (err) {
+                log.debug("Failed to read dropped file ", file._file.name, ": ", err);
+                return;
+              }
+            } else {
+              log.debug("Unknown file type for file: ", file._file.name);
               return;
             }
             log.debug("Dropped object: ", obj);
