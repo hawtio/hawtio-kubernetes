@@ -1625,14 +1625,31 @@ module Kubernetes {
   /**
    * Lets remove any enriched data to leave the original json intact
    */
-  export function toRawJson(item) {
-    var o = angular.copy(item);
+  export function unenrich(item) {
+    var o = _.cloneDeep(item);
     angular.forEach(o, (value, key) => {
       if (key.startsWith("$") || key.startsWith("_")) {
         delete o[key];
       }
     });
+    delete o['connectTo'];
+    return o;
+  }
+
+  /**
+   * Returns the unenriched JSON representation of an object
+   */
+  export function toRawJson(item) {
+    var o = unenrich(item);
     return JSON.stringify(o, null, 2); // spacing level = 2
+  }
+
+  /**
+   * Returns the unenriched YAML representation of an object
+   */
+  export function toRawYaml(item) {
+    var o = unenrich(item);
+    return jsyaml.dump(o, { indent: 2 });
   }
 
 

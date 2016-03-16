@@ -36,7 +36,14 @@
       <a class="btn btn-default pull-right"
          ng-click="flipRaw()"
          title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'Form' : 'Raw'}}</a>
-      <span class="pull-right">&nbsp;</span>
+       <span class="pull-right">&nbsp;</span>
+
+       <a class="btn btn-default pull-right" ng-show="rawMode" ng-click="readOnly = !readOnly" ng-class="!readOnly ? 'btn-primary' : ''">Edit</a>
+       <span class="pull-right">&nbsp;</span>
+
+       <a class="btn btn-success pull-right" ng-show="dirty" ng-click="save(rawModel)">Save</a>
+       <span class="pull-right">&nbsp;</span>
+
       <a class="btn btn-primary pull-right"
          href="/kubernetes/namespace/{{item.metadata.namespace}}/events?q=kind%3DPod%20name%3D{{item.metadata.name}}"
          title="View the events for this Pod">
@@ -74,7 +81,7 @@
 
   <div ng-show="model.fetched && rawMode">
     <div class="raw-json-view">
-      <div hawtio-editor="rawModel" mode="javascript" read-only="true"></div>
+      <div hawtio-editor="rawModel" mode="mode" read-only="readOnly"></div>
     </div>
   </div>
 

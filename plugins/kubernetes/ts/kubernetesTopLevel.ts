@@ -3,8 +3,6 @@
 /// <reference path="kubernetesPlugin.ts"/>
 /// <reference path="kubernetesModel.ts"/>
 
-declare var jsyaml:any;
-
 module Kubernetes {
 
   export var FileDropController = controller("FileDropController", ["$scope", "KubernetesModel", "FileUploader", '$http', ($scope, model:KubernetesModelService, FileUploader, $http:ng.IHttpService) => {
@@ -103,6 +101,45 @@ module Kubernetes {
     $scope.isActive = (href) => {
       return isLinkActive(href);
     };
+
+    $scope.mode = 'yaml';
+    $scope.rawMode = true;
+    $scope.dirty = false;
+    $scope.readOnly = true;
+    $scope.rawModel = null;
+
+    $scope.$on('hawtioEditor_default_dirty', ($event, dirty) => {
+      $scope.dirty = dirty;
+    });
+
+    $scope.save = (rawModel) => {
+      var obj:any = null;
+      var str = rawModel.replace(/\t/g, "    ");
+      try {
+        obj = jsyaml.load(str);
+      } catch (err) {
+        Core.notification("warning", "Failed to save object, error: \"" + err + "\"");
+      }
+      if (!obj) {
+        return;
+      }
+      $scope.readOnly = true;
+      KubernetesAPI.put({
+        object: obj,
+        success: (data) => {
+          $scope.dirty = false;
+          Core.notification("success", "Saved object " + getName(obj));
+          Core.$apply($scope);
+        },
+        error: (err) => {
+          console.log("Got error: ", err);
+          Core.notification("warning", "Failed to save object, error: \"" + err.message + "\"");
+          $scope.dirty = false;
+          Core.$apply($scope);
+        }
+      });
+    };
+
 
     $scope.kubernetes = KubernetesState;
 

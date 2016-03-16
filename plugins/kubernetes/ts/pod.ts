@@ -11,7 +11,6 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
-    $scope.rawMode = false;
     $scope.rawModel = null;
 
     $scope.itemConfig = {
@@ -64,7 +63,7 @@ module Kubernetes {
       $scope.id = $routeParams["id"];
       $scope.item = $scope.model.getPod(KubernetesState.selectedNamespace, $scope.id);
       if ($scope.item) {
-        $scope.rawModel = toRawJson($scope.item);
+        $scope.rawModel = toRawYaml($scope.item);
       }
       Core.$apply($scope);
     }

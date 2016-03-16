@@ -189,7 +189,15 @@ declare module Kubernetes {
     /**
      * Lets remove any enriched data to leave the original json intact
      */
+    function unenrich(item: any): any;
+    /**
+     * Returns the unenriched JSON representation of an object
+     */
     function toRawJson(item: any): string;
+    /**
+     * Returns the unenriched YAML representation of an object
+     */
+    function toRawYaml(item: any): any;
     function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): void;
     function createKubernetesClient(kind: any, ns?: any): any;
     function currentUserName(): any;

@@ -12,7 +12,6 @@ module Kubernetes {
 
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
-        $scope.rawMode = false;
         $scope.rawModel = null;
 
         $scope.itemConfig = {
@@ -47,9 +46,8 @@ module Kubernetes {
                   $scope.item = data;
                 }
                 if ($scope.item) {
-                  $scope.rawModel = JSON.stringify($scope.item, null, 2); // spacing level = 2
+                  $scope.rawModel = toRawYaml($scope.item);
                 }
-                Core.$apply($scope);
               }).
             error(function (data, status, headers, config) {
               log.warn("Failed to load " + url + " " + data + " " + status);

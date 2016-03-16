@@ -28,6 +28,12 @@
          title="{{rawMode ? 'Raw mode' : 'Form mode'}}">{{rawMode ? 'Form' : 'Raw'}}</a>
       <span class="pull-right">&nbsp;</span>
 
+       <a class="btn btn-default pull-right" ng-show="rawMode" ng-click="readOnly = !readOnly" ng-class="!readOnly ? 'btn-primary' : ''">Edit</a>
+       <span class="pull-right">&nbsp;</span>
+
+       <a class="btn btn-success pull-right" ng-show="dirty" ng-click="save(rawModel)">Save</a>
+       <span class="pull-right">&nbsp;</span>
+
       <a class="btn btn-primary pull-right"
          title="Open this service in your browser"
          ng-show="item.$connectUrl" href="{{item.$connectUrl}}">
@@ -55,7 +61,7 @@
 
   <div ng-show="model.fetched && rawMode">
     <div class="raw-json-view">
-      <div hawtio-editor="rawModel" mode="javascript" read-only="true"></div>
+      <div hawtio-editor="rawModel" mode="mode" read-only="readOnly"></div>
     </div>
   </div>
 

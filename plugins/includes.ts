@@ -5,3 +5,5 @@
 /// <reference path="../libs/hawtio-utilities/defs.d.ts"/>
 
 declare var humandate;
+declare var jsyaml:any;
+
