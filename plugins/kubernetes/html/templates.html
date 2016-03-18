@@ -13,31 +13,33 @@
 
 
   <div class="row filter-header">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <span ng-show="model.templates.length && !formConfig">
         <hawtio-filter ng-model="filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter templates..."></hawtio-filter>
       </span>
-
-      <button ng-show="formConfig" 
-        class="btn btn-success pull-right"
-        title="Click to deploy this app" 
-        ng-click="substituteAndDeployTemplate()">
-        <i class="fa fa-play-circle"></i> Run
-      </button>
-      <span class="pull-right">&nbsp;</span>
-      <button class="btn btn-info pull-right"
+    </div>
+    <div class="col-md-6 align-right">
+      <span>
+        Target namespace: 
+        <select ng-model="targetNamespace" ng-options="namespace for namespace in model.namespaces" title="Select the namespace to deploy these objects in">
+        </select>
+      </span>
+      <span>&nbsp;</span>
+      <button class="btn btn-info"
               ng-click="cancel()"
               title="Go back to app view">
               Cancel
       </button>
-      <span class="pull-right">&nbsp;</span>
-      <span class="pull-right">
-        Target namespace: <select ng-model="targetNamespace" ng-options="namespace for namespace in model.namespaces" title="Select the namespace to deploy these objects in">
-    </select>
+      <span>&nbsp;</span>
+      <button ng-show="formConfig" 
+        class="btn btn-success"
+        title="Click to deploy this app" 
+        ng-click="substituteAndDeployTemplate()">
+        <i class="fa fa-play-circle"></i> Run
+      </button>
 
-      </span>
     </div>
   </div>
   <div class="row" ng-hide="formConfig || model.templates.length != 0">
