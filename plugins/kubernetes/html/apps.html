@@ -1,204 +1,5 @@
 <div ng-controller="Kubernetes.Apps">
 
-  <script type="text/ng-template" id="appIconTemplate.html">
-    <div class="ngCellText" title="{{row.entity.$info.description}}">
-      <a ng-href="row.entity.$appUrl">
-        <img ng-show="row.entity.$iconUrl" class="app-icon-small" ng-src="{{row.entity.$iconUrl}}">
-      </a>
-      <span class="app-name">
-        <a ng-click="row.entity.$select()">
-          {{row.entity.$info.name}}
-        </a>
-      </span>
-    </div>
-  </script>
-  <script type="text/ng-template" id="appServicesTemplate.html">
-    <div class="ngCellText">
-      <span ng-repeat="service in row.entity.services">
-          <a ng-href="{{service | kubernetesPageLink}}"
-             title="View service details">
-            <span>{{service.metadata.name ||service.name || service.id}}</span>
-          </a>
-      </span>
-    </div>
-  </script>
-  <script type="text/ng-template" id="appDeployedTemplate.html">
-    <div class="ngCellText" title="deployed at: {{row.entity.$creationDate | date:'yyyy-MMM-dd HH:mm:ss Z'}}">
-      {{row.entity.$creationDate.relative()}}
-    </div>
-  </script>
-  <script type="text/ng-template" id="appReplicationControllerTemplate.html">
-    <div class="ngCellText">
-      <span ng-repeat="controller in row.entity.replicationControllers">
-        <a ng-href="{{controller | kubernetesPageLink}}"
-           title="View controller details">
-          <span>{{controller.metadata.name || controller.id}}</span>
-        </a>
-        &nbsp;
-        <span class="pull-right">
-          <a class="badge badge-info" href="" ng-click="$emit('do-resize', controller)"
-            title="Resize the number of replicas of this controller">
-             {{controller.spec.replicas || 0}}</a>
-        </span>
-      </span>
-    </div>
-  </script>
-  <script type="text/ng-template" id="appPodCountsAndLinkTemplate.html">
-    <div class="ngCellText" title="Number of running pods for this controller">
-      <div ng-repeat="podCounters in row.entity.$podCounters track by $index">
-        <a ng-show="podCounters.podsLink" href="{{podCounters.podsLink}}" title="{{podCounters.labelText}}">
-          <span ng-show="podCounters.valid" class="badge badge-success">{{podCounters.valid}}</span>
-          <span ng-show="podCounters.waiting" class="badge">{{podCounters.waiting}}</span>
-          <span ng-show="podCounters.error" class="badge badge-warning">{{podCounters.error}}</span>
-        </a>
-      </div>
-    </div>
-  </script>
-  <script type="text/ng-template" id="appDetailTemplate.html">
-    <div class="service-view-rectangle" ng-repeat="view in item.$serviceViews">
-      <div class="service-view-header">
-        <span class="service-view-icon">
-          <a ng-href="{{view.service | kubernetesPageLink}}" title="View the service detail page">
-            <img ng-show="item.$iconUrl" ng-src="{{item.$iconUrl}}">
-          </a>
-        </span>
-        <span class="service-view-name" title="{{view.name}}">
-          <a ng-href="{{view.service | kubernetesPageLink}}" title="View the service detail page">
-            {{view.appName}}
-          </a>
-        </span>
-        <span class="service-view-address" title="The service address">
-          <a ng-show="view.service.$connectUrl" target="_blank" href="{{view.service.$connectUrl}}" title="Connect to the service">
-            {{view.service.$host}}
-          </a>
-          <span ng-hide="view.service.$connectUrl">{{view.service.$host}}</span>
-        </span>
-        <span class="pull-right">
-          <a class="service-view-header-delete" href="" ng-click="deleteSingleApp(item)" title="Delete this app"><i
-                  class="fa fa-remove red"></i></a>
-        </span>
-      </div>
-
-      <div class="service-view-detail-rectangle">
-        <div class="service-view-detail-header">
-          <div class="col-md-4">
-            <div class="service-view-detail-deployed" ng-show="view.createdDate"
-                 title="deployed at: {{view.createdDate | date:'yyyy-MMM-dd HH:mm:ss Z'}}">
-              deployed:
-              <span class="value">{{view.createdDate.relative()}}</span>
-            </div>
-            <div class="service-view-detail-deployed" ng-hide="view.createdDate">
-              not deployed
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="service-view-detail-pod-template" ng-show="view.controllerId">
-              pod template:
-              <span class="value" title="Go to the replication controller detail page"><a
-                      ng-href="{{view.replicationController | kubernetesPageLink}}">{{view.controllerId}}</a></span>
-            </div>
-            <div class="service-view-detail-pod-template" ng-hide="view.controllerId">
-              no pod template
-            </div>
-          </div>
-          <div class="col-md-4 service-view-detail-pod-counts">
-            <span class="pull-right">
-              pods:
-              <a href="" ng-show="view.replicationController" class="badge badge-info"
-                ng-click="resizeDialog.open(view.replicationController)"
-                title="Resize the number of pods">
-                {{view.podCount}}
-              </a>
-              <span ng-hide="view.replicationController" class="badge badge-success">
-                {{view.podCount}}
-              </span>
-            </span>
-          </div>
-        </div>
-
-        <div class="service-view-detail-pod-box" ng-repeat="pod in item.pods track by $index">
-          <div ng-show="podExpanded(pod)" class="service-view-detail-pod-summary-expand">
-            <table>
-              <tr>
-                <td class="service-view-detail-pod-status">
-                  <i ng-class="pod.statusClass"></i>
-                </td>
-                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl"
-                    ng-controller="Kubernetes.ConnectController">
-                  <a class="clickable"
-                     ng-click="doConnect(pod)"
-                     title="Open a new window and connect to this container">
-                    <i class="fa fa-sign-in"></i>
-                  </a>
-                </td>
-                <td>
-                  <div class="service-view-detail-pod-id" title="{{pod.id}}">
-                    <span class="value">Pod <a title="Go to the pod detail page" ng-href="{{pod | kubernetesPageLink}}">{{pod.idAbbrev}}</a></span>
-                  </div>
-                  <div class="service-view-detail-pod-ip">
-                    IP:
-                    <span class="value">{{pod.status.podIP}}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="service-view-detail-pod-ports">
-                    ports: <span class="value">{{pod.$containerPorts.join(", ")}}</span>
-                  </div>
-                  <div class="service-view-detail-pod-minion">
-                    minion:
-                    <span class="value">
-                      <a ng-show="pod.$host" ng-href="{{baseUri}}/kubernetes/hosts/{{pod.$host}}">{{pod.$host}}</a>
-                    </span>
-                  </div>
-                </td>
-                <td class="service-view-detail-pod-expand" ng-click="collapsePod(pod)">
-                  <i class="fa fa-chevron-left"></i>
-                </td>
-              </tr>
-            </table>
-            <!--
-                                      <div class="service-view-detail-pod-status">
-                                        status:
-                                        <span class="value">{{pod.status}}</span>
-                                      </div>
-            -->
-          </div>
-
-          <div ng-hide="podExpanded(pod)" class="service-view-detail-pod-summary">
-            <table>
-              <tr>
-                <td class="service-view-detail-pod-status">
-                  <i ng-class="pod.statusClass"></i>
-                </td>
-                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl"
-                    ng-controller="Kubernetes.ConnectController">
-                  <a class="clickable"
-                     ng-click="doConnect(pod)"
-                     title="Open a new window and connect to this container">
-                    <i class="fa fa-sign-in"></i>
-                  </a>
-                </td>
-                <td>
-                  <div class="service-view-detail-pod-id" title="{{pod.id}}">
-                    <span class="value">Pod <a title="Go to the pod detail page" ng-href="{{pod | kubernetesPageLink}}">{{pod.idAbbrev}}</a></span>
-                  </div>
-                  <div class="service-view-detail-pod-ip">
-                    IP:
-                    <span class="value">{{pod.status.podIP}}</span>
-                  </div>
-                </td>
-                <td class="service-view-detail-pod-expand" ng-click="expandPod(pod)">
-                  <i class="fa fa-chevron-right"></i>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </script>
-
-
   <div class="row">
     <div hawtio-breadcrumbs></div>
   </div>
@@ -217,9 +18,9 @@
         </span>
         <span ng-hide="id" class="pull-right">
           <div class="btn-group">
-            <a class="btn" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
+            <a class="btn btn-default" ng-disabled="mode == 'list'" href="" ng-click="mode = 'list'">
               <i class="fa fa-list"></i></a>
-            <a class="btn" ng-disabled="mode == 'detail'" href="" ng-click="mode = 'detail'">
+            <a class="btn btn-default" ng-disabled="mode == 'detail'" href="" ng-click="mode = 'detail'">
               <i class="fa fa-table"></i></a>
           </div>
         </span>
@@ -264,14 +65,14 @@
             </div>
             <div ng-show="mode == 'detail'">
               <div class="app-detail" ng-repeat="item in model.apps | filter:tableConfig.filterOptions.filterText | orderBy:'$name' track by $index">
-                <ng-include src="'appDetailTemplate.html'"/>
+                <ng-include src="'plugins/kubernetes/html/appDetailTemplate.html'"/>
               </div>
             </div>
           </div>
         </div>
         <div ng-show="model.fetched && id">
           <div class="app-detail">
-            <ng-include src="'appDetailTemplate.html'"/>
+            <ng-include src="'plugins/kubernetes/html/appDetailTemplate.html'"/>
           </div>
         </div>
       </div>

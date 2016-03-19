@@ -159,65 +159,6 @@ module Kubernetes {
     }
   }
 
-  export function updateOrCreateObject(object, KubernetesModel, success?: (data) => void, error?: (error) => void) {
-    var kind = getKind(object);
-    if (kind === "List") {
-      log.debug("Object is a list, deploying all objects");
-      _.forEach(object.items, (obj) => {
-        log.debug("Deploying: ", obj);
-        updateOrCreateObject(obj, KubernetesModel, success, error);
-      });
-      return;
-    }
-    if (!kind) {
-      log.debug("Object: ", object, " has no object type");
-      return;
-    }
-    kind = kind.toLowerCase().pluralize();
-    var resource = KubernetesModel[kind + 'Resource'];
-    if (!resource) {
-      var injector = HawtioCore.injector;
-      var $resource = injector ? injector.get<ng.resource.IResourceService>("$resource") : null;
-      if (!$resource) {
-        log.warn("Cannot create resource for " + kind + " due to missing $resource");
-        return;
-      }
-      resource = createResource(kind, uriTemplateForKubernetesKind(kind), $resource, KubernetesModel);
-      KubernetesModel[kind + 'Resource'] = resource;
-    }
-    var name = getName(object);
-    if (!name) {
-      log.debug("Object has no name: ", object);
-      return;
-    }
-
-    var isUpdate = _.any(KubernetesModel[kind], (n) => n === name)
-    var action = isUpdate ? "Modified" : "Added";
-
-    var successInternal = (data) => {
-      log.debug(action, data);
-      if (!isUpdate && KubernetesModel[kind]) {
-        KubernetesModel[kind].push(data);
-      }
-      if (success) {
-        success(data);
-      }
-    };
-    var errorInternal = (err) => {
-      log.debug("Failed to add/modify object: ", object, " error: ", err);
-      if (error) {
-        error(err);
-      }
-    }
-    if (isUpdate) {
-      log.debug("Object already exists, updating...");
-      resource.save({ id: name }, object, successInternal, errorInternal);
-    } else {
-      log.debug("Object doesn't exist, creating...");
-      resource.create({}, object, successInternal, errorInternal);
-    }
-  }
-
   /**
    * Returns thevalue from the injector if its available or null
    */
@@ -444,7 +385,7 @@ module Kubernetes {
 
     $scope.viewTemplates = () => {
       var returnTo = $location.url();
-      $location.path('/kubernetes/templates').search({'returnTo': returnTo});
+      $location.path(UrlHelpers.join('/kubernetes/namespace', $scope.namespace, '/templates')).search({'returnTo': returnTo});
     };
 
     $scope.namespace = $routeParams.namespace || $scope.namespace || KubernetesState.selectedNamespace || defaultNamespace;
@@ -1684,14 +1625,34 @@ module Kubernetes {
   /**
    * Lets remove any enriched data to leave the original json intact
    */
-  export function toRawJson(item) {
-    var o = angular.copy(item);
+  export function unenrich(item) {
+    if (!item) {
+      return item;
+    }
+    var o = _.cloneDeep(item);
     angular.forEach(o, (value, key) => {
       if (key.startsWith("$") || key.startsWith("_")) {
         delete o[key];
       }
     });
+    delete o['connectTo'];
+    return o;
+  }
+
+  /**
+   * Returns the unenriched JSON representation of an object
+   */
+  export function toRawJson(item) {
+    var o = unenrich(item);
     return JSON.stringify(o, null, 2); // spacing level = 2
+  }
+
+  /**
+   * Returns the unenriched YAML representation of an object
+   */
+  export function toRawYaml(item) {
+    var o = unenrich(item);
+    return jsyaml.dump(o, { indent: 2 });
   }
 
 

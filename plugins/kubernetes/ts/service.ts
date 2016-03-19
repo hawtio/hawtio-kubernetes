@@ -11,7 +11,6 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
-    $scope.rawMode = false;
     $scope.rawModel = null;
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
@@ -48,7 +47,7 @@ module Kubernetes {
       $scope.namespace = $routeParams["namespace"] || KubernetesState.selectedNamespace;
       $scope.item = $scope.model.getService($scope.namespace, $scope.id);
       if ($scope.item) {
-        $scope.rawModel = toRawJson($scope.item);
+        $scope.rawModel = toRawYaml($scope.item);
       }
       Core.$apply($scope);
     }

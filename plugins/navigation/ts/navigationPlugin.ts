@@ -5,6 +5,9 @@ module Navigation {
   export var log = Logger.get(pluginName);
   export var _module = angular.module(pluginName, []);
 
+  _module.run(() => {
+  });
+
   _module.service('HawtioBreadcrumbs', () => {
     var _config = [];
     var self = {
@@ -69,9 +72,11 @@ module Navigation {
         scope.$watchCollection('HawtioSubTabs.get()', (subTabConfig) => {
           // log.debug("subTabConfig: ", subTabConfig);
           if (subTabConfig && subTabConfig.length > 0) {
-            element.attr('class', 'col-sm-9 col-md-10 col-sm-push-1 col-md-push-2');
+            element.removeClass('hidden-nav');
+            //element.css({ 'margin-left': '' });
           } else {
-            element.attr('class', 'col-md-12');
+            element.addClass('hidden-nav');
+            //element.css({ 'margin-left': 'auto' });
           }
         });
       }
@@ -80,34 +85,50 @@ module Navigation {
   }]);
 
   _module.directive('hawtioTabsOutlet', ['HawtioSubTabs', (HawtioSubTabs) => {
+    var initialized = false;
     return {
-      restrict: 'E',
+      restrict: 'AE',
       replace: true,
       template: `
-        <div ng-show="subTabConfig && subTabConfig.length" class="col-sm-3 col-md-2 col-sm-pull-9 col-md-pull-10 sidebar-pf sidebar-pf-left" viewport-height style="position: fixed;"
-             ng-controller="Developer.NavBarController">
-          <ul class="nav nav-pills nav-stacked">
+        <div class="nav-pf-vertical nav-pf-vertical-with-secondary-nav" ng-controller="Developer.NavBarController" ng-class="getClass()">
+          <ul class="list-group">
             <li ng-repeat="subTab in subTabConfig" ng-show="isValid(subTab)"
-                class="{{subTab.active ? 'active' : ''}}"
+                class="list-group-item {{subTab.active ? 'active' : ''}}"
                 title="{{subTab.title}}">
                 <a ng-hide="subTab.template" href="{{subTab.href}}">
-                  <i ng-show="subTab.class" ng-class="subTab.class"></i>
-                  <img ng-show="subTab.icon" ng-src="{{subTab.icon}}" style="max-width: 16px; margin-right: 5px;">
+                  <span ng-show="subTab.class" ng-class="subTab.class"></span>
+                  <img ng-show="subTab.icon" ng-src="{{subTab.icon}}" style="max-width: 16px; margin-right: 13px;">
                   {{subTab.label}}
                 </a>
                 <div ng-show="subTab.template" compile="subTab.template"></div>
             </li>
           </ul>
-          <!--
-
-        <div class="pull-right inline-block"
-                ng-show="model.serviceApps && model.serviceApps.length"
-                ng-include="'plugins/kubernetes/html/serviceApps.html'"></div>
-                -->
         </div>
       `,
       link: (scope, element, attrs) => {
+        if (!initialized) {
+          try {
+            (<any>$)().setupVerticalNavigation(false);
+          } catch (err) {
+            // ignore if we haven't loaded patternfly
+          }
+          initialized = true;
+        }
         scope.HawtioSubTabs = HawtioSubTabs;
+        var collapsed = false;
+        scope.getClass = () => {
+          //log.debug("My class: ", element.attr('class'));
+          if (!scope.subTabConfig || !scope.subTabConfig.length) {
+            return 'hidden';
+          }
+          if (collapsed) {
+            return 'collapsed';
+          }
+          return '';
+        }
+        scope.$on('hawtioCollapseNav', () => {
+          collapsed = !collapsed;
+        });
         scope.$watch('HawtioSubTabs.get()', (subTabConfig) => {
           scope.subTabConfig = subTabConfig;
         });
@@ -139,7 +160,7 @@ module Navigation {
     };
   }]);
 
-  hawtioPluginLoader.addModule('patternfly');
+  //hawtioPluginLoader.addModule('patternfly');
   hawtioPluginLoader.addModule(pluginName);
 
 }

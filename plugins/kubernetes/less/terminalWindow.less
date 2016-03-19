@@ -1,0 +1,84 @@
+.terminal-window {
+  position: fixed;
+  bottom: 0;
+  background: white;
+  border: 1px solid #d4d4d4;
+  overflow: hidden;
+  z-index: 1040;
+
+  .resize-dot {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #d4d4d4;
+    background: white;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    cursor: nwse-resize;
+    border-radius: 8px;
+    z-index: 10000;
+  }
+
+  &.minimized .resize-dot,
+  &.maximized .resize-dot {
+    display: none;
+  }
+
+  &.minimized .terminal-title, 
+  &.maximized .terminal-title {
+    cursor: inherit;
+  }
+
+  .terminal-body {
+    overflow: auto;
+    .terminal-wrapper > .terminal * {
+      font-family: 'DroidSansMonoRegular';
+    }
+  }
+  .terminal-title {
+    cursor: move;
+    border-bottom: 1px solid #d4d4d4;
+    > h5 {
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    > i {
+      font-size: 16px;
+      margin-right: 5px;
+      margin-top: 7px;
+    }
+  }
+}
+
+kubernetes-container-terminal .terminal-wrapper {
+  display: block !important;
+}
+
+kubernetes-container-terminal .terminal-actions {
+  position: absolute !important;
+}
+
+.pod-log-window {
+  .scroll-indicator {
+    position: absolute;
+    bottom: 0;
+    line-height: 32px;
+    left: 20px;
+    right: 20px;
+    background-color: #ffffff;
+    border-top: 1px solid #d4d4d4;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    z-index: 10000;
+    opacity: 0.7;
+
+  }
+  .terminal-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+

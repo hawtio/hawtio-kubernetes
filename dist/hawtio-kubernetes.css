@@ -31,120 +31,6 @@ img.icon-selected-app {
   line-height: 36px;
   padding-left: 5px;
 }
-.service-view-rectangle {
-  position: relative;
-  margin-left: 0;
-  margin-right: 0px;
-  margin-bottom: 15px;
-  margin-top: 0;
-  background-color: #fafafa;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #eeeeee;
-}
-.service-view-header {
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 8px;
-  padding-bottom: 5px;
-}
-.service-view-header .pull-right {
-  position: relative;
-}
-.service-view-header .pull-right .service-view-header-delete {
-  position: absolute;
-  top: -7px;
-  right: -14px;
-}
-.service-view-header-delete .red {
-  opacity: 0.5;
-  transition: opacity 1s;
-  font-size: larger;
-}
-.service-view-header-delete:hover .red {
-  opacity: 1;
-}
-.service-view-icon img {
-  width: 32px;
-  height: 32px;
-  padding-right: 6px;
-}
-.service-view-name {
-  font-size: larger;
-  font-weight: bold;
-}
-.service-view-address {
-  padding-left: 30px;
-}
-.service-view-detail-header {
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-top: 5px;
-  padding-bottom: 0px;
-  height: 20px;
-  min-height: 20px;
-  max-height: 20px;
-}
-.service-view-detail-header .span4,
-.service-view-detail-header .value {
-  height: 20px;
-  min-height: 20px;
-  max-height: 20px;
-}
-/*
-.service-view-detail-header a {
-    color: black;
-}
-*/
-.service-view-detail-rectangle {
-  background-color: #eeeeee;
-  min-height: 32px;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-.service-view-detail-rectangle .value {
-  font-weight: 600;
-}
-.service-view-detail-pod-box {
-  background-color: #eeeeee;
-  display: inline-block;
-  font-size: smaller;
-}
-.service-view-detail-pod-summary,
-.service-view-detail-pod-summary-expand {
-  display: inline-block;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  background-color: #ffffff;
-}
-.service-view-detail-pod-summary table td,
-.service-view-detail-pod-summary-expand table td {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.service-view-detail-pod-status,
-.service-view-detail-pod-connect {
-  line-height: 36px;
-  padding-right: 20px;
-}
-.service-view-detail-pod-status i,
-.service-view-detail-pod-connect i {
-  font-size: 36px;
-  display: inline-block;
-  vertical-align: middle;
-}
-.service-view-detail-pod-expand {
-  color: #a0a0a0;
-  font-size: 18px;
-  padding-right: 0px;
-}
-.kubernetes-view .filter-header {
-  margin-bottom: 1em;
-}
 .controller-pod-counts {
   padding-right: 16px;
   padding-top: 8px;
@@ -273,35 +159,6 @@ img.icon-selected-app {
 }
 tbody .ngCellText i {
   margin-right: 5px;
-}
-.terminal-window {
-  position: fixed;
-  bottom: 0;
-  height: 345px;
-  /* min-width: 443px; */
-  background: white;
-  border: 1px solid #d4d4d4;
-}
-.terminal-body .terminal-wrapper > .terminal * {
-  font-family: 'DroidSansMonoRegular';
-}
-.terminal-title > h5 {
-  display: inline-block;
-  margin-left: 5px;
-}
-.terminal-title > i {
-  font-size: 16px;
-  margin-right: 5px;
-  margin-top: 7px;
-}
-.terminal-window.minimized {
-  height: 33px;
-}
-kubernetes-container-terminal .terminal-wrapper {
-  display: block !important;
-}
-kubernetes-container-terminal .terminal-actions {
-  position: absolute !important;
 }
 .log-success {
   color: green;
@@ -464,12 +321,102 @@ legend {
 }
 .project-selector a,
 .project-selector a:hover {
+  color: #fff;
   text-decoration: none;
-  color: #333333;
   font-size: 13px;
   line-height: 21px;
 }
 
+/* This is for the 'Overview' page with all the rows of boxes */
+.service-view-rectangle {
+  position: relative;
+  margin-left: 0;
+  margin-right: 0px;
+  margin-bottom: 15px;
+  margin-top: 0;
+  background-color: #fafafa;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #eeeeee;
+}
+.service-view-rectangle .service-view-header {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  line-height: 20px;
+  vertical-align: middle;
+}
+.service-view-rectangle .service-view-detail-pod-box {
+  background-color: #eeeeee;
+  display: inline-block;
+  font-size: smaller;
+}
+.service-view-rectangle .service-view-header-delete .red {
+  opacity: 0.5;
+  transition: opacity 1s;
+  font-size: larger;
+}
+.service-view-rectangle .service-view-header-delete:hover .red {
+  opacity: 1;
+}
+.service-view-rectangle .service-view-icon img {
+  width: 32px;
+  height: 32px;
+  margin-right: 6px;
+}
+.service-view-rectangle .service-view-name {
+  font-size: larger;
+  font-weight: bold;
+}
+.service-view-rectangle .service-view-detail-header {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  line-height: 20px;
+}
+.service-view-rectangle .service-view-detail-rectangle {
+  background-color: #eeeeee;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.service-view-rectangle .service-view-detail-rectangle .value {
+  font-weight: bold;
+}
+.service-view-rectangle .service-view-detail-pod-summary,
+.service-view-rectangle .service-view-detail-pod-summary-expand {
+  display: inline-block;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  background-color: #ffffff;
+}
+.service-view-rectangle .service-view-detail-pod-summary table td,
+.service-view-rectangle .service-view-detail-pod-summary-expand table td {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.service-view-rectangle .service-view-detail-pod-status,
+.service-view-rectangle .service-view-detail-pod-connect {
+  line-height: 36px;
+  padding-right: 20px;
+}
+.service-view-rectangle .service-view-detail-pod-status i,
+.service-view-rectangle .service-view-detail-pod-connect i {
+  font-size: 36px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.service-view-rectangle .service-view-detail-pod-expand {
+  color: #a0a0a0;
+  font-size: 18px;
+  padding-right: 0px;
+}
+.kubernetes-view .filter-header {
+  margin-bottom: 1em;
+}
+
+/* This is all for the diagram, not the 'Overview' page */
 .kubernetes-overview {
   width: 100%;
   height: 100%;
@@ -619,16 +566,107 @@ legend {
   white-space: normal;
 }
 
-.pod-log-viewport {
+.pod-log-lines * {
   padding-left: 5px;
   padding-right: 5px;
-  width: 575px;
-  height: 309px;
-  overflow-y: auto;
+  font-family: monospace;
+  margin: 0;
+  line-height: 14px;
 }
-.pod-log-viewport .pod-log-lines {
-  max-width: 575px;
+.pod-log-lines * .black {
+  color: #222;
 }
-.pod-log-viewport .pod-log-lines * {
+.pod-log-lines * .red {
+  color: #f22;
+}
+.pod-log-lines * .green {
+  color: #2f2;
+}
+.pod-log-lines * .yellow {
+  color: #ff2;
+}
+.pod-log-lines * .blue {
+  color: #22f;
+}
+.pod-log-lines * .purple {
+  color: #f2f;
+}
+.pod-log-lines * .cyan {
+  color: #2dd;
+}
+.pod-log-lines * .white {
+  color: #ddd;
+}
+
+.terminal-window {
+  position: fixed;
+  bottom: 0;
+  background: white;
+  border: 1px solid #d4d4d4;
+  overflow: hidden;
+  z-index: 1040;
+}
+.terminal-window .resize-dot {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #d4d4d4;
+  background: white;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  cursor: nwse-resize;
+  border-radius: 8px;
+  z-index: 10000;
+}
+.terminal-window.minimized .resize-dot,
+.terminal-window.maximized .resize-dot {
+  display: none;
+}
+.terminal-window.minimized .terminal-title,
+.terminal-window.maximized .terminal-title {
+  cursor: inherit;
+}
+.terminal-window .terminal-body {
+  overflow: auto;
+}
+.terminal-window .terminal-body .terminal-wrapper > .terminal * {
   font-family: 'DroidSansMonoRegular';
+}
+.terminal-window .terminal-title {
+  cursor: move;
+  border-bottom: 1px solid #d4d4d4;
+}
+.terminal-window .terminal-title > h5 {
+  display: inline-block;
+  margin-left: 5px;
+}
+.terminal-window .terminal-title > i {
+  font-size: 16px;
+  margin-right: 5px;
+  margin-top: 7px;
+}
+kubernetes-container-terminal .terminal-wrapper {
+  display: block !important;
+}
+kubernetes-container-terminal .terminal-actions {
+  position: absolute !important;
+}
+.pod-log-window .scroll-indicator {
+  position: absolute;
+  bottom: 0;
+  line-height: 32px;
+  left: 20px;
+  right: 20px;
+  background-color: #ffffff;
+  border-top: 1px solid #d4d4d4;
+  border-left: 1px solid #d4d4d4;
+  border-right: 1px solid #d4d4d4;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  z-index: 10000;
+  opacity: 0.7;
+}
+.pod-log-window .terminal-body {
+  overflow-y: auto;
+  overflow-x: hidden;
 }

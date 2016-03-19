@@ -1,6 +1,6 @@
 {
   "name": "hawtio-kubernetes",
-  "version": "2.1.163",
+  "version": "2.1.180",
   "keywords": [
     "hawtio"
   ],
@@ -34,7 +34,8 @@
     "term.js": "~0.0.3",
     "urijs": "~1.17.0",
     "hawtio-kubernetes-api": "~2.0.0",
-    "human-date": "^1.3.2"
+    "human-date": "^1.3.2",
+    "js-yaml": "^3.5.4"
   },
   "overrides": {
     "term.js": {
@@ -52,10 +53,10 @@
     "hawtio-extension-service": "~2.0.1"
   },
   "resolutions": {
-    "lodash": "~3.2.0",
     "codemirror": "^5.0",
     "angular": "~1.3.5",
     "angular-resource": "~1.3.9",
-    "urijs": "~1.17.0"
+    "urijs": "~1.17.0",
+    "lodash": "3.10.1"
   }
 }

@@ -1,0 +1,8 @@
+<div class="ngCellText">
+  <span ng-repeat="service in row.entity.services">
+    <a ng-href="{{service | kubernetesPageLink}}"
+      title="View service details">
+      <span>{{service.metadata.name ||service.name || service.id}}</span>
+    </a>
+  </span>
+</div>

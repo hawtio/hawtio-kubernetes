@@ -11,8 +11,7 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
-    $scope.rawMode = false;
-    $scope.rawModel = null;
+    $scope.rawModel = null
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
@@ -24,7 +23,7 @@ module Kubernetes {
       }
     };
 
-    $scope.$on('kubernetesModelUpdated', function () {
+    $scope.$on('kubernetesModelUpdated', () => {
       updateData();
     });
 
@@ -44,12 +43,14 @@ module Kubernetes {
     updateData();
 
     function updateData() {
+      if ($scope.dirty) {
+        return;
+      }
       $scope.id = $routeParams["id"];
       $scope.item = $scope.model.getReplicationController(KubernetesState.selectedNamespace, $scope.id);
       if ($scope.item) {
-        $scope.rawModel = toRawJson($scope.item);
+        $scope.rawModel = toRawYaml($scope.item);
       }
-
       Core.$apply($scope);
     }
   }]);

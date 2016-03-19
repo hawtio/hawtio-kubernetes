@@ -1,0 +1,149 @@
+<div class="service-view-rectangle" ng-repeat="view in item.$serviceViews" ng-hide="view.appName === 'kubernetes'">
+  <div class="service-view-header row">
+    <div class="col-md-4">
+      <span class="service-view-icon">
+        <a ng-href="{{view.service | kubernetesPageLink}}" title="View the service detail page">
+          <img ng-show="item.$iconUrl" ng-src="{{item.$iconUrl}}">
+        </a>
+      </span>
+      <span class="service-view-name" title="{{view.name}}">
+        <a ng-href="{{view.service | kubernetesPageLink}}" title="View the service detail page">
+          {{view.appName}}
+        </a>
+      </span>
+    </div>
+    <div class="col-md-6">
+      <span class="service-view-address" title="The service address">
+        <a ng-show="view.service.$connectUrl" target="_blank" href="{{view.service.$connectUrl}}" title="Connect to the service">
+          {{view.service.$host}}
+        </a>
+        <span ng-hide="view.service.$connectUrl">{{view.service.$host}}</span>
+      </span>
+    </div>
+    <div class="col-md-2 align-right">
+      <a class="service-view-header-delete" href="" ng-click="deleteSingleApp(item)" title="Delete this app"><i
+          class="fa fa-remove red"></i></a>
+    </div>
+  </div>
+
+  <div class="service-view-detail-rectangle">
+    <div class="service-view-detail-header row">
+      <div class="col-md-3">
+        <div class="service-view-detail-deployed" ng-show="view.createdDate"
+          title="deployed at: {{view.createdDate | date:'yyyy-MMM-dd HH:mm:ss Z'}}">
+          deployed:
+          <span class="value">{{view.createdDate | relativeTime}}</span>
+        </div>
+        <div class="service-view-detail-deployed" ng-hide="view.createdDate">
+          not deployed
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="service-view-detail-pod-template" ng-show="view.controllerId">
+          pod template:
+          <span class="value" title="Go to the replication controller detail page"><a
+              ng-href="{{view.replicationController | kubernetesPageLink}}">{{view.controllerId}}</a></span>
+        </div>
+        <div class="service-view-detail-pod-template" ng-hide="view.controllerId">
+          no pod template
+        </div>
+      </div>
+      <div class="col-md-3 service-view-detail-pod-counts align-right">
+        <span>
+          pods:
+          <a href="" ng-show="view.replicationController" class="badge badge-success"
+            ng-click="resizeDialog.open(view.replicationController)"
+            title="Resize the number of pods">
+            {{view.podCount}}
+          </a>
+          <span ng-hide="view.replicationController" class="badge badge-info">
+            {{view.podCount}}
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="service-view-detail-pod-box row">
+      <div class="col-md-12">
+        <div class="inline-block" ng-repeat="pod in item.pods track by $index">
+          <div ng-show="podExpanded(pod)" class="service-view-detail-pod-summary-expand">
+            <table>
+              <tr>
+                <td class="service-view-detail-pod-status">
+                  <i ng-class="pod.statusClass"></i>
+                </td>
+                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl"
+                  ng-controller="Kubernetes.ConnectController">
+                  <a class="clickable"
+                    ng-click="doConnect(pod)"
+                    title="Open a new window and connect to this container">
+                    <i class="fa fa-sign-in"></i>
+                  </a>
+                </td>
+                <td>
+                  <div class="service-view-detail-pod-id" title="{{pod.id}}">
+                    <span class="value">Pod <a title="Go to the pod detail page" ng-href="{{pod | kubernetesPageLink}}">{{pod.idAbbrev}}</a></span>
+                  </div>
+                  <div class="service-view-detail-pod-ip">
+                    IP:
+                    <span class="value">{{pod.status.podIP}}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="service-view-detail-pod-ports">
+                    ports: <span class="value">{{pod.$containerPorts.join(", ")}}</span>
+                  </div>
+                  <div class="service-view-detail-pod-minion">
+                    minion:
+                    <span class="value">
+                      <a ng-show="pod.$host" ng-href="{{baseUri}}/kubernetes/hosts/{{pod.$host}}">{{pod.$host}}</a>
+                    </span>
+                  </div>
+                </td>
+                <td class="service-view-detail-pod-expand" ng-click="collapsePod(pod)">
+                  <i class="fa fa-chevron-left"></i>
+                </td>
+              </tr>
+            </table>
+            <!--
+            <div class="service-view-detail-pod-status">
+              status:
+              <span class="value">{{pod.status}}</span>
+            </div>
+            -->
+          </div>
+
+          <div ng-hide="podExpanded(pod)" class="service-view-detail-pod-summary">
+            <table>
+              <tr>
+                <td class="service-view-detail-pod-status">
+                  <i ng-class="pod.statusClass"></i>
+                </td>
+                <td class="service-view-detail-pod-connect" ng-show="pod.$jolokiaUrl"
+                  ng-controller="Kubernetes.ConnectController">
+                  <a class="clickable"
+                    ng-click="doConnect(pod)"
+                    title="Open a new window and connect to this container">
+                    <i class="fa fa-sign-in"></i>
+                  </a>
+                </td>
+                <td>
+                  <div class="service-view-detail-pod-id" title="{{pod.id}}">
+                    <span class="value">Pod <a title="Go to the pod detail page" ng-href="{{pod | kubernetesPageLink}}">{{pod.idAbbrev}}</a></span>
+                  </div>
+                  <div class="service-view-detail-pod-ip">
+                    IP:
+                    <span class="value">{{pod.status.podIP}}</span>
+                  </div>
+                </td>
+                <td class="service-view-detail-pod-expand" ng-click="expandPod(pod)">
+                  <i class="fa fa-chevron-right"></i>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

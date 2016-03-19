@@ -156,7 +156,7 @@ module Kubernetes {
               var key = property.key;
               var value = property.value || "";
               if (key) {
-                data[key] = value.encodeBase64();
+                data[key] = window.btoa(value);
               }
             });
             $scope.secret.metadata.name = name;
@@ -184,7 +184,7 @@ module Kubernetes {
         updateData();
 
         function createProperty(key, text) {
-          var label = secretLabels[key] || key.humanize();
+          var label = secretLabels[key] || Core.humanizeValue(key);
           var tooltip = secretTooltips[key] || "Value of the " + label;
 
           var rows = 5;
@@ -227,7 +227,7 @@ module Kubernetes {
                 angular.forEach(secret.data, (value, key) => {
                   var text = "";
                   if (angular.isString(value) && value) {
-                    text = value.decodeBase64();
+                    text = window.atob(value);
                   }
                   var property = createProperty(key, text);
                   $scope.entity.properties[key] = property;

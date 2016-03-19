@@ -4,16 +4,21 @@ module Kubernetes {
   export var TemplateController = controller("TemplateController", [
     "$scope", "$location", "$http", "$timeout", "$routeParams", "marked", "$templateCache", "$modal", "KubernetesModel", "KubernetesState", "KubernetesApiURL",
     ($scope, $location, $http, $timeout, $routeParams, marked, $templateCache, $modal, KubernetesModel, KubernetesState, KubernetesApiURL) => {
+
+    var states = $scope.states = {
+      LISTING: 'LISTING',
+      SELECTED: 'SELECTED',
+      SUBSTITUTED: 'SUBSTITUTED',
+      DEPLOYING: 'DEPLOYING'
+    };
+
+    $scope.currentState = states.LISTING;
+
     var model = $scope.model = KubernetesModel;
     $scope.filterText = $location.search()["q"];
 
-    // $scope.watch = watches[WatchTypes.TEMPLATES];
-
     $scope.targetNamespace = $routeParams.targetNamespace;
     initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
-
-    // reloadDataIfNoWatch();
-
 
     $scope.$watchCollection('model.namespaces', () => {
       if (!$scope.targetNamespace) {
@@ -23,9 +28,30 @@ module Kubernetes {
 
     var returnTo = new URI($location.search()['returnTo'] || '/kubernetes/apps');
 
+    $scope.toString = (obj) => {
+      return toRawYaml(obj);
+    }
+
     function goBack() {
       $location.path(returnTo.path()).search(returnTo.query(true));
     }
+
+    // not currently used, but in case 'Done' should be
+    // disabled while applying all the objects
+    /*
+    $scope.stillDeploying = () => {
+      if (!$scope.outstanding) {
+        return false;
+      }
+      var answer = false;
+      _.forOwn($scope.outstanding, (value, key) => {
+        if (!answer) {
+          answer = value.applying;
+        }
+      });
+      return answer;
+    }
+    */
 
     function getAnnotations(obj) {
       return Core.pathGet(obj, ['metadata', 'annotations']);
@@ -52,14 +78,26 @@ module Kubernetes {
       }
     }
 
-    $scope.cancel = () => {
-      if ($scope.formConfig) {
-        delete $scope.formConfig;
-        delete $scope.entity;
-        $scope.objects = undefined;
-        return;
-      }
+    $scope.finish = () => {
       goBack();
+    }
+
+    $scope.cancel = () => {
+      switch ($scope.currentState) {
+        case states.SELECTED:
+          delete $scope.formConfig;
+          delete $scope.entity;
+          delete $scope.selectedTemplate;
+          $scope.objects = undefined;
+          $scope.currentState = states.LISTING;
+          return;
+        case states.SUBSTITUTED:
+          $scope.currentState = states.SELECTED;
+          return;
+        default:
+          goBack();
+          //$scope.currentState = states.LISTING;
+      }
     }
 
     /*
@@ -106,7 +144,8 @@ module Kubernetes {
       return getValueFor(template, 'iconUrl') || defaultIconUrl;
     };
 
-    $scope.deployTemplate = (template) => {
+    $scope.selectTemplate = (template) => {
+      $scope.selectedTemplate = _.clone(template);
       log.debug("Template parameters: ", template.parameters);
       log.debug("Template objects: ", template.objects);
       log.debug("Template annotations: ", template.metadata.annotations);
@@ -196,6 +235,7 @@ module Kubernetes {
       $scope.entity = <any> {};
       $scope.formConfig = formConfig;
       $scope.objects = template.objects;
+      $scope.currentState = states.SELECTED;
       log.debug("Form config: ", formConfig);
     };
 
@@ -206,7 +246,7 @@ module Kubernetes {
       });
     };
 
-    $scope.substituteAndDeployTemplate = () => {
+    $scope.substituteTemplate = () => {
       var objects = $scope.objects;
       var objectsText = angular.toJson(objects, true);
       // pull these out of the entity object so they're not used in substitutions
@@ -246,11 +286,16 @@ module Kubernetes {
         });
         objects = objects.concat(routes);
       }
+      $scope.objects = objects;
+      $scope.currentState = states.SUBSTITUTED;
+    };
+
+    $scope.deployTemplate = () => {
+      var objects = $scope.objects;
       if ($scope.targetNamespace !== model.currentNamespace()) {
         $scope.$on('WatcherNamespaceChanged', () => {
           log.debug("Namespace changed");
           setTimeout(() => {
-            // reloadDataIfNoWatch();
             applyObjects(objects);
             Core.$apply($scope);
           }, 500);
@@ -260,9 +305,11 @@ module Kubernetes {
       } else {
         applyObjects(objects);
       }
-    };
+    }
 
     function applyObjects(objects) {
+      var outstanding = $scope.outstanding = <any> {};
+      $scope.currentState = states.DEPLOYING;
       var projectClient = Kubernetes.createKubernetesClient("projects");
 
       _.forEach(objects, (object:any) => {
@@ -271,6 +318,13 @@ module Kubernetes {
         var kind = getKind(object);
         var name = getName(object);
         var ns = getNamespace(object);
+
+        var id = UrlHelpers.join(ns, kind, name);
+        var result = outstanding[id] = <any> {
+          applying: true,
+          object: object
+        };
+        Core.$apply($scope);
 
         if (kind && name) {
           if (ns && ns !== currentKubernetesNamespace()) {
@@ -297,14 +351,20 @@ module Kubernetes {
           kubeClient.put(object,
             (data) => {
               log.info("updated " + kind + " name: " + name + (ns ? " ns: " + ns: ""));
+              result.applying = false;
+              result.succeeded = true;
+              Core.$apply($scope);
             },
             (err) => {
               log.warn("Failed to update " + kind + " name: " + name + (ns ? " ns: " + ns: "") + " error: " + angular.toJson(err));
+              result.applying = false;
+              result.succeeded = false;
+              result.error = jsyaml.dump(err);
+              Core.$apply($scope);
             });
         }
-        //updateOrCreateObject(object, KubernetesModel);
       });
-      goBack();
+      //goBack();
     }
 
     $scope.deleteTemplate = (template) => {
@@ -332,21 +392,6 @@ module Kubernetes {
         customClass: "alert alert-warning"
       }).open();
     };
-
-    /*
-    function reloadDataIfNoWatch() {
-      if (!$scope.watch || !$scope.watch.connected) {
-        // TODO register a handler of bad watches so we invoke this in a polling form automatically?
-        model.templatesResource.query((response) => {
-          if (response) {
-            var items = response.items;
-            model.templates = items;
-            Core.$apply($scope);
-          }
-        });
-      }
-    }
-    */
   }]);
 }
 
