@@ -581,7 +581,7 @@ module Kubernetes {
           }
         }
         if (answer) {
-          var servicepath = getAnnotation(service, "servicepath");
+          var servicepath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
           if (servicepath) {
             return UrlHelpers.join(answer, servicepath);
           }

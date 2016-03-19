@@ -198,135 +198,6 @@ legend {
   background-color: darkred;
 }
 
-.environment-row a {
-  color: black;
-}
-.environment-row .panel {
-  min-width: 255px;
-  min-height: 160px;
-}
-.environment-row .panel-group {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-.environment-row .panel-title > a:before {
-  display: none;
-}
-.environment-rows {
-  /*
-    background-color: rgb(238, 238, 238);
-    */
-  padding-top: 5px;
-  vertical-align: top;
-}
-.environment-name-block {
-  width: 200px;
-}
-.environment-name-block,
-.environment-deploy-block {
-  background: white;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.environment-name-block {
-  padding-top: 0px;
-}
-.environment-block {
-  vertical-align: top;
-}
-.environment-deploy-block {
-  border: 1px dashed;
-  border-color: silver;
-}
-.environment-deploy-version-and-pods {
-  padding-bottom: 5px;
-}
-
-.project-dashboard .page-header-row {
-  background: white;
-  margin-left: -20px;
-  margin-right: -20px;
-  margin-top: -20px;
-  border-bottom: 1px solid #d1d1d1;
-  margin-bottom: 13px;
-  padding-bottom: 7px;
-}
-.project-dashboard .card-pf-title {
-  margin-right: 1em;
-}
-.project-dashboard .no-border {
-  border: none;
-  margin-bottom: 0;
-}
-.project-dashboard .no-top-margin {
-  margin-top: 0;
-}
-.project-dashboard .full-card-width {
-  margin-left: -20px;
-  margin-right: -20px;
-}
-.project-dashboard .card-pf.pipeline .panel-group {
-  border-width: 0;
-}
-.project-dashboard .card-pf.pipeline .panel-group .panel {
-  box-shadow: none;
-}
-.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default {
-  border-width: 0;
-  border-top-width: 1px;
-}
-.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default .log-panel {
-  border: 1px solid #d4d4d4;
-}
-
-.filter-header .btn,
-.filter-header form {
-  margin-top: 1.05em;
-  margin-bottom: 1em;
-}
-
-.log-window {
-  border-top: 1px solid #d4d4d4;
-  overflow: auto;
-}
-.log-window-inner * {
-  font-family: "DroidSansMonoRegular", monospace;
-  line-height: 13px;
-}
-.log-panel {
-  position: static;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-  border: none;
-  padding: 3px;
-}
-.log-panel-inner * {
-  font-family: "DroidSansMonoRegular", monospace;
-  line-height: 13px;
-}
-
-.project-selector {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  list-style-type: none;
-}
-.project-selector a,
-.project-selector a:hover {
-  color: #fff;
-  text-decoration: none;
-  font-size: 13px;
-  line-height: 21px;
-}
-
 /* This is for the 'Overview' page with all the rows of boxes */
 .service-view-rectangle {
   position: relative;
@@ -669,4 +540,133 @@ kubernetes-container-terminal .terminal-actions {
 .pod-log-window .terminal-body {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.environment-row a {
+  color: black;
+}
+.environment-row .panel {
+  min-width: 255px;
+  min-height: 160px;
+}
+.environment-row .panel-group {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.environment-row .panel-title > a:before {
+  display: none;
+}
+.environment-rows {
+  /*
+    background-color: rgb(238, 238, 238);
+    */
+  padding-top: 5px;
+  vertical-align: top;
+}
+.environment-name-block {
+  width: 200px;
+}
+.environment-name-block,
+.environment-deploy-block {
+  background: white;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.environment-name-block {
+  padding-top: 0px;
+}
+.environment-block {
+  vertical-align: top;
+}
+.environment-deploy-block {
+  border: 1px dashed;
+  border-color: silver;
+}
+.environment-deploy-version-and-pods {
+  padding-bottom: 5px;
+}
+
+.project-dashboard .page-header-row {
+  background: white;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-top: -20px;
+  border-bottom: 1px solid #d1d1d1;
+  margin-bottom: 13px;
+  padding-bottom: 7px;
+}
+.project-dashboard .card-pf-title {
+  margin-right: 1em;
+}
+.project-dashboard .no-border {
+  border: none;
+  margin-bottom: 0;
+}
+.project-dashboard .no-top-margin {
+  margin-top: 0;
+}
+.project-dashboard .full-card-width {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.project-dashboard .card-pf.pipeline .panel-group {
+  border-width: 0;
+}
+.project-dashboard .card-pf.pipeline .panel-group .panel {
+  box-shadow: none;
+}
+.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default {
+  border-width: 0;
+  border-top-width: 1px;
+}
+.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default .log-panel {
+  border: 1px solid #d4d4d4;
+}
+
+.filter-header .btn,
+.filter-header form {
+  margin-top: 1.05em;
+  margin-bottom: 1em;
+}
+
+.log-window {
+  border-top: 1px solid #d4d4d4;
+  overflow: auto;
+}
+.log-window-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
+  line-height: 13px;
+}
+.log-panel {
+  position: static;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  border: none;
+  padding: 3px;
+}
+.log-panel-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
+  line-height: 13px;
+}
+
+.project-selector {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  list-style-type: none;
+}
+.project-selector a,
+.project-selector a:hover {
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 21px;
 }

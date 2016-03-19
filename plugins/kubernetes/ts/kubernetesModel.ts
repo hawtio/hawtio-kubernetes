@@ -506,7 +506,7 @@ module Kubernetes {
                 }
                 service.$connectUrl = UrlHelpers.join(hostUrl, "/");
 
-                var servicepath = getAnnotation(service, "servicepath");
+                var servicepath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
                 if (servicepath) {
                   service.$connectUrl = UrlHelpers.join(service.$connectUrl, servicepath);
                 }
