@@ -16,7 +16,7 @@
     "gulp-notify": "^2.1.0",
     "gulp-replace": "^0.5.4",
     "gulp-sourcemaps": "^1.5.1",
-    "gulp-typescript": "^2.4.2",
+    "gulp-typescript": "^2.12.1",
     "gulp-watch": "^3.0.0",
     "hawtio-node-backend": "^2.0.5",
     "stringify-object": "^2.0.0",
