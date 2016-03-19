@@ -53,6 +53,8 @@ declare module Kubernetes {
     function templatesRestURL(): string;
     function getNamespace(entity: any): any;
     function getLabels(entity: any): any;
+    function getAnnotations(entity: any): any;
+    function getAnnotation(entity: any, annotation: any): any;
     function getName(entity: any): any;
     function getKind(entity: any): any;
     function getSelector(entity: any): any;

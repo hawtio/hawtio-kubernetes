@@ -238,6 +238,15 @@ module Kubernetes {
     return answer ? answer : {};
   }
 
+  export function getAnnotations(entity) {
+    var answer = Core.pathGet(entity, ["metadata", "annotations"]);
+    return answer ? answer : {};
+  }
+
+  export function getAnnotation(entity, annotation) {
+    return Core.pathGet(entity, ["metadata", "annotations", annotation]);
+  }
+
   export function getName(entity) {
     if (angular.isString(entity)) {
       return entity;
@@ -559,16 +568,24 @@ module Kubernetes {
         }
       }
       if (portalIP) {
+        var answer = "";
         if (hasHttps) {
-          return "https://" + portalIP;
+          answer = "https://" + portalIP;
         } else if (hasHttp) {
-          return "http://" + portalIP;
+          answer = "http://" + portalIP;
         } else if (!httpOnly) {
           if (port) {
-            return protocol + portalIP + ":" + port + "/";
+            answer = protocol + portalIP + ":" + port + "/";
           } else {
-            return protocol + portalIP;
+            answer = protocol + portalIP;
           }
+        }
+        if (answer) {
+          var servicepath = getAnnotation(service, "servicepath");
+          if (servicepath) {
+            return UrlHelpers.join(answer, servicepath);
+          }
+          return answer;
         }
       }
     } else if (service) {

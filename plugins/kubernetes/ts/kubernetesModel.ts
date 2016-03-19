@@ -500,22 +500,27 @@ module Kubernetes {
               // service in the console. For now just assume its http:
 
               if (host) {
-                var hostUrl =  host;
+                var hostUrl = host;
                 if (hostUrl.indexOf("://") < 0) {
                   hostUrl = "http://" + host;
                 }
-                service.$connectUrl = UrlHelpers.join(hostUrl,  "/");
+                service.$connectUrl = UrlHelpers.join(hostUrl, "/");
+
+                var servicepath = getAnnotation(service, "servicepath");
+                if (servicepath) {
+                  service.$connectUrl = UrlHelpers.join(service.$connectUrl, servicepath);
+                }
               }
 
               // TODO definitely need that annotation, temp hack for apiman link
               if (getName(service) === 'apiman' && host) {
                 service.$connectUrl = (<any> new URI().host(service.$host)
-                                        .path('apimanui/index.html'))
-                                        .query({})
-                                        .hash(URI.encode(angular.toJson({
-                                          backTo: new URI().toString(),
-                                          token: HawtioOAuth.getOAuthToken()
-                                        }))).toString();
+                  .path('apimanui/index.html'))
+                  .query({})
+                  .hash(URI.encode(angular.toJson({
+                    backTo: new URI().toString(),
+                    token: HawtioOAuth.getOAuthToken()
+                  }))).toString();
 
               }
             } else {
