@@ -7,8 +7,8 @@
 module Developer {
 
   export var WorkspacesController = controller("WorkspacesController",
-    ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesPods", "KubernetesState", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
-      ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesServices:ng.resource.IResourceClass, KubernetesPods:ng.resource.IResourceClass, KubernetesState,
+    ["$scope", "KubernetesModel", "KubernetesState", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
+      ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {
 
         $scope.kubernetes = KubernetesState;
@@ -24,7 +24,7 @@ module Developer {
           }
         });
 
-        $scope.developerPerspective = Core.trimLeading($location.url(), "/").startsWith("workspace");
+        $scope.developerPerspective = _.startsWith(Core.trimLeading($location.url(), "/"), "workspace");
 
         $scope.tableConfig = {
           data: 'model.workspaces',

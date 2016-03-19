@@ -153,7 +153,7 @@ module Developer {
 
 
   export function jenkinsLink() {
-    var ServiceRegistry = Kubernetes.inject("ServiceRegistry");
+    var ServiceRegistry = Kubernetes.inject<any>("ServiceRegistry");
     if (ServiceRegistry) {
       return ServiceRegistry.serviceLink(jenkinsServiceName);
     }
@@ -161,7 +161,7 @@ module Developer {
   }
 
   export function forgeReadyLink() {
-    var ServiceRegistry = Kubernetes.inject("ServiceRegistry");
+    var ServiceRegistry = Kubernetes.inject<any>("ServiceRegistry");
     if (ServiceRegistry) {
       return ServiceRegistry.serviceReadyLink(Kubernetes.fabric8ForgeServiceName);
     }

@@ -177,7 +177,7 @@ module Kubernetes {
     var resource = KubernetesModel[kind + 'Resource'];
     if (!resource) {
       var injector = HawtioCore.injector;
-      var $resource = injector ? injector.get("$resource") : null;
+      var $resource = injector ? injector.get<ng.resource.IResourceService>("$resource") : null;
       if (!$resource) {
         log.warn("Cannot create resource for " + kind + " due to missing $resource");
         return;
@@ -221,9 +221,9 @@ module Kubernetes {
   /**
    * Returns thevalue from the injector if its available or null
    */
-  export function inject(name) {
+  export function inject<T>(name):T {
     var injector = HawtioCore.injector;
-    return injector ? injector.get(name) : null;
+    return injector ? injector.get<T>(name) : null;
   }
 
   export function createResource(thing:string, urlTemplate:string, $resource: ng.resource.IResourceService, KubernetesModel) {
@@ -349,7 +349,7 @@ module Kubernetes {
     return true;
   }
 
-  export function getStrippedPathName():String {
+  export function getStrippedPathName():string {
     var pathName = Core.trimLeading((this.$location.path() || '/'), "#");
     pathName = pathName.replace(/^\//, '');
     return pathName;
@@ -357,10 +357,9 @@ module Kubernetes {
 
   export function linkContains(...words:String[]):boolean {
     var pathName = this.getStrippedPathName();
-    return words.all((word:string) => {
-      return pathName.has(word);
-    });
+    return _.every(words, (word:string) => pathName.indexOf(word) !== 0);
   }
+
 
   /**
    * Returns true if the given link is active. The link can omit the leading # or / if necessary.
@@ -383,7 +382,7 @@ module Kubernetes {
     if (!pathName.length) {
       return link === pathName;
     } else {
-      return pathName.startsWith(link);
+      return _.startsWith(pathName, link);
     }
   }
 
@@ -430,7 +429,7 @@ module Kubernetes {
 
     function hasService(name) {
       if (injector) {
-        var ServiceRegistry = injector.get("ServiceRegistry");
+        var ServiceRegistry = injector.get<any>("ServiceRegistry");
         if (ServiceRegistry) {
           return ServiceRegistry.hasService(name);
         }
@@ -767,8 +766,8 @@ module Kubernetes {
       if (!HawtioCore.injector || !baseLink) {
         return baseLink;
       }
-      var $routeParams = HawtioCore.injector.get('$routeParams');
-      var projectId = $routeParams.project || $routeParams.project;
+      var $routeParams = HawtioCore.injector.get<ng.route.IRouteParamsService>('$routeParams');
+      var projectId = $routeParams['project'] || $routeParams['project'];
       if (!projectId) {
         return baseLink;
       }
@@ -950,7 +949,7 @@ module Kubernetes {
    */
   export function getServiceRegistry() {
     var injector = HawtioCore.injector;
-    return injector ? injector.get("ServiceRegistry") : null;
+    return injector ? injector.get<any>("ServiceRegistry") : null;
   }
 
 
@@ -1162,7 +1161,7 @@ module Kubernetes {
    * converts a git path into an accessible URL for the browser
    */
   export function gitPathToUrl(iconPath, branch = "master") {
-    return (HawtioCore.injector.get('AppLibraryURL') || '') + "/git/" + branch + iconPath;
+    return (HawtioCore.injector.get<string>('AppLibraryURL') || '') + "/git/" + branch + iconPath;
   }
 
   function asDate(value) {
@@ -1632,7 +1631,7 @@ module Kubernetes {
   export function currentKubernetesNamespace() {
     var injector = HawtioCore.injector;
     if (injector) {
-      var KubernetesState = injector.get("KubernetesState") || {};
+      var KubernetesState = injector.get<any>("KubernetesState") || {};
       return KubernetesState.selectedNamespace || defaultNamespace;
     }
     return defaultNamespace;
@@ -1640,7 +1639,7 @@ module Kubernetes {
 
   export function setCurrentKubernetesNamespace(ns) {
     if (ns) {
-      var KubernetesState = inject("KubernetesState") || {};
+      var KubernetesState = inject<any>("KubernetesState") || {};
       KubernetesState.selectedNamespace = ns;
     }
   }
@@ -1724,7 +1723,7 @@ module Kubernetes {
   }
 
   export function createKubernetesClient(kind, ns = null) {
-    var K8SClientFactory = inject("K8SClientFactory");
+    var K8SClientFactory = inject<any>("K8SClientFactory");
     if (!K8SClientFactory) {
       log.warn("Could not find injected K8SClientFactory!");
       return null;

@@ -239,7 +239,7 @@ module Kubernetes {
         pod.$age = null;
         if (createdTime) {
           pod.$createdTime = new Date(createdTime);
-          pod.$age = pod.$createdTime.relative();
+          pod.$age = humandate.relativeTime(pod.$createdTime);
         }
         var ready = isReady(pod);
         pod.$ready = ready;
@@ -524,7 +524,7 @@ module Kubernetes {
           }
         });
 
-        appViews = populateKeys(appViews).sortBy((appView) => appView._key);
+        appViews = _.sortBy(populateKeys(appViews), (appView) => appView._key);
 
         ArrayHelpers.sync(this.appViews, appViews, '$name');
 
@@ -558,14 +558,14 @@ module Kubernetes {
               folder.apps.push(appInfo);
             }
           });
-          this.appFolders = folders.sortBy("path");
+          this.appFolders = _.sortBy(folders, "path");
 
           var apps = [];
           var defaultInfo = {
             $iconUrl: defaultIconUrl
           };
 
-          angular.forEach(this.appViews, (appView) => {
+          angular.forEach(this.appViews, (appView:any) => {
             try {
               var appPath = appView.appPath;
 
@@ -576,7 +576,7 @@ module Kubernetes {
                };
                */
 
-              var appInfo = angular.copy(defaultInfo);
+              var appInfo:any = angular.copy(defaultInfo);
               if (appPath) {
                 appInfo = appMap[appPath] || appInfo;
               }
@@ -594,8 +594,8 @@ module Kubernetes {
               apps.push(appView);
               appView.$podCounters = createAppViewPodCounters(appView);
               appView.$podCount = (appView.pods || []).length;
-              appView.$replicationControllersText = (appView.replicationControllers || []).map("_key").join(" ");
-              appView.$servicesText= (appView.services || []).map("_key").join(" ");
+              appView.$replicationControllersText = (appView.replicationControllers || []).map((i) => i["_key"]).join(" ");
+              appView.$servicesText= (appView.services || []).map((i) => i["_key"]).join(" ");
               appView.$serviceViews = createAppViewServiceViews(appView);
             } catch (e) {
               log.warn("Failed to update appViews: " + e);

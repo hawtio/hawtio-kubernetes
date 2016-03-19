@@ -43,8 +43,8 @@ declare module Kubernetes {
     /**
      * Returns thevalue from the injector if its available or null
      */
-    function inject(name: any): any;
-    function createResource(thing: string, urlTemplate: string, $resource: ng.resource.IResourceService, KubernetesModel: any): ng.resource.IResourceClass;
+    function inject<T>(name: any): T;
+    function createResource(thing: string, urlTemplate: string, $resource: ng.resource.IResourceService, KubernetesModel: any): ng.resource.IResourceClass<ng.resource.IResource<any>>;
     function imageRepositoriesRestURL(): string;
     function deploymentConfigsRestURL(): string;
     function buildsRestURL(): string;
@@ -67,7 +67,7 @@ declare module Kubernetes {
     function isKubernetes(workspace?: any): boolean;
     function isKubernetesTemplateManager(workspace?: any): boolean;
     function isAppView(workspace?: any): boolean;
-    function getStrippedPathName(): String;
+    function getStrippedPathName(): string;
     function linkContains(...words: String[]): boolean;
     /**
      * Returns true if the given link is active. The link can omit the leading # or / if necessary.

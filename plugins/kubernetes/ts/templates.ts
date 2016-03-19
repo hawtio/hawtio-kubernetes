@@ -152,7 +152,7 @@ module Kubernetes {
       var params = template.parameters;
       _.forEach(params, (param:any) => {
         var property = <any> {};
-        property.label = param.name.titleize();
+        property.label = _.startCase(param.name);
         property.description = param.description;
         property.default = param.value;
         // TODO, do parameters support types?

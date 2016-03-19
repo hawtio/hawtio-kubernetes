@@ -5,7 +5,7 @@ module Kubernetes {
   
   export var Apps = controller("Apps",
     ["$scope", "KubernetesModel", "KubernetesServices", "KubernetesReplicationControllers", "KubernetesPods", "KubernetesState", "KubernetesApiURL", "$templateCache", "$location", "$routeParams", "$http", "$dialog", "$timeout", 
-      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.resource.IResourceClass, KubernetesReplicationControllers:ng.resource.IResourceClass, KubernetesPods:ng.resource.IResourceClass, KubernetesState, KubernetesApiURL,
+      ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesServices:ng.resource.IResourceClass<any>, KubernetesReplicationControllers:ng.resource.IResourceClass<any>, KubernetesPods:ng.resource.IResourceClass<any>, KubernetesState, KubernetesApiURL,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $dialog, $timeout) => {
 
     $scope.model = KubernetesModel;
@@ -249,7 +249,7 @@ module Kubernetes {
             selectedApps = selectedApps.concat(apps);
           }
         });
-        $scope.appSelector.selectedApps = selectedApps.sortBy("name");
+        $scope.appSelector.selectedApps = _.sortBy(selectedApps, "name");
       },
 
       select: (app, flag) => {

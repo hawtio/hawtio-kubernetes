@@ -3,3 +3,5 @@
 /// <reference path="../libs/hawtio-oauth/defs.d.ts"/>
 /// <reference path="../libs/hawtio-ui/defs.d.ts"/>
 /// <reference path="../libs/hawtio-utilities/defs.d.ts"/>
+
+declare var humandate;

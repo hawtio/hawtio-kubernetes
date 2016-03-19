@@ -384,7 +384,7 @@ module Developer {
   }
 
   export function forgeProjectHasBuilder(name) {
-    var forgeProject = Kubernetes.inject("ForgeProject");
+    var forgeProject = Kubernetes.inject<any>("ForgeProject");
     if (forgeProject) {
       return forgeProject.hasBuilder(name);
     }
@@ -392,7 +392,7 @@ module Developer {
   }
 
   export function forgeProjectHasPerspective(name) {
-    var forgeProject = Kubernetes.inject("ForgeProject");
+    var forgeProject = Kubernetes.inject<any>("ForgeProject");
     if (forgeProject) {
       return forgeProject.hasPerspective(name);
     }
@@ -562,7 +562,7 @@ module Developer {
   function activateCurrent(navBarItems) {
     navBarItems = _.compact(navBarItems);
     var injector = HawtioCore.injector;
-    var $location = injector ? injector.get("$location") : null;
+    var $location = injector ? injector.get<ng.ILocationService>("$location") : null;
     if ($location) {
       var path = trimQuery($location.path());
       var found = false;

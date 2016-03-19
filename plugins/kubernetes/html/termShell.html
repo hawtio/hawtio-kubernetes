@@ -1,5 +1,5 @@
-<div class="terminal-window" terminal-window ng-click="raise()">
-  <div class="terminal-title">
+<div class="terminal-window" terminal-window ng-mousedown="raise()">
+  <div class="terminal-title" ng-mousedown="mouseDown($event)">
     <h5 ng-bind="containerName"></h5>
     <i class="fa fa-remove pull-right clickable" title="Close and exit this terminal" ng-click="close()"></i>
     <i class="fa fa-toggle-down pull-right clickable" title="Minimize this terminal" ng-click="minimize()"></i>
