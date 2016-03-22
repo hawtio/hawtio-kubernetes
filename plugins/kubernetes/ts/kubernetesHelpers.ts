@@ -393,8 +393,13 @@ module Kubernetes {
     $scope.hasServiceApiman = () => hasService(apimanServiceName);
 
     $scope.viewTemplates = () => {
+      console.log("$scope: ", $scope);
       var returnTo = $location.url();
-      $location.path(UrlHelpers.join('/kubernetes/namespace', $scope.namespace, '/templates')).search({'returnTo': returnTo});
+      if ($scope.$projectNamespaceLink) {
+        $location.path(UrlHelpers.join($scope.$projectNamespaceLink, 'templates')).search({'returnTo': returnTo});
+      } else {
+        $location.path(UrlHelpers.join('/kubernetes/namespace', $scope.namespace, '/templates')).search({'returnTo': returnTo});
+      }
     };
 
     $scope.namespace = $routeParams.namespace || $scope.namespace || KubernetesState.selectedNamespace || defaultNamespace;
@@ -1698,6 +1703,7 @@ module Kubernetes {
           oldDeleteScopeFn();
         }
       }
+      return connection;
   }
 
   export function createKubernetesClient(kind, ns = null) {

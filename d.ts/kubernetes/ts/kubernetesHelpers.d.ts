@@ -200,7 +200,11 @@ declare module Kubernetes {
      * Returns the unenriched YAML representation of an object
      */
     function toRawYaml(item: any): any;
-    function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): void;
+    function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): {
+        client: KubernetesAPI.Collection;
+        handle: (data: any[]) => void;
+        disconnect: () => void;
+    };
     function createKubernetesClient(kind: any, ns?: any): any;
     function currentUserName(): any;
     function createNamespace(ns: any, client?: any): void;

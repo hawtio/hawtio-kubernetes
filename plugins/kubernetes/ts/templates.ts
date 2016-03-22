@@ -2,8 +2,10 @@
 
 module Kubernetes {
   export var TemplateController = controller("TemplateController", [
-    "$scope", "$location", "$http", "$timeout", "$routeParams", "marked", "$templateCache", "$modal", "KubernetesModel", "KubernetesState", "KubernetesApiURL",
-    ($scope, $location, $http, $timeout, $routeParams, marked, $templateCache, $modal, KubernetesModel, KubernetesState, KubernetesApiURL) => {
+    "$scope", "$location", "$http", "$timeout", "$routeParams", "marked", "$templateCache", "$modal", "KubernetesModel", "KubernetesState", "KubernetesApiURL", "$element",
+    ($scope, $location, $http, $timeout, $routeParams, marked, $templateCache, $modal, KubernetesModel, KubernetesState, KubernetesApiURL, $element) => {
+
+    var log = Logger.get('kubernetes-template-view');
 
     var states = $scope.states = {
       LISTING: 'LISTING',
@@ -15,12 +17,63 @@ module Kubernetes {
     $scope.currentState = states.LISTING;
 
     var model = $scope.model = KubernetesModel;
-    $scope.filterText = $location.search()["q"];
 
+    var templates = $scope.templates = {};
+
+    $scope.filterText = $location.search()["q"];
     $scope.targetNamespace = $routeParams.targetNamespace;
     initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
-    $scope.$watchCollection('model.namespaces', () => {
+    log.debug("$scope: ", $scope);
+    log.debug("$routeParams: ", $routeParams);
+
+    var workspace = $routeParams['workspace'];
+    var project = $routeParams['project'];
+    var namespace = $routeParams['namespace'];
+    $scope.buildConfig = null;
+    var watches = {};
+
+    if (isOpenShift && workspace && project && namespace) {
+      // we're in a workspace, let's fetch our buildConfig to find out all of our environments
+      $scope.$watch('buildConfig', (buildConfig) => {
+        if (!buildConfig) {
+          return;
+        }
+        var envs = buildConfig.environments;
+        if (!envs || envs.length === 0) {
+          // clear out any existing watches
+          _.forOwn(watches, (connection, ns) => {
+            connection.disconnect();
+            delete watches[ns];
+          });
+        }
+        _.forEach(envs, (env) => {
+          // we'll just use the model's list of templates
+          if (env.namespace === namespace || env.namespace in watches) {
+            return;
+          }
+          watches[env.namespace] = Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.TEMPLATES, env.namespace, (_templates) => {
+            templates[env.namespace] = _templates;
+          });
+        });
+      });
+      Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.BUILD_CONFIGS, workspace, (buildConfigs) => {
+        _.forEach(buildConfigs, (_buildConfig) => {
+          var name = KubernetesAPI.getName(_buildConfig)
+          if (name === project) {
+            var sortedBuilds = null;
+            Kubernetes.enrichBuildConfig(_buildConfig, sortedBuilds);
+            $scope.buildConfig = _buildConfig;
+          }
+        });
+      });
+    }
+    // we always show these
+    $scope.$watchCollection('model.templates', (_templates) => {
+      templates[namespace] = _templates;
+    });
+
+    $scope.$watchCollection('model.namespaces', (namespaces) => {
       if (!$scope.targetNamespace) {
         $scope.targetNamespace = model.currentNamespace();
       }

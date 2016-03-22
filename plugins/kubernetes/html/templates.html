@@ -13,7 +13,7 @@
 
   <div class="row filter-header">
     <div class="col-md-5">
-      <span ng-show="model.templates.length && !formConfig">
+      <span ng-show="_.keys(templates).length && !formConfig">
         <hawtio-filter ng-model="filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter templates..."></hawtio-filter>
@@ -68,10 +68,11 @@
       </div>
     </div>
   </div>
-  <div class="row" ng-show="currentState === states.LISTING">
+  <div class="row" ng-show="currentState === states.LISTING" ng-repeat="(name, _templates) in templates">
     <div class="col-md-12">
+      <h3 ng-show="buildConfig">Templates in namespace "{{name}}"</h3>
       <div class="column-box" 
-           ng-repeat="template in model.templates | filter:filterTemplates | orderBy:'metadata.name' track by $index">
+           ng-repeat="template in _templates | filter:filterTemplates | orderBy:'metadata.name' track by $index">
           <div class="row">
             <div class="col-md-2">
               <img style="width: 64px; height: 64px;" ng-src="{{getIconUrl(template)}}">
