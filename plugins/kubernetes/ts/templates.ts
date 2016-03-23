@@ -377,47 +377,57 @@ module Kubernetes {
           applying: true,
           object: object
         };
+        // update the view
         Core.$apply($scope);
 
-        if (kind && name) {
-          if (ns && ns !== currentKubernetesNamespace()) {
-            var project = {
-              apiVersion: Kubernetes.defaultApiVersion,
-              kind: "Project",
-              metadata: {
-                name: ns,
-                labels: {
-                }
-              }
-            };
-            projectClient.put(project,
-              (data) => {
-                log.info("Created namespace: " + ns)
-              },
-              (err) => {
-                log.warn("Failed to create namespace: " + ns + ": " + angular.toJson(err));
-              });
-          }
-
-          var pluralKind = kind.toLowerCase() + "s";
-          var kubeClient = Kubernetes.createKubernetesClient(pluralKind, ns);
-          kubeClient.put(object,
-            (data) => {
+        function putObject() {
+          KubernetesAPI.applyNamespace(object, ns);
+          KubernetesAPI.put({
+            object: object,
+            success: (data) => {
               log.info("updated " + kind + " name: " + name + (ns ? " ns: " + ns: ""));
               result.applying = false;
               result.succeeded = true;
               Core.$apply($scope);
             },
-            (err) => {
+            error: (err) => {
               log.warn("Failed to update " + kind + " name: " + name + (ns ? " ns: " + ns: "") + " error: " + angular.toJson(err));
               result.applying = false;
               result.succeeded = false;
               result.error = jsyaml.dump(err);
               Core.$apply($scope);
+            }
+          });
+        }
+
+        if (kind && name) {
+          if (ns && ns !== currentKubernetesNamespace()) {
+            // create the target namespace and ensure it's created
+            // before creating the target object
+            KubernetesAPI.put({
+              object: {
+                apiVersion: Kubernetes.defaultApiVersion,
+                kind: "Project",
+                metadata: {
+                  name: ns,
+                  labels: {}
+                }
+              },
+              success: (data) => {
+                log.info("Created namespace: " + ns)
+                putObject();
+              },
+              error: (err) => {
+                log.warn("Failed to create namespace: " + ns + ": " + angular.toJson(err));
+                // maybe it's already created?  Let's try...
+                putObject();
+              }
             });
+          } else {
+            putObject();
+          }
         }
       });
-      //goBack();
     }
 
     $scope.deleteTemplate = (template) => {

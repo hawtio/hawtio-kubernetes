@@ -42,10 +42,8 @@ module Kubernetes {
               log.debug("Unknown file type for file: ", file._file.name);
               return;
             }
+            KubernetesAPI.applyNamespace(obj, model.currentNamespace());
             log.debug("Dropped object: ", obj);
-            if (!KubernetesAPI.getNamespace(obj)) {
-              obj.metadata.namespace = model.currentNamespace();
-            }
             KubernetesAPI.put({
               object: obj,
               success: (data) => {
