@@ -200,12 +200,24 @@ declare module Kubernetes {
      * Returns the unenriched YAML representation of an object
      */
     function toRawYaml(item: any): any;
+    /**
+     * Helper function to set up a KubernetesAPI watch and automatically
+     * close the watch when the view closes
+     */
     function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): {
         client: KubernetesAPI.Collection;
         handle: (data: any[]) => void;
         disconnect: () => void;
     };
+    /**
+     * Helper wrapper to create a KubernetesAPI client instance, for
+     * simple puts/deletes though use KubernetesAPI.put() or
+     * KubernetesAPI.del()
+     */
     function createKubernetesClient(kind: any, ns?: any): any;
     function currentUserName(): any;
-    function createNamespace(ns: any, client?: any): void;
+    function getNamespaceKind(): string;
+    function newNamespaceObject(namespace: string): any;
+    function deleteNamespace(ns: any, client?: any, success?: (data: any) => void, error?: (err: any) => void): void;
+    function createNamespace(ns: any, client?: any, success?: (data: any) => void, error?: (err: any) => void): void;
 }

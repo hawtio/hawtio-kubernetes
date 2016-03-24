@@ -8,13 +8,16 @@ module Kubernetes {
 
   var self = <any> {};
 
+  // This fires whenever watches trigger
   var updateFunction = () => {
-    
     log.debug("Objects changed, firing listeners");
     var objects = <ObjectMap>{};
     _.forEach(self.getTypes(), (type:string) => {
       objects[type] = self.getObjects(type);
     });
+    if (isOpenShift) {
+      objects[KubernetesAPI.WatchTypes.PROJECTS] = namespaceWatch.objects;
+    }
     _.forEach(self.listeners, (listener:(ObjectMap) => void) => {
       listener(objects);
     });
@@ -34,13 +37,14 @@ module Kubernetes {
     depends: ['KubernetesApiDiscovery'],
     task: (next) => {
       var booted = false;
+      var kind = getNamespaceKind();
       if (isOpenShift) {
-        log.info("Backend is an Openshift instance");
+        log.info("Backend is an Openshift instance, namespace kind: ", kind);
       } else {
-        log.info("Backend is a vanilla Kubernetes instance");
+        log.info("Backend is a vanilla Kubernetes instance, namespace kind: ", kind);
       }
       namespaceWatch.watch = KubernetesAPI.watch({
-        kind: KubernetesAPI.WatchTypes.NAMESPACES,
+        kind: kind,
         success: (objects) => {
           namespaceWatch.objects = objects;
           if (!booted) {
@@ -82,14 +86,14 @@ module Kubernetes {
               userProfile.token = undefined;
               $.ajaxSetup({
                 beforeSend: (request) => {
-
+                  // nothing to do, overwrites any existing config
                 }
               });
             }
             next();
           },
           beforeSend: (request) => {
-
+            // nothing to do, overwrites any existing config
           }
         });
       } else {
@@ -146,7 +150,7 @@ module Kubernetes {
     namespaceWatch.selected = namespace;
     if (namespace) {
       _.forEach(self.getTypes(), (kind:string) => {
-        if (kind === KubernetesAPI.WatchTypes.NAMESPACES) {
+        if (kind === KubernetesAPI.WatchTypes.NAMESPACES || kind === KubernetesAPI.WatchTypes.PROJECTS) {
           return;
         }
         if (!namespaceWatch.watches[kind]) {
@@ -207,6 +211,10 @@ module Kubernetes {
         case KubernetesAPI.WatchTypes.ENDPOINTS:
         case KubernetesAPI.WatchTypes.RESOURCE_QUOTAS:
         case KubernetesAPI.WatchTypes.SERVICE_ACCOUNTS:
+        // TODO we get the list of nodes from deployed pods
+        // but let's not start this watch for now as it 
+        // requires cluster_admin
+        case KubernetesAPI.WatchTypes.NODES:
           return false;
 
         default:
@@ -241,35 +249,7 @@ module Kubernetes {
     self.listeners.push(fn);
   }
 
-  var projectsHandle = <any> undefined;
-
-  // kick off the project watcher a bit sooner also
-  hawtioPluginLoader.registerPreBootstrapTask({
-    name: 'ProjectsWatcher',
-    depends: ['KubernetesApiDiscovery'],
-    task: (next) => {
-      if (isOpenShift) {
-        projectsHandle = KubernetesAPI.watch({
-          kind: KubernetesAPI.WatchTypes.PROJECTS,
-          namespace: undefined,
-          success: (objects) => {
-            if (self.listeners && self.listeners.length) {
-              log.debug("got projects: ", objects);
-              _.forEach(self.listeners, (listener:(objects:ObjectMap) => void) => {
-                listener({
-                  projects: objects
-                });
-              });
-            }
-          }
-        });
-      }
-      next();
-    }
-  });
-
-
-_module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (userDetails, $rootScope, $timeout) => {
+  _module.service('WatcherService', ['userDetails', '$rootScope', '$timeout', (userDetails, $rootScope, $timeout) => {
     return self;
-}]);
+  }]);
 }

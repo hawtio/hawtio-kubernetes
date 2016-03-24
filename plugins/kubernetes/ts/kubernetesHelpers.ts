@@ -1678,6 +1678,10 @@ module Kubernetes {
   }
 
 
+  /**
+   * Helper function to set up a KubernetesAPI watch and automatically
+   * close the watch when the view closes
+   */
   export function watch($scope: any, $element: any, kind, ns, fn, labelSelector = null) {
      var connection = KubernetesAPI.watch({
         kind: kind,
@@ -1706,6 +1710,11 @@ module Kubernetes {
       return connection;
   }
 
+  /**
+   * Helper wrapper to create a KubernetesAPI client instance, for
+   * simple puts/deletes though use KubernetesAPI.put() or
+   * KubernetesAPI.del()
+   */
   export function createKubernetesClient(kind, ns = null) {
     var K8SClientFactory = inject<any>("K8SClientFactory");
     if (!K8SClientFactory) {
@@ -1730,27 +1739,81 @@ module Kubernetes {
     return answer || "admin";
   }
 
-  export function createNamespace(ns, client?) {
-    if (!client) {
-      client = isOpenShift ? Kubernetes.createKubernetesClient('projects') : Kubernetes.createKubernetesClient('namespaces');
+  export function getNamespaceKind() {
+    return isOpenShift ? KubernetesAPI.WatchTypes.PROJECTS : KubernetesAPI.WatchTypes.NAMESPACES;
+  }
+
+  export function newNamespaceObject(namespace:string) {
+    return <any> {
+      apiVersion: Kubernetes.defaultApiVersion,
+      kind: KubernetesAPI.toKindName(getNamespaceKind()),
+      metadata: {
+        name: namespace,
+        labels: {}
+      }
     }
-    if (ns && ns !== currentKubernetesNamespace()) {
-      var object = {
+  }
+
+  export function deleteNamespace(ns, client?, success?:(data:any) => void, error?:(err:any) => void) {
+    if (!ns) {
+      throw "Null value provided for namespace name";
+    }
+    var namespace = ns;
+    if (angular.isString(ns)) {
+      namespace = newNamespaceObject(ns);      
+    }
+    var _success = (data) => {
+      log.info("Deleted namespace: ", data);
+      if (success) {
+        success(data);
+      }
+    }
+    var _error = (err) => {
+      log.info("Failed to delete namespace: ", err);
+      if (error) {
+        error(err);
+      }
+    }
+    if (client) {
+      client.delete(namespace, _success, _error);
+    } else {
+      KubernetesAPI.del({
         apiVersion: Kubernetes.defaultApiVersion,
-        kind: isOpenShift ? 'Project' : 'Namespace',
-        metadata: {
-          name: ns,
-          labels: {
-          }
-        }
-      };
-      client.put(object,
-        (data) => {
+        kind: getNamespaceKind(),
+        object: namespace,
+        success: _success,
+        error: _error
+      });
+    }
+  }
+
+  export function createNamespace(ns, client?, success?:(data:any) => void, error?:(err:any) => void) {
+    if (!ns) {
+      throw "Null value provided for namespace name";
+    }
+    if (ns !== currentKubernetesNamespace()) {
+      var namespace:any = newNamespaceObject(ns);
+      var _success = (data) => {
           log.info("Created namespace: " + ns)
-        },
-        (err) => {
+          if (success) {
+            success(data);
+          }
+        };
+      var _error = (err) => {
           log.warn("Failed to create namespace: " + ns + ": " + angular.toJson(err));
+          if (error) {
+            error(err);
+          }
+        };
+      if (client) {
+        client.put(namespace, _success, _error);
+      } else {
+        KubernetesAPI.put({
+          object: namespace, 
+          success: _success, 
+          error: _error
         });
+      }
     }
   }
 }
