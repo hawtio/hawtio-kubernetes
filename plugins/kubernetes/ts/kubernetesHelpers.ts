@@ -544,6 +544,15 @@ module Kubernetes {
       var port = null;
       var protocol = "http://";
       var spec = service.spec;
+      var model = inject("KubernetesModel");
+      var nodeIP = "";
+      if (model) {
+        var hosts = model['hosts'];
+        if (angular.isArray(hosts) && hosts.length) {
+          nodeIP = hosts[0].hostIP;
+        }
+      }
+      var nodePort = 0;
       if (spec) {
         if (!portalIP) {
           portalIP = spec.portalIP;
@@ -562,6 +571,11 @@ module Kubernetes {
               port = p;
             }
           }
+          if (!portalIP && nodeIP) {
+            if (portSpec.nodePort) {
+              nodePort = portSpec.nodePort;
+            }
+          }
         });
         if (!hasHttps && !hasHttp && port) {
           // lets treat 8080 as http which is a common service to export
@@ -572,8 +586,9 @@ module Kubernetes {
           }
         }
       }
+
+      var answer = "";
       if (portalIP) {
-        var answer = "";
         if (hasHttps) {
           answer = "https://" + portalIP;
         } else if (hasHttp) {
@@ -585,13 +600,15 @@ module Kubernetes {
             answer = protocol + portalIP;
           }
         }
-        if (answer) {
-          var servicepath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
-          if (servicepath) {
-            return UrlHelpers.join(answer, servicepath);
-          }
-          return answer;
+      } else if (nodeIP && nodePort) {
+        answer = protocol + nodeIP + ":" + nodePort + "/";
+      }
+      if (answer) {
+        var servicepath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
+        if (servicepath) {
+          return UrlHelpers.join(answer, servicepath);
         }
+        return answer;
       }
     } else if (service) {
       var serviceId = service.toString();

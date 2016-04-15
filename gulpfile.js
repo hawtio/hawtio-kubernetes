@@ -191,6 +191,29 @@ gulp.task('connect', ['watch'], function() {
     console.log("because of LOCAL_GOGS_HOST being set we are using a local proxy for /kubernetes/api/v1/proxy/services/gogs-http-service to point to http://"
     + process.env.LOCAL_GOGS_HOST + ":" + gogsPort);
   }
+  if (process.env.LOCAL_JENKINSHIFT) {
+    var jenkinshiftPort = process.env.LOCAL_JENKINSHIFT_PORT || "9090";
+    var jenkinshiftHost = process.env.LOCAL_JENKINSHIFT;
+    console.log("Using jenkinshift host: " + jenkinshiftHost);
+    var proxyPath = '/api/v1/proxy/namespaces/default/services/templates/oapi/v1';
+    console.log("Using jenkinshift host: " + jenkinshiftHost);
+    localProxies.push({
+        proto: "http",
+        port: jenkinshiftPort,
+        hostname: jenkinshiftHost,
+        path: proxyPath,
+        targetPath: "/oapi/v1"
+      });
+    localProxies.push({
+        proto: "http",
+        port: jenkinshiftPort,
+        hostname: jenkinshiftHost,
+        path: "/oapi/v1",
+        targetPath: "/oapi/v1"
+      });
+    console.log("because of LOCAL_JENKINSHIFT being set we are using a local proxy for " + proxyPath + " to point to http://"
+    + jenkinshiftHost + ":" + jenkinshiftPort);
+  }
   var defaultProxies = [{
     proto: kube.protocol(),
     port: kube.port(),
