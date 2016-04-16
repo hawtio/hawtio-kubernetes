@@ -5,6 +5,8 @@ module Kubernetes {
 
   export var FABRIC8_PROJECT_JSON = "fabric8ProjectJson";
 
+  var jenkinshiftServiceName = 'jenkinshift';
+
   function byId(thing) {
     return thing.id;
   }
@@ -677,8 +679,8 @@ module Kubernetes {
     }
   }
 
-  function getTemplateService(model) {
-    var key = createKey('default', 'templates', 'service');
+  function getServiceForName(model, serviceName) {
+    var key = createKey('default', serviceName, 'service');
     var answer = model.servicesByKey[key];
     log.debug("found template service: ", answer);
     return answer;
@@ -701,22 +703,29 @@ module Kubernetes {
     });
 
     if (!isOpenShift) {
-      // register custom URL factories for templates/projects
-      watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.BUILD_CONFIGS, (options:KubernetesAPI.K8SOptions) => {
-        var templateService = getTemplateService($scope);
-        if (templateService) {
-          return UrlHelpers.join(templateService.proxyUrl, '/oapi/v1/namespaces/default/buildconfigs/');
+      function getJenkinshiftProxyUrlFor(serviceName, path) {
+        var proxyService = getServiceForName($scope, serviceName);
+        if (proxyService) {
+          var proxyUrl = proxyService.proxyUrl;
+          if (proxyUrl) {
+            proxyUrl = Core.trimTrailing(proxyUrl, "/") + ":80";
+            return UrlHelpers.join(proxyUrl, path);
+          }
         }
         return null;
-      });
+      }
+
+      // register custom URL factories for buildconfigs
+      watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.BUILD_CONFIGS,
+          (options:KubernetesAPI.K8SOptions) =>
+              getJenkinshiftProxyUrlFor(jenkinshiftServiceName, '/oapi/v1/namespaces/default/buildconfigs'));
       // register custom URL factories for templates/projects
-      watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.TEMPLATES, (options:KubernetesAPI.K8SOptions) => {
-        var templateService = getTemplateService($scope);
-        if (templateService) {
-          return UrlHelpers.join(templateService.proxyUrl, '/oapi/v1/namespaces/default/templates/');
-        }
-        return null;
-      });
+      // TOOD replace with jenkinshift once the catalog can work from ConfigMap
+      //var templatesServiceName = "jenkinshiftServiceName";
+      var templatesServiceName = "templates";
+      watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.TEMPLATES,
+          (options:KubernetesAPI.K8SOptions) =>
+              getJenkinshiftProxyUrlFor(templatesServiceName, '/oapi/v1/namespaces/default/templates'));
     }
 
     // register for all updates on objects
