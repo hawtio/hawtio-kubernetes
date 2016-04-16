@@ -22,6 +22,7 @@
 /// <reference path="d.ts/developer/ts/projects.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspace.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspaces.d.ts"/>
+/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/breadcrumbs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/build.d.ts"/>
@@ -65,4 +66,3 @@
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/tabs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/templates.d.ts"/>
-/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>

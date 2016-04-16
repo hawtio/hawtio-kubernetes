@@ -136,7 +136,7 @@ module Developer {
             item["$serviceLink"] = rcLink;
           }
           item.$buildId = annotations["fabric8.io/build-id"] || item.$buildId;
-          item.$buildUrl = annotations["fabric8.io/build-url"] || item.$buildUrl;
+          item.$buildUrl = annotations["fabric8.io/build-url"] || annotations["fabric8.io/jenkins-url"] || item.$buildUrl;
           item.$gitCommit = annotations["fabric8.io/git-commit"] || item.$gitCommit;
           item.$gitUrl = annotations["fabric8.io/git-url"] || item.$gitUrl;
           item.$gitBranch = annotations["fabric8.io/git-branch"] || item.$gitBranch;
