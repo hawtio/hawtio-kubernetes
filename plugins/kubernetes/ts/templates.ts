@@ -68,10 +68,29 @@ module Kubernetes {
         });
       });
     }
-    // we always show these
-    $scope.$watchCollection('model.templates', (_templates) => {
-      templates[namespace] = _templates;
-    });
+
+    // Show templates on openshift, and configmaps on vanilla k8s
+    if (isOpenShift) {
+      $scope.$watchCollection('model.templates', (_templates) => {
+        templates[namespace] = _templates;
+      });
+    } else {
+      $scope.$watchCollection('model.configmaps', (configmaps) => {
+        var _templates = [];
+        log.debug("configmaps: ", configmaps);
+        if (configmaps && configmaps.length) {
+          var catalogs = _.filter(configmaps, (configmap:any) => configmap.metadata.labels.kind === 'catalog');
+          catalogs.forEach((catalog:any) => {
+            _.forOwn(catalog.data, (obj, key) => {
+              if (_.endsWith(key, '.json')) {
+                _templates.push(angular.fromJson(obj));
+              }
+            });
+          });
+        }
+        templates[namespace] = _templates;
+      });
+    }
 
     $scope.$watchCollection('model.namespaces', (namespaces) => {
       if (!$scope.targetNamespace) {
@@ -286,6 +305,19 @@ module Kubernetes {
           }
         };
       }
+      // filter out any kinds that don't make sense for vanilla k8s
+      if (!isOpenShift) {
+        template.objects = _.filter(template.objects, (object:any) => {
+          var kind = KubernetesAPI.toCollectionName(object.kind);
+          switch (kind) {
+            // We won't attempt to create these types
+            case KubernetesAPI.WatchTypes.OAUTH_CLIENTS:
+              return false;
+            default:
+              return true;
+          }
+        });
+      }
       $scope.entity = <any> {};
       $scope.formConfig = formConfig;
       $scope.objects = template.objects;
@@ -364,7 +396,6 @@ module Kubernetes {
     function applyObjects(objects) {
       var outstanding = $scope.outstanding = <any> {};
       $scope.currentState = states.DEPLOYING;
-      var projectClient = Kubernetes.createKubernetesClient("projects");
 
       _.forEach(objects, (object:any) => {
         log.debug("Object: ", object);
@@ -408,7 +439,7 @@ module Kubernetes {
             KubernetesAPI.put({
               object: {
                 apiVersion: Kubernetes.defaultApiVersion,
-                kind: "Project",
+                kind: KubernetesAPI.toKindName(getNamespaceKind()),
                 metadata: {
                   name: ns,
                   labels: {}
