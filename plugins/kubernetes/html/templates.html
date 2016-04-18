@@ -61,7 +61,7 @@
 
     </div>
   </div>
-  <div class="row" ng-hide="currentState === states.LISTING || model.templates.length != 0">
+  <div class="row" ng-show="currentState === states.LISTING && totalTemplates() == 0">
     <div class="col-md-12">
       <div class="alert alert-info centered">
         There are no templates currently available.  Add templates by dragging and dropping template files into this area.

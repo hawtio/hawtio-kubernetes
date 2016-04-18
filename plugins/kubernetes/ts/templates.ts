@@ -151,21 +151,37 @@ module Kubernetes {
       }
     }
 
+    $scope.totalTemplates = () => {
+      var total = 0;
+      _.forOwn(templates, (templates, namespace) => {
+        total = total + templates.length;
+      });
+      return total;
+    }
+
     $scope.finish = () => {
       goBack();
     }
 
     $scope.cancel = () => {
+      function resetState() {
+        delete $scope.formConfig;
+        delete $scope.entity;
+        delete $scope.selectedTemplate;
+        $scope.objects = undefined;
+      }
       switch ($scope.currentState) {
         case states.SELECTED:
-          delete $scope.formConfig;
-          delete $scope.entity;
-          delete $scope.selectedTemplate;
-          $scope.objects = undefined;
+          resetState();
           $scope.currentState = states.LISTING;
           return;
         case states.SUBSTITUTED:
-          $scope.currentState = states.SELECTED;
+          if (!$scope.selectedTemplate.parameters || !$scope.selectedTemplate.parameters.length) {
+            resetState();
+            $scope.currentState = states.LISTING;
+          } else {
+            $scope.currentState = states.SELECTED;
+          }
           return;
         default:
           goBack();
@@ -251,11 +267,6 @@ module Kubernetes {
         routeServiceName = getName(service);
       }
       log.debug("Service: ", service);
-      if ((!routeServiceName || !isOpenShift) && (!template.parameters || template.parameters.length === 0)) {
-        log.debug("No parameters required, deploying objects");
-        applyObjects(template.objects);
-        return;
-      }
       var formConfig = {
         style: HawtioForms.FormStyle.STANDARD,
         hideLegend: true,
@@ -323,6 +334,16 @@ module Kubernetes {
       $scope.objects = template.objects;
       $scope.currentState = states.SELECTED;
       log.debug("Form config: ", formConfig);
+      // If we've no form to show, transition to the next
+      // state where we show the objects that will be deployed
+      if ((!routeServiceName || !isOpenShift) && (!template.parameters || template.parameters.length === 0)) {
+        log.debug("No parameters required, deploying objects");
+        setTimeout(() => {
+          $scope.substituteTemplate();
+          Core.$apply($scope);
+        }, 10);
+        return;
+      }
     };
 
     function substitute(str, data) {

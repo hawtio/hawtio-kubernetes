@@ -233,7 +233,7 @@ module Kubernetes {
     if (isOpenShift) {
       answer = answer.concat(osTypes);
     } else {
-      answer = answer.concat(KubernetesAPI.WatchTypes.TEMPLATES);
+      // answer = answer.concat(KubernetesAPI.WatchTypes.TEMPLATES);
       answer = answer.concat(KubernetesAPI.WatchTypes.BUILD_CONFIGS);
     }
     return _.filter(answer, filter);
