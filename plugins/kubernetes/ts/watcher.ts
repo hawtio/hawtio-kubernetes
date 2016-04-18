@@ -99,13 +99,21 @@ module Kubernetes {
       } else {
         log.debug("Not running on GCE");
         // double-check if we're on vanilla k8s or openshift
-        var rootUri = new URI(masterApiUrl()).path("/oapi").query("").toString();
+        var rootUri = new URI(masterApiUrl()).path("/oapi/v1/projects").query("").toString();
         log.debug("Checking for an openshift backend");
         HawtioOAuth.authenticatedHttpRequest({
           url: rootUri,
+          accepts: {
+              projectlist: 'application/json'
+            },
+          dataType: 'projectlist',
           success: (data) => {
-            if (data) {
-              isOpenShift = true;
+            isOpenShift = false;
+            if (data && data.items) {
+              var openshiftConfig = window["OPENSHIFT_CONFIG"] || {}
+              if (openshiftConfig["openshift"]) {
+                isOpenShift = true;
+              }
             }
             next();
           },
