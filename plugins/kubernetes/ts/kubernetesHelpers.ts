@@ -615,6 +615,12 @@ module Kubernetes {
       if (serviceId) {
         var ServiceRegistry = getServiceRegistry();
         if (ServiceRegistry) {
+/*
+          var serviceObject = ServiceRegistry.findService(serviceId);
+          if (serviceObject) {
+            return serviceLinkUrl(serviceObject, httpOnly);
+          }
+*/
           return ServiceRegistry.serviceLink(serviceId) || "";
         }
       }
@@ -1232,6 +1238,14 @@ module Kubernetes {
       buildConfig.$user = annotations["fabric8.jenkins/user"] || labels["user"];
       buildConfig.$repo = annotations["fabric8.jenkins/repo"] || labels["repo"];
 
+      var jenkinsBuildUrl = "";
+      var jenkinsLink = Kubernetes.serviceLinkUrl("jenkins", true);
+      var jenkinsBuildPath = annotations["fabric8.io/jenkins-url-path"];
+      if (jenkinsLink && jenkinsBuildPath) {
+        jenkinsBuildUrl = UrlHelpers.join(jenkinsLink, jenkinsBuildPath);
+      }
+      buildConfig.$buildUrl = annotations["fabric8.io/build-url"] || jenkinsBuildUrl || buildConfig.$buildUrl;
+
       angular.forEach(annotations, (value, key) => {
         var parts = key.split('/', 2);
         if (parts.length > 1) {
@@ -1360,7 +1374,7 @@ module Kubernetes {
       buildConfig.$fabric8TeamViews = $fabric8TeamViews;
 
       var $jenkinsJob = annotations["fabric8.io/jenkins-job"];
-      if (!$jenkinsJob && $fabric8Views["fabric8.link.jenkins.job"]) {
+      if (!$jenkinsJob && ($fabric8Views["fabric8.link.jenkins.job"] || jenkinsBuildPath)) {
         $jenkinsJob = name;
       }
       buildConfig.$jenkinsJob = $jenkinsJob;

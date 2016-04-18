@@ -136,13 +136,15 @@ module Developer {
             item["$serviceLink"] = rcLink;
           }
           item.$buildId = annotations["fabric8.io/build-id"] || item.$buildId;
+/*
           var jenkinsBuildUrl = "";
           var jenkinsLink = Kubernetes.serviceLinkUrl("jenkins", true);
-          var jenkinsBuildPath = annotations["fabric8.io/jenkins-url"];
+          var jenkinsBuildPath = annotations["fabric8.io/jenkins-url-path"];
           if (jenkinsLink && jenkinsBuildPath) {
             jenkinsBuildUrl = UrlHelpers.join(jenkinsLink, jenkinsBuildPath);
           }
-          item.$buildUrl = annotations["fabric8.io/build-url"] || jenkinsBuildUrl || item.$buildUrl;
+*/
+          item.$buildUrl = annotations["fabric8.io/build-url"] ||item.$buildUrl;
           item.$gitCommit = annotations["fabric8.io/git-commit"] || item.$gitCommit;
           item.$gitUrl = annotations["fabric8.io/git-url"] || item.$gitUrl;
           item.$gitBranch = annotations["fabric8.io/git-branch"] || item.$gitBranch;
