@@ -576,8 +576,12 @@ module Developer {
     navBarItems = _.compact(navBarItems);
     var injector = HawtioCore.injector;
     var $location = injector ? injector.get<ng.ILocationService>("$location") : null;
+    var documentBase = HawtioCore.documentBase();
     if ($location) {
       var path = trimQuery($location.path());
+      // Cater for the app running at some weird document base
+      var regex = new RegExp('^' + documentBase.replace('/', '\\/'));
+      path = path.replace(regex, '/');
       var found = false;
       function makeActive(item) {
         item.active = true;
