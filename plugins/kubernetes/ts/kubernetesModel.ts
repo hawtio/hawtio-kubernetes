@@ -487,6 +487,19 @@ module Kubernetes {
           }
         });
 
+        // when not on OpenShift we don't have a Rroute
+        this.services.forEach((service) => {
+          var $serviceUrl = serviceLinkUrl(service);
+          service.$serviceUrl = $serviceUrl;
+          service.$connectUrl = $serviceUrl;
+          if ($serviceUrl) {
+            var idx = $serviceUrl.indexOf("://");
+            if (idx > 0) {
+              service.$connectHost = Core.trimTrailing($serviceUrl.substring(idx + 3), "/");
+            }
+          }
+        });
+
         angular.forEach(this.routes, (route) => {
           var metadata = route.metadata || {};
           var spec = route.spec || {};

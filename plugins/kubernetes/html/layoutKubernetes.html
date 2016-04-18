@@ -64,7 +64,7 @@
       <a target="_blank" href="{{row.entity.$connectUrl}}"
          ng-show="row.entity.$connectUrl && row.entity.$podCounters.ready"
          title="Protocol {{row.entity.spec.protocol}}">
-        {{row.entity.$host}}
+        {{row.entity.$host || row.entity.$connectHost || row.entity.spec.clusterIP}}
       </a>
       <span ng-hide="row.entity.$connectUrl && row.entity.$podCounters.ready">{{row.entity.spec.portalIP || row.entity.spec.clusterIP}}:{{port}}</span>
     </div>
