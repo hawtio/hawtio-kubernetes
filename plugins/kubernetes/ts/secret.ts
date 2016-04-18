@@ -171,7 +171,7 @@ module Kubernetes {
                 if (onSaveUrl) {
                   params['secret'] = name;
                 }
-                $location.path(secretsLink);
+                goToPath($location, secretsLink);
                 $location.search(params);
                 log.info("navigating to URL: " + secretsLink + " with params " + angular.toJson($location.search()));
               },

@@ -86,7 +86,8 @@ module Kubernetes {
     }
 
     function goBack() {
-      $location.path(returnTo.path()).search(returnTo.query(true));
+      goToPath($location, returnTo.path());
+      $location.search(returnTo.query(true));
     }
 
     // not currently used, but in case 'Done' should be

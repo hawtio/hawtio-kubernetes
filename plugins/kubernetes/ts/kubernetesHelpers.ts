@@ -395,11 +395,13 @@ module Kubernetes {
     $scope.viewTemplates = () => {
       console.log("$scope: ", $scope);
       var returnTo = $location.url();
+      var path = "";
       if ($scope.$projectNamespaceLink) {
-        $location.path(UrlHelpers.join($scope.$projectNamespaceLink, 'templates')).search({'returnTo': returnTo});
+        goToPath($location, UrlHelpers.join($scope.$projectNamespaceLink, 'templates'));
       } else {
-        $location.path(UrlHelpers.join('/kubernetes/namespace', $scope.namespace, '/templates')).search({'returnTo': returnTo});
+        goToPath($location, UrlHelpers.join('/kubernetes/namespace', $scope.namespace, '/templates'));
       }
+      $location.search({'returnTo': returnTo});
     };
 
     $scope.namespace = $routeParams.namespace || $scope.namespace || KubernetesState.selectedNamespace || defaultNamespace;

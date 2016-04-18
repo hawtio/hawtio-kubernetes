@@ -303,8 +303,7 @@ module Kubernetes {
 
             var link = Developer.projectSecretsLink($scope.namespace, getName(entity));
             if (link) {
-              log.info("Navigating to: "+ link);
-              $location.path(link);
+              Kubernetes.goToPath($location, link);
             } else {
               log.warn("Could not find the edit pipeline link!");
             }
