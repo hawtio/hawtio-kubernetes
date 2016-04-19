@@ -60,7 +60,7 @@
               </div>
             </div>
             <div ng-show="environments.length">
-              <div ng-repeat="env in environments | filter:filterTemplates track by $index"
+              <div ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index"
                 class="inline-block environment-block" ng-include="'plugins/developer/html/environmentPanel.html'">
               </div>
             </div>
