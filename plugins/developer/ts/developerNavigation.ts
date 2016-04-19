@@ -99,20 +99,6 @@ module Developer {
       $scope.$projectLink = projectLink;
       $scope.$projectNamespaceLink = UrlHelpers.join(projectLink, "namespace", ns);
       namespacesLink = UrlHelpers.join(projectLink, "namespace");
-      // TODO use the logical name?
-      var envName = ns;
-      var buildConfig = null;
-      if ($scope.model) {
-        buildConfig = $scope.model.getProject(project, workspaceName);
-        if (buildConfig) {
-          // lets find the label for the namespace
-          var env = _.find(buildConfig.environments, {namespace: ns});
-          if (env) {
-            envName = env['label'] || envName;
-          }
-          log.info("env found: " + env + " for nameppace " + ns + " on buildConfig: " + buildConfig);
-        }
-      }
       var children: Array<BreadcrumbConfig> = [
         {
           href: UrlHelpers.join(projectLink, "environments"),
@@ -121,7 +107,7 @@ module Developer {
         },
         {
           href: UrlHelpers.join(namespacesLink, ns, "apps"),
-          label: envName,
+          label: () =>  environmentName(workspaceName, ns),
           title: "View the runtime of the workspace: " + ns
         }
       ];
@@ -136,13 +122,7 @@ module Developer {
         },
         {
           href: environmentLink(workspaceName, environment),
-          label: () => {
-            var model = Kubernetes.getKubernetesModel();
-            if (model) {
-              return model.environmentName(workspaceName, environment);
-            }
-            return environment;
-          },
+          label: () =>  environmentName(workspaceName, environment),
           title: "View this environment"
         }
       ];
@@ -159,6 +139,17 @@ module Developer {
         title: "View the runtime of the workspace: " + ns
       }
     ]);
+  }
+
+  /**
+   * Returns the name of the given environment namespace
+   */
+  function environmentName(workspaceName, environment) {
+    var model = Kubernetes.getKubernetesModel();
+    if (model) {
+      return model.environmentName(workspaceName, environment);
+    }
+    return environment;
   }
 
   export function createProjectBreadcrumbs(projectName = null, children: Array<BreadcrumbConfig> = null, workspaceName = null) {
