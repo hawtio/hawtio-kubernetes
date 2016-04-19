@@ -77,6 +77,8 @@ module Kubernetes {
 
     public fetched = false;
     public get showRunButton():boolean {
+      return true;
+/*
       if (isOpenShift) {
         return true;
       }
@@ -89,6 +91,7 @@ module Kubernetes {
           return false;
         }
       });
+*/
     }
 
     public configmaps = [];
