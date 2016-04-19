@@ -13,8 +13,8 @@ module Developer {
   function developBreadcrumb() {
     return {
       href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces"),
-      label: "Develop",
-      title: "View all the apps for a project"
+      label: "Projects",
+      title: "View all the available projects"
     };
   }
   function operateBreadcrumb() {
