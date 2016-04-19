@@ -21,6 +21,7 @@ module Developer {
         $scope.envVersionsCache = {};
         $scope.envNSCaches = {};
         $scope.envVersions = {};
+        $scope.environments = [];
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = []; //Developer.createProjectBreadcrumbs($scope.id);
@@ -33,13 +34,35 @@ module Developer {
           $scope.selectedBuild = build;
         });
 
-        // TODO this should be unnecessary but seems sometiems this watch doesn't always trigger unless you hit reload on this page
-        if ($scope.model.buildconfigs) {
+        $scope.$on('kubernetesModelUpdated', function () {
+          updateData();
+        });
+
+        $scope.$on('$routeUpdate', ($event) => {
+          updateData();
+        });
+
+        function updateData() {
           onBuildConfigs($scope.model.buildconfigs);
         }
+
+        updateData();
+        
+        // TODO this should be unnecessary but seems sometimes this watch doesn't always trigger unless you hit reload on this page
+/*
         Kubernetes.watch($scope, $element, "buildconfigs", $scope.namespace, onBuildConfigs);
+*/
 
         function onBuildConfigs(buildConfigs) {
+          $scope.environments = $scope.model.environments;
+          if (buildConfigs && (!$scope.environments || !$scope.environments.length)) {
+            // lets create a default environment
+            $scope.environments = [
+              $scope.model.createEnvironment("development",
+                          { name: "Development", namespace: Kubernetes.currentKubernetesNamespace()})
+            ];
+          }
+
           angular.forEach(buildConfigs, (data) => {
             var name = Kubernetes.getName(data);
             if (name === $scope.id) {
@@ -55,7 +78,9 @@ module Developer {
               updateTabs();
             }
           });
-          $scope.model.fetched = true;
+          if (buildConfigs) {
+            $scope.model.fetched = true;
+          }
           Core.$apply($scope);
         }
 
@@ -75,7 +100,7 @@ module Developer {
               }
             }
 
-            angular.forEach(project.environments, (env) => {
+            angular.forEach($scope.environments, (env) => {
               var ns = env.namespace;
               var caches = $scope.envNSCaches[ns];
               if (!caches) {

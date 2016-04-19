@@ -662,10 +662,13 @@ module Kubernetes {
       return answer;
     }
 
-    protected createEnvironment(key, values) {
+    public createEnvironment(key, values) {
       values["key"] = key;
+      values["label"] = values["label"] || values["name"];
+
       var envNamespace = values["namespace"];
       if (envNamespace) {
+        //values["url"] = UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
         values["$environmentLink"] = Developer.projectWorkspaceLink(null, envNamespace, "/");
       }
       return values;

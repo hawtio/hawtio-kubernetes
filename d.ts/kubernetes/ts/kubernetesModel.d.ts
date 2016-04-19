@@ -56,7 +56,7 @@ declare module Kubernetes {
          * Loads the environments for the given project
          */
         protected loadEnvironments(): any[];
-        protected createEnvironment(key: any, values: any): any;
+        createEnvironment(key: any, values: any): any;
         protected discoverPodConnections(entity: any): void;
     }
 }

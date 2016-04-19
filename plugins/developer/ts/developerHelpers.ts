@@ -40,7 +40,7 @@ module Developer {
     var projectAnnotation = "project";
     var versionAnnotation = "version";
 
-    var projectNamespace = project.$namespace;
+    var projectNamespace = project.$namespace || Kubernetes.getNamespace(project);
     var projectName = project.$name;
 
     var cache = caches[ns];
@@ -272,6 +272,7 @@ module Developer {
       }
     }
 
+    
     Kubernetes.watch($scope, $element, "replicationcontrollers", ns, (data) => {
       if (data) {
         status.rcs = data;
@@ -284,18 +285,21 @@ module Developer {
         updateModel();
       }
     });
-    Kubernetes.watch($scope, $element, "routes", ns, (data) => {
-      if (data) {
-        status.routes = data;
-        updateModel();
-      }
-    });
     Kubernetes.watch($scope, $element, "pods", ns, (data) => {
       if (data) {
         status.pods = data;
         updateModel();
       }
     });
+
+    if (Kubernetes.isOpenShift) {
+      Kubernetes.watch($scope, $element, "routes", ns, (data) => {
+        if (data) {
+          status.routes = data;
+          updateModel();
+        }
+      });
+    }
   }
 
 

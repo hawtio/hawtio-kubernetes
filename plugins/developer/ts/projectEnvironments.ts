@@ -35,8 +35,8 @@ module Developer {
           columnDefs: [
             {
               field: 'name',
-              displayName: 'Environment Name',
-              cellTemplate: $templateCache.get("viewNamespaceProjectsTemplate.html")
+              displayName: 'Environment',
+              cellTemplate: $templateCache.get("environmentNameTempalte.html")
             },
             {
               field: 'namespace',
