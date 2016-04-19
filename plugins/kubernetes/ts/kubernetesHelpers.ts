@@ -1,5 +1,6 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="kubernetesInterfaces.ts"/>
+/// <reference path="../../developer/ts/developerNavigation.ts"/>
 module Kubernetes {
 
   export var context = '/kubernetes';
@@ -444,7 +445,7 @@ module Kubernetes {
       } else {
         return href;
       }
-    }
+    };
 
     $scope.codeMirrorOptions = {
       lineWrapping : true,

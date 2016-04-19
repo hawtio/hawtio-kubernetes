@@ -90,6 +90,7 @@ module Developer {
     var namespacesLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace");
     var workspaceName = $routeParams.workspace;
     var project = $routeParams.project;
+    var environment = $routeParams.namespace;
     if (workspaceName && project) {
       var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", project);
       $scope.$projectLink = projectLink;
@@ -102,7 +103,7 @@ module Developer {
         buildConfig = $scope.model.getProject(project, workspaceName);
         if (buildConfig) {
           // lets find the label for the namespace
-          var env = _.find(buildConfig.environments, { namespace: ns});
+          var env = _.find(buildConfig.environments, {namespace: ns});
           if (env) {
             envName = env['label'] || envName;
           }
@@ -110,32 +111,56 @@ module Developer {
         }
       }
       var children = [
-          {
-            href: UrlHelpers.join(projectLink, "environments"),
-            label: "Environments",
-            title: "View the environments for this project"
-          },
-          {
-            href: UrlHelpers.join(namespacesLink, ns, "apps"),
-            label: envName,
-            title: "View the runtime of the workspace: " + ns
-          }
-          ];
-      return createProjectBreadcrumbs(project, children, workspaceName);
-    } else {
-      if (!workspaceName) {
-        workspaceName = Kubernetes.currentKubernetesNamespace();
-      }
-      return activateCurrent([
-        //homeBreadcrumb(),
-        operateBreadcrumb(),
+        {
+          href: UrlHelpers.join(projectLink, "environments"),
+          label: "Environments",
+          title: "View the environments for this project"
+        },
         {
           href: UrlHelpers.join(namespacesLink, ns, "apps"),
-          label: workspaceName,
+          label: envName,
           title: "View the runtime of the workspace: " + ns
         }
-      ]);
+      ];
+      return createProjectBreadcrumbs(project, children, workspaceName);
+    } else if (workspaceName && environment && workspaceName != environment) {
+      // find label for namespace environment
+      var children = [
+        {
+          href: environmentsLink(workspaceName),
+          label: "Environments",
+          title: "View the environments for this project"
+        },
+        {
+          href: environmentLink(workspaceName, environment),
+          labelFn: () => {
+            var envLabel = environment;
+            var model = Kubernetes.getKubernetesModel();
+            if (model) {
+              angular.forEach(model.environments, (env) => {
+                if (environment === env.namespace) {
+                  envLabel = env.name || env.label || envLabel;
+                }
+              });
+            }
+            return envLabel;
+          },
+          title: "View this environment"
+        }
+      ];
+      return createProjectBreadcrumbs(project, children, workspaceName);
+    } else if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
     }
+    return activateCurrent([
+      //homeBreadcrumb(),
+      operateBreadcrumb(),
+      {
+        href: UrlHelpers.join(namespacesLink, ns, "apps"),
+        label: workspaceName,
+        title: "View the runtime of the workspace: " + ns
+      }
+    ]);
   }
 
   export function createProjectBreadcrumbs(projectName = null, children = null, workspaceName = null) {
@@ -181,6 +206,7 @@ module Developer {
     return createProjectBreadcrumbs(projectName, children, workspaceName);
   }
 
+
   export function createWorkspaceSubNavBars() {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
     return activateCurrent([
@@ -198,7 +224,7 @@ module Developer {
         title: "View the builds in this project"
       },
       {
-        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "environments"),
+        href: environmentsLink(),
         label: "Environments",
         class: "fa fa-gears",
         title: "View the environments for this project"
@@ -449,6 +475,23 @@ module Developer {
     return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, path);
   }
 
+  export function environmentsLink(workspaceName = null) {
+    if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
+    }
+    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "environments")
+  }
+
+  export function environmentLink(workspaceName, environmentNamespace, path = "", ignoreBlankProject = true) {
+    if (ignoreBlankProject && !environmentNamespace) {
+      return "";
+    }
+    if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
+    }
+    return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "namespace", environmentNamespace, path);
+  }
+
   export var customProjectSubTabFactories = [];
 
   export function createJenkinsBreadcrumbs(projectName, jobId, buildId) {
@@ -486,9 +529,12 @@ module Developer {
     var ns = Kubernetes.currentKubernetesNamespace();
     var workspaceName = $routeParams.workspace;
     var project = $routeParams.project;
+    var environment = $routeParams.namespace;
     var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes");
     if (workspaceName && project) {
       projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", project);
+    } else if (workspaceName && environment && workspaceName != environment) {
+      projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName);
     }
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([

@@ -4,7 +4,7 @@
     <li ng-repeat="breadcrumb in breadcrumbConfig" ng-show="isValid(breadcrumb)"
         class="{{breadcrumb.active ? 'active' : ''}}"
         title="{{breadcrumb.title}}">
-      <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{breadcrumb.label}}</a>
-      <span ng-hide="breadcrumb.href && !breadcrumb.active">{{breadcrumb.label}}</span>
+      <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{label(breadcrumb)}}</a>
+      <span ng-hide="breadcrumb.href && !breadcrumb.active">{{label(breadcrumb)}}</span>
   </ol>
 </div>

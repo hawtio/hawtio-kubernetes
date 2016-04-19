@@ -668,8 +668,7 @@ module Kubernetes {
 
       var envNamespace = values["namespace"];
       if (envNamespace) {
-        //values["url"] = UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
-        values["$environmentLink"] = Developer.projectWorkspaceLink(null, envNamespace, "/");
+        values["$environmentLink"] = Developer.environmentLink(null, envNamespace);
       }
       return values;
     }

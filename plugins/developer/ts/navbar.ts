@@ -10,6 +10,17 @@ module Developer {
     ["$scope", "$location", "$routeParams", "$timeout", "KubernetesApiURL",
       ($scope, $location:ng.ILocationService, $routeParams, $timeout) => {
 
+        $scope.label = (entity) => {
+          if (entity) {
+            var fn = entity["labelFn"];
+            if (angular.isFunction(fn)) {
+              return fn();
+            }
+            return entity["label"] || entity["name"];
+          }
+          return "";
+        };
+        
         $scope.isValid = (item) => {
           if (item) {
             var value = item.isValid;

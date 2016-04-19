@@ -27,7 +27,7 @@ module Kubernetes {
       .when(context, {redirectTo: "/workspaces"});
 
 
-    angular.forEach([context, "/workspaces/:workspace/projects/:project"], (context) => {
+    angular.forEach([context, "/workspaces/:workspace/projects/:project", "/workspaces/:workspace"], (context) => {
       $routeProvider
         .when(UrlHelpers.join(context, '/namespace/:namespace/podCreate'), route('podCreate.html', false))
         .when(UrlHelpers.join(context, '/namespace/:namespace/podEdit/:id'), route('podEdit.html', false))

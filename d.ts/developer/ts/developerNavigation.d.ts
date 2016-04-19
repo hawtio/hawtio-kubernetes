@@ -20,6 +20,8 @@ declare module Developer {
     function projectSecretsLink(workspaceName: any, projectName: any): string;
     function secretsNamespaceLink(workspaceName: any, projectName: any, secretsNamespace: any): string;
     function projectWorkspaceLink(workspaceName: any, projectName: any, path: any, ignoreBlankProject?: boolean): string;
+    function environmentsLink(workspaceName?: any): string;
+    function environmentLink(workspaceName: any, environmentNamespace: any, path?: string, ignoreBlankProject?: boolean): string;
     var customProjectSubTabFactories: any[];
     function createJenkinsBreadcrumbs(projectName: any, jobId: any, buildId: any): any;
     function createJenkinsSubNavBars(projectName: any, jenkinsJobId: any, buildId: any, extraOption?: any): any;
