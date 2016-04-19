@@ -4,6 +4,7 @@
 module Kubernetes {
 
   export var FABRIC8_PROJECT_JSON = "fabric8ProjectJson";
+  export var environemntsConfigMapName = "fabric8-environments";
 
   var jenkinshiftServiceName = 'jenkinshift';
 
@@ -87,6 +88,8 @@ module Kubernetes {
       });
     }
 
+    public configmaps = [];
+    public environments = [];
     public buildconfigs = [];
     public events = [];
     public workspaces = [];
@@ -623,10 +626,49 @@ module Kubernetes {
           });
           //this.apps = apps;
           this.apps = this.appViews;
+
+
+          this.environments = this.loadEnvironments();
         }
       } catch (e) {
         log.warn("Caught error: " + e);
       }
+    }
+
+    /**
+     * Loads the environments for the given project
+     */
+    protected loadEnvironments() {
+      var answer = [];
+      var model = Kubernetes.getKubernetesModel();
+      if (model) {
+        var configmap = Kubernetes.getNamed(this.configmaps, environemntsConfigMapName);
+        if (configmap) {
+          angular.forEach(configmap.data, (yamlText, key) => {
+            try {
+              var values = jsyaml.load(yamlText);
+              var env = this.createEnvironment(key, values);
+              if (env) {
+                answer.push(env);
+              }
+            } catch (err) {
+              log.warn("Failed to read yaml environment " + key +
+                " with YAML: " + yamlText + ". Error: " + err, err);
+              return;
+            }
+          });
+        }
+      }
+      return answer;
+    }
+
+    protected createEnvironment(key, values) {
+      values["key"] = key;
+      var envNamespace = values["namespace"];
+      if (envNamespace) {
+        values["$environmentLink"] = Developer.projectWorkspaceLink(null, envNamespace, "/");
+      }
+      return values;
     }
 
     protected discoverPodConnections(entity) {

@@ -2,6 +2,7 @@
 /// <reference path="kubernetesPlugin.d.ts" />
 declare module Kubernetes {
     var FABRIC8_PROJECT_JSON: string;
+    var environemntsConfigMapName: string;
     /**
      * The object which keeps track of all the pods, replication controllers, services and their associations
      */
@@ -27,6 +28,8 @@ declare module Kubernetes {
         appFolders: any[];
         fetched: boolean;
         showRunButton: boolean;
+        configmaps: any[];
+        environments: any[];
         buildconfigs: any[];
         events: any[];
         workspaces: any[];
@@ -49,6 +52,11 @@ declare module Kubernetes {
         protected updateIconUrlAndAppInfo(entity: any, nameField: string): void;
         maybeInit(): void;
         protected updateApps(): void;
+        /**
+         * Loads the environments for the given project
+         */
+        protected loadEnvironments(): any[];
+        protected createEnvironment(key: any, values: any): any;
         protected discoverPodConnections(entity: any): void;
     }
 }

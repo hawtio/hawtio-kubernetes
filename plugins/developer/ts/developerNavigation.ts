@@ -198,6 +198,13 @@ module Developer {
         title: "View the builds in this project"
       },
       {
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "environments"),
+        label: "Environments",
+        class: "fa fa-gears",
+        title: "View the environments for this project"
+      }
+/*
+      {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
         class: "fa fa-gears",
@@ -209,6 +216,7 @@ module Developer {
         class: "fa fa-gear",
         title: "View the project details"
       }
+*/
     ]);
   }
 

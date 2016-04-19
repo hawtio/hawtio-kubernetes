@@ -56,6 +56,7 @@ declare module Kubernetes {
     function getAnnotations(entity: any): any;
     function getAnnotation(entity: any, annotation: any): any;
     function getName(entity: any): any;
+    function getNamed(array: any, name: string): any;
     function getKind(entity: any): any;
     function getSelector(entity: any): any;
     function getHost(pod: any): any;
@@ -65,8 +66,7 @@ declare module Kubernetes {
     var mbean: string;
     var managerMBean: string;
     var appViewMBean: string;
-    function isKubernetes(workspace?: any): boolean;
-    function isKubernetesTemplateManager(workspace?: any): boolean;
+    function getKubernetesModel(): KubernetesModelService;
     function isAppView(workspace?: any): boolean;
     function getStrippedPathName(): string;
     function linkContains(...words: String[]): boolean;

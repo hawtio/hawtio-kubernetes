@@ -21,33 +21,20 @@ module Developer {
         $scope.breadcrumbConfig = createWorkspaceBreadcrumbs();
         $scope.subTabConfig = Developer.createWorkspaceSubNavBars();
 
-        $scope.$keepPolling = () => Kubernetes.keepPollingModel;
-        $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
-          $scope.item = null;
-          if ($scope.id) {
-            var url = UrlHelpers.join(Kubernetes.resourcesUriForKind("Projects"), $scope.id);
-            log.info("Loading url: " + url);
-            $http.get(url).
-              success(function (data, status, headers, config) {
-                if (data) {
-                  $scope.entity = enrichWorkspace(data);
-                }
-                $scope.model.fetched = true;
-                Core.$apply($scope);
-                next();
-              }).
-              error(function (data, status, headers, config) {
-                log.warn("Failed to load " + url + " " + data + " " + status);
-                next();
-              });
-          } else {
-            $scope.model.fetched = true;
-            Core.$apply($scope);
-            next();
 
-          }
+
+        $scope.$on('kubernetesModelUpdated', function () {
+          updateData();
         });
 
-        $scope.fetch();
+        function updateData() {
+          var projectsOrNamespaces = Kubernetes.isOpenShift ? $scope.model.projects : $scope.model.namespaces;
+          $scope.entity = Kubernetes.getNamed(projectsOrNamespaces, $scope.id) || {}
+          enrichWorkspace($scope.entity);
+          $scope.fetched = true;
+          $scope.model.fetched = true;
+        }
+
+        updateData();
       }]);
 }

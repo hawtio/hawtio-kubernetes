@@ -254,6 +254,15 @@ module Kubernetes {
     return Core.pathGet(entity, ["metadata", "name"]) || Core.pathGet(entity, "name") || Core.pathGet(entity, "id");
   }
 
+  export function getNamed(array, name: string) {
+    var answer = null;
+    angular.forEach(array, (entity) => {
+      if (!answer && name === getName(entity)) {
+        answer = entity;
+      }
+    });
+    return answer;
+  }
   export function getKind(entity) {
     return Core.pathGet(entity, ["metadata", "kind"]) || Core.pathGet(entity, "kind");
   }
@@ -276,7 +285,7 @@ module Kubernetes {
 
   export function getCreationTimestamp(entity) {
     return Core.pathGet(entity, ["metadata", "creationTimestamp"]);
-  };
+  }
 
   //var fabricDomain = Fabric.jmxDomain;
   var fabricDomain = "io.fabric8";
@@ -284,16 +293,11 @@ module Kubernetes {
   export var managerMBean = fabricDomain + ":type=KubernetesManager";
   export var appViewMBean = fabricDomain + ":type=AppView";
 
-  export function isKubernetes(workspace?) {
-    // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "Kubernetes"});
-    return true;
-  }
 
-  export function isKubernetesTemplateManager(workspace?) {
-    // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "KubernetesTemplateManager"});
-    return true;
+  export function getKubernetesModel(): KubernetesModelService {
+    return <KubernetesModelService> Kubernetes.inject("KubernetesModel");
   }
-
+  
   export function isAppView(workspace?) {
     // return workspace.treeContainsDomainAndProperties(fabricDomain, {type: "AppView"});
     return true;
@@ -1597,7 +1601,6 @@ module Kubernetes {
     });
     return imageRepositories;
   }
-
 
   var labelColors = {
     'version': 'k8s-badge-version',
