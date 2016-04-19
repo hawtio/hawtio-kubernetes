@@ -100,7 +100,7 @@ module Developer {
             versionInfo.replicationControllers[name] = item;
             item.$name = name;
             if (projectNamespace && projectName) {
-              item.$viewLink = UrlHelpers.join("/workspaces/", projectNamespace, "projects", projectName, "namespace", ns, "replicationControllers", name);
+              item.$viewLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces/", projectNamespace, "projects", projectName, "namespace", ns, "replicationControllers", name);
             } else {
               log.warn("Missing project data! " + projectNamespace + " name " + projectName);
             }

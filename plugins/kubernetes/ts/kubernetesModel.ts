@@ -313,7 +313,7 @@ module Kubernetes {
         if (!service.$podCounters) {
           service.$podCounters = {};
         }
-        var podLinkUrl = UrlHelpers.join("/kubernetes/namespace", service.metadata.namespace, "pods");
+        var podLinkUrl = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", service.metadata.namespace, "pods");
         _.assign(service.$podCounters, selector ? createPodCounters(selector, this.pods, service.$pods, Kubernetes.labelsToString(selector, ","), podLinkUrl) : {});
         service.$podCount = service.$pods.length;
 

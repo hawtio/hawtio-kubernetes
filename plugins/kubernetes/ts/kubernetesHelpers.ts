@@ -1065,7 +1065,7 @@ module Kubernetes {
       if (!answer) {
         answer = {
           labelText: selectorText,
-          podsLink: UrlHelpers.join("/kubernetes/namespace/", pod.metadata.namespace, "pods?q=" + encodeURIComponent(selectorText)),
+          podsLink: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace/", pod.metadata.namespace, "pods?q=" + encodeURIComponent(selectorText)),
           valid: 0,
           waiting: 0,
           error: 0
@@ -1392,7 +1392,7 @@ module Kubernetes {
         if (c && c.startsWith(prefix)) {
           var ens = c.substring(prefix.length);
           env.namespace = ens;
-          env.url = UrlHelpers.join("/workspaces", ns, "projects", name, "namespace", ens);
+          env.url = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", ns, "projects", name, "namespace", ens);
         }
         buildConfig.environments.push(env);
       });
@@ -1404,7 +1404,7 @@ module Kubernetes {
           label: "Current",
           description: "The environemnt that this project is built and run inside",
           iconClass: "fa fa-cloud",
-          url: UrlHelpers.join("/workspaces", ns, "projects", name, "namespace", ens)
+          url: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", ns, "projects", name, "namespace", ens)
         };
         buildConfig.environments.push(env);
 
@@ -1556,7 +1556,7 @@ module Kubernetes {
         if (entity) {
           entity.$events.push(event);
           if (!entity.$eventsLink) {
-            entity.$eventsLink = UrlHelpers.join("/kubernetes/namespace/", currentKubernetesNamespace(), "events") + "?q=kind%3D" + entity.kind + "%20name%3D" + entity.metadata.name;
+            entity.$eventsLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace/", currentKubernetesNamespace(), "events") + "?q=kind%3D" + entity.kind + "%20name%3D" + entity.metadata.name;
           }
           entity.$eventCount = entity.$events.length;
         }

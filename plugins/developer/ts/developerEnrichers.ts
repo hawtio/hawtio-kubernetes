@@ -71,8 +71,8 @@ module Developer {
       if (jobUrl) {
         job.$jobLink = jobUrl;
         var workspaceName = Kubernetes.currentKubernetesNamespace();
-        job.$pipelinesLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName, "pipelines");
-        job.$buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName);
+        job.$pipelinesLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName, "pipelines");
+        job.$buildsLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", job.$project, "jenkinsJob", jobName);
       }
       job.$iconClass = $iconClass;
 
@@ -139,9 +139,9 @@ module Developer {
         build.$jobLink = jobUrl;
         if (buildId) {
           //build.$logsLink = UrlHelpers.join(build.$buildLink, "console");
-          build.$logsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", buildId);
-          build.$pipelineLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "pipeline", buildId);
-          build.$buildsLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName);
+          build.$logsLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", buildId);
+          build.$pipelineLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "pipeline", buildId);
+          build.$buildsLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName);
           //build.$buildLink = UrlHelpers.join(jobUrl, build.id);
           build.$buildLink = build.$logsLink;
         }
@@ -205,7 +205,7 @@ module Developer {
 */
         }
       }
-      build.$logLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", build.id);
+      build.$logLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", build.id);
       build.$viewLink = build.$logLink;
 
       angular.forEach(build.stages, (stage) => {
@@ -238,7 +238,7 @@ module Developer {
           stage.$viewLink = UrlHelpers.join(jenkinsUrl, url);
           stage.$logLink = UrlHelpers.join(stage.$viewLink, "log");
           if (projectId && buildId) {
-            stage.$logLink = UrlHelpers.join("/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", buildId);
+            stage.$logLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectId, "jenkinsJob", jobName, "log", buildId);
           }
         }
       }

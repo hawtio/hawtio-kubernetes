@@ -96,7 +96,7 @@ module Developer {
             if (jenkinsJob) {
               var buildsTab = _.find($scope.subTabConfig, {id: "builds"});
               if (buildsTab) {
-                buildsTab["href"] = UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", $scope.id, "jenkinsJob", jenkinsJob);
+                buildsTab["href"] = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", $scope.id, "jenkinsJob", jenkinsJob);
               }
             }
 

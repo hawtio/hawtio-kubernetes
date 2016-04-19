@@ -20,7 +20,7 @@ module Developer {
       var projectName = Kubernetes.getName($scope.buildConfig);
       if (projectName && env) {
         var envNamespace = env["namespace"];
-        return UrlHelpers.join("/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
+        return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
       }
       return "";
     };

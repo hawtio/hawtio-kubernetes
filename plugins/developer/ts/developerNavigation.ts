@@ -297,7 +297,7 @@ module Developer {
           }
           return false;
         },
-        //href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName),
+        //href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName),
         label: "Dashboard",
         class: "fa fa-tachometer",
         title: "View the app dashboard for the activity, environments and pipelines"
@@ -334,7 +334,7 @@ module Developer {
       },
 /*
       {
-        href: UrlHelpers.join("/workspaces", workspaceName, "projects", projectName, "tools"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "tools"),
         label: "Tools",
         title: "View the tools for this project"
       },
