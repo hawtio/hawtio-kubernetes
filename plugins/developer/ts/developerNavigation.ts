@@ -13,15 +13,6 @@ module Developer {
   }
 
 
-/*
-  function homeBreadcrumb() {
-    return {
-      href: "/home",
-      label: "Home",
-      title: "Go to the home page"
-    }
-  }
-*/
   function developBreadcrumb() {
     return {
       href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces"),
@@ -146,16 +137,11 @@ module Developer {
         {
           href: environmentLink(workspaceName, environment),
           label: () => {
-            var envLabel = environment;
             var model = Kubernetes.getKubernetesModel();
             if (model) {
-              angular.forEach(model.environments, (env) => {
-                if (environment === env.namespace) {
-                  envLabel = env.name || env.label || envLabel;
-                }
-              });
+              return model.environmentName(workspaceName, environment);
             }
-            return envLabel;
+            return environment;
           },
           title: "View this environment"
         }

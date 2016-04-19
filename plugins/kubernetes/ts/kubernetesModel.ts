@@ -68,6 +68,9 @@ module Kubernetes {
     public replicationControllersByKey = {};
     public podsByKey = {};
 
+    // the environments by namespace (development project)
+    public namespaceEnvironments = {};
+
     public appInfos = [];
     public appViews = [];
     public appFolders = [];
@@ -636,6 +639,20 @@ module Kubernetes {
     }
 
     /**
+     * Returns the name of the environment for the given project namespace and environment namespace
+     */
+    public environmentName(projectNamespace, environmentNamespace) {
+      var answer = "";
+      var environments = this.namespaceEnvironments[projectNamespace];
+      angular.forEach(environments, (env) => {
+        if (environmentNamespace === env.namespace) {
+          answer = env.name || env.label || answer;
+        }
+      });
+      return answer || environmentNamespace;
+    }
+
+    /**
      * Loads the environments for the given project
      */
     protected loadEnvironments() {
@@ -657,6 +674,10 @@ module Kubernetes {
               return;
             }
           });
+          var ns = getNamespace(configmap);
+          if (ns) {
+            this.namespaceEnvironments[ns] = answer;
+          }
         }
       }
       return answer;

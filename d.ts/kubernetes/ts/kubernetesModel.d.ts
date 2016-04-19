@@ -23,6 +23,7 @@ declare module Kubernetes {
         servicesByKey: {};
         replicationControllersByKey: {};
         podsByKey: {};
+        namespaceEnvironments: {};
         appInfos: any[];
         appViews: any[];
         appFolders: any[];
@@ -52,6 +53,10 @@ declare module Kubernetes {
         protected updateIconUrlAndAppInfo(entity: any, nameField: string): void;
         maybeInit(): void;
         protected updateApps(): void;
+        /**
+         * Returns the name of the environment for the given project namespace and environment namespace
+         */
+        environmentName(projectNamespace: any, environmentNamespace: any): any;
         /**
          * Loads the environments for the given project
          */
