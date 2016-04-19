@@ -1,6 +1,18 @@
 /// <reference path="../../includes.ts"/>
 module Developer {
 
+  export type LabelResolver = () => string;
+
+  export interface BreadcrumbConfig {
+      href?: string;
+      label?: string | LabelResolver;
+      title?: string;
+      class?: string;
+      isValid?: () => boolean;
+      isActive?: (subTab, path) => boolean;
+  }
+
+
 /*
   function homeBreadcrumb() {
     return {
@@ -110,7 +122,7 @@ module Developer {
           log.info("env found: " + env + " for nameppace " + ns + " on buildConfig: " + buildConfig);
         }
       }
-      var children = [
+      var children: Array<BreadcrumbConfig> = [
         {
           href: UrlHelpers.join(projectLink, "environments"),
           label: "Environments",
@@ -125,7 +137,7 @@ module Developer {
       return createProjectBreadcrumbs(project, children, workspaceName);
     } else if (workspaceName && environment && workspaceName != environment) {
       // find label for namespace environment
-      var children = [
+      var children: Array<BreadcrumbConfig> = [
         {
           href: environmentsLink(workspaceName),
           label: "Environments",
@@ -133,7 +145,7 @@ module Developer {
         },
         {
           href: environmentLink(workspaceName, environment),
-          labelFn: () => {
+          label: () => {
             var envLabel = environment;
             var model = Kubernetes.getKubernetesModel();
             if (model) {
@@ -163,7 +175,7 @@ module Developer {
     ]);
   }
 
-  export function createProjectBreadcrumbs(projectName = null, children = null, workspaceName = null) {
+  export function createProjectBreadcrumbs(projectName = null, children: Array<BreadcrumbConfig> = null, workspaceName = null) {
     if (!workspaceName) {
       workspaceName = Kubernetes.currentKubernetesNamespace();
     }

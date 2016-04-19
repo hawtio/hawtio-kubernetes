@@ -1,12 +1,21 @@
 /// <reference path="../../includes.d.ts" />
 declare module Developer {
+    type LabelResolver = () => string;
+    interface BreadcrumbConfig {
+        href?: string;
+        label?: string | LabelResolver;
+        title?: string;
+        class?: string;
+        isValid?: () => boolean;
+        isActive?: (subTab, path) => boolean;
+    }
     function workspaceLink(): string;
     function projectLink(projectId: any): string;
     function createWorkspacesBreadcrumbs(developPerspective: any): any[];
     function createWorkspacesSubNavBars(developPerspective: any): any;
     function createWorkspaceBreadcrumbs(children?: any, workspaceName?: any): any;
     function createEnvironmentBreadcrumbs($scope: any, $location: any, $routeParams: any): any;
-    function createProjectBreadcrumbs(projectName?: any, children?: any, workspaceName?: any): any;
+    function createProjectBreadcrumbs(projectName?: any, children?: Array<BreadcrumbConfig>, workspaceName?: any): any;
     function createProjectSettingsBreadcrumbs(projectName: any, workspaceName?: any): any;
     function createWorkspaceSubNavBars(): any;
     function createProjectSubNavBars(projectName: any, jenkinsJobId?: any, $scope?: any): any;

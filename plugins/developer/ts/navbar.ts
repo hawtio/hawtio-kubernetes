@@ -12,11 +12,11 @@ module Developer {
 
         $scope.label = (entity) => {
           if (entity) {
-            var fn = entity["labelFn"];
-            if (angular.isFunction(fn)) {
-              return fn();
+            var value = entity["label"];
+            if (angular.isFunction(value)) {
+              return value();
             }
-            return entity["label"] || entity["name"];
+            return value|| entity["name"];
           }
           return "";
         };
