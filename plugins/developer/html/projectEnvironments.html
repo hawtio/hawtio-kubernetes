@@ -11,9 +11,9 @@
     <div class="ngCellText">
       <div class="ngCellText">
         <a ng-show="row.entity.$environmentLink" href="{{row.entity.$environmentLink}}" title="View this environment">
-          {{row.entity.name}}
+          <i class="fa fa-cube"></i> {{row.entity.name}}
         </a>
-        <span ng-hide="row.entity.$environmentLink">{{row.entity.name}}</span>
+        <span ng-hide="row.entity.$environmentLink"><i class="fa fa-cube"></i> {{row.entity.name}}</span>
       </div>
     </div>
   </script>
@@ -64,17 +64,6 @@
       <div class="row">
         <div class="col-md-12">
           <table class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
-        </div>
-      </div>
-    </div>
-    <div ng-show="devEnvironmentLink" class="row">
-      <div class="col-md-12">
-        <div class="align-center">
-          <a class="btn btn-default"
-             title="View the namespace for the Development environment"
-             href="{{devEnvironmentLink}}">
-            <i class="fa fa-cogs"></i> Development Environment
-          </a>
         </div>
       </div>
     </div>

@@ -215,16 +215,16 @@ module Developer {
       {
         href: environmentsLink(),
         label: "Environments",
-        class: "fa fa-gears",
+        class: "fa fa-cubes",
         title: "View the environments for this project"
-      }
-/*
+      },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", workspaceName, "apps"),
         label: "Runtime",
-        class: "fa fa-gears",
-        title: "View the runtime resources in this project"
-      },
+        class: "fa fa-cube",
+        title: "View the Runtime perspective for this project"
+      }
+/*
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "detail"),
         label: "Details",
@@ -527,6 +527,15 @@ module Developer {
     }
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([
+      {
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName || environment),
+        label: "<< Back To Project",
+        title: "Go back to the Project perspective",
+        isValid: () => {
+          // only valid if we showing a top level project which is not inside a nested environment
+          return !project && (!workspaceName || workspaceName === environment);
+        }
+      },
       {
         href: UrlHelpers.join(projectLink, "environments"),
         label: "<< Back To App",
