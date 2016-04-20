@@ -74,28 +74,37 @@ module Kubernetes {
 
       var userProfile = HawtioOAuth.getUserProfile();
       log.debug("User profile: ", userProfile);
-      if (userProfile && userProfile.provider === "hawtio-google-oauth") {
-        log.debug("Possibly running on GCE");
-        // api master is on GCE
-        $.ajax({
-          url: UrlHelpers.join(masterApiUrl(), 'api', 'v1', 'namespaces'),
-          complete: (jqXHR, textStatus) => {
-            if (textStatus === "success") {
-              log.debug("jqXHR: ", jqXHR);
-              userProfile.oldToken = userProfile.token;
-              userProfile.token = undefined;
-              $.ajaxSetup({
-                beforeSend: (request) => {
-                  // nothing to do, overwrites any existing config
-                }
-              });
-            }
+      if (userProfile) {
+        var provider = userProfile.provider;
+        if (provider) {
+          if (provider === userProfile.provider) {
+            isOpenShift = true;
             next();
-          },
-          beforeSend: (request) => {
-            // nothing to do, overwrites any existing config
+          } else if (provider === "hawtio-google-oauth") {
+            log.debug("Possibly running on GCE");
+            // api master is on GCE
+            $.ajax({
+              url: UrlHelpers.join(masterApiUrl(), 'api', 'v1', 'namespaces'),
+              complete: (jqXHR, textStatus) => {
+                if (textStatus === "success") {
+                  log.debug("jqXHR: ", jqXHR);
+                  userProfile.oldToken = userProfile.token;
+                  userProfile.token = undefined;
+                  $.ajaxSetup({
+                    beforeSend: (request) => {
+                      // nothing to do, overwrites any existing config
+                    }
+                  });
+                }
+                next();
+              },
+              beforeSend: (request) => {
+                // nothing to do, overwrites any existing config
+              }
+            });
           }
-        });
+        }
+/*
       } else {
         log.debug("Not running on GCE");
         // double-check if we're on vanilla k8s or openshift
@@ -128,6 +137,7 @@ module Kubernetes {
             next();
           }
         });
+*/
       }
     }
   });
