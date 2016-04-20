@@ -41,21 +41,8 @@ module Developer {
     }
   }
 
-  export function createWorkspacesBreadcrumbs(developPerspective) {
-/*
-    if (developPerspective) {
-      return [
-        //homeBreadcrumb(),
-        developBreadcrumb()
-      ];
-    } else {
-      return [
-        //homeBreadcrumb(),
-        operateBreadcrumb()
-      ];
-    }
-*/
-    return [];
+  export function createWorkspacesBreadcrumbs(developPerspective?) {
+    return [developBreadcrumb()];
   }
 
 
@@ -67,10 +54,7 @@ module Developer {
   }
 
   export function createWorkspaceBreadcrumbs(children = null, workspaceName = null) {
-    var answer = [
-      //homeBreadcrumb(),
-      developBreadcrumb()
-    ];
+    var answer = createWorkspacesBreadcrumbs(true);
     if (!workspaceName) {
       workspaceName = Kubernetes.currentKubernetesNamespace();
     }
@@ -130,15 +114,13 @@ module Developer {
     } else if (!workspaceName) {
       workspaceName = Kubernetes.currentKubernetesNamespace();
     }
-    return activateCurrent([
-      //homeBreadcrumb(),
-      operateBreadcrumb(),
-      {
-        href: UrlHelpers.join(namespacesLink, ns, "apps"),
-        label: workspaceName,
-        title: "View the runtime of the workspace: " + ns
-      }
-    ]);
+    var answer = createWorkspaceBreadcrumbs(workspaceName);
+    answer.push({
+      href: UrlHelpers.join(HawtioCore.documentBase(), "workspaces", workspaceName, "namespace", ns, "apps"),
+      label: 'Runtime',
+      title: "View the runtime of the workspace: " + ns
+    });
+    return activateCurrent(answer);
   }
 
   /**
@@ -219,7 +201,7 @@ module Developer {
         title: "View the environments for this project"
       },
       {
-        href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", workspaceName, "apps"),
+        href: UrlHelpers.join(HawtioCore.documentBase(), "workspaces", workspaceName, "namespace", workspaceName, "apps"),
         label: "Runtime",
         class: "fa fa-cube",
         title: "View the Runtime perspective for this project"
@@ -522,7 +504,7 @@ module Developer {
     var projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes");
     if (workspaceName && project) {
       projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", project);
-    } else if (workspaceName && environment && workspaceName != environment) {
+    } else {
       projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName);
     }
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
@@ -579,7 +561,7 @@ module Developer {
         title: "View the secrets for this project"
       },
       {
-        href: UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/hosts"),
+        href: UrlHelpers.join(namespacesLink, ns, "hosts"),
         label: "Nodes",
         class: "fa fa-server",
         title: "View the nodes for this project"

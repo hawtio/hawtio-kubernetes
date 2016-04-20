@@ -16,6 +16,7 @@ module Navigation {
         _.forEach(config, (crumb) => {
           _config.push(crumb);
         });
+        console.log("New breadcrumb config: ", _config);
       },
       get: () => {
         return _config;
@@ -141,9 +142,9 @@ module Navigation {
       restrict: 'E',
       scope: {},
       template: `
-        <div ng-show="breadcrumbConfig" ng-controller="Developer.NavBarController">
+        <div class="nav navbar-nav nav-breadcrumb" ng-show="breadcrumbConfig" ng-controller="Developer.NavBarController">
           <ol class="breadcrumb">
-            <li ng-repeat="breadcrumb in breadcrumbConfig" ng-show="isValid(breadcrumb)"
+            <li ng-repeat="breadcrumb in breadcrumbConfig" ng-show="isValid(breadcrumb) && label(breadcrumb)"
                 class="{{breadcrumb.active ? 'active' : ''}}"
                 title="{{breadcrumb.title}}">
               <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{label(breadcrumb)}}</a>

@@ -423,6 +423,7 @@ module Kubernetes {
     $scope.forgeEnabled = isForgeEnabled();
 
     $scope.projectId = $routeParams["project"] || $scope.projectId || $scope.id;
+
     var showProjectNavBars = false;
     if ($scope.projectId && showProjectNavBars) {
       $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.projectId);
