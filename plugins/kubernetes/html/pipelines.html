@@ -66,22 +66,22 @@
                        title="last build was at: {{step.buildConfig.$lastBuild.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
                     <div ng-switch="step.buildConfig.$lastBuild.status">
                         <span ng-switch-when="New" class="text-primary">
-                          <i class="fa fa-spin fa-spinner"></i> new: {{step.buildConfig.$lastBuild.$creationDate.relative()}}
+                          <i class="fa fa-spin fa-spinner"></i> new: {{step.buildConfig.$lastBuild.$creationDate | relativeTime}}
                         </span>
                         <span ng-switch-when="Pending" class="text-primary">
-                          <i class="fa fa-spin fa-spinner"></i> pending: {{step.buildConfig.$lastBuild.$creationDate.relative()}}
+                          <i class="fa fa-spin fa-spinner"></i> pending: {{step.buildConfig.$lastBuild.$creationDate | relativeTime}}
                         </span>
                         <span ng-switch-when="Running" class="text-primary">
-                          <i class="fa fa-spin fa-spinner"></i> running {{step.buildConfig.$lastBuild.$creationDate.relative()}}
+                          <i class="fa fa-spin fa-spinner"></i> running {{step.buildConfig.$lastBuild.$creationDate | relativeTime}}
                         </span>
                         <span ng-switch-when="Complete" class="text-success">
-                          <i class="fa fa-check-circle"></i> completed {{step.buildConfig.$lastBuild.$creationDate.relative()}}
+                          <i class="fa fa-check-circle"></i> completed {{step.buildConfig.$lastBuild.$creationDate | relativeTime }}
                         </span>
                         <span ng-switch-when="Failed" class="text-danger">
-                          <i class="fa fa-exclamation-circle"></i> failed {{step.buildConfig.$lastBuild.$creationDate.relative()}}
+                          <i class="fa fa-exclamation-circle"></i> failed {{step.buildConfig.$lastBuild.$creationDate | relativeTime}}
                         </span>
                         <span ng-switch-default class="text-warning">
-                          <i class="fa fa-exclamation-triangle"></i> {{step.buildConfig.$lastBuild.status}}: {{step.buildConfig.$lastBuild.$creationDate.relative()}}
+                          <i class="fa fa-exclamation-triangle"></i> {{step.buildConfig.$lastBuild.status}}: {{step.buildConfig.$lastBuild.$creationDate | relativeTime}}
                         </span>
                     </div>
                   </div>
