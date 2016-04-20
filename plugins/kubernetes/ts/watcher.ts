@@ -73,37 +73,40 @@ module Kubernetes {
       isOpenShift = false;
 
       var userProfile = HawtioOAuth.getUserProfile();
-      log.debug("User profile: ", userProfile);
+      var provider = "";
       if (userProfile) {
-        var provider = userProfile.provider;
-        if (provider) {
-          if (provider === userProfile.provider) {
-            isOpenShift = true;
-            next();
-          } else if (provider === "hawtio-google-oauth") {
-            log.debug("Possibly running on GCE");
-            // api master is on GCE
-            $.ajax({
-              url: UrlHelpers.join(masterApiUrl(), 'api', 'v1', 'namespaces'),
-              complete: (jqXHR, textStatus) => {
-                if (textStatus === "success") {
-                  log.debug("jqXHR: ", jqXHR);
-                  userProfile.oldToken = userProfile.token;
-                  userProfile.token = undefined;
-                  $.ajaxSetup({
-                    beforeSend: (request) => {
-                      // nothing to do, overwrites any existing config
-                    }
-                  });
+        provider = userProfile.provider;
+      }
+      log.debug("User profile: ", userProfile + " provider: " + provider);
+
+      if (provider === "hawtio-os-oauth") {
+        isOpenShift = true;
+        next();
+      } else if (provider === "hawtio-google-oauth") {
+        log.debug("Possibly running on GCE");
+        // api master is on GCE
+        $.ajax({
+          url: UrlHelpers.join(masterApiUrl(), 'api', 'v1', 'namespaces'),
+          complete: (jqXHR, textStatus) => {
+            if (textStatus === "success") {
+              log.debug("jqXHR: ", jqXHR);
+              userProfile.oldToken = userProfile.token;
+              userProfile.token = undefined;
+              $.ajaxSetup({
+                beforeSend: (request) => {
+                  // nothing to do, overwrites any existing config
                 }
-                next();
-              },
-              beforeSend: (request) => {
-                // nothing to do, overwrites any existing config
-              }
-            });
+              });
+            }
+            next();
+          },
+          beforeSend: (request) => {
+            // nothing to do, overwrites any existing config
           }
-        }
+        });
+      } else {
+        next();
+      }
 /*
       } else {
         log.debug("Not running on GCE");
@@ -137,8 +140,8 @@ module Kubernetes {
             next();
           }
         });
-*/
       }
+*/
     }
   });
 
