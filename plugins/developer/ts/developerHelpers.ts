@@ -36,12 +36,14 @@ module Developer {
   /**
    * Lets load the project versions for the given namespace
    */
-  export function loadProjectVersions($scope, $element, project, env, ns, answer, caches) {
+  export function loadProjectVersions($scope, $element, project, env, ns, answer, caches, projectNamespace = null) {
     var projectAnnotation = "project";
     var versionAnnotation = "version";
 
-    var projectNamespace = project.$namespace || Kubernetes.getNamespace(project);
-    var projectName = project.$name;
+    if (!projectNamespace) {
+      projectNamespace = project.$namespace || Kubernetes.getNamespace(project);
+    }
+    var projectName = project ? project.$name : null;
 
     var cache = caches[ns];
     if (!cache) {
@@ -80,7 +82,7 @@ module Developer {
         if (!version) {
           version = annotations["openshift.io/deployment-config.latest-version"]
         }
-        if (project && version && project === projectName) {
+        if (project && version && (!projectName ||project === projectName)) {
           var projects = projectInfos[project];
           if (!projects) {
             projects = {
@@ -99,10 +101,16 @@ module Developer {
           if (name) {
             versionInfo.replicationControllers[name] = item;
             item.$name = name;
-            if (projectNamespace && projectName) {
-              item.$viewLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces/", projectNamespace, "projects", projectName, "namespace", ns, "replicationControllers", name);
+            if (projectNamespace) {
+              if (projectName) {
+                item.$viewLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces/", projectNamespace, "projects", projectName, "namespace", ns, "replicationControllers", name);
+              } else {
+                item.$viewLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces/", projectNamespace, "namespace", ns, "replicationControllers", name);
+              }
             } else {
-              log.warn("Missing project data! " + projectNamespace + " name " + projectName);
+              if (projectName) {
+                log.warn("Missing project data! " + projectNamespace + " name " + projectName);
+              }
             }
 
             item.$services = [];
@@ -203,7 +211,7 @@ module Developer {
                                       var buildName = values[1];
                                       if (buildName) {
                                         item.$buildId = buildName;
-                                        item.$buildUrl = Developer.projectWorkspaceLink(ns, projectName, "buildLogs/" + buildName);
+                                        item.$buildUrl = Developer.projectWorkspaceLink(ns, projectName || project, "buildLogs/" + buildName);
                                       }
                                     }
                                   }
@@ -217,7 +225,7 @@ module Developer {
                                   item.$gitBranch = labels["io.openshift.build.commit.ref"] || item.$gitBranch;
 
                                   if (!item.$gitUrl && item.$gitCommit) {
-                                    item.$gitUrl = Developer.projectWorkspaceLink(ns, projectName, "wiki/commitDetail///" + item.$gitCommit);
+                                    item.$gitUrl = Developer.projectWorkspaceLink(ns, projectName || project, "wiki/commitDetail///" + item.$gitCommit);
                                   }
                                 }
                               }
@@ -234,7 +242,7 @@ module Developer {
 
           if (selector) {
             var selectorText = Kubernetes.labelsToString(selector, ",");
-            var podLinkUrl = UrlHelpers.join(projectLink(projectName), "namespace", ns, "pods");
+            var podLinkUrl = UrlHelpers.join(projectLink(projectName || project), "namespace", ns, "pods");
             item.pods = [];
             item.$podCounters = Kubernetes.createPodCounters(selector, status.pods, item.pods, selectorText, podLinkUrl);
           }

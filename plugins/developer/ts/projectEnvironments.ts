@@ -16,12 +16,15 @@ module Developer {
 
         ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
 
-
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         $scope.breadcrumbConfig = createProjectBreadcrumbs();
         $scope.subTabConfig = Developer.createWorkspaceSubNavBars();
 
-        $scope.devEnvironmentLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace", $scope.namespace, "apps");
+        $scope.entityChangedCache = {};
+        $scope.envVersionsCache = {};
+        $scope.envNSCaches = {};
+        $scope.envVersions = {};
+        $scope.environments = [];
 
         $scope.tableConfig = {
           data: 'model.environments',
@@ -48,6 +51,46 @@ module Developer {
             }
           ]
         };
+
+        $scope.$on('kubernetesModelUpdated', function () {
+          updateData();
+        });
+
+        $scope.$on('$routeUpdate', ($event) => {
+          updateData();
+        });
+
+        function updateData() {
+          $scope.environments = $scope.model.environments;
+          updateEnvironmentWatch();
+          //updateTabs();
+          $scope.model.fetched = true;
+          Core.$apply($scope);
+        }
+
+        updateData();
+
+        /**
+         * We have updated the entity so lets make sure we are watching all the environments to find
+         * the project versions for each namespace
+         */
+        function updateEnvironmentWatch() {
+          var project = null;
+          var projectNamespace = $scope.namespace || Kubernetes.currentKubernetesNamespace();
+          angular.forEach($scope.environments, (env) => {
+            var ns = env.namespace;
+            var caches = $scope.envNSCaches[ns];
+            if (!caches) {
+              caches = {};
+              $scope.envNSCaches[ns] = caches;
+              loadProjectVersions($scope, $element, project, env, ns, $scope.envVersions, caches, projectNamespace);
+            }
+          });
+        }
+
+        function updateTabs() {
+          $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id, null, $scope);
+        }
 
       }]);
 }

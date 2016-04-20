@@ -4,8 +4,7 @@
       <div class="panel-heading">
         <h2 class="panel-title inline-block">
           <a href="{{environmentLink(env)}}" title="namespace: {{env.namespace}}">
-            <!-- <i class="{{env.iconClass}}"></i>&nbsp; -->
-            {{env.label}}
+            <i class="fa fa-cube"></i>&nbsp;{{env.label}}
           </a>
         </h2>
       </div>
@@ -18,15 +17,11 @@
               <div class="environment-deploy-version-and-pods">
                 <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
                   title="View the Replication Controller from project {{project}} of version {{version}}">
-                  <i class="fa fa-cubes"></i>
-                  {{rc.$name}}
-                  : {{version}}
+                  <i class="fa fa-square"></i>&nbsp;{{rc.$name}} : {{version}}
                 </a>
                 <span ng-hide="rc.$viewLink"
                   title="View the Replication Controller from project {{project}} of version {{version}}">
-                  <i class="fa fa-cubes"></i>
-                  {{rc.$name}}
-                  : {{version}}
+                  <i class="fa fa-square"></i>&nbsp;{{rc.$name}} : {{version}}
                 </span>
                 <span class="pull-right" ng-show="rc.$serviceLink.href">
                   &nbsp;

@@ -2,11 +2,17 @@
 
 module Developer {
   _module.controller('Developer.EnvironmentPanelController', ($scope, $element, $location, $routeParams, KubernetesModel:Kubernetes.KubernetesModelService, $http, $timeout, KubernetesState, KubernetesApiURL) => {
-
-    $scope.envVersions = {};
     $scope.model = KubernetesModel;
     $scope.env = $scope.$eval('env');
     $scope.buildConfig = $scope.$eval('entity');
+
+    var loaded = false;
+    $scope.envVersions = $scope.$eval('envVersions');
+    if ($scope.envVersions) {
+      loaded = true;
+    } else {
+      $scope.envVersions = {};
+    }
 
     $scope.open = true;
 
@@ -18,14 +24,19 @@ module Developer {
 
     $scope.environmentLink = (env) => {
       var projectName = Kubernetes.getName($scope.buildConfig);
-      if (projectName && env) {
+      if (env) {
         var envNamespace = env["namespace"];
-        return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
+        if (envNamespace) {
+          if (projectName) {
+            return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
+          } else {
+            return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "namespace", envNamespace);
+          }
+        }
       }
       return "";
     };
 
-    var loaded = false;
 
     function doLoad() {
       if (!loaded) {
