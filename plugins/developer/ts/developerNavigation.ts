@@ -248,6 +248,7 @@ module Developer {
     }
 
     var answer = [
+      /*
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
         label: "All Apps",
@@ -257,6 +258,7 @@ module Developer {
       {
         template: `<div ng-include="'plugins/developer/html/projectSelector.html'"></div>`
       },
+*/
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
         isActive: (subTab, path) => {
@@ -510,21 +512,6 @@ module Developer {
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([
       {
-        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName || environment),
-        label: "<< Back To Project",
-        title: "Go back to the Project perspective",
-        isValid: () => {
-          // only valid if we showing a top level project which is not inside a nested environment
-          return !project && (!workspaceName || workspaceName === environment);
-        }
-      },
-      {
-        href: UrlHelpers.join(projectLink, "environments"),
-        label: "<< Back To App",
-        title: "Go back to the Dashboard for this App",
-        isValid: () => project
-      },
-      {
         href: UrlHelpers.join(namespacesLink, ns, "apps"),
         label: "Overview",
         class: "fa fa-list",
@@ -578,6 +565,23 @@ module Developer {
         class: "fa fa-gamepad",
         title: "Try the Angry Pods game!"
       },
+      {
+        href: UrlHelpers.join(projectLink, "environments"),
+        label: "App",
+        class: "fa fa-rocket",
+        title: "Go back to the Dashboard for this App",
+        isValid: () => project
+      },
+      {
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName || environment),
+        label: "Apps",
+        title: "View the apps for this project",
+        class: "fa fa-rocket",
+        isValid: () => {
+          // only valid if we showing a top level project which is not inside a nested environment
+          return !project && (!workspaceName || workspaceName === environment);
+        }
+      }
     ]);
   }
 
