@@ -395,7 +395,12 @@ module Kubernetes {
       // Sort the objects in the correct order so
       // everything deploys properly
       objects = sortObjects(objects);
-      $scope.objects = objects;
+      // remove any gack added to the objects by view directives
+      $scope.objects = _.map(objects, (object:any) => {
+        delete object.newGroup;
+        delete object.$$hashKey;
+        return object; 
+      });
       $scope.currentState = states.SUBSTITUTED;
     };
 
@@ -430,7 +435,9 @@ module Kubernetes {
         Core.notification('info', "Switching to namespace " + $scope.targetNamespace + " and deploying template");
         model.kubernetes.selectedNamespace = $scope.targetNamespace;
       } else {
-        applyObjects(objects);
+        setTimeout(() => {
+          applyObjects(objects);
+        }, 10);
       }
     }
 
@@ -444,15 +451,17 @@ module Kubernetes {
         return id;
       }
       // build up an array of results, strip out duplicates
-      var outstanding = $scope.outstanding = _.uniq(_.map(objects, (object, index) => {
+      var outstanding = _.uniq(_.map(objects, (object:any) => {
         return {
           id: createId(object),
+          kind: object.kind,
           applying: true,
           object: object
         };
       }), true, (obj, index) => {
         return createId(obj);
       });
+      $scope.outstanding = outstanding;
       $scope.currentState = states.DEPLOYING;
       // update the view
       Core.$apply($scope);

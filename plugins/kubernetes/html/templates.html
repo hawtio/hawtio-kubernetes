@@ -2,6 +2,16 @@
   <script type="text/ng-template" id="truncatedDescriptionTag.html">
     <a href="" ng-click="openFullDescription(template)">More...</a>
   </script>
+  <script type="text/ng-template" id="templateKindAndNameHeader.html">
+    <div class="row">
+      <div class="col-md-2">
+        <img style="width: 64px; height: 64px;" ng-src="{{getIconUrl(object)}}">
+      </div>
+      <div class="col-md-10">
+        <h3 ng-bind="object.metadata.name"></h3>
+      </div>
+    </div>
+  </script>
 
   <div hawtio-breadcrumbs></div>
   <div hawtio-tabs></div>
@@ -106,23 +116,18 @@
   <div class="row" ng-show="currentState === states.SUBSTITUTED">
     <div class="col-md-12">
       <h3>The Following items will be deployed</h3>
-      <div class="column-box" ng-repeat="obj in objects">
-        <div class="row">
-          <div class="col-md-2">
-            <img style="width: 64px; height: 64px;" ng-src="{{getIconUrl(obj)}}">
-          </div>
-          <div class="col-md-5">
-            <h3 ng-bind="obj.metadata.name"></h3>
-          </div>
-          <div class="col-md-5">
-            <strong>Kind: </strong><span ng-bind="obj.kind"></span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <h5>Details</h5>
-            <div>
-              <div hawtio-editor="toString(obj)" mode="mode" read-only="true"></div>
+      <div ng-repeat="obj in objects | hawtioGroupBy:'kind'" ng-class="obj.endGroup ? '' : 'inline-block'">
+        <h2 ng-show="obj.newGroup && obj.kind"><b>Kind: </b>{{obj.kind | humanize}}</h2>
+        <div class="column-box">
+          <div ng-include="'templateKindAndNameHeader.html'" ng-init="object = obj"></div>
+          <div class="row">
+            <div class="col-md-12 expandable closed">
+              <div class="title">
+                <i class="expandable-indicator"></i> Details
+              </div>
+              <div class="expandable-body">
+                <div hawtio-editor="toString(obj)" mode="mode" read-only="true"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -131,34 +136,27 @@
   </div>
   <div class="row" ng-show="currentState === states.DEPLOYING">
     <div class="col-md-12">
-      <div class="column-box" ng-repeat="obj in outstanding">
-        <div class="row">
-          <div class="col-md-2">
-            <img style="width: 64px; height: 64px;" ng-src="{{getIconUrl(obj.object)}}">
-          </div>
-          <div class="col-md-5">
-            <h3 ng-bind="obj.object.metadata.name"></h3>
-          </div>
-          <div class="col-md-5">
-            <strong>Kind: </strong><span ng-bind="obj.object.kind"></span>
-          </div>
-        </div>
-        <div class="row" ng-show="obj.applying">
-          <div class="col-md-12 align-center">
-            <div class="spinner spinner-lg"></div>
-          </div>
-        </div>
-        <div class="row" ng-show="obj.succeeded">
-          <div class="col-md-12 align-center">
-            <span class="green fa fa-4x fa-check"></span>
-          </div>
-        </div>
-        <div class="row" ng-show="!obj.suceeded && obj.error">
-          <div class="col-md-12">
-            <div class="align-center">
-              <span class="yellow fa fa-4x fa-remove"></span>
+      <div ng-repeat="obj in outstanding | hawtioGroupBy:'kind'" ng-class="obj.endGroup ? '' : 'inline-block'">
+        <h2 ng-show="obj.newGroup && obj.kind"><b>Kind: </b>{{obj.kind | humanize}}</h2>
+        <div class="column-box">
+          <div ng-include="'templateKindAndNameHeader.html'" ng-init="object = obj.object"></div>
+          <div class="row" ng-show="obj.applying">
+            <div class="col-md-12 align-center">
+              <div class="spinner spinner-lg"></div>
             </div>
-            <div hawtio-editor="obj.error" mode="mode" read-only="true"></div>
+          </div>
+          <div class="row" ng-show="obj.succeeded">
+            <div class="col-md-12 align-center">
+              <span class="green fa fa-4x fa-check"></span>
+            </div>
+          </div>
+          <div class="row" ng-show="!obj.suceeded && obj.error">
+            <div class="col-md-12">
+              <div class="align-center">
+                <span class="yellow fa fa-4x fa-remove"></span>
+              </div>
+              <div hawtio-editor="obj.error" mode="mode" read-only="true"></div>
+            </div>
           </div>
         </div>
       </div>
