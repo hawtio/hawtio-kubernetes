@@ -24,8 +24,7 @@ module Kubernetes {
     $scope.targetNamespace = $routeParams.targetNamespace;
     initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
-    log.debug("$scope: ", $scope);
-    log.debug("$routeParams: ", $routeParams);
+    $scope.subTabConfig = [];
 
     var workspace = $routeParams['workspace'];
     var project = $routeParams['project'];
@@ -393,9 +392,30 @@ module Kubernetes {
         });
         objects = objects.concat(routes);
       }
+      // Sort the objects in the correct order so
+      // everything deploys properly
+      objects = sortObjects(objects);
       $scope.objects = objects;
       $scope.currentState = states.SUBSTITUTED;
     };
+
+    function sortObjects(objects) {
+      return _.sortBy(objects, (obj:any, index, objects) => {
+        var kind = KubernetesAPI.toCollectionName(obj.kind);
+        switch (kind) {
+          case KubernetesAPI.WatchTypes.SERVICE_ACCOUNTS:
+            return 0;
+          case KubernetesAPI.WatchTypes.SECRETS:
+            return 1;
+          case KubernetesAPI.WatchTypes.OAUTH_CLIENTS:
+            return 2;
+          case KubernetesAPI.WatchTypes.SERVICES:
+            return 3;
+          default:
+            return 4;
+        }
+      });
+    }
 
     $scope.deployTemplate = () => {
       var objects = $scope.objects;
@@ -415,24 +435,51 @@ module Kubernetes {
     }
 
     function applyObjects(objects) {
-      var outstanding = $scope.outstanding = <any> {};
-      $scope.currentState = states.DEPLOYING;
-
-      _.forEach(objects, (object:any) => {
-        log.debug("Object: ", object);
-
+      // create a unique enough ID for each object
+      function createId(object) {
         var kind = getKind(object);
         var name = getName(object);
         var ns = getNamespace(object);
-
         var id = UrlHelpers.join(ns, kind, name);
-        var result = outstanding[id] = <any> {
+        return id;
+      }
+      // build up an array of results, strip out duplicates
+      var outstanding = $scope.outstanding = _.uniq(_.map(objects, (object, index) => {
+        return {
+          id: createId(object),
           applying: true,
           object: object
         };
-        // update the view
-        Core.$apply($scope);
+      }), true, (obj, index) => {
+        return createId(obj);
+      });
+      $scope.currentState = states.DEPLOYING;
+      // update the view
+      Core.$apply($scope);
 
+      // shorthand
+      function getOutstanding(id) {
+        return _.find(outstanding, (obj) => obj.id === id);
+      }
+
+      // iterate through the objects to deploy and apply 'em in serial
+      function deployObject(object, objects) {
+        log.debug("Deploying object { kind:" + object.kind + ", name:" + object.metadata.name + " } remaining: ", objects.length);
+        var kind = getKind(object);
+        var name = getName(object);
+        var ns = getNamespace(object);
+        var id = UrlHelpers.join(ns, kind, name);
+        var result:any = getOutstanding(id);
+
+        // put the next object if available
+        function next() {
+          var object = objects.shift();
+          if (object) {
+            deployObject(object, objects);
+          }
+        }
+
+        // deploy the current object
         function putObject() {
           KubernetesAPI.applyNamespace(object, ns);
           KubernetesAPI.put({
@@ -442,13 +489,18 @@ module Kubernetes {
               result.applying = false;
               result.succeeded = true;
               Core.$apply($scope);
+              next();
             },
             error: (err) => {
               log.warn("Failed to update " + kind + " name: " + name + (ns ? " ns: " + ns: "") + " error: " + angular.toJson(err));
-              result.applying = false;
-              result.succeeded = false;
-              result.error = jsyaml.dump(err);
+              // this object's possibly already been deployed, let's just log it.
+              if (!result.succeeded) {
+                result.applying = false;
+                result.succeeded = false;
+                result.error = jsyaml.dump(err);
+              }
               Core.$apply($scope);
+              next();
             }
           });
         }
@@ -479,8 +531,12 @@ module Kubernetes {
           } else {
             putObject();
           }
+        } else {
+          log.debug("invalid object: ", object, " skipping");
+          next();
         }
-      });
+      }
+      deployObject(objects.shift(), objects);
     }
 
     $scope.deleteTemplate = (template) => {
