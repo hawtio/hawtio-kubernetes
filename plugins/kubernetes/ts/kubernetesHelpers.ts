@@ -1403,7 +1403,7 @@ module Kubernetes {
         var env = {
           namespace: ens,
           label: "Current",
-          description: "The environemnt that this project is built and run inside",
+          description: "The environment that this project is built and run inside",
           iconClass: "fa fa-cloud",
           url: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", ns, "projects", name, "namespace", ens)
         };

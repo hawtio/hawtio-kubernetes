@@ -505,7 +505,7 @@ module Developer {
     if (workspaceName && project) {
       projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", project);
     } else {
-      projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName);
+      projectLink = UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName || ns);
     }
     var namespacesLink = UrlHelpers.join(projectLink, "namespace");
     return activateCurrent([
