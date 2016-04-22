@@ -90,14 +90,14 @@
                 </a>
               </td>
               <td ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
-                <div ng-repeat="(project, versions) in envVersions[env.namespace] | orderBy:'project' track by $index">
-                  <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
-                    <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
-                      <div>
-                        <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
-                           title="View the Replication Controller {{rc.$name}} with version {{version}}">
-                          <i class="fa fa-square"></i>&nbsp;{{version}}
-                        </a>
+                <div
+                  ng-repeat="(version, versionInfo) in envVersions[env.namespace][app.metadata.name].versions | orderBy:'version' track by $index">
+                  <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
+                    <div>
+                      <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
+                         title="View the Replication Controller {{rc.$name}} with version {{version}}">
+                        <i class="fa fa-square"></i>&nbsp;{{version}}
+                      </a>
                         <span ng-hide="rc.$viewLink"
                               title="View the Replication Controller {{rc.$name}} with version {{version}}">
                           <i class="fa fa-square"></i>&nbsp;{{version}}
@@ -111,9 +111,9 @@
                             <i class="fa fa-external-link"></i>
                           </a>
                         </span>
-                        &nbsp;
-                        &nbsp;
-                        &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
                         <span>
                           <a ng-show="rc.$podCounters.podsLink"
                              href="{{rc.$podCounters.podsLink}}" title="View pods">
@@ -126,11 +126,12 @@
                                   class="badge badge-warning">{{rc.$podCounters.error}}</span>
                           </a>
                         </span>
-                        &nbsp;
-                        &nbsp;
-                        &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
                         <span class="dropdown">
-                          <a class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" title="View build and commit details">
+                          <a class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"
+                             title="View build and commit details">
                             <span class="fa fa-ellipsis-v"></span>
                           </a>
                           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -161,9 +162,23 @@
                             </li>
                           </ul>
                         </span>
-                      </div>
                     </div>
                   </div>
+                </div>
+              </td>
+            </tr>
+            <tr ng-show="totalPodCount">
+              <th>
+                Pods
+              </th>
+            </tr>
+            <tr ng-show="totalPodCount">
+              <td>
+                <div pf-c3-chart id="summaryChart" config="summaryChartConfig"></div>
+              </td>
+              <td ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
+                <div ng-show="envCharts[env.namespace]">
+                  <div pf-c3-chart id="{{env.namespace}}Chart" config="envCharts[env.namespace]"></div>
                 </div>
               </td>
             </tr>

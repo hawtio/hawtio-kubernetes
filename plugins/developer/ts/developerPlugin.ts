@@ -3,7 +3,7 @@
 
 module Developer {
 
-  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'ui.codemirror', 'nvd3']);
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'ui.codemirror', 'nvd3', 'patternfly.charts']);
   export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 

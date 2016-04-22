@@ -36,7 +36,7 @@ module Developer {
   /**
    * Lets load the project versions for the given namespace
    */
-  export function loadProjectVersions($scope, $element, project, env, ns, answer, caches, projectNamespace = null) {
+  export function loadProjectVersions($scope, $element, project, env, ns, answer, caches, projectNamespace = null, onUpdateFn = null) {
     var projectAnnotation = "project";
     var versionAnnotation = "version";
 
@@ -277,6 +277,9 @@ module Developer {
       if (hasObjectChanged(projectInfos, cache)) {
         log.debug("project versions has changed!");
         answer[ns] = projectInfos;
+      }
+      if (angular.isFunction(onUpdateFn)) {
+        onUpdateFn();
       }
     }
 
