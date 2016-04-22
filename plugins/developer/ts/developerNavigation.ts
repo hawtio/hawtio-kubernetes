@@ -185,8 +185,7 @@ module Developer {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
         label: "Dashboard",
         class: "fa fa-tachometer",
-        title: "View the app dashboard for the activity, environments and pipelines"
-        title: "View the apps in this project"
+        title: "View the dashboard for the apps, environments and pipelines in this project"
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "apps"),
