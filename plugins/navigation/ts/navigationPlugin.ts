@@ -16,7 +16,6 @@ module Navigation {
         _.forEach(config, (crumb) => {
           _config.push(crumb);
         });
-        console.log("New breadcrumb config: ", _config);
       },
       get: () => {
         return _config;
