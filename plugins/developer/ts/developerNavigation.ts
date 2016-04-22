@@ -183,6 +183,13 @@ module Developer {
     return activateCurrent([
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName),
+        label: "Dashboard",
+        class: "fa fa-tachometer",
+        title: "View the app dashboard for the activity, environments and pipelines"
+        title: "View the apps in this project"
+      },
+      {
+        href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "apps"),
         label: "Apps",
         class: "fa fa-rocket",
         title: "View the apps in this project"
@@ -567,19 +574,20 @@ module Developer {
       },
       {
         href: UrlHelpers.join(projectLink, "environments"),
-        label: "App",
-        class: "fa fa-rocket",
-        title: "Go back to the Dashboard for this App",
+        label: "Dashboard",
+        class: "fa fa-tachometer",
+        title: "View the dashboard for this App",
         isValid: () => project
       },
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName || environment),
-        label: "Apps",
-        title: "View the apps for this project",
-        class: "fa fa-rocket",
+        label: "Dashboard",
+        class: "fa fa-tachometer",
+        title: "View the dashboard for this project",
         isValid: () => {
           // only valid if we showing a top level project which is not inside a nested environment
-          return !project && (!workspaceName || workspaceName === environment);
+          //return !project && (!workspaceName || workspaceName !== environment);
+          return !project;
         }
       }
     ]);

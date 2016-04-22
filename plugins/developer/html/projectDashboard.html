@@ -1,0 +1,225 @@
+<div ng-controller="Developer.ProjectEnvironmentsController">
+  <div class="row">
+    <div hawtio-breadcrumbs></div>
+  </div>
+
+  <div class="row">
+    <div hawtio-tabs></div>
+  </div>
+
+  <script type="text/ng-template" id="environmentNameTempalte.html">
+    <div class="ngCellText">
+      <div class="ngCellText">
+        <a ng-show="row.entity.$environmentLink" href="{{row.entity.$environmentLink}}" title="View this environment">
+          <i class="fa fa-cube"></i> {{row.entity.name}}
+        </a>
+        <span ng-hide="row.entity.$environmentLink"><i class="fa fa-cube"></i> {{row.entity.name}}</span>
+      </div>
+    </div>
+  </script>
+
+
+  <div class="row filter-header">
+    <div class="col-md-12" ng-show="model.environments.length">
+<!--
+      <span ng-show="!id">
+        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter environments..."></hawtio-filter>
+      </span>
+-->
+      <span class="pull-right">&nbsp;</span>
+      <button class="btn btn-danger pull-right"
+              title="Deletes the selected environments"
+              ng-disabled="!tableConfig.selectedItems.length"
+              ng-click="deletePrompt(tableConfig.selectedItems)">
+        <i class="fa fa-remove"></i> Delete
+      </button>
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-primary pull-right"
+         title="Adds a new environment to this project"
+         ng-click="createNamespaceDialog.open()">
+        <i class="fa fa-plus"></i> Add Environment
+      </a>
+    </div>
+  </div>
+
+  <div ng-hide="model.fetched">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-show="model.fetched">
+    <div ng-hide="model.environments.length" class="align-center">
+      <div class="row">
+        <div class="col-md-12">
+          <p class="alert alert-info">There are no environments currently available.</p>
+        </div>
+      </div>
+    </div>
+    <div ng-show="model.environments.length">
+<!--
+            <div class="row">
+              <div class="col-md-12">
+                <table class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
+              </div>
+            </div>
+-->
+
+      <div ng-hide="environments.length">
+        <div class="row">
+          <div class="col-md-12 align-center">
+            <h2>No Environment Available</h2>
+            <p>Environment is a logical place where deployments happen which maps to a kubernetes / openshift
+              namespace. You will see environments here after you add a build.</p>
+            <a class="btn btn-primary" ng-href="{{settingsLink}}"><i class="fa fa-plus"></i> New Build</a>
+          </div>
+        </div>
+      </div>
+
+
+      <div ng-show="environments.length">
+        <table class="table table-striped environments">
+          <thead>
+            <tr>
+              <th>Apps</th>
+              <th ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
+                <a href="{{environmentLink(env)}}" title="namespace: {{env.namespace}}">
+                  <i class="fa fa-cube"></i>&nbsp;{{env.label}}
+                </a>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="app in model.buildconfigs | orderBy: '$name' track by $index">
+              <td>
+                <a href=""
+                   title="View App {{row.entity.metadata.name || row.entity.name}}"
+                   ng-href="{{app | kubernetesPageLink}}">
+                  <img class="app-icon-small" ng-src="{{app.$iconUrl}}" ng-show="app.$iconUrl">
+                  {{app.metadata.name || row.entity.name}}
+                </a>
+              </td>
+              <td ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
+                <div ng-repeat="(project, versions) in envVersions[env.namespace] | orderBy:'project' track by $index">
+                  <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
+                    <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
+                      <div>
+                        <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
+                           title="View the Replication Controller {{rc.$name}} with version {{version}}">
+                          <i class="fa fa-square"></i>&nbsp;{{version}}
+                        </a>
+                        <span ng-hide="rc.$viewLink"
+                              title="View the Replication Controller {{rc.$name}} with version {{version}}">
+                          <i class="fa fa-square"></i>&nbsp;{{version}}
+                        </span>
+                        <span ng-show="rc.$serviceLink.href">
+                          &nbsp;
+                          &nbsp;
+                          &nbsp;
+                          <a target="test-service" href="{{rc.$serviceLink.href}}"
+                             title="Open this service in a new tab">
+                            <i class="fa fa-external-link"></i>
+                          </a>
+                        </span>
+                        &nbsp;
+                        &nbsp;
+                        &nbsp;
+                        <span>
+                          <a ng-show="rc.$podCounters.podsLink"
+                             href="{{rc.$podCounters.podsLink}}" title="View pods">
+                            <span ng-show="rc.$podCounters.ready"
+                                  class="badge badge-success">{{rc.$podCounters.ready}}</span>
+                            <span ng-show="rc.$podCounters.valid"
+                                  class="badge badge-info">{{rc.$podCounters.valid}}</span>
+                            <span ng-show="rc.$podCounters.waiting" class="badge">{{rc.$podCounters.waiting}}</span>
+                            <span ng-show="rc.$podCounters.error"
+                                  class="badge badge-warning">{{rc.$podCounters.error}}</span>
+                          </a>
+                        </span>
+                        &nbsp;
+                        &nbsp;
+                        &nbsp;
+                        <span class="dropdown">
+                          <a class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" title="View build and commit details">
+                            <span class="fa fa-ellipsis-v"></span>
+                          </a>
+                          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            <li role="presentation" ng-show="rc.$gitUrl">
+                              <a href="{{rc.$gitUrl}}" target="git" title="{{rc.$gitCommit}}
+                                {{rc.$gitCommitAuthor}}
+                                {{rc.$gitCommitDate}}
+                                {{rc.$gitCommitMessage}}">
+                                <i class="fa fa-code-fork"></i>
+                                Commit {{rc.$gitCommit | limitTo:7}}
+                              </a>
+                            </li>
+                            <li role="presentation" ng-hide="rc.$gitUrl || !rc.$gitCommit" title="{{rc.$gitCommit}}
+                              {{rc.$gitCommitAuthor}}
+                              {{rc.$gitCommitDate}}
+                              {{rc.$gitCommitMessage}}">
+                              <span>
+                                <i class="fa fa-code-fork"></i>
+                                Commit {{rc.$gitCommit | limitTo:7}}
+                              </span>
+                            </li>
+                            <li role="presentation" ng-show="rc.$buildUrl && rc.$buildId">
+                              <a href="{{rc.$buildUrl}}" target="builds"
+                                 title="View the build which created this Replication Controller">
+                                <i class="fa fa-tasks"></i>
+                                Build #{{rc.$buildId}}
+                              </a>
+                            </li>
+                          </ul>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+<!--
+        <div class="row row-cards-pf">
+          <div class="col-md-12">
+            <div class="card-pf pipeline">
+              <div class="card-pf-heading no-border">
+                <h2 class="card-pf-title inline-block">Active Pipelines</h4>
+                  <a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">View All Pipelines >></a>
+              </div>
+              <div class="card-pf-body no-top-margin">
+                <div class="full-card-width" ng-controller="Developer.PipelinesController"
+                     ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row row-cards-pf">
+          <div class="col-md-12">
+            <div class="card-pf">
+              <div class="card-pf-heading">
+                <h2 class="card-pf-title inline-block">Commits</h2>
+                <a ng-href="{{$projectLink}}/wiki/history//">View All Commits >></a>
+              </div>
+              <div class="card-pf-body">
+                <div ng-include="'plugins/wiki/html/projectCommitsPanel.html'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+-->
+
+      </div>
+    </div>
+  </div>
+</div>
