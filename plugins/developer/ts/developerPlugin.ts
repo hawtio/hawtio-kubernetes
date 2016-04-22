@@ -13,14 +13,14 @@ module Developer {
                   //.when("/home", route('home.html', false))
                   .when(UrlHelpers.join(context, '/:namespace'), route('projectDashboard.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/apps'), route('apps.html', false))
-                  .when(UrlHelpers.join(context, '/:namespace/detail'), route('workspace.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/projects'), route('apps.html', false)) // TODO no longer required?
                   .when(UrlHelpers.join(context, '/:namespace/environments'), route('projectEnvironments.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/jenkinsJob'), route('jenkinsJobs.html', false))
-                  .when(UrlHelpers.join(context, '/:namespace/projects'), route('apps.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/detail'), route('workspace.html', false)) // currently disabled
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id'), route('appDashboard.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/projects/:id/environments'), route('appDashboard.html', false)) // TODO required?
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/detail'), Kubernetes.route('buildConfig.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/builds'), Kubernetes.route('builds.html', false))
-                  .when(UrlHelpers.join(context, '/:namespace/projects/:id/environments'), route('appDashboard.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job'), route('jenkinsJob.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/log/:build'), route('jenkinsLog.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/pipelines'), route('pipelines.html', false))
@@ -28,8 +28,9 @@ module Developer {
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsJob/:job/metrics'), route('jenkinsMetrics.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/jenkinsMetrics'), route('jenkinsMetrics.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id/tools'), route('tools.html', false))
-                  .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false))
-                  .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false))
+
+                  .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false)) // TODO not required?
+                  .when(UrlHelpers.join(context, '/:workspace/projects/:project/environments/:namespace'), route('environment.html', false)) // TODO not required?
                   .otherwise("/workspaces");
   }]);
   

@@ -4,5 +4,5 @@
 /// <reference path="developerHelpers.d.ts" />
 /// <reference path="developerNavigation.d.ts" />
 declare module Developer {
-    var ProjectController: ng.IModule;
+    var AppDashboardController: ng.IModule;
 }
