@@ -123,12 +123,26 @@ module Developer {
 
     $scope.$keepPolling = () => Kubernetes.keepPollingModel;
 
-    $scope.fetch = PollHelpers.setupPolling($scope, (next:() => void) => {
+    function getLogLength() {
+      return ($scope.log.logs ? $scope.log.logs.length : 0);
+    }
+
+    // Log fetching loop
+    $scope.fetch = PollHelpers.setupPolling($scope, (doNext:() => void) => {
       if ($scope.$eval('hideLogs && !build.building')) {
         log.debug("Log hidden, not fetching logs");
         return;
       } else {
         log.debug("Fetching logs for build: ", $scope.$eval('build'));
+      }
+      var lastCount = getLogLength();
+      var next = () => {
+        if (lastCount !== getLogLength()) {
+          // Notify parent scopes that logs have changed so they can react
+          log.debug("Notifying parent");
+          $scope.$emit('logViewPollUpdate');
+        }
+        doNext();
       }
       var buildId = getBuildId();
       var jobId = getJobId();

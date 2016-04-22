@@ -29,18 +29,6 @@ module Developer {
     $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
     $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id, $scope.jobId);
 
-    $scope.$on('kubernetesModelUpdated', function () {
-      updateData();
-    });
-
-    $scope.$on('$routeUpdate', ($event) => {
-      updateData();
-    });
-
-    $scope.$watch('model.pendingOnly', ($event) => {
-      updateData();
-    });
-
     $scope.selectBuild = (build) => {
       var id = build.id;
       if (id) {
@@ -66,9 +54,9 @@ module Developer {
               if (data) {
                 enrichJenkinsPipelineJob(data, $scope.id, $scope.jobId);
                 if (hasObjectChanged(data, $scope.entityChangedCache)) {
-                  log.info("entity has changed!");
+                  log.debug("Job data has changed");
+                  // log.info("entity has changed!");
                   $scope.model.job = data;
-
                   var builds = data.builds;
                   if (builds && builds.length) {
                     $scope.selectBuild(builds[0]);
@@ -76,7 +64,6 @@ module Developer {
                 }
               }
               $scope.model.fetched = true;
-              Core.$apply($scope);
             }).
             error(function (data, status, headers, config) {
               log.warn("Failed to load " + url + " " + data + " " + status);
@@ -157,7 +144,23 @@ module Developer {
         $scope.model.fetched = true;
         Core.$apply($scope);
       }
-    }, 50);
+    }, 50, { trailing: true });
+
+    $scope.$on('logViewPollUpdate', () => {
+      updateData();
+    });
+
+    $scope.$on('kubernetesModelUpdated', function () {
+      updateData();
+    });
+
+    $scope.$on('$routeUpdate', ($event) => {
+      updateData();
+    });
+
+    $scope.$watch('model.pendingOnly', ($event) => {
+      updateData();
+    });
 
     updateData();
 
