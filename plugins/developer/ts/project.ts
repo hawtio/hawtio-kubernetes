@@ -6,7 +6,7 @@
 
 module Developer {
 
-  export var ProjectController = controller("ProjectController",
+  export var AppDashboardController = controller("AppDashboardController",
     ["$scope", "$element", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL",
       ($scope, $element, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL) => {

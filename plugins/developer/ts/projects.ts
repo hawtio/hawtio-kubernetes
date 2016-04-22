@@ -6,7 +6,7 @@
 
 module Developer {
 
-  export var ProjectsController = controller("ProjectsController", ["$scope", "KubernetesModel", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
+  export var AppsController = controller("AppsController", ["$scope", "KubernetesModel", "KubernetesState", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
     ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, KubernetesApiURL) => {
 
       $scope.kubernetes = KubernetesState;
