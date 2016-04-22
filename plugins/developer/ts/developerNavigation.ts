@@ -592,6 +592,20 @@ module Developer {
     ]);
   }
 
+  export function environmentInstanceLink(env, projectName = null) {
+    if (env) {
+      var envNamespace = env["namespace"];
+      if (envNamespace) {
+        if (projectName) {
+          return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
+        } else {
+          return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "namespace", envNamespace);
+        }
+      }
+    }
+    return "";
+  }
+
 
   export function namespaceLink($scope, $routeParams, path = null) {
     var ns = Kubernetes.currentKubernetesNamespace();

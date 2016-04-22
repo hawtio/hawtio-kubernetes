@@ -39,5 +39,6 @@ declare module Developer {
     function createJenkinsBreadcrumbs(projectName: any, jobId: any, buildId: any): any;
     function createJenkinsSubNavBars(projectName: any, jenkinsJobId: any, buildId: any, extraOption?: any): any;
     function createEnvironmentSubNavBars($scope: any, $location: any, $routeParams: any): any;
+    function environmentInstanceLink(env: any, projectName?: any): string;
     function namespaceLink($scope: any, $routeParams: any, path?: any): string;
 }

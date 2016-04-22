@@ -1,4 +1,4 @@
-<div ng-controller="Developer.ProjectEnvironmentsController">
+<div ng-controller="Developer.ProjectDashboardController">
   <div class="row">
     <div hawtio-breadcrumbs></div>
   </div>
@@ -21,13 +21,6 @@
 
   <div class="row filter-header">
     <div class="col-md-12" ng-show="model.environments.length">
-<!--
-      <span ng-show="!id">
-        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
-                       css-class="input-xxlarge"
-                       placeholder="Filter environments..."></hawtio-filter>
-      </span>
--->
       <span class="pull-right">&nbsp;</span>
       <button class="btn btn-danger pull-right"
               title="Deletes the selected environments"
@@ -36,10 +29,9 @@
         <i class="fa fa-remove"></i> Delete
       </button>
       <span class="pull-right">&nbsp;</span>
-      <a class="btn btn-primary pull-right"
-         title="Adds a new environment to this project"
-         ng-click="createNamespaceDialog.open()">
-        <i class="fa fa-plus"></i> Add Environment
+      <a class="btn btn-primary pull-right" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
+         title="Create a new app in this project">
+        <i class="fa fa-plus"></i> Create App
       </a>
     </div>
   </div>
@@ -63,14 +55,6 @@
       </div>
     </div>
     <div ng-show="model.environments.length">
-<!--
-            <div class="row">
-              <div class="col-md-12">
-                <table class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
-              </div>
-            </div>
--->
-
       <div ng-hide="environments.length">
         <div class="row">
           <div class="col-md-12 align-center">

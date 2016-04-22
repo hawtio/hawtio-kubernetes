@@ -18,6 +18,7 @@
 /// <reference path="d.ts/developer/ts/pipelineDirective.d.ts"/>
 /// <reference path="d.ts/developer/ts/pipelines.d.ts"/>
 /// <reference path="d.ts/developer/ts/project.d.ts"/>
+/// <reference path="d.ts/developer/ts/projectDashboard.d.ts"/>
 /// <reference path="d.ts/developer/ts/projectEnvironments.d.ts"/>
 /// <reference path="d.ts/developer/ts/projectSelector.d.ts"/>
 /// <reference path="d.ts/developer/ts/projects.d.ts"/>

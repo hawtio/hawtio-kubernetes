@@ -23,20 +23,8 @@ module Developer {
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
     $scope.environmentLink = (env) => {
-      var projectName = Kubernetes.getName($scope.buildConfig);
-      if (env) {
-        var envNamespace = env["namespace"];
-        if (envNamespace) {
-          if (projectName) {
-            return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "projects", projectName, "namespace", envNamespace);
-          } else {
-            return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", Kubernetes.currentKubernetesNamespace(), "namespace", envNamespace);
-          }
-        }
-      }
-      return "";
+      return environmentInstanceLink(env, Kubernetes.getName($scope.buildConfig));
     };
-
 
     function doLoad() {
       if (!loaded) {
