@@ -57,6 +57,7 @@ module Kubernetes {
       return this.kubernetes.namespaces;
     }
     //public namespaces = [];
+    public ingresses = [];
     public routes = [];
     public templates = [];
     public redraw = false;
@@ -767,6 +768,28 @@ module Kubernetes {
     return answer;
   }
 
+  export function getJenkinshiftBuildConfigURL($scope) {
+    return getJenkinshiftProxyUrlFor($scope, jenkinshiftServiceName, '/oapi/v1/namespaces/default/buildconfigs');
+  }
+
+  function getJenkinshiftProxyUrlFor($scope, serviceName, path) {
+    if (!$scope) {
+      $scope = getKubernetesModel();
+    }
+    if ($scope) {
+      var proxyService = getServiceForName($scope, serviceName);
+      if (proxyService) {
+        var proxyUrl = proxyService.proxyUrl;
+        if (proxyUrl) {
+          proxyUrl = Core.trimTrailing(proxyUrl, "/") + ":80";
+          return UrlHelpers.join(proxyUrl, path);
+        }
+      }
+    }
+    return null;
+  }
+
+
   /**
    * Creates a model service which keeps track of all the pods, replication controllers and services along
    * with their associations and status
@@ -784,30 +807,21 @@ module Kubernetes {
     });
 
     if (!isOpenShift) {
-      function getJenkinshiftProxyUrlFor(serviceName, path) {
-        var proxyService = getServiceForName($scope, serviceName);
-        if (proxyService) {
-          var proxyUrl = proxyService.proxyUrl;
-          if (proxyUrl) {
-            proxyUrl = Core.trimTrailing(proxyUrl, "/") + ":80";
-            return UrlHelpers.join(proxyUrl, path);
-          }
-        }
-        return null;
-      }
-
       // register custom URL factories for buildconfigs
       watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.BUILD_CONFIGS,
           (options:KubernetesAPI.K8SOptions) =>
-              getJenkinshiftProxyUrlFor(jenkinshiftServiceName, '/oapi/v1/namespaces/default/buildconfigs'));
+              getJenkinshiftBuildConfigURL($scope));
       // register custom URL factories for templates/projects
       // TOOD replace with jenkinshift once the catalog can work from ConfigMap
       //var templatesServiceName = "jenkinshiftServiceName";
       var templatesServiceName = "templates";
       watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.TEMPLATES,
           (options:KubernetesAPI.K8SOptions) =>
-              getJenkinshiftProxyUrlFor(templatesServiceName, '/oapi/v1/namespaces/default/templates'));
+              getJenkinshiftProxyUrlFor($scope, templatesServiceName, '/oapi/v1/namespaces/default/templates'));
     }
+
+    watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.INGRESSES,
+        (options:KubernetesAPI.K8SOptions) => UrlHelpers.join(masterApiUrl(), kubernetesExperimentalApiPrefix(), '/ingresses'));
 
     // register for all updates on objects
 		watcher.registerListener((objects:ObjectMap) => {

@@ -15,6 +15,7 @@ declare module Kubernetes {
         pods: any[];
         hosts: any[];
         namespaces: Array<string>;
+        ingresses: any[];
         routes: any[];
         templates: any[];
         redraw: boolean;
@@ -64,4 +65,5 @@ declare module Kubernetes {
         createEnvironment(key: any, values: any): any;
         protected discoverPodConnections(entity: any): void;
     }
+    function getJenkinshiftBuildConfigURL($scope: any): string;
 }

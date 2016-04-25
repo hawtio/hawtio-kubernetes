@@ -134,6 +134,7 @@ gulp.task('connect', ['watch'], function() {
   var kubeBase = process.env.KUBERNETES_MASTER || 'https://localhost:8443';
   console.log("==== using KUBERNETES URL: " + kubeBase);
   var kube = uri(urljoin(kubeBase, 'api'));
+  var kubeapis = uri(urljoin(kubeBase, 'apis'));
   var oapi = uri(urljoin(kubeBase, 'oapi'));
   console.log("Connecting to Kubernetes on: " + kube);
 
@@ -220,6 +221,12 @@ gulp.task('connect', ['watch'], function() {
     hostname: kube.hostname(),
     path: '/kubernetes/api',
     targetPath: kube.path()
+  }, {
+    proto: kubeapis.protocol(),
+    port: kubeapis.port(),
+    hostname: kubeapis.hostname(),
+    path: '/apis',
+    targetPath: kubeapis.path()
   }, {
     proto: oapi.protocol(),
     port: oapi.port(),

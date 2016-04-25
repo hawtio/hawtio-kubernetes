@@ -78,6 +78,10 @@ module Kubernetes {
     return UrlHelpers.join(apiPrefix(), defaultApiVersion);
   }
 
+  export function kubernetesExperimentalApiPrefix() {
+    return UrlHelpers.join("/apis/extensions/v1beta1");
+  }
+
   export function openshiftApiPrefix() {
     return UrlHelpers.join(osApiPrefix(), defaultOSApiVersion);
   }
@@ -85,6 +89,9 @@ module Kubernetes {
   export function prefixForType(type:string) {
     if (type === WatchTypes.NAMESPACES) {
       return kubernetesApiPrefix();
+    }
+    if (type === WatchTypes.INGRESSES) {
+      return kubernetesExperimentalApiPrefix();
     }
     if (_.any(NamespacedTypes.k8sTypes, (t) => t === type)) {
       return kubernetesApiPrefix();
@@ -118,6 +125,10 @@ module Kubernetes {
       case "Namespaces":
         urlTemplate = UrlHelpers.join('namespaces');
         break;
+      case WatchTypes.INGRESSES:
+      case "ingresses":
+        urlTemplate = UrlHelpers.join('ingresses');
+        break;
       case WatchTypes.OAUTH_CLIENTS:
       case "OAuthClients":
       case "OAuthClient":
@@ -139,6 +150,10 @@ module Kubernetes {
       case "Namespaces":
       case "Namespace":
         return UrlHelpers.join('namespaces');
+      case WatchTypes.INGRESSES:
+      case "ingresses":
+        urlTemplate = UrlHelpers.join('ingresses');
+        break;
       case WatchTypes.NODES:
       case "Nodes":
       case "node":
@@ -542,6 +557,7 @@ module Kubernetes {
     return count;
   }
 
+
   /**
    * Returns the service link URL for either the service name or the service object
    */
@@ -552,7 +568,7 @@ module Kubernetes {
       var port = null;
       var protocol = "http://";
       var spec = service.spec;
-      var model = inject("KubernetesModel");
+      var model = getKubernetesModel();
       var nodeIP = "";
       if (model) {
         var hosts = model['hosts'];
@@ -562,6 +578,7 @@ module Kubernetes {
       }
       var nodePort = 0;
       if (spec) {
+        var answer = "";
         if (!portalIP) {
           portalIP = spec.portalIP;
         }
@@ -579,9 +596,14 @@ module Kubernetes {
               port = p;
             }
           }
-          if (!portalIP && nodeIP) {
-            if (portSpec.nodePort) {
-              nodePort = portSpec.nodePort;
+          if (!portalIP) {
+            if (!answer) {
+              answer = getIngressServiceURL(service, portSpec, model);
+            }
+            if (nodeIP) {
+              if (portSpec.nodePort) {
+                nodePort = portSpec.nodePort;
+              }
             }
           }
         });
@@ -594,8 +616,10 @@ module Kubernetes {
           }
         }
       }
+      if (answer) {
+        return answer;
+      }
 
-      var answer = "";
       if (portalIP) {
         if (hasHttps) {
           answer = "https://" + portalIP;
@@ -636,6 +660,94 @@ module Kubernetes {
     return "";
   }
 
+
+  function getIngressServiceURL(service, model:Kubernetes.KubernetesModelService = null) {
+    var answer = "";
+    if (angular.isObject(service)) {
+      if (!model) {
+        model = getKubernetesModel();
+      }
+      var spec = service.spec;
+      if (spec) {
+        angular.forEach(spec.ports, (portSpec) => {
+          if (!answer) {
+            answer = getIngressServiceURL(service, portSpec, model);
+          }
+        });
+      }
+    }
+    return answer;
+  }
+
+  function getIngressServiceURL(service, portSpec, model:Kubernetes.KubernetesModelService = null) {
+    var answer = "";
+    if (!model) {
+      model = getKubernetesModel();
+    }
+    if (model) {
+      var ns = getNamespace(service);
+      var serviceName = getName(service);
+      angular.forEach(model.ingresses, (ingress) => {
+        var ins = getNamespace(ingress);
+        if (ns === ins) {
+          var spec = ingress.spec;
+          if (spec) {
+            var rules = spec.rules;
+            var tls = spec.tls;
+            angular.forEach(spec.rules, (rule) => {
+              var http = rule.http;
+              if (http) {
+                angular.forEach(http.paths, (path) => {
+                  var backend = path.backend;
+                  var pathSuffix = path.path || "/";
+                  if (backend) {
+                    var servicePort = backend.servicePort;
+                    var backendServiceName = backend.serviceName;
+                    if (serviceName === backendServiceName && portsMatch(portSpec, servicePort)) {
+                      if (tls) {
+                        angular.forEach(tls.hosts, (host) => {
+                          if (!answer && host) {
+                            answer = "https://" + UrlHelpers.join(host, pathSuffix);
+                          }
+                        });
+                      }
+                      var host = rule.host;
+                      if (!answer && host) {
+                        answer = "http://" + UrlHelpers.join(host, pathSuffix);
+                      }
+                    }
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+    return answer;
+  }
+
+  function portsMatch(portSpec, servicePort) {
+    if (angular.isObject(portSpec)) {
+      if (angular.isNumber(servicePort)) {
+        return portSpec.port === servicePort;
+      }
+      if (angular.isString(servicePort)) {
+        return portSpec.name === servicePort;
+      }
+    }
+    if (angular.isObject(servicePort)) {
+      var number = portSpec.port;
+      var name = portSpec.name;
+      if (number) {
+        return number === servicePort.intVal;
+      }
+      if (name) {
+        return name === servicePort.strVal;
+      }
+    }
+    return false;
+  }
 
   /**
    * Returns the total number of counters for the podCounters object

@@ -45,6 +45,7 @@ declare module Kubernetes {
         static EVENTS: string;
         static NAMESPACES: string;
         static NODES: string;
+        static INGRESSES: string;
         static PERSISTENT_VOLUMES: string;
         static PERSISTENT_VOLUME_CLAIMS: string;
         static PODS: string;

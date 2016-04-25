@@ -33,6 +33,7 @@ declare module Kubernetes {
     function masterApiUrl(): string;
     /** WARNING - this excludes the host name - you probably want to use: kubernetesApiUrl() instead!! */
     function kubernetesApiPrefix(): string;
+    function kubernetesExperimentalApiPrefix(): string;
     function openshiftApiPrefix(): string;
     function prefixForType(type: string): string;
     function kubernetesApiUrl(): string;

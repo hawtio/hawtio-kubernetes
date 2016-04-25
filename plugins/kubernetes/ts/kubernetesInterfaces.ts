@@ -55,6 +55,7 @@ module Kubernetes {
 		public static get EVENTS():string { return "events"; }
     public static get NAMESPACES():string { return "namespaces"; }
 		public static get NODES():string { return "nodes"; }
+		public static get INGRESSES():string { return "ingresses"; }
 		public static get PERSISTENT_VOLUMES():string { return "persistentvolumes"; }
 		public static get PERSISTENT_VOLUME_CLAIMS():string { return "persistentvolumeclaims"; }
 		public static get PODS():string { return "pods"; }
