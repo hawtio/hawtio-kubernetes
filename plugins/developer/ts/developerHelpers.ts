@@ -121,24 +121,25 @@ module Developer {
               if (serviceSelector && repSelector &&
                 Kubernetes.selectorMatches(serviceSelector, repSelector) &&
                 Kubernetes.getNamespace(service) === Kubernetes.getNamespace(item)) {
+
+                var serviceName = Kubernetes.getName(service);
                 status.routes.forEach((route) => {
-                  var serviceName = Kubernetes.getName(service);
                   if (serviceName === Kubernetes.getName(route)) {
                     service["$route"] = route;
                     service["$host"] = Core.pathGet(route, ["spec", "host"]);
-                    item.$services.push(service);
-                    if (!rcLink) {
-                      var url = Kubernetes.serviceLinkUrl(service, true);
-                      if (url) {
-                        // TODO find icon etc?
-                        rcLink = {
-                          name: serviceName,
-                          href: url
-                        };
-                      }
-                    }
                   }
                 });
+                item.$services.push(service);
+                if (!rcLink) {
+                  var url = Kubernetes.serviceLinkUrl(service, true);
+                  if (url) {
+                    // TODO find icon etc?
+                    rcLink = {
+                      name: serviceName,
+                      href: url
+                    };
+                  }
+                }
               }
             });
             item["$serviceLink"] = rcLink;
