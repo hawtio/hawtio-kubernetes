@@ -6,7 +6,7 @@
           Build {{build.displayName}}
         </a>
         <span class="pull-right" title="This build started at {{build.$timestamp}}">
-          started {{build.$timestamp.relative()}}
+          started {{build.$timestamp | relativeTime}}
         </span>
       </h2>
     </div>
@@ -16,46 +16,30 @@
 
         <div class="row">
           <div class="col-md-12">
-            <!--
-          <div class="pipeline-build inline-block"
-            title="{{build.description || 'Pipeline build number ' + build.displayName}}">
-            <div class="buildName">
-              <a href="{{build.$viewLink}}" title="View the build details">
-                {{build.displayName}}
-              </a>
-              <span class="buildParameters pull-right" ng-show="$parameterText">
-                <i class="fa fa-ellipsis-v" title="build parameters: {{build.$parameterText}}"></i>
-              </span>
-            </div>
 
-            <div class="buildDuration text-center">
-              <a href="{{build.$logLink}}" title="This build started at {{build.$timestamp}}">
-                started {{build.$timestamp.relative()}}
-              </a>
-            </div>
-          </div>
-            -->
-
-            <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="inline-block">
-              <div class="pipeline-arrow inline-block" ng-show="$index">
-                <i class="fa fa-angle-double-right"></i>
-              </div>
-              <div class="pipeline-deploy {{stage.$backgroundClass}} inline-block">
-                <div class="text-center stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i>
-                  <a href="{{stage.$viewLink}}" title="This stage started at {{stage.$startTime}}" target="jenkins">
-                    {{stage.stageName}}
-                  </a>
+            <div class="pipeline-view">
+              <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="inline-block">
+                <div class="pipeline-arrow inline-block" ng-show="$index">
+                  <i class="fa fa-angle-double-right"></i>
                 </div>
-                <div class="text-center stageStartTime" title="Stage started at {{stage.$startTime}}">
-                  <a href="{{stage.$logLink}}" title="View the logs of this stage">
-                    {{stage.duration.duration()}}
-                  </a>
+                <div class="pipeline-deploy {{stage.$backgroundClass}} inline-block">
+                  <div class="text-center stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i>
+                    <a href="{{stage.$viewLink}}" title="This stage started at {{stage.$startTime}}" target="jenkins">
+                      {{stage.stageName}}
+                    </a>
+                  </div>
+                  <div class="text-center stageStartTime" title="Stage started at {{stage.$startTime}}">
+                    <a href="{{stage.$logLink}}" title="View the logs of this stage">
+                      {{stage.duration | humanizeDuration}}
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
 
           </div>
         </div>
+
         <div class="row" ng-show="hideLogs && !build.building">
           <div class="col-md-12">
             <a href="{{build.$logLink}}" class="pull-right">View Full Log</a>

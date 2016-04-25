@@ -35,7 +35,8 @@
     "urijs": "~1.17.0",
     "hawtio-kubernetes-api": "~2.0.30",
     "human-date": "^1.3.2",
-    "js-yaml": "^3.5.4"
+    "js-yaml": "^3.5.4",
+    "humanize-duration": "^3.7.0"
   },
   "overrides": {
     "term.js": {
