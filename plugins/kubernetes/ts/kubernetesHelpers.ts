@@ -598,7 +598,7 @@ module Kubernetes {
           }
           if (!portalIP) {
             if (!answer) {
-              answer = getIngressServiceURL(service, portSpec, model);
+              answer = getIngressServicePortURL(service, portSpec, model);
             }
             if (nodeIP) {
               if (portSpec.nodePort) {
@@ -671,7 +671,7 @@ module Kubernetes {
       if (spec) {
         angular.forEach(spec.ports, (portSpec) => {
           if (!answer) {
-            answer = getIngressServiceURL(service, portSpec, model);
+            answer = getIngressServicePortURL(service, portSpec, model);
           }
         });
       }
@@ -679,7 +679,7 @@ module Kubernetes {
     return answer;
   }
 
-  function getIngressServiceURL(service, portSpec, model:Kubernetes.KubernetesModelService = null) {
+  function getIngressServicePortURL(service, portSpec, model:Kubernetes.KubernetesModelService = null) {
     var answer = "";
     if (!model) {
       model = getKubernetesModel();
