@@ -5,40 +5,76 @@
         <a data-toggle="collapse" data-parent=".panel-group" href="#build-{{build.id}}">
           Build {{build.displayName}}
         </a>
-        <span class="pull-right" title="This build started at {{build.$timestamp}}">
-          started {{build.$timestamp | relativeTime}}
+        <span ng-show="build.building" class="pull-right" title="This build started at {{build.$timestamp}}">
+          <span ng-show="lastStage(build).stageName"> {{lastStage(build).stageName}} | </span>Started {{build.$timestamp | relativeTime}}
+        </span>
+        <span ng-hide="build.building" class="pull-right" title="This build started at {{build.$timestamp}}">
+          <i class="{{lastStage(build).$iconClass}}"></i>&nbsp;
+          <span ng-switch on="lastStage(build).status">
+            <!-- TODO add more cases -->
+            <span ng-switch-when="SUCCESS">Complete!</span>
+            <span ng-switch-default>Failed</span>
+          </span>
+          &nbsp;| Started {{build.$timestamp | relativeTime}}
         </span>
       </h2>
     </div>
 
     <div id="build-{{build.id}}" class="panel-collapse collapse in">
-      <div class="panel-body">
+      <div class="panel-body pipeline-panel">
 
         <div class="row">
           <div class="col-md-12">
 
-            <div class="pipeline-view">
-              <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="inline-block">
-                <div class="pipeline-arrow inline-block" ng-show="$index">
-                  <i class="fa fa-angle-double-right"></i>
-                </div>
-                <div class="pipeline-deploy {{stage.$backgroundClass}} inline-block">
-                  <div class="text-center stageName" title="{{stage.status}}"><i class="{{stage.$iconClass}}"></i>
-                    <a href="{{stage.$viewLink}}" title="This stage started at {{stage.$startTime}}" target="jenkins">
-                      {{stage.stageName}}
+            <div class="pipeline-view {{build.status}}">
+              <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="pipeline-deploy inline-block pipeline-stage-{{$index}}" title="This stage started {{stage.$startTime | relativeTime}}" >
+                <div class="pipeline-deploy-box">
+                  <div class="text-center stageName" title="{{stage.status}}">
+                    <a href="{{stage.$viewLink}}" target="jenkins">
+                      <b>{{stage.stageName}}</b>
                     </a>
                   </div>
-                  <div class="text-center stageStartTime" title="Stage started at {{stage.$startTime}}">
+                  <div class="text-center stage-status">
+                    <div>
+                      <i class="fa-2x {{stage.$iconClass}} stage-icon"></i>
+                    </div>
+                    <div class="stage-bar {{stage.$backgroundClass}}"></div>
+                  </div>
+                  <div class="text-center stageStartTime">
                     <a href="{{stage.$logLink}}" title="View the logs of this stage">
                       {{stage.duration | humanizeDuration}}
                     </a>
                   </div>
                 </div>
               </div>
+              <div ng-show="!build.building" class="pipeline-deploy inline-block pipeline-end">
+                <div class="pipeline-deploy-box">
+                  <div>&nbsp;</div>
+                  <div class="text-center pipeline-result">
+                    <b ng-switch on="build.result">
+                      Build #{{build.number}}
+                      <!-- TODO add more cases -->
+                      <span ng-switch-when="SUCCESS">Complete!</span>
+                      <span ng-switch-default>Failed</span>
+                    </b>
+                  </div>
+                  <div>&nbsp;</div>
+                </div>
+              </div>
             </div>
 
           </div>
         </div>
+
+        <!--
+        <div class="row">
+          <div class="col-md-12">
+            <pre>
+              {{build | json}}
+            </pre>
+          </div>
+        </div>
+        -->
 
         <div class="row" ng-show="hideLogs && !build.building">
           <div class="col-md-12">

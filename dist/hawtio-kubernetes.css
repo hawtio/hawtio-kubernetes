@@ -35,88 +35,6 @@ img.icon-selected-app {
   padding-right: 16px;
   padding-top: 8px;
 }
-.pipeline-build-block {
-  background-color: #eeeeee;
-  display: inline-block;
-  width: 100%;
-}
-.pipeline-build {
-  background: white;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.pipeline-deploy {
-  background: white;
-  border: 5px solid;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-  color: black;
-}
-.widget-body > .pipeline-panel,
-.widget-body > .pipeline-panel > *,
-.widget-body > .pipeline-panel > * > *,
-.widget-body > .pipeline-panel > * > * > *,
-.widget-body > .pipeline-panel > * > * > * > * {
-  height: 100%;
-  vertical-align: middle;
-}
-.pipeline-block {
-  width: 100%;
-}
-.build-fail {
-  border-color: lightcoral;
-}
-.build-success {
-  border-color: lightgreen;
-}
-.build-pending {
-  border-color: khaki;
-}
-.build-aborted {
-  border-color: silver;
-}
-.build-not-started {
-  border-color: lightblue;
-}
-.pipeline-build a {
-  color: black;
-}
-.pipeline-deploy a {
-  color: black;
-}
-.pipeline-pod-counts {
-  padding-right: 16px;
-  padding-top: 8px;
-}
-.pipeline-row {
-  background: lightgrey;
-  height: 80px;
-  display: inline;
-  border-radius: 4px;
-  text-align: center;
-  vertical-align: middle;
-  border: 20px;
-  margin: 5px;
-}
-.pipeline-arrow {
-  font-size: 1.2em;
-}
 .icon-heading {
   font-size: 24px;
 }
@@ -312,6 +230,111 @@ legend {
 .log-panel-inner * {
   font-family: "DroidSansMonoRegular", monospace;
   line-height: 13px;
+}
+
+.pipeline-pod-counts {
+  padding-right: 16px;
+  padding-top: 8px;
+}
+.pipeline-row {
+  background: lightgrey;
+  height: 80px;
+  display: inline;
+  border-radius: 4px;
+  text-align: center;
+  vertical-align: middle;
+  border: 20px;
+  margin: 5px;
+}
+.pipeline-arrow {
+  font-size: 1.2em;
+}
+.pipeline-panel {
+  padding-top: 0;
+}
+.pipeline-view .SUCCESS {
+  background-color: lightgreen;
+}
+.pipeline-view .pipeline-build-block {
+  background-color: #eeeeee;
+  display: inline-block;
+  width: 100%;
+}
+.pipeline-view .stage-icon {
+  background: white;
+}
+.pipeline-view .stage-bar {
+  border-top: 3px solid;
+  margin-top: -16px;
+  margin-bottom: 16px;
+}
+.pipeline-view .pipeline-build,
+.pipeline-view .pipeline-deploy {
+  border-top: 5px solid;
+  height: 100%;
+}
+.pipeline-view .pipeline-build:first-child > .pipeline-deploy-box,
+.pipeline-view .pipeline-deploy:first-child > .pipeline-deploy-box {
+  border-left: 1px solid #d4d4d4;
+}
+.pipeline-view .pipeline-build > .pipeline-deploy-box,
+.pipeline-view .pipeline-deploy > .pipeline-deploy-box {
+  border-right: 1px solid #d4d4d4;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 22px;
+  padding-bottom: 22px;
+  margin: 0;
+  /*
+      margin-top: 10px;
+      margin-bottom: 10px;
+      margin-left: 20px;
+      margin-right: 20px;
+      */
+  color: black;
+}
+.pipeline-view .pipeline-build.pipeline-end,
+.pipeline-view .pipeline-deploy.pipeline-end {
+  margin-left: -3px;
+}
+.pipeline-view .pipeline-build.pipeline-end .pipeline-result,
+.pipeline-view .pipeline-deploy.pipeline-end .pipeline-result {
+  height: 2.5em;
+}
+.pipeline-view .widget-body > .pipeline-panel,
+.pipeline-view .widget-body > .pipeline-panel > *,
+.pipeline-view .widget-body > .pipeline-panel > * > *,
+.pipeline-view .widget-body > .pipeline-panel > * > * > *,
+.pipeline-view .widget-body > .pipeline-panel > * > * > * > * {
+  height: 100%;
+  vertical-align: middle;
+}
+.pipeline-view .pipeline-block {
+  width: 100%;
+}
+.pipeline-view .build-fail {
+  border-color: lightcoral;
+}
+.pipeline-view .build-success {
+  border-color: lightgreen;
+}
+.pipeline-view .build-pending {
+  border-color: khaki;
+}
+.pipeline-view .build-aborted {
+  border-color: silver;
+}
+.pipeline-view .build-not-started {
+  border-color: lightblue;
+}
+.pipeline-view .pipeline-build a {
+  color: black;
+}
+.pipeline-view .pipeline-deploy a {
+  color: black;
+}
+.pipeline-view .green {
+  color: lightgreen !important;
 }
 
 table.environments a {

@@ -39,6 +39,13 @@ module Developer {
       }
     };
 
+    $scope.lastStage = (build) => {
+      if (build && build.stages) {
+        return _.last(build.stages);
+      }
+      return {};
+    }
+
     var updateData = _.debounce(() => {
       var entity = $scope.entity;
       if ($scope.jobId) {
