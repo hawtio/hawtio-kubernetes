@@ -27,7 +27,7 @@
           <div class="col-md-12">
 
             <div class="pipeline-view {{build.status}}">
-              <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="pipeline-deploy inline-block pipeline-stage-{{$index}}" title="This stage started {{stage.$startTime | relativeTime}}" >
+              <div ng-repeat="stage in build.stages | filter:model.filterText track by $index" class="pipeline-deploy inline-block" ng-style="borderStyle(build, stage, $index)" title="This stage started {{stage.$startTime | relativeTime}}" >
                 <div class="pipeline-deploy-box">
                   <div class="text-center stageName" title="{{stage.status}}">
                     <a href="{{stage.$viewLink}}" target="jenkins">
@@ -47,7 +47,7 @@
                   </div>
                 </div>
               </div>
-              <div ng-show="!build.building" class="pipeline-deploy inline-block pipeline-end">
+              <div ng-show="!build.building" class="pipeline-deploy inline-block pipeline-end {{lastStage(build).$backgroundClass}}">
                 <div class="pipeline-deploy-box">
                   <div>&nbsp;</div>
                   <div class="text-center pipeline-result">
