@@ -118,7 +118,7 @@ declare module Kubernetes {
     /**
      * Returns a link to the detail page for the given entity
      */
-    function entityPageLink(obj: any): any;
+    function entityPageLink(obj: any): string;
     function resourceKindToUriPath(kind: any): string;
     /**
      * Returns the root URL for the kind

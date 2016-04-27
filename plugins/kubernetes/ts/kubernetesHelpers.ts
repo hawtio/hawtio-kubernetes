@@ -861,21 +861,23 @@ module Kubernetes {
         if (kind && id) {
           var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
           var namespace = getNamespace(entity);
+          // TODO find the current project namespace and app from the global navigation context?
+          // then return a /workspace/foo/app/bar style link?
           if (namespace && !isIgnoreNamespaceKind(kind)) {
-            return Core.url(UrlHelpers.join('/kubernetes/namespace', namespace, path, id));
+            return UrlHelpers.join('/kubernetes/namespace', namespace, path, id);
           } else {
-            return Core.url(UrlHelpers.join('/kubernetes', path, id));
+            return UrlHelpers.join('/kubernetes', path, id);
           }
         }
       }
       var baseLink = getLink(obj);
       if (!HawtioCore.injector || !baseLink) {
-        return baseLink;
+        return Core.url(baseLink);
       }
       var $routeParams = HawtioCore.injector.get<ng.route.IRouteParamsService>('$routeParams');
       var projectId = $routeParams['project'] || $routeParams['project'];
       if (!projectId) {
-        return baseLink;
+        return Core.url(baseLink);
       }
       return UrlHelpers.join(Developer.projectLink(projectId), baseLink.replace(/^\/kubernetes\//, ''));
     }
