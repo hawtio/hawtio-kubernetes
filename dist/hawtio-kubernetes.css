@@ -232,6 +232,27 @@ legend {
   line-height: 13px;
 }
 
+.pipeline-list-view .panel-group .panel-default {
+  border-color: transparent;
+}
+.pipeline-list-view .panel-group .panel-default .panel-body {
+  padding: 0px;
+}
+.pipeline-list-view .panel-group .panel-default .panel-body .col-md-12 {
+  padding: 0px;
+}
+.pipeline-list-view .build-links .line-spacer {
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+  color: #c5c5c5;
+}
+.pipeline-list-view .build-links a {
+  font-size: smaller;
+  color: #656565;
+}
+.pipeline-list-view .build-links a i {
+  color: #75c2df;
+}
 .pipeline-pod-counts {
   padding-right: 16px;
   padding-top: 8px;
@@ -251,6 +272,13 @@ legend {
 }
 .pipeline-panel {
   padding-top: 0;
+}
+.pipeline-panel .log-section {
+  padding-left: 0;
+  padding-right: 0;
+}
+.pipeline-panel .log-section .log-link {
+  margin-top: 7px;
 }
 .pipeline-view .pipeline-build-block {
   background-color: #eeeeee;

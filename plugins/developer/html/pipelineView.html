@@ -4,7 +4,10 @@
       <h2 class="panel-title">
         <a data-toggle="collapse" data-parent=".panel-group" href="#build-{{build.id}}">
           Build {{build.displayName}}
-        </a>
+          </a><span class="build-links" ng-show="listView">
+          <span class="line-spacer">|</span>
+          <a ng-href="{{build.$logLink}}">Build Results <i class="fa fa-caret-right"></i></a>
+          </span>
         <span ng-show="build.building" class="pull-right" title="This build started at {{build.$timestamp}}">
           <span ng-show="lastStage(build).stageName"> {{lastStage(build).stageName}} | </span>Started {{build.$timestamp | relativeTime}}
         </span>
@@ -80,15 +83,15 @@
         </div>
         -->
 
-        <div class="row" ng-show="hideLogs && !build.building">
-          <div class="col-md-12">
+        <div class="row" ng-show="!listView && hideLogs && !build.building">
+          <div class="col-md-12 log-section">
             <a href="{{build.$logLink}}" class="pull-right">View Full Log</a>
           </div>
         </div>
         <div class="row" ng-hide="hideLogs && !build.building">
-          <div class="col-md-12">
+          <div class="col-md-12 log-section">
             <h4 class="inline-block">Logs</h4>
-            <a href="{{build.$logLink}}" class="pull-right">View Full Log</a>
+            <a href="{{build.$logLink}}" class="pull-right log-link">View Full Log</a>
             <div style="height: 250px;" ng-include="'plugins/developer/html/logPanel.html'"></div>
           </div>
         </div>

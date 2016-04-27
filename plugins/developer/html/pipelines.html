@@ -1,17 +1,15 @@
-<div class="row" ng-controller="Developer.PipelinesController">
+<div class="row" ng-controller="Developer.PipelinesController" hawtio-card-bg>
   <div hawtio-breadcrumbs></div>
   <div hawtio-tabs></div>
 
   <div class="row filter-header">
-    <div class="col-md-4">
-      <span>
-        <hawtio-filter ng-show="model.job.builds.length"
-                       ng-model="model.filterText"
-                       css-class="input-xxlarge"
-                       placeholder="Filter pipelines..."></hawtio-filter>
-      </span>
+    <div class="col-md-6">
+      <hawtio-filter ng-show="model.job.builds.length"
+                     ng-model="model.filterText"
+                     css-class="input-xxlarge"
+                     placeholder="Filter pipelines..."></hawtio-filter>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <form class="form-inline">
         <div class="checkbox" title="Only show build pipelines which are pending">
           <label>
@@ -22,7 +20,7 @@
 
     </div>
   </div>
-  <div class="row" ng-init="hideLogs = true">
+  <div class="row pipeline-list-view" ng-init="hideLogs = true; listView = true">
     <div class="col-md-12">
       <div ng-hide="model.fetched">
         <div class="align-center">
