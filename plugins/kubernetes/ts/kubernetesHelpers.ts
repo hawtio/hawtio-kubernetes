@@ -769,7 +769,7 @@ module Kubernetes {
    */
   export function createPodCounters(selector, pods, outputPods = [], podLinkQuery = null, podLinkUrl = null) {
     if (!podLinkUrl) {
-      podLinkUrl = "/kubernetes/pods";
+      podLinkUrl = Core.url("/kubernetes/pods");
     }
     var filterFn;
     if (angular.isFunction(selector)) {
