@@ -252,9 +252,6 @@ legend {
 .pipeline-panel {
   padding-top: 0;
 }
-.pipeline-view .SUCCESS {
-  background-color: lightgreen;
-}
 .pipeline-view .pipeline-build-block {
   background-color: #eeeeee;
   display: inline-block;
@@ -262,6 +259,15 @@ legend {
 }
 .pipeline-view .stage-icon {
   background: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 16px;
+  position: relative;
+}
+.pipeline-view .stage-icon:before {
+  position: absolute;
+  top: -1px;
+  left: 0px;
 }
 .pipeline-view .stage-bar {
   border-top: 3px solid;
@@ -273,24 +279,26 @@ legend {
   border-top: 5px solid;
   height: 100%;
 }
+.pipeline-view .pipeline-build.SUCCESS,
+.pipeline-view .pipeline-deploy.SUCCESS {
+  background-color: #e4f1e2;
+}
+.pipeline-view .pipeline-build.FAILURE,
+.pipeline-view .pipeline-deploy.FAILURE {
+  background-color: #fff0f0;
+}
 .pipeline-view .pipeline-build:first-child > .pipeline-deploy-box,
 .pipeline-view .pipeline-deploy:first-child > .pipeline-deploy-box {
-  border-left: 1px solid #d4d4d4;
+  border-left: 1px solid #e9e8e8;
 }
 .pipeline-view .pipeline-build > .pipeline-deploy-box,
 .pipeline-view .pipeline-deploy > .pipeline-deploy-box {
-  border-right: 1px solid #d4d4d4;
+  border-right: 1px solid #e9e8e8;
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 22px;
   padding-bottom: 22px;
   margin: 0;
-  /*
-      margin-top: 10px;
-      margin-bottom: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      */
   color: black;
 }
 .pipeline-view .pipeline-build.pipeline-end,
@@ -299,7 +307,7 @@ legend {
 }
 .pipeline-view .pipeline-build.pipeline-end .pipeline-result,
 .pipeline-view .pipeline-deploy.pipeline-end .pipeline-result {
-  height: 2.5em;
+  height: 2.45em;
 }
 .pipeline-view .widget-body > .pipeline-panel,
 .pipeline-view .widget-body > .pipeline-panel > *,
@@ -313,7 +321,7 @@ legend {
   width: 100%;
 }
 .pipeline-view .build-fail {
-  border-color: lightcoral;
+  border-color: red;
 }
 .pipeline-view .build-success {
   border-color: lightgreen;

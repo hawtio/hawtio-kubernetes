@@ -26,9 +26,7 @@
 
 .pipeline-view {
 
-  .SUCCESS {
-    background-color: lightgreen;
-  }
+  @pipeline-block-border: #e9e8e8;
 
   .pipeline-build-block {
     background-color: rgb(238, 238, 238);
@@ -38,6 +36,15 @@
 
   .stage-icon {
     background: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 16px;
+    position: relative;
+    &:before {
+      position: absolute;
+      top: -1px;
+      left: 0px;
+    }
   }
 
   .stage-bar {
@@ -48,31 +55,34 @@
 
   .pipeline-build,
   .pipeline-deploy {
+    
+    &.SUCCESS {
+      background-color: #e4f1e2;
+    }
+
+    &.FAILURE {
+      background-color: #fff0f0;
+    }
+
     border-top: 5px solid;
     height: 100%;
 
     &:first-child > .pipeline-deploy-box {
-      border-left: 1px solid #d4d4d4;
+      border-left: 1px solid @pipeline-block-border;
     }
     & > .pipeline-deploy-box {
-      border-right: 1px solid #d4d4d4;
+      border-right: 1px solid @pipeline-block-border;
       padding-left: 10px;
       padding-right: 10px;
       padding-top: 22px;
       padding-bottom: 22px;
       margin: 0;
-      /*
-      margin-top: 10px;
-      margin-bottom: 10px;
-      margin-left: 20px;
-      margin-right: 20px;
-      */
       color: black;
     }
     &.pipeline-end {
       margin-left: -3px;
       .pipeline-result {
-        height: 2.5em;
+        height: 2.45em;
       }
 
     }
@@ -92,7 +102,7 @@
   }
 
   .build-fail {
-    border-color: lightcoral;
+    border-color: red;
   }
 
   .build-success {
