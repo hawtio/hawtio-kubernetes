@@ -1,11 +1,6 @@
 <div ng-controller="Developer.ProjectEnvironmentsController">
-  <div class="row">
-    <div hawtio-breadcrumbs></div>
-  </div>
-
-  <div class="row">
-    <div hawtio-tabs></div>
-  </div>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
 
   <script type="text/ng-template" id="environmentNameTempalte.html">
     <div class="ngCellText">
@@ -19,8 +14,8 @@
   </script>
 
 
-  <div class="row filter-header">
-    <div class="col-md-12" ng-show="model.environments.length">
+  <div class="row filter-header" ng-show="model.environments.length">
+    <div class="col-md-12">
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
@@ -51,15 +46,24 @@
       </div>
     </div>
   </div>
-
   <div ng-show="model.fetched">
-    <div ng-hide="model.environments.length" class="align-center">
+    <div class="jumbotron" ng-hide="model.environments.length">
       <div class="row">
         <div class="col-md-12">
-          <p class="alert alert-info">There are no environments currently available.</p>
+          <div>
+            <p>There are no environments currently available.</p>
+            <p>Create environments by creating a   
+              <a class="btn btn-primary" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
+                title="Create a new app in this project">
+                New Application
+              </a>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+  </div>
+
+  <div ng-show="model.fetched">
     <div ng-show="model.environments.length">
       <div class="row">
         <div class="col-md-12">
