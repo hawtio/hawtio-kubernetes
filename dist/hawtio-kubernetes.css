@@ -283,6 +283,10 @@ legend {
 .pipeline-view .pipeline-deploy.SUCCESS {
   background-color: #e4f1e2;
 }
+.pipeline-view .pipeline-build.ABORTED,
+.pipeline-view .pipeline-deploy.ABORTED {
+  background-color: #d5d5d5;
+}
 .pipeline-view .pipeline-build.FAILURE,
 .pipeline-view .pipeline-deploy.FAILURE {
   background-color: #fff0f0;

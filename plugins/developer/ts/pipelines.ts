@@ -39,11 +39,20 @@ module Developer {
       }
     };
 
-    $scope.lastStage = (build) => {
-      if (build && build.stages) {
+    $scope.lastStage = (build):any => {
+      if (build && build.stages && build.stages.length) {
         return _.last(build.stages);
       }
-      return {};
+      // cater for no build stages
+      if (build.building) {
+        return {};
+      } else {
+        return {
+          status: build.result,
+          '$iconClass': createBuildStatusIconClass(build.result),
+          '$backgroundClass': createBuildStatusBackgroundClass(build.result)
+        };
+      }
     }
 
     // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb

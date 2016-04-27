@@ -13,6 +13,8 @@
           <span ng-switch on="lastStage(build).status">
             <!-- TODO add more cases -->
             <span ng-switch-when="SUCCESS">Complete!</span>
+            <span ng-switch-when="ABORTED">Aborted</span>
+            <span ng-switch-when="INTERUPTED">Aborted</span>
             <span ng-switch-default>Failed</span>
           </span>
           &nbsp;| Started {{build.$timestamp | relativeTime}}
@@ -55,6 +57,7 @@
                       Build #{{build.number}}
                       <!-- TODO add more cases -->
                       <span ng-switch-when="SUCCESS">Complete!</span>
+                      <span ng-switch-when="ABORTED">Aborted</span>
                       <span ng-switch-default>Failed</span>
                     </b>
                   </div>
