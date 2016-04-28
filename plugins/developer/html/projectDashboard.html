@@ -14,7 +14,7 @@
   </script>
 
 
-  <div class="row filter-header" ng-show="model.environments.length">
+  <div class="row filter-header" ng-show="model.buildconfigs.length">
     <div class="col-md-12">
       <!--
       <span class="pull-right">&nbsp;</span>
@@ -44,23 +44,27 @@
   </div>
 
   <div ng-show="model.fetched">
-    <div class="jumbotron" ng-hide="model.environments.length">
+    <div class="jumbotron" ng-hide="model.buildconfigs.length">
       <div class="row">
         <div class="col-md-12">
           <div>
-            <p>There are no environment or applications currently available.</p>
-            <p>Create environments by creating a 
-              <a class="btn btn-primary" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
+            <p>
+              There are no applications currently available.
+            </p>
+            <p>
+              <a class="btn btn-primary btn-lg" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
                 title="Create a new app in this project">
-                New Application
+                Create Application
               </a>
+            </p>
+            <p>
+              Please create a new application or try browsing the <a href="{{namespaceRuntimeLink}}" title="View the runtime environment for this project">Runtime</a> for this project
             </p>
           </div>
         </div>
       </div>
     </div>
-    <!-- TODO when does this bit show up? -->
-    <div ng-show="model.environments.length">
+    <div ng-show="model.buildconfigs.length">
       <div ng-hide="environments.length">
         <div class="row">
           <div class="col-md-12 align-center">

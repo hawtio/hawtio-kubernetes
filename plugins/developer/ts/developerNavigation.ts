@@ -207,7 +207,7 @@ module Developer {
         title: "View the environments for this project"
       },
       {
-        href: UrlHelpers.join(HawtioCore.documentBase(), "workspaces", workspaceName, "namespace", workspaceName, "apps"),
+        href: namespaceRuntimeLink(workspaceName),
         label: "Runtime",
         class: "fa fa-cube",
         title: "View the Runtime perspective for this project"
@@ -223,6 +223,13 @@ module Developer {
     ]);
   }
 
+  export function namespaceRuntimeLink(workspaceName = null) {
+    if (!workspaceName) {
+      workspaceName = Kubernetes.currentKubernetesNamespace();
+    }
+    return UrlHelpers.join(HawtioCore.documentBase(), "workspaces", workspaceName, "namespace", workspaceName, "apps");
+  }
+  
   function createBuildsLink(workspaceName, projectName, jenkinsJobId) {
     workspaceName = workspaceName || Kubernetes.currentKubernetesNamespace();
     return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "jenkinsJob", jenkinsJobId);

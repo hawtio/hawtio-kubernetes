@@ -22,6 +22,7 @@ declare module Developer {
     function createProjectBreadcrumbs(projectName?: any, children?: Array<BreadcrumbConfig>, workspaceName?: any): any;
     function createProjectSettingsBreadcrumbs(projectName: any, workspaceName?: any): any;
     function createWorkspaceSubNavBars(): any;
+    function namespaceRuntimeLink(workspaceName?: any): string;
     function createProjectSubNavBars(projectName: any, jenkinsJobId?: any, $scope?: any): any;
     function createProjectSettingsSubNavBars(projectName: any, jenkinsJobId?: any): any;
     function forgeProjectHasBuilder(name: any): any;

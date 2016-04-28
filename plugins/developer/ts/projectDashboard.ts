@@ -34,6 +34,8 @@ module Developer {
           return environmentInstanceLink(env);
         };
 
+        $scope.namespaceRuntimeLink = namespaceRuntimeLink();
+
         $scope.$on('kubernetesModelUpdated', function () {
           updateData();
         });
