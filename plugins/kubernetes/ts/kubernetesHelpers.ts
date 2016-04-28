@@ -229,10 +229,16 @@ module Kubernetes {
   }
 
   export function buildConfigHooksRestURL() {
+    if (!isOpenShift) {
+      return getJenkinshiftBuildConfigURL(null);
+    }
     return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/buildconfighooks");
   }
 
   export function buildConfigsRestURL() {
+    if (!isOpenShift) {
+      return getJenkinshiftBuildConfigURL(null);
+    }
     return UrlHelpers.join(openshiftApiUrl(), kubernetesNamespacePath(), "/buildconfigs");
   }
 
