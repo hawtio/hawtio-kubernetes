@@ -47,7 +47,8 @@
                   </div>
                   <div class="text-center stageStartTime">
                     <a href="{{stage.$logLink}}" title="View the logs of this stage">
-                      {{stage.duration | humanizeDuration}}
+                      <span ng-show="stage.duration >= 0">{{stage.duration | humanizeDuration}}</span>
+                      <span ng-hide="stage.duration < 0">&nbsp;</span>
                     </a>
                   </div>
                 </div>
