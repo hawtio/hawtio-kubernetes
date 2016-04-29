@@ -21,30 +21,60 @@ module Developer {
         $scope.subTabConfig = Developer.createWorkspaceSubNavBars();
 
         $scope.tableConfig = {
-          data: 'model.environments',
-          showSelectionCheckbox: true,
-          enableRowClickSelection: true,
-          multiSelect: true,
-          selectedItems: [],
-          filterOptions: {
-            filterText: $location.search()["q"] || ''
-          },
-          columnDefs: [
-            {
-              field: 'name',
-              displayName: 'Environment',
-              cellTemplate: $templateCache.get("environmentNameTempalte.html")
-            },
-            {
-              field: 'namespace',
-              displayName: 'Namespace'
-            },
-            {
-              field: 'clusterUrl',
-              displayName: 'Cluster URL'
+             data: 'model.environments',
+             showSelectionCheckbox: true,
+             enableRowClickSelection: true,
+             multiSelect: true,
+             selectedItems: [],
+             filterOptions: {
+               filterText: $location.search()["q"] || ''
+             },
+             columnDefs: [
+               {
+                 field: 'name',
+                 displayName: 'Environment',
+                 cellTemplate: $templateCache.get("environmentNameTemplate.html")
+               },
+               {
+                 field: 'namespace',
+                 displayName: 'Namespace'
+               },
+               {
+                 field: 'clusterUrl',
+                 displayName: 'Cluster URL'
+               },
+               {
+                 field: 'name',
+                 displayName: 'Actions',
+                 cellTemplate: $templateCache.get("environmentEditTemplate.html")
+               }
+             ]
+           };
+
+
+        $scope.editEntityLink = (entity) => {
+          if (entity) {
+            var key = entity.key;
+            if (key) {
+              return UrlHelpers.join(HawtioCore.documentBase(), '/workspaces', $scope.namespace, "/environments/edit", key);
             }
-          ]
+            return "";
+          }
         };
+
+        $scope.editEntity = () => {
+          var selectedItems = $scope.tableConfig.selectedItems || [];
+          if (selectedItems.length) {
+            var entity = selectedItems[0] || {};
+            var key = entity.key;
+            if (key) {
+              $location.path(UrlHelpers.join('/workspaces', $scope.namespace, "/environments/edit", key));
+            } else {
+              log.warn("No key for environment " + angular.toJson(entity));
+            }
+          }
+        };
+
 
       }]);
 }

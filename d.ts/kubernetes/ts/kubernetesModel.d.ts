@@ -62,7 +62,7 @@ declare module Kubernetes {
          * Loads the environments for the given project
          */
         protected loadEnvironments(): any[];
-        createEnvironment(key: any, values: any): any;
+        createEnvironment(key: any, values: any, ns: any): any;
         protected discoverPodConnections(entity: any): void;
     }
     function getJenkinshiftBuildConfigURL($scope: any): string;

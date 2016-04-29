@@ -15,6 +15,8 @@ module Developer {
                   .when(UrlHelpers.join(context, '/:namespace/apps'), route('apps.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/projects'), route('apps.html', false)) // TODO no longer required?
                   .when(UrlHelpers.join(context, '/:namespace/environments'), route('projectEnvironments.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/environments/create'), route('projectEnvironment.html', false))
+                  .when(UrlHelpers.join(context, '/:namespace/environments/edit/:env'), route('projectEnvironment.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/jenkinsJob'), route('jenkinsJobs.html', false))
                   .when(UrlHelpers.join(context, '/:namespace/detail'), route('workspace.html', false)) // currently disabled
                   .when(UrlHelpers.join(context, '/:namespace/projects/:id'), route('appDashboard.html', false))

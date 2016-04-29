@@ -1,0 +1,31 @@
+<div ng-controller="Developer.ProjectEnvironmentController">
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
+
+
+  <div class="row filter-header" ng-show="model.environments.length">
+    <div class="col-md-12">
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-danger pull-right"
+              title="Cancels the changes"
+              href="{{environmentsLink}}">
+        <i class="fa fa-remove"></i> Cancel
+      </a>
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-primary pull-right"
+         title="Saves the changes"
+         ng-click="save()">
+        <i class="fa fa-plus"></i> Save Changes
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Environment configuration</h3>
+
+      <div hawtio-form-2="schema" entity="entity"></div>
+    </div>
+  </div>
+
+</div>

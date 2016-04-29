@@ -665,10 +665,11 @@ module Kubernetes {
       if (model) {
         var configmap = Kubernetes.getNamed(this.configmaps, environemntsConfigMapName);
         if (configmap) {
+          var ns = getNamespace(configmap);
           angular.forEach(configmap.data, (yamlText, key) => {
             try {
               var values = jsyaml.load(yamlText);
-              var env = this.createEnvironment(key, values);
+              var env = this.createEnvironment(key, values, ns);
               if (env) {
                 answer.push(env);
               }
@@ -678,7 +679,6 @@ module Kubernetes {
               return;
             }
           });
-          var ns = getNamespace(configmap);
           if (ns) {
             this.namespaceEnvironments[ns] = answer;
           }
@@ -687,13 +687,14 @@ module Kubernetes {
       return answer;
     }
 
-    public createEnvironment(key, values) {
+    public createEnvironment(key, values, ns) {
       values["key"] = key;
       values["label"] = values["label"] || values["name"];
 
       var envNamespace = values["namespace"];
       if (envNamespace) {
         values["$environmentLink"] = Developer.environmentLink(null, envNamespace);
+        values["$editLink"] = UrlHelpers.join(HawtioCore.documentBase(), '/workspaces', ns, "/environments/edit", key);
       }
       return values;
     }

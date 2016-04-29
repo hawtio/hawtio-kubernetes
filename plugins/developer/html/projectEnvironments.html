@@ -2,7 +2,7 @@
   <div hawtio-breadcrumbs></div>
   <div hawtio-tabs></div>
 
-  <script type="text/ng-template" id="environmentNameTempalte.html">
+  <script type="text/ng-template" id="environmentNameTemplate.html">
     <div class="ngCellText">
       <div class="ngCellText">
         <a ng-show="row.entity.$environmentLink" href="{{row.entity.$environmentLink}}" title="View this environment">
@@ -13,6 +13,19 @@
     </div>
   </script>
 
+  <script type="text/ng-template" id="environmentEditTemplate.html">
+    <div class="ngCellText">
+      <div class="ngCellText">
+<!--
+        <a class="btn btn-default" href="{{baseUri}}/workspaces/{{namespace}}/environments/edit/{{row.entity.key}}" title="Edit this environment configuration">
+        <a class="btn btn-default" href="{{$scope.$parent.editEntityLink(row.entity)}}" title="Edit this environment configuration">
+-->
+        <a ng-show="row.entity.$editLink" class="btn btn-default" href="{{row.entity.$editLink}}" title="Edit this environment configuration">
+          <i class="fa fa-pencil-square-o"></i> Edit
+        </a>
+      </div>
+    </div>
+  </script>
 
   <div class="row filter-header" ng-show="model.environments.length">
     <div class="col-md-12">
@@ -31,7 +44,7 @@
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-primary pull-right"
          title="Adds a new environment to this project"
-         ng-click="createNamespaceDialog.open()">
+         href="{{baseUri}}/workspaces/{{namespace}}/environments/create">
         <i class="fa fa-plus"></i> Add Environment
       </a>
     </div>
@@ -52,25 +65,27 @@
         <div class="col-md-12">
           <div>
             <p>There are no environments currently available.</p>
-            <p>Create environments by creating a   
+            <p>Create environments by creating a
               <a class="btn btn-primary" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
-                title="Create a new app in this project">
+                 title="Create a new app in this project">
                 New Application
               </a>
             </p>
           </div>
         </div>
       </div>
-  </div>
+    </div>
 
-  <div ng-show="model.fetched">
-    <div ng-show="model.environments.length">
-      <div class="row">
-        <div class="col-md-12">
-          <table class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
+    <div ng-show="model.fetched">
+      <div ng-show="model.environments.length">
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 </div>
+
