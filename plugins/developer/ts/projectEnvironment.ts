@@ -31,6 +31,7 @@ module Developer {
         var env = $routeParams.env;
 
         $scope.entity = {};
+        $scope.changed = false;
 
         var loadedEntity = false;
 
@@ -66,10 +67,81 @@ module Developer {
           required: ["key", "namespace", "name"]
         };
 
+        angular.forEach($scope.schema.required, (name) => {
+          Core.pathSet($scope.schema, ["properties", name, "input-attributes", "required"], true);
+        });
+
         if (env) {
           // lets disable the "key" property in the form
-          $scope.schema.properties.key.hidden = false;
+          Core.pathSet($scope.schema, ["properties", "key", "input-attributes", "readonly"], true);
+        } else {
+          // doesn't seem to be able to see this $scope's checkKeyUnique() so lets use the entity watcher instead...
+          //Core.pathSet($scope.schema, ["properties", "key", "input-attributes", "ui-validate"], "'checkKeyUnique($value)'");
+        }
 
+        $scope.$on('hawtio-form2-form', ($event, formInfo) => {
+          if (formInfo.name === "entityForm") {
+            $scope.form = formInfo.form;
+          }
+        });
+
+        var changeCount = 0;
+        $scope.$watchCollection("entity", () => {
+          if (loadedEntity) {
+            changeCount += 1;
+            if (changeCount > 1) {
+              $scope.changed = true;
+            }
+            if (!env) {
+              var key = $scope.entity.key;
+              $scope.validationMessage = "";
+              if (key) {
+                if (!$scope.checkKeyUnique(key)) {
+                  $scope.validationMessage = "Key already in use!";
+                }
+              }
+            }
+          }
+        });
+
+
+        $scope.getRequiredFields = () => {
+          // TODO no _.join() yet!
+          //return _.join(_.map($scope.form.$error.required, $scope.getLabel), ", ");
+          function join(array, separator = ", ") {
+            var answer = "";
+            angular.forEach(array, (value) => {
+              if (value) {
+                if (answer) {
+                  answer += separator + value;
+                } else {
+                  answer = value;
+                }
+              }
+            });
+            return answer;
+          }
+
+          return join(_.map(Core.pathGet($scope, ["form", "$error", "required"]), (item) => $scope.getLabel(item['$name'])));
+        };
+
+        $scope.getLabel = (name:string) => {
+          var property = $scope.schema.properties[name] || {};
+          return property.label || property.title || _.capitalize(name);
+        };
+
+        $scope.checkKeyUnique = (value) => {
+          var answer = true;
+          angular.forEach($scope.model.environments, (environment) => {
+            if (value === environment.key) {
+              answer = false;
+            }
+          });
+          return answer;
+        };
+
+
+        if (env) {
           loadEntity();
 
           if (!loadedEntity) {
@@ -78,9 +150,9 @@ module Developer {
             // if we hit reload on this page
             $scope.$on('kubernetesModelUpdated', loadEntity);
           }
+        } else {
+          hasLoaded();
         }
-
-;
 
         $scope.save = () => {
           var data = {};
@@ -114,12 +186,17 @@ module Developer {
             });
           }
         };
+
+        function hasLoaded() {
+          loadedEntity = true;
+        }
+
         function loadEntity() {
           if (!loadedEntity) {
             angular.forEach($scope.model.environments, (environment) => {
               if (environment && env === environment.key) {
                 $scope.entity = environment;
-                loadedEntity = true;
+                hasLoaded();
               }
             });
           }

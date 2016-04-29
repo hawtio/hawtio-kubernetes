@@ -16,11 +16,7 @@
   <script type="text/ng-template" id="environmentEditTemplate.html">
     <div class="ngCellText">
       <div class="ngCellText">
-<!--
-        <a class="btn btn-default" href="{{baseUri}}/workspaces/{{namespace}}/environments/edit/{{row.entity.key}}" title="Edit this environment configuration">
-        <a class="btn btn-default" href="{{$scope.$parent.editEntityLink(row.entity)}}" title="Edit this environment configuration">
--->
-        <a ng-show="row.entity.$editLink" class="btn btn-default" href="{{row.entity.$editLink}}" title="Edit this environment configuration">
+        <a ng-show="row.entity.$editLink" class="btn" href="{{row.entity.$editLink}}" title="Edit this environment configuration">
           <i class="fa fa-pencil-square-o"></i> Edit
         </a>
       </div>
@@ -32,7 +28,7 @@
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
-                       placeholder="Filter environments..."></hawtio-filter>
+                       placeholder="Filter environment configurations..."></hawtio-filter>
       </span>
       <span class="pull-right">&nbsp;</span>
       <button class="btn btn-danger pull-right"
@@ -43,9 +39,9 @@
       </button>
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-primary pull-right"
-         title="Adds a new environment to this project"
+         title="Adds a new environment configuration to this project"
          href="{{baseUri}}/workspaces/{{namespace}}/environments/create">
-        <i class="fa fa-plus"></i> Add Environment
+        <i class="fa fa-plus"></i> Add
       </a>
     </div>
   </div>

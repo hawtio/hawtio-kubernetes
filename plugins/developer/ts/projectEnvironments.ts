@@ -36,17 +36,17 @@ module Developer {
                  cellTemplate: $templateCache.get("environmentNameTemplate.html")
                },
                {
+                 field: 'name',
+                 displayName: 'Actions',
+                 cellTemplate: $templateCache.get("environmentEditTemplate.html")
+               },
+               {
                  field: 'namespace',
                  displayName: 'Namespace'
                },
                {
                  field: 'clusterUrl',
                  displayName: 'Cluster URL'
-               },
-               {
-                 field: 'name',
-                 displayName: 'Actions',
-                 cellTemplate: $templateCache.get("environmentEditTemplate.html")
                }
              ]
            };

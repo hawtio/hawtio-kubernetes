@@ -7,13 +7,14 @@
     <div class="col-md-12">
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-danger pull-right"
-              title="Cancels the changes"
-              href="{{environmentsLink}}">
+         title="Cancels the changes"
+         href="{{environmentsLink}}">
         <i class="fa fa-remove"></i> Cancel
       </a>
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-primary pull-right"
          title="Saves the changes"
+         ng-disabled="form.$invalid || !changed || validationMessage"
          ng-click="save()">
         <i class="fa fa-plus"></i> Save Changes
       </a>
@@ -24,8 +25,38 @@
     <div class="col-md-12">
       <h3>Environment configuration</h3>
 
-      <div hawtio-form-2="schema" entity="entity"></div>
+      <div hawtio-form-2="schema" entity="entity" name="entityForm"></div>
     </div>
+  </div>
+
+  <div class="row" ng-show="validationMessage">
+    <form>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <p class="text-warning pull-right">{{validationMessage}}</p>
+        </div>
+      </div>
+    </form>
+  </div>
+<!--
+  <div class="row" ng-show="form.key.$error.validator && form.key.$viewValue">
+    <form>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <p class="text-warning pull-right">Key already in use!</p>
+        </div>
+      </div>
+    </form>
+  </div>
+-->
+  <div class="row" ng-show="form.$error.required.length">
+    <form>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <p class="text-warning pull-right">{{getRequiredFields()}} required</p>
+        </div>
+      </div>
+    </form>
   </div>
 
 </div>
