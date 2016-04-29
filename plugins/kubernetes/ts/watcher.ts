@@ -32,6 +32,26 @@ module Kubernetes {
     watches: {}
   };
 
+  // If no kind is passed, returns true when all watchers have initialized
+  // If a kind is passed, returns true if that watcher has fetched data
+  self.fetched = (kind?:string) => {
+    if (kind) {
+      if (kind in namespaceWatch.watches) {
+        return namespaceWatch.watches[kind]['fetched'] || false;
+      } else {
+        return false;
+      }
+    } else {
+      var result = _.filter(<any>namespaceWatch.watches, {'fetched': false});
+      if (result.length) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+
+
   hawtioPluginLoader.registerPreBootstrapTask({
     name: 'KubernetesWatcherInit',
     depends: ['KubernetesApiDiscovery'],
@@ -55,8 +75,6 @@ module Kubernetes {
           log.debug("Got namespaces: ", namespaceWatch.objects);
         }, error: (error:any) => {
           log.warn("Error fetching namespaces: ", error);
-          // TODO is this necessary?
-          //HawtioOAuth.doLogout();
           if (!booted) {
             booted = true;
             next();
@@ -66,6 +84,7 @@ module Kubernetes {
     }
   });
 
+  // figure out if we're running against openshift or vanilla k8s
   hawtioPluginLoader.registerPreBootstrapTask({
     name: 'KubernetesApiDiscovery',
     depends: ['hawtio-oauth'],
@@ -147,6 +166,35 @@ module Kubernetes {
 
   var customUrlHandlers = {};
 
+  function createWatch(kind, namespace) {
+    if (kind === KubernetesAPI.WatchTypes.NAMESPACES || kind === KubernetesAPI.WatchTypes.PROJECTS) {
+      return;
+    }
+    if (!namespaceWatch.watches[kind]) {
+      log.debug("Creating watch for kind: ", kind);
+      var watch:any = {
+        fetched: false,
+        config: <any> {
+          kind: kind,
+          namespace: KubernetesAPI.namespaced(kind) ? namespace : undefined,
+          success: (objects) => {
+            watch.objects = objects;
+            if (!watch.fetched) {
+              log.debug(kind, "fetched");
+              watch.fetched = true;
+            }
+            debouncedUpdate();
+          }
+        }
+      }
+      if (kind in customUrlHandlers) {
+        watch.config.urlFunction = customUrlHandlers[kind];
+      }
+      watch = _.extend(watch, KubernetesAPI.watch(watch.config));
+      namespaceWatch.watches[kind] = watch;
+    }
+  }
+
   self.setNamespace = (namespace: string) => {
     if (namespace === namespaceWatch.selected) {
       return;
@@ -171,26 +219,7 @@ module Kubernetes {
     namespaceWatch.selected = namespace;
     if (namespace) {
       _.forEach(self.getTypes(), (kind:string) => {
-        if (kind === KubernetesAPI.WatchTypes.NAMESPACES || kind === KubernetesAPI.WatchTypes.PROJECTS) {
-          return;
-        }
-        if (!namespaceWatch.watches[kind]) {
-          log.debug("Creating watch for kind: ", kind);
-          var config = <any> {
-            kind: kind,
-            namespace: KubernetesAPI.namespaced(kind) ? namespace : undefined,
-            success: (objects) => {
-              watch.objects = objects;
-              debouncedUpdate();
-            }
-          };
-          if (kind in customUrlHandlers) {
-            config.urlFunction = customUrlHandlers[kind];
-          }
-          var watch = <any> KubernetesAPI.watch(config);
-          watch.config = config;
-          namespaceWatch.watches[kind] = watch;
-        }
+        createWatch(kind, namespace);
       });
     }
   };
@@ -202,18 +231,11 @@ module Kubernetes {
   self.registerCustomUrlFunction = (kind:string, url:(options:KubernetesAPI.K8SOptions) => string) => {
     customUrlHandlers[kind] = url;
     if (kind in namespaceWatch.watches) {
-      var watch = namespaceWatch.watches[kind];
-      var config = watch.config;
-      config.urlFunction = url;
-      watch.disconnect();
+      log.debug("Custom URL function set for", kind, "restarting watch");
+      // reset the existing watch;
+      namespaceWatch.watches[kind].disconnect();
       delete namespaceWatch.watches[kind];
-      config.success = (objects) => {
-        watch.objects = objects;
-        debouncedUpdate();
-      }
-      watch = <any> KubernetesAPI.watch(config);
-      watch.config = config;
-      namespaceWatch.watches[kind] = watch;
+      createWatch(kind, namespaceWatch.selected);
     }
   }
 

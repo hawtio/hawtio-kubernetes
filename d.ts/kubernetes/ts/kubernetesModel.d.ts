@@ -29,6 +29,7 @@ declare module Kubernetes {
         appViews: any[];
         appFolders: any[];
         fetched: boolean;
+        isFetched(kind: string): boolean;
         showRunButton: boolean;
         configmaps: any[];
         environments: any[];
@@ -37,6 +38,7 @@ declare module Kubernetes {
         workspaces: any[];
         projects: any[];
         project: any;
+        watcher: WatcherService;
         serviceApps: Array<any>;
         $keepPolling(): boolean;
         orRedraw(flag: any): void;

@@ -76,7 +76,20 @@ module Kubernetes {
     public appViews = [];
     public appFolders = [];
 
-    public fetched = false;
+    public get fetched():boolean {
+      if (!this.watcher) {
+        return false;
+      }
+      return this.watcher.fetched();
+    };
+
+    public isFetched(kind:string) {
+      return this.watcher.fetched(kind);
+    }
+
+    public set fetched(val:boolean) {
+      //ignore
+    }
     public get showRunButton():boolean {
       return true;
 /*
@@ -102,6 +115,7 @@ module Kubernetes {
     public workspaces = [];
     public projects = [];
     public project = null;
+    public watcher:WatcherService = null;
 
     public get serviceApps():Array<any> {
       return _.filter(this.services, (s) => {
@@ -799,6 +813,7 @@ module Kubernetes {
 
     var $scope = new KubernetesModelService();
     $scope.kubernetes = KubernetesState;
+    $scope.watcher = watcher;
 
     // create all of our resource classes
     var typeNames = watcher.getTypes();
