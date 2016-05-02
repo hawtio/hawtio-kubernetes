@@ -103,29 +103,6 @@ module Kubernetes {
 
   _module.filter('kubernetesPageLink', () => entityPageLink);
 
-  // relativeTime was the first humanize filter for dates,
-  // let's maybe also add a 'humanizeDate' filter to match
-  // up with 'humanizeDuration'
-  var relativeTimeFunc = (date) => {
-    return humandate.relativeTime(date);
-  };
-
-  // Turn a date into a relative time from right now
-  _module.filter('relativeTime', () => {
-    return relativeTimeFunc;
-  });
-
-  _module.filter('humanizeDate', () => {
-    return relativeTimeFunc;
-  });
-
-  // Output a duration in milliseconds in a human-readable format
-  _module.filter('humanizeDuration', () => {
-    return (duration) => {
-      return humanizeDuration(duration, { round: true });
-    }
-  });
-
   _module.run(['viewRegistry', 'ServiceRegistry', 'HawtioNav', 'KubernetesModel', '$templateCache', (viewRegistry, ServiceRegistry, HawtioNav, KubernetesModel, $templateCache) => {
 
     log.debug("Running");
