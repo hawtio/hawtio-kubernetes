@@ -377,13 +377,19 @@ legend {
   color: lightgreen !important;
 }
 
-table.environments a {
+table.deployments a,
+table.usage a {
   color: black;
 }
-table.environments tbody a:hover {
+table.deployments tbody a:hover,
+.table.usage > thead > tr > th > a:hover,
+.table.deployments > thead > tr > th > a:hover,
+.table.deployments > tbody > tr > td > a:hover,
+table.usage tbody a:hover {
   text-decoration: underline;
 }
-table.environment th {
+table.deployments th,
+table.usage th {
   font-size: 14px;
   padding: 10px;
 }
@@ -395,6 +401,11 @@ table.environment td {
 }
 .version2 {
   background-color: #3b0083;
+}
+.table.usage > thead > tr > th,
+.table.deployments > thead > tr > th,
+.table.deployments > tbody > tr > td {
+  padding: 10px 20px;
 }
 
 .project-selector {

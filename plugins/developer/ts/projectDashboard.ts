@@ -28,7 +28,7 @@ module Developer {
         $scope.environments = [];
 
         $scope.totalPodCount = 0;
-        $scope.summaryChartConfig = createChartConfig("All", "summaryChart");
+        $scope.summaryChartConfig = createChartConfig("Pods", "summaryChart");
 
         $scope.environmentLink = (env) => {
           return environmentInstanceLink(env);
@@ -102,7 +102,7 @@ module Developer {
 
             var envChart = $scope.envCharts[envNamespace];
             if (!envChart) {
-              envChart = createChartConfig(env.label, envNamespace + "Chart");
+              envChart = createChartConfig("Pods", envNamespace + "Chart");
               $scope.envCharts[envNamespace] = envChart;
             }
             var envColumns = [];

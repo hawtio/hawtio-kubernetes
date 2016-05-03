@@ -52,12 +52,14 @@
             </p>
             <p>
               <a class="btn btn-primary btn-lg" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
-                title="Create a new app in this project">
+                 title="Create a new app in this project">
                 Create Application
               </a>
             </p>
             <p>
-              Please create a new application or try browsing the <a href="{{namespaceRuntimeLink}}" title="View the runtime environment for this project">Runtime</a> for this project
+              Please create a new application or try browsing the <a href="{{namespaceRuntimeLink}}"
+                                                                     title="View the runtime environment for this project">Runtime</a>
+              for this project
             </p>
           </div>
         </div>
@@ -77,43 +79,50 @@
 
 
       <div ng-show="environments.length">
-        <table class="table table-striped environments">
-          <thead>
-            <tr>
-              <th>Apps</th>
-              <th ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
-                <a href="{{environmentLink(env)}}" title="namespace: {{env.namespace}}">
-                  <i class="fa fa-cube"></i>&nbsp;{{env.label}}
-                </a>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="app in model.buildconfigs | orderBy: '$name' track by $index">
-              <td>
-                <a href=""
-                   title="View App {{row.entity.metadata.name || row.entity.name}}"
-                   ng-href="{{app | kubernetesPageLink}}">
-                  <img class="app-icon-small" ng-src="{{app.$iconUrl}}" ng-show="app.$iconUrl">
-                  {{app.metadata.name || row.entity.name}}
-                </a>
-              </td>
-              <td ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
-                <div
-                  ng-repeat="(version, versionInfo) in envVersions[env.namespace][app.metadata.name].versions | orderBy:'version' track by $index">
-                  <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
-                    <div>
-                      <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
-                         title="View the Replication Controller {{rc.$name}} with version {{version}}">
-                        <i class="fa fa-square"></i>&nbsp;{{version}}
+        <div class="row row-cards-pf" title="Deployments by app across environments">
+          <div class="col-md-12 environment-rows">
+            <div class="card-pf">
+              <div class="card-pf-heading">
+                <h2 class="card-pf-title inline-block">Deployments</h2>
+              </div>
+              <div class="card-pf-body">
+                <table class="table table-striped deployments">
+                  <thead>
+                  <tr>
+                    <th>Apps</th>
+                    <th ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
+                      <a href="{{environmentLink(env)}}" title="namespace: {{env.namespace}}">
+                        <i class="fa fa-cube"></i>&nbsp;{{env.label}}
                       </a>
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr ng-repeat="app in model.buildconfigs | orderBy: '$name' track by $index">
+                    <td>
+                      <a href=""
+                         title="View App {{row.entity.metadata.name || row.entity.name}}"
+                         ng-href="{{app | kubernetesPageLink}}">
+                        <img class="app-icon-small" ng-src="{{app.$iconUrl}}" ng-show="app.$iconUrl">
+                        {{app.metadata.name || row.entity.name}}
+                      </a>
+                    </td>
+                    <td ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
+                      <div
+                        ng-repeat="(version, versionInfo) in envVersions[env.namespace][app.metadata.name].versions | orderBy:'version' track by $index">
+                        <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
+                          <div>
+                            <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
+                               title="View the Replication Controller {{rc.$name}} with version {{version}}">
+                              <i class="fa fa-square"></i>&nbsp;{{version}}
+                            </a>
                       <span ng-hide="rc.$viewLink"
                             title="View the Replication Controller {{rc.$name}} with version {{version}}">
                         <i class="fa fa-square"></i>&nbsp;{{version}}
                       </span>
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
                       <span>
                         <a ng-show="rc.$podCounters.podsLink"
                            href="{{rc.$podCounters.podsLink}}" title="View pods">
@@ -126,9 +135,9 @@
                                 class="badge badge-warning">{{rc.$podCounters.error}}</span>
                         </a>
                       </span>
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
                       <span class="dropdown">
                         <a class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"
                            title="View build and commit details">
@@ -171,61 +180,88 @@
                           <i class="fa fa-external-link"></i>
                         </a>
                       </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div ng-show="totalPodCount" class="row row-cards-pf" title="Resource usage by apps and environments">
+          <div class="col-md-12 environment-rows">
+            <div class="card-pf">
+              <div class="card-pf-heading">
+                <h2 class="card-pf-title inline-block">Usage</h2>
+              </div>
+              <div class="card-pf-body">
+                <table class="table usage">
+                  <thead>
+                  <tr>
+                    <th>All Environments</th>
+                    <th
+                      ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
+                      <a href="{{environmentLink(env)}}" title="namespace: {{env.namespace}}">
+                        <i class="fa fa-cube"></i>&nbsp;{{env.label}}
+                      </a>
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>
+                      <div pf-c3-chart id="summaryChart" config="summaryChartConfig"></div>
+                    </td>
+                    <td
+                      ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
+                      <div ng-show="envCharts[env.namespace]">
+                        <div pf-c3-chart id="{{env.namespace}}Chart" config="envCharts[env.namespace]"></div>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!--
+                <div class="row row-cards-pf">
+                  <div class="col-md-12">
+                    <div class="card-pf pipeline">
+                      <div class="card-pf-heading no-border">
+                        <h2 class="card-pf-title inline-block">Active Pipelines</h4>
+                          <a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">View All Pipelines >></a>
+                      </div>
+                      <div class="card-pf-body no-top-margin">
+                        <div class="full-card-width" ng-controller="Developer.PipelinesController"
+                             ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </td>
-            </tr>
-            <tr ng-show="totalPodCount">
-              <th>
-                Pods
-              </th>
-            </tr>
-            <tr ng-show="totalPodCount">
-              <td>
-                <div pf-c3-chart id="summaryChart" config="summaryChartConfig"></div>
-              </td>
-              <td ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
-                <div ng-show="envCharts[env.namespace]">
-                  <div pf-c3-chart id="{{env.namespace}}Chart" config="envCharts[env.namespace]"></div>
+
+                <div class="row row-cards-pf">
+                  <div class="col-md-12">
+                    <div class="card-pf">
+                      <div class="card-pf-heading">
+                        <h2 class="card-pf-title inline-block">Commits</h2>
+                        <a ng-href="{{$projectLink}}/wiki/history//">View All Commits >></a>
+                      </div>
+                      <div class="card-pf-body">
+                        <div ng-include="'plugins/wiki/html/projectCommitsPanel.html'"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-
-<!--
-        <div class="row row-cards-pf">
-          <div class="col-md-12">
-            <div class="card-pf pipeline">
-              <div class="card-pf-heading no-border">
-                <h2 class="card-pf-title inline-block">Active Pipelines</h4>
-                  <a ng-href="{{$projectLink}}/jenkinsJob/{{jobId}}/pipelines">View All Pipelines >></a>
-              </div>
-              <div class="card-pf-body no-top-margin">
-                <div class="full-card-width" ng-controller="Developer.PipelinesController"
-                     ng-include="'plugins/kubernetes/html/pendingPipelines.html'"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row row-cards-pf">
-          <div class="col-md-12">
-            <div class="card-pf">
-              <div class="card-pf-heading">
-                <h2 class="card-pf-title inline-block">Commits</h2>
-                <a ng-href="{{$projectLink}}/wiki/history//">View All Commits >></a>
-              </div>
-              <div class="card-pf-body">
-                <div ng-include="'plugins/wiki/html/projectCommitsPanel.html'"></div>
-              </div>
-            </div>
-          </div>
-        </div>
--->
+        -->
 
       </div>
     </div>
