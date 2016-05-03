@@ -14,6 +14,19 @@ module Developer {
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
 
+        $scope.namespaceObjects = _.map(Kubernetes.isOpenShift ? $scope.model.projects : $scope.model.namespaces, (item) => {
+          if (angular.isString(item)) {
+            return {
+              "$name": item
+            };
+          } else {
+            if (!item["$name"]) {
+              item["$name"] = Kubernetes.getName(item);
+            }
+            return item;
+          }
+        });
+
         ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
@@ -55,7 +68,11 @@ module Developer {
               "type": "string",
               "label": "Project name",
               "description": "The project for this environment",
-              "required": true
+              "required": true,
+              "input-attributes": {
+                "typeahead": "title for $name in $parent.$parent.namespaceObjects | filter:$viewValue",
+                "typeahead-editable": true
+              }
             },
             "clusterURL": {
               "type": "string",

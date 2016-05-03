@@ -1,5 +1,4 @@
 /// <reference path="d.ts/includes.d.ts"/>
-/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>
 /// <reference path="d.ts/developer/ts/developerHelpers.d.ts"/>
 /// <reference path="d.ts/developer/ts/developerPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesInterfaces.d.ts"/>
@@ -26,6 +25,7 @@
 /// <reference path="d.ts/developer/ts/projectSelector.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspace.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspaces.d.ts"/>
+/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/breadcrumbs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/build.d.ts"/>
