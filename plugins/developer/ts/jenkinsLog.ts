@@ -9,6 +9,17 @@
 
 module Developer {
 
+  _module.directive('hawtioBuildLogPanel', () => {
+    return {
+      restrict: 'EA',
+      replace: true,
+      templateUrl: UrlHelpers.join(templatePath, 'logPanel.html'),
+      link: ($scope, $element, $attrs) => {
+        $element.css({ height: 250 });
+      }
+    }
+  });
+
   export function clickApprove(element, url) {
     var $scope: any = angular.element(element).scope();
     if ($scope) {

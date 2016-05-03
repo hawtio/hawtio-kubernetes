@@ -13,7 +13,7 @@
     </div>
     <div ng-show="model.job.builds.length">
       <div ng-repeat="build in model.job.builds | filter:model.filterText track by $index">
-        <div pipeline-view></div>
+        <div hawtio-pipeline-view></div>
       </div>
     </div>
   </div>

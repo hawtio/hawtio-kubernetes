@@ -51,7 +51,7 @@ module Developer {
       job.$project = projectId || jobName;
       var lastBuild = job.lastBuild;
       var lastBuildResult = lastBuild ? lastBuild.result : "NOT_STARTED";
-      var $iconClass = createBuildStatusIconClass(lastBuildResult);
+      var $iconClass = HawtioPipelineView.createBuildStatusIconClass(lastBuildResult);
 
       job.$lastBuildNumber = enrichJenkinsBuild(job, lastBuild);
       job.$lastSuccessfulBuildNumber = enrichJenkinsBuild(job, job.lastSuccessfulBuild);
@@ -83,40 +83,7 @@ module Developer {
     return job;
   }
 
-  export function createBuildStatusIconClass(result) {
-    var $iconClass = "fa fa-spinner fa-spin";
-    if (result) {
-      if (result === "FAILURE" || result === "FAILED") {
-        // TODO not available yet
-        $iconClass = "fa fa-exclamation-circle red";
-      } else if (result === "ABORTED" || result === "INTERUPTED") {
-        $iconClass = "fa fa-circle grey";
-      } else if (result === "SUCCESS" || result === "COMPLETE" || result === "COMPLETED") {
-        $iconClass = "fa fa-check-circle green";
-      } else if (result === "NOT_STARTED") {
-        $iconClass = "fa fa-circle-thin grey";
-      }
-    }
-    return $iconClass;
-  }
-
-  export function createBuildStatusBackgroundClass(result) {
-    var $iconClass = "build-pending";
-    if (result) {
-      if (result === "FAILURE" || result === "FAILED") {
-        $iconClass = "build-fail";
-      } else if (result === "ABORTED" || result === "INTERUPTED") {
-        $iconClass = "build-aborted";
-      } else if (result === "SUCCESS" || result === "COMPLETE" || result === "COMPLETED") {
-        $iconClass = "build-success";
-      } else if (result === "NOT_STARTED") {
-        $iconClass = "build-not-started";
-      }
-    }
-    return $iconClass;
-  }
-
-  export function enrichJenkinsBuild(job, build) {
+  export function enrichJenkinsBuild(job, build, namespace?:string) {
     var number = null;
     if (build) {
       build.$duration = build.duration;
@@ -125,9 +92,9 @@ module Developer {
       var jobName = job.$jobId || projectId;
       var buildId = build.id;
       number = build.number;
-      var workspaceName = Kubernetes.currentKubernetesNamespace();
+      var workspaceName = namespace || Kubernetes.currentKubernetesNamespace();
 
-      var $iconClass = createBuildStatusIconClass(build.result);
+      var $iconClass = HawtioPipelineView.createBuildStatusIconClass(build.result);
       var jobUrl = (job || {}).url;
       if (!jobUrl || !jobUrl.startsWith("http")) {
         var jenkinsUrl = jenkinsLink();
@@ -183,7 +150,7 @@ module Developer {
       build.$project = projectId;
       build.$jobId = jobName;
       build.$timestamp = asDate(build.timeInMillis);
-      build.$iconClass = createBuildStatusIconClass(build.result || "NOT_STARTED");
+      build.$iconClass = HawtioPipelineView.createBuildStatusIconClass(build.result || "NOT_STARTED");
 
       var workspaceName = Kubernetes.currentKubernetesNamespace();
       var parameters = build.parameters;
@@ -225,8 +192,8 @@ module Developer {
       var jobName = build.$jobId || projectId;
       var buildId = build.id;
       var workspaceName = Kubernetes.currentKubernetesNamespace();
-      stage.$backgroundClass =  createBuildStatusBackgroundClass(stage.status);
-      stage.$iconClass = createBuildStatusIconClass(stage.status);
+      stage.$backgroundClass =  HawtioPipelineView.createBuildStatusBackgroundClass(stage.status);
+      stage.$iconClass = HawtioPipelineView.createBuildStatusIconClass(stage.status);
       stage.$startTime = asDate(stage.startTime);
       if (!stage.duration) {
         stage.duration = 0;

@@ -112,7 +112,7 @@ module Developer {
             var date = Developer.asDate(build.timeInMillis);
             var result = build.result || "NOT_STARTED";
             var color = barColourForBuildResult(result);
-            var iconClass = createBuildStatusIconClass(result);
+            var iconClass = HawtioPipelineView.createBuildStatusIconClass(result);
             var tooltip = '<h3><i class="' + iconClass + '"></i> ' + build.displayName + '</h3>' +
               '<p>duration: <b>' + y + '</b> seconds</p>';
             if (date) {

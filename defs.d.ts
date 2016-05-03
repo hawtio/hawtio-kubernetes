@@ -16,7 +16,6 @@
 /// <reference path="d.ts/developer/ts/jenkinsMetrics.d.ts"/>
 /// <reference path="d.ts/developer/ts/navbar.d.ts"/>
 /// <reference path="d.ts/developer/ts/pipeline.d.ts"/>
-/// <reference path="d.ts/developer/ts/pipelineDirective.d.ts"/>
 /// <reference path="d.ts/developer/ts/pipelines.d.ts"/>
 /// <reference path="d.ts/developer/ts/project.d.ts"/>
 /// <reference path="d.ts/developer/ts/projectDashboard.d.ts"/>

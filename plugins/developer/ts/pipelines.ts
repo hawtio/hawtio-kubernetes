@@ -39,46 +39,6 @@ module Developer {
       }
     };
 
-    $scope.lastStage = (build):any => {
-      if (build && build.stages && build.stages.length) {
-        return _.last(build.stages);
-      }
-      // cater for no build stages
-      if (build.building) {
-        return {};
-      } else {
-        return {
-          status: build.result,
-          '$iconClass': createBuildStatusIconClass(build.result),
-          '$backgroundClass': createBuildStatusBackgroundClass(build.result)
-        };
-      }
-    }
-
-    // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-    function componentToHex(c) {
-      var hex = c.toString(16);
-      return hex.length == 1 ? "0" + hex : hex;
-    }
-
-    function rgbToHex(r, g, b) {
-      return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-
-    // set the top border color of each pipeline step
-    $scope.borderStyle = (build, stage, $index) => {
-      // #78DAF4
-      var r = 120;
-      var g = 218;
-      var b = 244;
-      r = Math.abs(r - ($index * 10));
-      g = Math.abs(g - ($index * 10));
-      b = Math.abs(b - ($index * 5));
-      return {
-        'border-color': rgbToHex(r, g, b)
-      };
-    }
-
     var updateData = _.debounce(() => {
       var entity = $scope.entity;
       if ($scope.jobId) {
@@ -146,8 +106,8 @@ module Developer {
                 duration = duration / 1000000;
               }
               var displayName = Kubernetes.getName(build);
-              var $iconClass = createBuildStatusIconClass(resultUpperCase);
-              var $backgroundClass = createBuildStatusBackgroundClass(resultUpperCase);
+              var $iconClass = HawtioPipelineView.createBuildStatusIconClass(resultUpperCase);
+              var $backgroundClass = HawtioPipelineView.createBuildStatusBackgroundClass(resultUpperCase);
               var stage = {
                 stageName: "OpenShift Build",
                 $viewLink: $viewLink,
