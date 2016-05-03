@@ -881,11 +881,26 @@ module Kubernetes {
         return Core.url(baseLink);
       }
       var $routeParams = HawtioCore.injector.get<ng.route.IRouteParamsService>('$routeParams');
-      var projectId = $routeParams['project'] || $routeParams['project'];
-      if (!projectId) {
+      var workspace = $routeParams['workspace'];
+      var ns = $routeParams['namespace'];
+      var projectId = $routeParams['project'];
+      if (!projectId && !ns) {
         return Core.url(baseLink);
       }
-      return UrlHelpers.join(Developer.projectLink(projectId), baseLink.replace(/^\/kubernetes\//, ''));
+      var path = baseLink.replace(/^\/kubernetes\//, '');
+      if (_.startsWith(Core.trimLeading(path, "/"), "workspaces/")) {
+        return UrlHelpers.join(HawtioCore.documentBase(), path);
+      }
+      if (workspace) {
+        if (projectId) {
+          return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspace, "projects", projectId, path);
+        } else {
+          return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspace, path);
+          //return UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspace, "namespaces", ns, path);
+        }
+      } else {
+        return UrlHelpers.join(Developer.projectLink(projectId), path);
+      }
     }
     return null;
   }
