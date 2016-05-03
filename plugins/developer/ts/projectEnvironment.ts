@@ -161,6 +161,14 @@ module Developer {
               data[key] = value;
             }
           });
+          if (!env && !data["order"]) {
+            var order = 0;
+            var max = _.max(_.map($scope.model.environments, 'order'));
+            if (angular.isNumber(max)) {
+              order = <number> max;
+            }
+            data["order"] = 1 + order;
+          }
           var key = data["key"];
           if (!key) {
             log.warn("No key defined in enviroment configuration: " + angular.toJson(data, false));

@@ -698,7 +698,7 @@ module Kubernetes {
           }
         }
       }
-      return answer;
+      return _.sortBy(answer, (element) => element['order']);
     }
 
     public createEnvironment(key, values, ns) {

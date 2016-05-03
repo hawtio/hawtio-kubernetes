@@ -23,7 +23,7 @@ module Developer {
         $scope.tableConfig = {
           data: 'model.environments',
           showSelectionCheckbox: true,
-          enableRowClickSelection: true,
+          enableRowClickSelection: false,
           multiSelect: true,
           selectedItems: [],
           filterOptions: {
@@ -31,12 +31,16 @@ module Developer {
           },
           columnDefs: [
             {
+              field: 'order',
+              displayName: 'Order'
+            },
+            {
               field: 'name',
               displayName: 'Environment',
               cellTemplate: $templateCache.get("environmentNameTemplate.html")
             },
             {
-              field: 'name',
+              field: 'key',
               displayName: 'Actions',
               cellTemplate: $templateCache.get("environmentEditTemplate.html")
             },
@@ -116,5 +120,53 @@ module Developer {
             }
           }
         }
+
+        $scope.moveEntity = (entity, up, callback = null) => {
+          var environments = _.sortBy($scope.model.environments, (element) => element['order']);
+          var index = _.indexOf(environments, entity);
+          log.info("Moving entity " + entity['key'] + " at index " + index + " up: " + up);
+
+          var nextIndex = up ? index - 1 : index + 1;
+
+          function getKey(idx) {
+            if (idx >= 0 || idx < environments.length) {
+              var env = environments[idx];
+              return (env || {})['key']
+            } else {
+              return null;
+            }
+          }
+
+          var key1 = getKey(index);
+          var key2 = getKey(nextIndex);
+          if (key1 && key2) {
+            var configMap = Kubernetes.getNamed($scope.model.configmaps, Kubernetes.environemntsConfigMapName);
+            if (configMap) {
+              var configMapData = configMap.data;
+
+              var data1 = jsyaml.load(configMapData[key1]);
+              var data2 = jsyaml.load(configMapData[key2]);
+              var tmp = data1.order || 0;
+              data1.order = data2.order || 0;
+              data2.order = tmp;
+
+              var yaml1 = jsyaml.safeDump(data1);
+              var yaml2 = jsyaml.safeDump(data2);
+              configMapData[key1] = yaml1;
+              configMapData[key2] = yaml2;
+
+              kubeClient.put(configMap, (data) => {
+                log.info("Switched order of " + key1 + " and " + key2);
+                log.info("Environments are now: " + angular.toJson(configMapData));
+                if (angular.isFunction(callback)) {
+                  callback();
+                }
+              });
+            }
+          } else {
+            log.warn("Could not find keys for index " + index + " and " + nextIndex + ". Found " + key1 + " and " + key2);
+          }
+        };
+
       }]);
 }

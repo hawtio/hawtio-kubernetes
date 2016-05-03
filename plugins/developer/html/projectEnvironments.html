@@ -19,6 +19,16 @@
         <a ng-show="row.entity.$editLink" class="btn" href="{{row.entity.$editLink}}" title="Edit this environment configuration">
           <i class="fa fa-pencil-square-o"></i> Edit
         </a>
+        &nbsp;
+        &nbsp;
+        <a class="btn" ng-click="$parent.$parent.moveEntity(row.entity, true)" ng-disabled="row.index == 0"
+           title="Move this environment up in the list">
+          <i class="fa fa-arrow-up"></i>
+        </a>
+        <a class="btn" ng-click="$parent.$parent.moveEntity(row.entity, false)" ng-disabled="row.index >= $parent.$parent.model.environments.length - 1"
+           title="Move this environment down in the list">
+          <i class="fa fa-arrow-down"></i>
+        </a>
       </div>
     </div>
   </script>
