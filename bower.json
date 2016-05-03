@@ -34,7 +34,7 @@
     "term.js": "~0.0.3",
     "hawtio-kubernetes-api": "~2.0.30",
     "js-yaml": "^3.5.4",
-    "hawtio-pipeline-view": "*"
+    "hawtio-pipeline-view": "~0.1.0"
   },
   "overrides": {
     "term.js": {
