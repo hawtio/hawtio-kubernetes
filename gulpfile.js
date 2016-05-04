@@ -56,7 +56,7 @@ gulp.task('tsc', ['clean-defs'], function() {
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.typescript(config.tsProject))
     .on('error', plugins.notify.onError({
-      message: '<%= error.message =>',
+      message: '<%= error.message %>',
       title: 'Typescript compilation error'
     }));
 

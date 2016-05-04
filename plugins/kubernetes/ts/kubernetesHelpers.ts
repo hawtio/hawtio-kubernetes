@@ -419,7 +419,6 @@ module Kubernetes {
     $scope.hasServiceApiman = () => hasService(apimanServiceName);
 
     $scope.viewTemplates = () => {
-      console.log("$scope: ", $scope);
       var returnTo = $location.url();
       var path = "";
       if ($scope.$projectNamespaceLink) {
@@ -502,7 +501,7 @@ module Kubernetes {
 
     $scope.triggerBuild = (buildConfig) => {
       var url = buildConfig.$triggerUrl;
-      console.log("triggering build at url: " + url);
+      log.debug("triggering build at url: " + url);
       if (url) {
         //var data = {};
         var data = null;
@@ -1866,11 +1865,11 @@ module Kubernetes {
         }
       });
       $element.on('$destroy', () => {
-        console.log("Static controller[" + kind + ", " + ns + "] element destroyed");
+        log.debug("Static controller[" + kind + ", " + ns + "] element destroyed");
         $scope.$destroy();
       });
       $scope.$on('$destroy', () => {
-        console.log("Static controller[" + kind + ", " + ns + "] scope destroyed");
+        log.debug("Static controller[" + kind + ", " + ns + "] scope destroyed");
         connection.disconnect();
       });
       var oldDeleteScopeFn = $scope.deleteScope;

@@ -1,6 +1,8 @@
 /// <reference path="../../includes.ts"/>
 module Developer {
 
+  var log = Logger.get('developer-navigation');
+
   export type LabelResolver = () => string;
 
   export interface BreadcrumbConfig {
@@ -526,6 +528,15 @@ module Developer {
     return activateCurrent([
       {
         href: UrlHelpers.join(namespacesLink, ns, "apps"),
+        isActive: (tab, path) => {
+          if (tab.href === path) {
+            return true;
+          }
+          if (tab.href.replace(path, '') === '/apps') {
+            return true;
+          }
+          return false;
+        },
         label: "Overview",
         class: "fa fa-list",
         title: "Overview of all the apps for this project"
@@ -653,21 +664,48 @@ module Developer {
         item.active = true;
         found = true;
       }
+      function getHref(item) {
+        var href = item.href;
+        var trimHref = trimQuery(href);
+        return trimHref;
+      }
       angular.forEach(navBarItems, (item) => {
-        if (item) {
+        if (!found && item) {
           if (angular.isFunction(item.isActive)) {
-            if (!found && item.isActive(item, path)) {
+            if (item.isActive(item, path)) {
               makeActive(item);
             }
           } else {
-            var href = item.href;
-            var trimHref = trimQuery(href);
-            if (!found && trimHref && trimHref === path) {
+            var trimHref = getHref(item);
+            if (!trimHref) {
+              return;
+            }
+            if (trimHref === path) {
               makeActive(item);
             }
           }
         }
       });
+      // Maybe it's a sub-item of a tab, let's fall back to that maybe
+      if (!found) {
+        angular.forEach(navBarItems, (item) => {
+          if (!found) {
+            if (!angular.isFunction(item.isActive)) {
+              var trimHref = getHref(item);
+              if (!trimHref) {
+                return;
+              }
+              if (_.startsWith(path, trimHref)) {
+                makeActive(item);
+              }
+            }
+          }
+        });
+      }
+      // still not found, let's log it
+      if (!found) {
+        log.debug("No navigation tab found for path:", path);
+      }
     }
     return navBarItems;
   }
