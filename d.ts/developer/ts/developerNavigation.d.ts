@@ -42,4 +42,5 @@ declare module Developer {
     function createEnvironmentSubNavBars($scope: any, $location: any, $routeParams: any): any;
     function environmentInstanceLink(env: any, projectName?: any): string;
     function namespaceLink($scope: any, $routeParams: any, path?: any): string;
+    function normalizeHref(href: string): string;
 }

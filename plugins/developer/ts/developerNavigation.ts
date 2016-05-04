@@ -277,11 +277,12 @@ module Developer {
       {
         href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces", workspaceName, "projects", projectName, "environments"),
         isActive: (subTab, path) => {
+          var href = normalizeHref(subTab.href);
           //console.log("subTab: ", subTab, " path: ", path);
-          if (path === subTab.href) {
+          if (path === href) {
             return true;
           }
-          var rootPath = subTab.href.replace(/\/environments/, '');
+          var rootPath = href.replace(/\/environments/, '');
           if (path === rootPath) {
             return true;
           }
@@ -529,10 +530,11 @@ module Developer {
       {
         href: UrlHelpers.join(namespacesLink, ns, "apps"),
         isActive: (tab, path) => {
-          if (tab.href === path) {
+          var href = normalizeHref(tab.href);
+          if (href === path) {
             return true;
           }
-          if (tab.href.replace(path, '') === '/apps') {
+          if (href.replace(path, '') === '/apps') {
             return true;
           }
           return false;
@@ -649,16 +651,21 @@ module Developer {
     return text;
   }
 
+  // Cater for the app running at some weird document base
+  export function normalizeHref(href:string) {
+    if (!href) {
+      return null;
+    }
+    var regex = new RegExp('^' + HawtioCore.documentBase().replace('/', '\\/'));
+    return href.replace(regex, '/');
+  }
+
   function activateCurrent(navBarItems) {
     navBarItems = _.compact(navBarItems);
     var injector = HawtioCore.injector;
     var $location = injector ? injector.get<ng.ILocationService>("$location") : null;
-    var documentBase = HawtioCore.documentBase();
     if ($location) {
-      var path = trimQuery($location.path());
-      // Cater for the app running at some weird document base
-      var regex = new RegExp('^' + documentBase.replace('/', '\\/'));
-      path = path.replace(regex, '/');
+      var path = normalizeHref(trimQuery($location.path()));
       var found = false;
       function makeActive(item) {
         item.active = true;
@@ -667,7 +674,7 @@ module Developer {
       function getHref(item) {
         var href = item.href;
         var trimHref = trimQuery(href);
-        return trimHref;
+        return normalizeHref(trimHref);
       }
       angular.forEach(navBarItems, (item) => {
         if (!found && item) {
