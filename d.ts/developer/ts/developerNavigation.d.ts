@@ -23,6 +23,27 @@ declare module Developer {
     function createProjectSettingsBreadcrumbs(projectName: any, workspaceName?: any): any;
     function createWorkspaceSubNavBars(): any;
     function namespaceRuntimeLink(workspaceName?: any): string;
+    /**
+     * Creates a routing function that loads a template and inject the needed directives to properly
+     * display/update the Developer module managed tabs and bread crumbs for when the route is active.
+     *
+     * Example Usage:
+     *
+     * var route = Developer.createTabRoutingFunction("/app/somedir");
+     * $routeProvider.when('/profiles', route('view.html', false, [{
+     *     label: "Profiles",
+     *     title: "Browse the profiles of this project"
+     *   }]
+     * ));
+     *
+     * @param baseURL
+     * @returns {function(string, boolean=, Array<Developer.BreadcrumbConfig>=): {template: string, reloadOnSearch: boolean, controller: string|string|(function(any, ng.route.IRouteParamsService): undefined)[]}}
+     */
+    function createTabRoutingFunction(baseURL: string): (templateName: string, reloadOnSearch?: boolean, children?: BreadcrumbConfig[]) => {
+        template: string;
+        reloadOnSearch: boolean;
+        controller: (string | (($scope: any, $routeParams: ng.route.IRouteParamsService) => void))[];
+    };
     function createProjectSubNavBars(projectName: any, jenkinsJobId?: any, $scope?: any): any;
     function createProjectSettingsSubNavBars(projectName: any, jenkinsJobId?: any): any;
     function forgeProjectHasBuilder(name: any): any;
