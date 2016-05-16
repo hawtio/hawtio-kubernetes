@@ -11,6 +11,32 @@ module Kubernetes {
     }
   }]);
 
+  // Controller that handles a service that requires an OAuth redirect
+  _module.controller("Kubernetes.PostController", ($scope, userDetails, $element, $sce) => {
+    var service = $scope.$eval('view.service');
+    if (!service || !service.$connectTemplate) {
+      return;
+    }
+    // need to clear off any query params
+    var actionUrl = new URI(service.$actionUrl);
+    actionUrl.query({});
+    var connectUrl = new URI(service.$connectUrl);
+    connectUrl.query({});
+    connectUrl.hash('#' + URI.encode('{"backTo":"' + new URI().toString() + '"}'));
+    var item = {
+      '$host': service.$host,
+      '$actionUrl': $sce.trustAsResourceUrl(actionUrl.toString()),
+      '$connectUrl': $sce.trustAsResourceUrl(connectUrl.toString())
+    }
+    $scope.item = item;
+    $scope.accessToken = userDetails.token;
+    $scope.go = () => {
+      var form = $element.find('form');
+      form.submit();
+    }
+
+  });
+
   _module.controller("Kubernetes.TermController", ($scope, TerminalService) => {
     $scope.canConnectTo = (container) => {
       if (container.securityContext && container.securityContext.privileged) {
