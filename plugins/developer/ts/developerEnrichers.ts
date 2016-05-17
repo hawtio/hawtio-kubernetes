@@ -8,27 +8,33 @@ module Developer {
     return projects;
   }
 
-  export function enrichWorkspace(build) {
-    if (build) {
-      var name = Kubernetes.getName(build);
-      build.$name = name;
-      build.$sortOrder = 0 - build.number;
+  export function enrichWorkspace(project) {
+    if (project) {
+      var name = Kubernetes.getName(project);
+      project.$name = name;
+      project.$sortOrder = 0 - project.number;
 
       var nameArray = name.split("-");
       var nameArrayLength = nameArray.length;
-      build.$shortName = (nameArrayLength > 4) ? nameArray.slice(0, nameArrayLength - 4).join("-") : name.substring(0, 30);
+      project.$shortName = (nameArrayLength > 4) ? nameArray.slice(0, nameArrayLength - 4).join("-") : name.substring(0, 30);
 
-      var labels = Kubernetes.getLabels(build);
-      build.$creationDate = asDate(Kubernetes.getCreationTimestamp(build));
-      build.$labelsText = Kubernetes.labelsToString(labels);
+      var labels = Kubernetes.getLabels(project);
+      project.$creationDate = asDate(Kubernetes.getCreationTimestamp(project));
+      project.$labelsText = Kubernetes.labelsToString(labels);
 
+      var team = labels["team"] || labels["project"];
       if (name) {
-        build.$projectsLink = UrlHelpers.join("workspaces", name);
-        build.$runtimeLink = UrlHelpers.join("kubernetes/namespace/", name, "/apps");
-        build.$viewLink = build.$projectsLink;
+        if (team) {
+          project.$projectsLink = UrlHelpers.join("workspaces", team, "/namespace", name);
+          project.$runtimeLink = UrlHelpers.join("workspaces", team, "/namespace", name, "/apps");
+        } else {
+          project.$projectsLink = UrlHelpers.join("workspaces", name);
+          project.$runtimeLink = UrlHelpers.join("kubernetes/namespace/", name, "/apps");
+        }
+        project.$viewLink = project.$projectsLink;
       }
     }
-    return build;
+    return project;
   }
 
   export function asDate(value) {
