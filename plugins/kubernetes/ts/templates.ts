@@ -73,6 +73,14 @@ module Kubernetes {
       $scope.$watchCollection('model.templates', (_templates) => {
         templates[namespace] = _templates;
       });
+      // We currently store all of our templates in 'default', let's
+      // have 'em available if the user is in a different namespace
+      if (namespace !== 'default') {
+        Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.TEMPLATES, 'default', (_templates) => {
+          templates['default'] = _templates;
+          Core.$apply($scope);
+        });
+      }
     } else {
       $scope.$watchCollection('model.configmaps', (configmaps) => {
         var _templates = [];

@@ -552,15 +552,20 @@ module Kubernetes {
               }
 
               // TODO definitely need that annotation, temp hack for apiman link
-              if (getName(service) === 'apiman' && host) {
-                service.$connectUrl = (<any> new URI().host(service.$host)
-                  .path('apimanui/'))
-                  .query({})
-                  .hash(URI.encode(angular.toJson({
-                    backTo: new URI().toString(),
-                    token: HawtioOAuth.getOAuthToken()
-                  }))).toString();
-
+              if (getName(service) === 'apiman' && host && _.get(route, 'spec.tls.termination') === 'passthrough') {
+                service.$connectUrl = (<any> new URI().scheme('https').host(service.$host)
+                  .path('apimanui/')).toString();
+                service.$actionUrl = (<any> new URI().scheme('https').host(service.$host)
+                  .path('apimanui/link')).toString();
+                service.$connectTemplate = `
+                  <span ng-controller="Kubernetes.PostController">
+                    <form action="{{item.$actionUrl}}" method="POST">
+                      <input type="hidden" name="redirect" value="{{item.$connectUrl}}">
+                      <input type="hidden" name="access_token" value="{{accessToken}}">
+                    </form>
+                    <a href="" ng-click="go()">{{item.$host}}</a>
+                  </span>
+                `;
               }
             } else {
               log.debug("Could not find service " + serviceName + " namespace " + namespace + " for route: " + metadata.name);

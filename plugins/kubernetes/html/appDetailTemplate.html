@@ -14,9 +14,10 @@
     </div>
     <div class="col-md-6">
       <span class="service-view-address" title="The service address">
-        <a ng-show="view.service.$connectUrl" target="_blank" href="{{view.service.$connectUrl}}" title="Connect to the service">
+        <a ng-show="view.service.$connectUrl && !view.service.$connectTemplate" target="_blank" href="{{view.service.$connectUrl}}" title="Connect to the service">
           {{view.service.$host}}
         </a>
+        <span ng-show="view.service.$connectTemplate" compile="view.service.$connectTemplate"></span>
         <span ng-hide="view.service.$connectUrl">{{view.service.$host}}</span>
       </span>
     </div>
