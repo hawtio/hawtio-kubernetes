@@ -11,11 +11,7 @@ declare module Developer {
     }
     function workspaceLink(): string;
     function projectLink(projectId: any): string;
-    function createWorkspacesBreadcrumbs(developPerspective?: any): {
-        href: string;
-        label: string;
-        title: string;
-    }[];
+    function createWorkspacesBreadcrumbs(developPerspective?: any): BreadcrumbConfig[];
     function createWorkspacesSubNavBars(developPerspective: any): any;
     function createWorkspaceBreadcrumbs(children?: any, workspaceName?: any): any;
     function createEnvironmentBreadcrumbs($scope: any, $location: any, $routeParams: any): any;

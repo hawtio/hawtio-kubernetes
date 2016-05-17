@@ -15,14 +15,16 @@ module Developer {
   }
 
 
-  function developBreadcrumb() {
+  function developBreadcrumb() : BreadcrumbConfig {
     return {
       href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces"),
       label: "Projects",
-      title: "View all the available projects"
+      title: "View all the available projects",
+      isActive: (subTab, path) => false
     };
   }
-  function operateBreadcrumb() {
+
+  function operateBreadcrumb() : BreadcrumbConfig {
     return {
       href: UrlHelpers.join(HawtioCore.documentBase(), "/namespaces"),
       label: "Manage",
