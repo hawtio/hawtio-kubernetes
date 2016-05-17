@@ -184,6 +184,13 @@ module Kubernetes {
               watch.fetched = true;
             }
             debouncedUpdate();
+          },
+          error: (err) => {
+            log.debug(kind, " fetch error: ", err);
+            if (!watch.fetched) {
+              watch.fetched = true;
+            }
+            debouncedUpdate();
           }
         }
       }

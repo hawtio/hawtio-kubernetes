@@ -68,3 +68,4 @@
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/tabs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/templates.d.ts"/>
+/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>
