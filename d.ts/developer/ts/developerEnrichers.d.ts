@@ -1,7 +1,7 @@
 /// <reference path="../../includes.d.ts" />
 declare module Developer {
     function enrichWorkspaces(projects: any): any;
-    function enrichWorkspace(build: any): any;
+    function enrichWorkspace(project: any): any;
     function asDate(value: any): Date;
     function enrichJenkinsJobs(jobsData: any, projectId: any, jobName: any): any;
     function enrichJenkinsJob(job: any, projectId: any, jobName: any): any;

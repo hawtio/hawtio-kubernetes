@@ -551,9 +551,9 @@ module Developer {
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "replicationControllers"),
-        label: "Controllers",
+        label: "Replicas",
         class: "fa fa-clone",
-        title: "View the Replication Controllers for this project"
+        title: "View the Replicas for this project"
       },
       {
         href: UrlHelpers.join(namespacesLink, ns, "pods"),

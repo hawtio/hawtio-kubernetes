@@ -28,7 +28,7 @@
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
-                       placeholder="Filter replication controllers..."
+                       placeholder="Filter replicas..."
                        save-as="kubernetes-replication-controllers-text-filter"></hawtio-filter>
       </span>
       <button ng-show="model.fetched"
@@ -58,7 +58,7 @@
       </div>
       <div ng-show="model.fetched">
         <div ng-hide="model.replicationControllers.length" class="align-center">
-          <p class="alert alert-info">There are no replication controllers currently available.</p>
+          <p class="alert alert-info">There are no replicas currently available.</p>
         </div>
         <div ng-show="model.replicationControllers.length">
           <table class="table table-bordered table-striped"

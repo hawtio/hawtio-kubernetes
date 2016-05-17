@@ -39,7 +39,7 @@ module Kubernetes {
           }
         },
         { field: '$replicas',
-          displayName: 'Replicas',
+          displayName: 'Scale',
           cellTemplate:$templateCache.get("desiredReplicas.html")
         },
         { field: '$labelsText',
