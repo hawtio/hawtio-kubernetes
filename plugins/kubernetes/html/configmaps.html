@@ -1,0 +1,47 @@
+<div class="row" ng-controller="Kubernetes.ConfigMapsController">
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
+
+  <div class="row filter-header">
+    <div class="col-md-12">
+      <span ng-show="!id">
+        <hawtio-filter ng-show="model.configmaps.length"
+          ng-model="tableConfig.filterOptions.filterText"
+          save-as="kubernetes-configmaps-text-filter"
+          css-class="input-xxlarge"
+          placeholder="Filter configmaps..."></hawtio-filter>
+
+        <button class="btn btn-danger pull-right"
+          title="Deletes the selected configmaps"
+          ng-disabled="!tableConfig.selectedItems.length"
+          ng-click="deletePrompt(tableConfig.selectedItems)">
+          <i class="fa fa-remove"></i> Delete
+        </button>
+        <span class="pull-right">&nbsp;</span>
+        <a class="btn btn-primary pull-right"
+          title="Create a new secret"
+          ng-show="$createSecretLink" href="{{$createSecretLink}}">
+          <i class="fa fa-plus"></i> Create
+        </a>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="model.fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="model.fetched">
+        <div ng-hide="model.configmaps.length" class="align-center">
+          <p class="alert alert-info">There are no configmaps currently available.</p>
+        </div>
+        <div ng-show="model.configmaps.length">
+          <table class="table table-bordered table-striped" ui-if="kubernetes.selectedNamespace"
+            hawtio-simple-table="tableConfig"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

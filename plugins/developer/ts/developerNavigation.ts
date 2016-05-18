@@ -602,6 +602,12 @@ module Developer {
         title: "View the pods for this project"
       },
       {
+        href: UrlHelpers.join(namespacesLink, ns, "configMaps"),
+        label: "Config",
+        class: "fa fa-cogs",
+        title: "View the config maps for this project"
+      },
+      {
         href: UrlHelpers.join(namespacesLink, ns, "events"),
         label: "Events",
         class: "fa fa-newspaper-o",

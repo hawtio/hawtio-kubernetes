@@ -24,6 +24,7 @@
 /// <reference path="d.ts/developer/ts/projectSelector.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspace.d.ts"/>
 /// <reference path="d.ts/developer/ts/workspaces.d.ts"/>
+/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/apps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/breadcrumbs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/build.d.ts"/>
@@ -32,12 +33,14 @@
 /// <reference path="d.ts/kubernetes/ts/buildConfigs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/buildLogs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/builds.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/configmap.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/utilHelpers.d.ts"/>
+/// <reference path="d.ts/kubernetes/ts/configmaps.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/connect.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/deploymentConfig.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/deploymentConfigs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/events.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/host.d.ts"/>
-/// <reference path="d.ts/kubernetes/ts/utilHelpers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/hosts.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/imageRepositories.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/kubernetesNavigation.d.ts"/>
@@ -67,4 +70,3 @@
 /// <reference path="d.ts/kubernetes/ts/sharedControllers.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/tabs.d.ts"/>
 /// <reference path="d.ts/kubernetes/ts/templates.d.ts"/>
-/// <reference path="d.ts/navigation/ts/navigationPlugin.d.ts"/>

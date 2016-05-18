@@ -40,6 +40,18 @@ module Navigation {
     return self;
   });
 
+  _module.directive('hawtioRelativeHref', ['$location', ($location) => {
+    return {
+      restrict: 'A',
+      link: (scope, element, attr) => {
+        var targetPath = attr['hawtioRelativeHref'];
+        var targetHref = new URI($location.url());
+        targetHref.segment(targetPath);
+        element.attr('href', targetHref.toString());
+      }
+    }
+  }]);
+
   _module.directive('viewportHeight', ['$window', '$document', ($window, $document) => {
     return {
       restrict: 'A',
