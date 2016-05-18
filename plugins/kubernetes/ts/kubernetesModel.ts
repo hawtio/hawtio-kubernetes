@@ -121,7 +121,6 @@ module Kubernetes {
       var answer = _.filter(this.services, (s) => {
         return s.$serviceUrl && s.$podCount
       });
-      console.log("answer: ", answer);
       return answer;
     }
 
