@@ -1,16 +1,15 @@
-<div class="dropdown" ng-controller="Kubernetes.ServiceApps">
-  <a href="" class="dropdown-toggle" data-toggle="dropdown">
-    <i class="fa fa-ellipsis-v" title="View the available tools"></i>
-  </a>
-  <ul class="dropdown-menu right k8sServiceApp-menu">
-    <li class="k8sServiceApp" 
-        ng-repeat="service in model.serviceApps | filter:filterTemplates | orderBy:'metadata.name' track by $index">
-        <a href="{{service.$connectUrl}}"
-         target="_blank"
-         title="Click to open this app">
-        <img style="width: 32px; height: 32px;" ng-src="{{service.$iconUrl}}">&nbsp;
-        <span ng-bind="service.metadata.name"></span>
-      </a>
-    </li>
-  </ul>
-</div>
+<a href="#" class="dropdown-toggle nav-item-iconic" data-toggle="dropdown">
+  <span class="fa fa-wrench" title="View the available tools for team {{model.currentNamespace()}}"></span>
+  <span class="caret"></span>
+</a>
+<ul class="dropdown-menu"> <!-- k8sServiceApp-menu -->
+  <li class="k8sServiceApp" 
+    ng-repeat="service in model.serviceApps | filter:filterTemplates | orderBy:'metadata.name' track by $index">
+    <a href="{{service.$connectUrl}}"
+      target="_blank"
+      title="Click to open this app">
+      <img style="width: 32px; height: 32px;" ng-src="{{service.$iconUrl}}">&nbsp;
+      <span ng-bind="service.metadata.name"></span>
+    </a>
+  </li>
+</ul>

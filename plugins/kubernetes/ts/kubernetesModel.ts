@@ -118,9 +118,11 @@ module Kubernetes {
     public watcher:WatcherService = null;
 
     public get serviceApps():Array<any> {
-      return _.filter(this.services, (s) => {
-        return s.$host && s.$serviceUrl && s.$podCount
+      var answer = _.filter(this.services, (s) => {
+        return s.$serviceUrl && s.$podCount
       });
+      console.log("answer: ", answer);
+      return answer;
     }
 
     public $keepPolling() {
