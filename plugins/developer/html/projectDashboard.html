@@ -1,4 +1,4 @@
-<div ng-controller="Developer.ProjectDashboardController" hawtio-card-bg>
+<div class="team-dashboard" ng-controller="Developer.ProjectDashboardController" hawtio-card-bg>
   <div hawtio-breadcrumbs></div>
   <div hawtio-tabs></div>
 
@@ -138,13 +138,14 @@
                             &nbsp;
                             &nbsp;
                             &nbsp;
-                      <span class="dropdown">
-                        <a class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"
+                      <div class="inline-block dropdown">
+                        <a href="#" class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown"
                            title="View build and commit details">
                           <span class="fa fa-ellipsis-v"></span>
+                          <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                          <li role="presentation" ng-show="rc.$gitUrl">
+                          <li role="presentation" ng-if="rc.$gitUrl">
                             <a href="{{rc.$gitUrl}}" target="git" title="{{rc.$gitCommit}}
                               {{rc.$gitCommitAuthor}}
                               {{rc.$gitCommitDate}}
@@ -153,16 +154,16 @@
                               Commit {{rc.$gitCommit | limitTo:7}}
                             </a>
                           </li>
-                          <li role="presentation" ng-hide="rc.$gitUrl || !rc.$gitCommit" title="{{rc.$gitCommit}}
+                          <li role="presentation" ng-if="!rc.$gitUrl" title="{{rc.$gitCommit}}
                             {{rc.$gitCommitAuthor}}
                             {{rc.$gitCommitDate}}
                             {{rc.$gitCommitMessage}}">
-                            <span>
+                            <a>
                               <i class="fa fa-code-fork"></i>
                               Commit {{rc.$gitCommit | limitTo:7}}
-                            </span>
+                            </a>
                           </li>
-                          <li role="presentation" ng-show="rc.$buildUrl && rc.$buildId">
+                          <li role="presentation" ng-if="rc.$buildUrl && rc.$buildId">
                             <a href="{{rc.$buildUrl}}" target="builds"
                                title="View the build which created this Replication Controller">
                               <i class="fa fa-tasks"></i>
@@ -170,7 +171,7 @@
                             </a>
                           </li>
                         </ul>
-                      </span>
+                      </div>
                       <span ng-show="rc.$serviceLink.href">
                         &nbsp;
                         &nbsp;
