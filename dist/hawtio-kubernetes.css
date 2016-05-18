@@ -167,6 +167,11 @@ legend {
 .environment-deploy-version-and-pods {
   padding-bottom: 5px;
 }
+.full-card-width .log-section {
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 20px;
+}
 
 .project-dashboard .page-header-row {
   background: white;
