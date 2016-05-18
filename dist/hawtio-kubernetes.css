@@ -280,6 +280,9 @@ table.environment td {
 .team-dashboard .environment-rows .card-pf .card-pf-heading {
   margin-bottom: 0;
 }
+.team-dashboard .environment-rows .card-pf .card-pf-heading .btn {
+  margin-top: 15px;
+}
 .team-dashboard .environment-rows .card-pf .card-pf-body {
   margin-top: 0;
 }

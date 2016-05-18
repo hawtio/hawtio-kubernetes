@@ -13,9 +13,10 @@
     </div>
   </script>
 
+  
+      <!--
   <div class="row filter-header" ng-show="model.buildconfigs.length">
     <div class="col-md-12">
-      <!--
       <span class="pull-right">&nbsp;</span>
       <button class="btn btn-danger pull-right"
               title="Deletes the selected environments"
@@ -24,13 +25,13 @@
         <i class="fa fa-remove"></i> Delete
       </button>
       <span class="pull-right">&nbsp;</span>
-      -->
       <a class="btn btn-primary pull-right" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
          title="Create a new app in this project">
         <i class="fa fa-plus"></i> Create App
       </a>
     </div>
   </div>
+      -->
 
   <div ng-hide="model.fetched">
     <div class="row">
@@ -84,6 +85,10 @@
             <div class="card-pf">
               <div class="card-pf-heading">
                 <h2 class="card-pf-title inline-block">Deployments</h2>
+                <a class="btn btn-primary pull-right" href="{{baseUri}}/workspaces/{{namespace}}/forge/createProject"
+                  title="Create a new app in this project">
+                  <i class="fa fa-plus"></i> Create App
+                </a>
               </div>
               <div class="card-pf-body">
                 <table class="table table-striped deployments">
