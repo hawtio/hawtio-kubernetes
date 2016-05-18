@@ -18,8 +18,8 @@ module Developer {
   function developBreadcrumb() : BreadcrumbConfig {
     return {
       href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces"),
-      label: "Projects",
-      title: "View all the available projects",
+      label: "Teams",
+      title: "View all the available teams",
       isActive: (subTab, path) => false
     };
   }

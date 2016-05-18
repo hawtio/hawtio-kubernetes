@@ -1,16 +1,11 @@
 <div ng-controller="Developer.WorkspacesController">
-  <div class="row">
-    <div hawtio-breadcrumbs></div>
-  </div>
-
-  <div class="row">
-    <div hawtio-tabs></div>
-  </div>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
 
   <script type="text/ng-template" id="viewNamespaceProjectsTemplate.html">
     <div class="ngCellText">
       <div class="ngCellText">
-        <a href="{{row.entity.$projectsLink}}" title="View the apps for this project">
+        <a href="{{row.entity.$projectsLink}}" title="View the apps for this team">
           {{row.entity.$name}}
         </a>
       </div>
@@ -19,7 +14,7 @@
   <script type="text/ng-template" id="viewNamespaceTemplate.html">
     <div class="ngCellText">
       <div class="ngCellText">
-        <a href="{{row.entity.$runtimeLink}}" title="View the runtime resources in this project">
+        <a href="{{row.entity.$runtimeLink}}" title="View the runtime resources in this team">
           {{row.entity.$name}}
         </a>
       </div>
@@ -31,11 +26,11 @@
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
-                       placeholder="Filter projects..."></hawtio-filter>
+                       placeholder="Filter teams..."></hawtio-filter>
       </span>
       <span class="pull-right">&nbsp;</span>
       <button class="btn btn-danger pull-right"
-              title="Deletes the selected projects"
+              title="Deletes the selected teams"
               ng-disabled="!tableConfig.selectedItems.length"
               ng-click="deletePrompt(tableConfig.selectedItems)">
         <i class="fa fa-remove"></i> Delete
@@ -44,7 +39,7 @@
       <a class="btn btn-primary pull-right"
          title="Create a new workspace"
          ng-click="createNamespaceDialog.open()">
-        <i class="fa fa-plus"></i> Create Project
+        <i class="fa fa-plus"></i> Create Team
       </a>
     </div>
   </div>
@@ -57,7 +52,7 @@
       </div>
       <div ng-show="model.fetched">
         <div ng-hide="model.workspaces.length" class="align-center">
-          <p class="alert alert-info">There are no projects currently available.</p>
+          <p class="alert alert-info">There are no teams currently available.</p>
         </div>
         <div ng-show="model.workspaces.length">
           <div ng-show="mode == 'list'">
@@ -97,7 +92,7 @@
 
   <div modal="createNamespaceDialog.dialog.show">
       <form name="createNamespaceForm" class="" ng-submit="createNamespaceDialog.onOk()">
-        <div class="modal-header"><h4>Create Project</h4></div>
+        <div class="modal-header"><h4>Create Team</h4></div>
         <div class="modal-body">
 
           <div class="form-group" ng-class="{'has-error': createNamespaceForm.$invalid}">
@@ -114,10 +109,10 @@
                      ui-validate="'checkNamespaceUnique($value)'"
                      required="true"
                      title="name of the new namespace"
-                     placeholder="new project name">
+                     placeholder="New team name">
 
               <span class="help-block" ng-show="createNamespaceForm.newNamespaceName.$error.validator">
-                That project name already exists!
+                That team name already exists!
               </span>
             </div>
           </div>
@@ -127,7 +122,7 @@
           <div class="form-group">
             <div class="col-sm-12">
                 <span class="help-block">
-                  Enter the name of the new project
+                  Enter the name of the new team
                 </span>
             </div>
           </div>
