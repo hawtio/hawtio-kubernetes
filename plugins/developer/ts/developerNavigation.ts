@@ -67,7 +67,8 @@ module Developer {
         {
           href: UrlHelpers.join(HawtioCore.documentBase(), "/workspaces/", workspaceName),
           label: workspaceName,
-          title: "View the project: " + workspaceName
+          title: "View the project: " + workspaceName,
+          isActive: (subTab, path) => false
         }
       );
       return processChildren(answer, children);
