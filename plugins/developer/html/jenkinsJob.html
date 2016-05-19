@@ -8,7 +8,7 @@
   </script>
   <script type="text/ng-template" id="jenkinsBuildButtonsTemplate.html">
     <div class="ngCellText">
-      <a class="btn btn-default" href="{{row.entity.$pipelineLink}}" ng-show="row.entity.$pipelineLink" target="View the pipeline for this build">
+      <a class="btn btn-default" href="{{row.entity.$pipelineLink}}" ng-show="row.entity.$pipelineLink" title="View the pipeline for this build">
         <i class="fa fa-tasks"></i> Pipeline
       </a>
       &nbsp;&nbsp;
@@ -19,12 +19,12 @@
   </script>
   <script type="text/ng-template" id="jenkinsBuildTimestampTemplate.html">
     <div class="ngCellText" title="Build started at: {{row.entity.$timestamp}}">
-      {{row.entity.$timestamp.relative()}}
+      {{row.entity.$timestamp | humanizeDate}}
     </div>
   </script>
   <script type="text/ng-template" id="jenkinsBuildDurationTemplate.html">
     <div class="ngCellText" title="Build took {{row.entity.$duration}} milliseconds">
-      {{row.entity.$duration.duration()}}
+      {{row.entity.$duration | humanizeDuration}}
     </div>
   </script>
 
@@ -53,9 +53,9 @@
         <i class="fa fa-remove"></i> Delete
       </button>
 
-      <a class="btn btn-primary pull-right" ng-click="triggerBuild()"
+      <a ng-show="job.$triggerUrl" class="btn btn-primary pull-right" ng-click="triggerBuild()"
          title="Trigger this build">
-        <i class="fa fa-play-circle-o"></i>  Trigger</a>
+        <i class="fa fa-play-circle-o"></i> Trigger</a>
       </a>
     </div>
   </div>

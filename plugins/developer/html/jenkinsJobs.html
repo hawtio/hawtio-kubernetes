@@ -15,19 +15,19 @@
   </script>
   <script type="text/ng-template" id="jenkinsBuildTimestampTemplate.html">
     <div class="ngCellText" title="Build started at: {{row.entity.$timestamp}}">
-      {{row.entity.$timestamp.relative()}}
+      {{row.entity.$timestamp | humanizeDate}}
     </div>
   </script>
   <script type="text/ng-template" id="jenkinsBuildDurationTemplate.html">
     <div class="ngCellText" title="Build took {{row.entity.$duration}} milliseconds">
-      {{row.entity.$duration.duration()}}
+      {{row.entity.$duration | humanizeDuration}}
     </div>
   </script>
   <script type="text/ng-template" id="jenkinsLastSuccessTemplate.html">
     <div class="ngCellText"  ng-init="success=row.entity.lastSuccessfulBuild">
       <span title="Build took {{success.$duration.duration()}} milliseconds">
       <span ng-show="success">
-        {{success.$timestamp.relative()}}
+        {{success.$timestamp | humanizeDate}}
       </span>
       <span ng-show="success.$buildLink">
         -
@@ -40,9 +40,9 @@
   </script>
   <script type="text/ng-template" id="jenkinsLastFailureTemplate.html">
     <div class="ngCellText" ng-init="fail=row.entity.lastFailedBuild">
-      <span title="Build took {{fail.$duration.duration()}} milliseconds">
+      <span title="Build took {{fail.$duration | humanizeDuration}}">
       <span ng-show="fail">
-        {{fail.$timestamp.relative()}}
+        {{fail.$timestamp | humanizeDuration}}
       </span>
       <span ng-show="fail.$buildLink">
         -
@@ -55,13 +55,8 @@
   </script>
 
 
-  <div class="row">
-    <div hawtio-breadcrumbs></div>
-  </div>
-
-  <div class="row">
-    <div hawtio-tabs></div>
-  </div>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
 
   <div class="row filter-header">
     <div class="col-md-12">
@@ -70,11 +65,13 @@
                        ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
                        placeholder="Filter jobs..."></hawtio-filter>
-      </span>
+                   </span>
+     <!--
       <a class="btn btn-primary pull-right" ng-click="triggerBuild()"
          title="Trigger this build">
         <i class="fa fa-play-circle-o"></i>  Trigger</a>
-      </a>
+    </a>
+    -->
     </div>
   </div>
   <div class="row">

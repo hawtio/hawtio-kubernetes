@@ -26,17 +26,8 @@ module Developer {
         $scope.breadcrumbConfig = Developer.createProjectBreadcrumbs($scope.id);
         $scope.subTabConfig = Developer.createProjectSubNavBars($scope.id, $scope.jobId);
 
-        $scope.$on('kubernetesModelUpdated', function () {
-          updateData();
-        });
 
-        $scope.$on('$routeUpdate', ($event) => {
-          updateData();
-        });
-
-        updateData();
-
-        function updateData() {
+        var updateData = _.debounce(function () {
           if ($scope.jobId) {
             var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", $scope.jobId, $scope.buildId, "fabric8/stages/"));
             if (url && (!$scope.model.stages || Kubernetes.keepPollingModel)) {
@@ -51,17 +42,27 @@ module Developer {
                     }
                   }
                   $scope.model.fetched = true;
-                  Core.$apply($scope);
+                  //Core.$apply($scope);
                 }).
                 error(function (data, status, headers, config) {
                   log.warn("Failed to load " + url + " " + data + " " + status);
-                  $scope.model.fetched = true;
+                  //$scope.model.fetched = true;
                 });
             }
           } else {
             $scope.model.fetched = true;
             Core.$apply($scope);
           }
-        }
+        }, 10, { trailing: true });
+
+        $scope.$on('kubernetesModelUpdated', function () {
+          updateData();
+        });
+
+        $scope.$on('$routeUpdate', ($event) => {
+          updateData();
+        });
+
+        updateData();
       }]);
 }

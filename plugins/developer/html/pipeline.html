@@ -1,12 +1,8 @@
 <div class="row" ng-controller="Developer.PipelineController">
-  <div class="row">
-    <div hawtio-breadcrumbs></div>
-  </div>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
 
-  <div class="row">
-    <div hawtio-tabs></div>
-  </div>
-
+  <!--
   <div class="row filter-header">
     <div class="col-md-12">
       <span>
@@ -17,6 +13,7 @@
       </span>
     </div>
   </div>
+  -->
   <div class="row">
     <div class="col-md-12">
       <div ng-hide="model.fetched">
@@ -29,9 +26,7 @@
           <p class="alert alert-info">There are no pipeline stages in this build.</p>
         </div>
         <div ng-show="model.stages.length">
-
           <h2>Pipeline for {{jobId}}</h2>
-
           <div hawtio-pipeline-view></div>
         </div>
       </div>
