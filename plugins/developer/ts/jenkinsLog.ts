@@ -69,6 +69,9 @@ module Developer {
     $scope.breadcrumbConfig = createJenkinsBreadcrumbs($scope.id, getJobId(), getBuildId());
     $scope.subTabConfig = createJenkinsSubNavBars($scope.id, getJobId(), getBuildId(), {
       label: "Log",
+      class: "fa fa-tasks",
+      isValid: () => true,
+      active: true,
       title: "Views the logs of this build"
     });
 

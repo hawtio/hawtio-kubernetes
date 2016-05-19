@@ -347,6 +347,15 @@ module Developer {
       },
       {
         isValid: () => isJenkinsBuild(),
+        isActive: (item, path) => {
+          if (path.indexOf('/log/') > 0) {
+            return false;
+          }
+          if (path.indexOf('/jenkinsJob/') > 0) {
+            return true;
+          }
+          return false;
+        },
         id: "builds",
         href: jenkinsBuildLink,
         label: "Builds",
@@ -544,7 +553,7 @@ module Developer {
   export function createJenkinsSubNavBars(projectName, jenkinsJobId, buildId, extraOption: any = null) {
     var answer = createProjectSubNavBars(projectName, jenkinsJobId);
     if (extraOption) {
-      extraOption.active = true;
+      // extraOption.active = true;
       answer.push(extraOption);
     }
     return answer;
