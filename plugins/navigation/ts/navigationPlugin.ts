@@ -80,10 +80,10 @@ module Navigation {
     return {
       restrict: 'A',
       link: (scope, element, attrs) => {
-        scope.HawtioSubTabs = HawtioSubTabs;
-        scope.$watchCollection('HawtioSubTabs.get()', (subTabConfig) => {
+        scope.tabs = HawtioSubTabs;
+        scope.$watchCollection('tabs.get()', (tabs) => {
           // log.debug("subTabConfig: ", subTabConfig);
-          if (subTabConfig && subTabConfig.length > 0) {
+          if (tabs && tabs.length > 0) {
             element.removeClass('hidden-nav');
             //element.css({ 'margin-left': '' });
           } else {
@@ -148,7 +148,7 @@ module Navigation {
     };
   }]);
 
-  _module.directive('hawtioBreadcrumbsOutlet', ['HawtioBreadcrumbs', (HawtioBreadcrumbs) => {
+  _module.directive('hawtioBreadcrumbsOutlet', ['HawtioBreadcrumbs', 'HawtioSubTabs', (HawtioBreadcrumbs, HawtioSubTabs) => {
     return {
       restrict: 'E',
       scope: {},
@@ -157,16 +157,30 @@ module Navigation {
           <ol class="breadcrumb">
             <li ng-repeat="breadcrumb in breadcrumbConfig" ng-show="isValid(breadcrumb) && label(breadcrumb)"
                 class="{{breadcrumb.active ? 'active' : ''}}"
+                ng-class="$last ? 'dropdown' : ''"
                 title="{{breadcrumb.title}}">
-              <a ng-show="breadcrumb.href && !breadcrumb.active" href="{{breadcrumb.href}}">{{label(breadcrumb)}}</a>
-              <span ng-hide="breadcrumb.href && !breadcrumb.active">{{label(breadcrumb)}}</span>
+              <a ng-show="breadcrumb.href" href="{{breadcrumb.href}}">{{label(breadcrumb)}}</a>
+              <span ng-hide="breadcrumb.href">{{label(breadcrumb)}}</span>
+            </li>
+            <li ng-show="pageTitle">
+              <span ng-bind="pageTitle"></span>
+            </li>
           </ol>
         </div>
       `,
       link: (scope, element, attrs) => {
         scope.breadcrumbs = HawtioBreadcrumbs;
+        scope.tabs = HawtioSubTabs;
         scope.$watchCollection('breadcrumbs.get()', (breadcrumbConfig) => {
           scope.breadcrumbConfig = breadcrumbConfig;
+        });
+        scope.$watchCollection('tabs.get()', (tabs) => {
+          var active = _.find(tabs, (tab:any) => tab.active);
+          if (active) {
+            scope.pageTitle = active.label;
+          } else {
+            scope.pageTitle = undefined;
+          }
         });
       }
     };

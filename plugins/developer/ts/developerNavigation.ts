@@ -169,19 +169,15 @@ module Developer {
 
 
   export function createProjectSettingsBreadcrumbs(projectName, workspaceName = null) {
-    var children = [{
-      label: "Settings",
-      title: "View the settings of this app"
-    }];
+    var children = [];
     if (!projectName) {
-      var children = [{
+      children = [{
         label: "New App",
         title: "Lets make a new app"
       }];
     }
     return createProjectBreadcrumbs(projectName, children, workspaceName);
   }
-
 
   export function createWorkspaceSubNavBars() {
     var workspaceName = Kubernetes.currentKubernetesNamespace();
