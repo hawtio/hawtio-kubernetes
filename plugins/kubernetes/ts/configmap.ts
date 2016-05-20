@@ -47,16 +47,42 @@ module Kubernetes {
       updateData();
     }, true);
 
+    $scope.$on('kubernetesObjectSaved', ($event, obj) => {
+      log.debug("Object saved: ", obj);
+      var path = $location.path();
+      path = path.replace('/newConfigMap', '/' + obj.metadata.name);
+      $location.path(path);
+      Core.$apply($scope);
+    });
+
     $scope.flipRaw = () => {
       $scope.rawMode = !$scope.rawMode;
       Core.$apply($scope);
     };
 
+    $scope.onSave = (obj) => {
+      console.log("Saved object: ", obj);
+    }
+
     updateData();
 
     function updateData() {
       $scope.id = $routeParams["id"];
-      $scope.item = _.find($scope.model.configmaps, (configmap) => $scope.id === KubernetesAPI.getName(configmap));
+      if ($scope.id === 'newConfigMap') {
+        $scope.item = {
+          kind: 'ConfigMap',
+          apiVersion: 'v1',
+          metadata: {
+            name: 'New Config Map',
+            namespace: $scope.model.currentNamespace(),
+            labels: {}
+          },
+          data: {}
+        }
+        $scope.readOnly = false;
+      } else {
+        $scope.item = _.find($scope.model.configmaps, (configmap) => $scope.id === KubernetesAPI.getName(configmap));
+      }
       if ($scope.item) {
         $scope.rawModel = toRawYaml($scope.item);
       }

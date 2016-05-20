@@ -90,7 +90,7 @@ module Kubernetes {
 		});
 	}]);
 
-  export var TopLevel = controller("TopLevel", ["$scope", "KubernetesVersion", "KubernetesState", ($scope, KubernetesVersion:ng.resource.IResourceClass<any>, KubernetesState) => {
+  export var TopLevel = controller("TopLevel", ["$scope", "KubernetesVersion", "KubernetesState", "$routeParams", "$location", ($scope, KubernetesVersion:ng.resource.IResourceClass<any>, KubernetesState, $routeParams, $location) => {
 
     $scope.version = undefined;
 
@@ -127,6 +127,9 @@ module Kubernetes {
         success: (data) => {
           $scope.dirty = false;
           Core.notification("success", "Saved object " + getName(obj));
+          if ($routeParams['id'] !== obj.metadata.name) {
+            $scope.$broadcast('kubernetesObjectSaved', obj);
+          }
           Core.$apply($scope);
         },
         error: (err) => {
