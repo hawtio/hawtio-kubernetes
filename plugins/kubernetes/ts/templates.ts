@@ -75,6 +75,7 @@ module Kubernetes {
       });
       // We currently store all of our templates in 'default', let's
       // have 'em available if the user is in a different namespace
+      // TODO - maybe we want to look at the templates in the 'development' namespace too/instead?
       if (namespace !== 'default') {
         Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.TEMPLATES, 'default', (_templates) => {
           templates['default'] = _templates;
@@ -82,21 +83,37 @@ module Kubernetes {
         });
       }
     } else {
+      function configmapsToTemplates(configmaps, templates) {
+        if (!configmaps || !configmaps.length) {
+          return;
+        }
+        var catalogs = _.filter(configmaps, (configmap:any) => configmap.metadata.labels.kind === 'catalog');
+        catalogs.forEach((catalog:any) => {
+          _.forOwn(catalog.data, (obj, key) => {
+            if (_.endsWith(key, '.json')) {
+              templates.push(angular.fromJson(obj));
+            }
+          });
+        });
+      }
       $scope.$watchCollection('model.configmaps', (configmaps) => {
         var _templates = [];
         log.debug("configmaps: ", configmaps);
-        if (configmaps && configmaps.length) {
-          var catalogs = _.filter(configmaps, (configmap:any) => configmap.metadata.labels.kind === 'catalog');
-          catalogs.forEach((catalog:any) => {
-            _.forOwn(catalog.data, (obj, key) => {
-              if (_.endsWith(key, '.json')) {
-                _templates.push(angular.fromJson(obj));
-              }
-            });
-          });
-        }
+        configmapsToTemplates(configmaps, _templates);
         templates[namespace] = _templates;
       });
+      // We currently store all of our templates in 'default', let's
+      // have 'em available if the user is in a different namespace
+      // TODO - maybe we want to look at the templates in the 'development' namespace too/instead?
+      if (namespace !== 'default') {
+        Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.CONFIG_MAPS, 'default', (configmaps) => {
+          var _templates = [];
+          log.debug("configmaps from default: ", configmaps);
+          configmapsToTemplates(configmaps, _templates);
+          templates['default'] = _templates;
+          Core.$apply($scope);
+        });
+      }
     }
 
     $scope.$watchCollection('model.namespaces', (namespaces) => {
