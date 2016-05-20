@@ -309,6 +309,35 @@ table.environment td {
   line-height: 21px;
 }
 
+.team-list .team-list-entry,
+.team-list .team-no-team {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.175);
+}
+.team-list .team-list-entry:first-child,
+.team-list .team-no-team:first-child {
+  margin-top: 0px;
+}
+.team-list .team-list-entry h3,
+.team-list .team-no-team h3 {
+  margin-top: 0;
+}
+.team-list .team-list-entry .tiles-view-pf,
+.team-list .team-no-team .tiles-view-pf {
+  padding-top: 5px;
+}
+.team-list .team-list-entry .tiles-view-pf .tile,
+.team-list .team-no-team .tiles-view-pf .tile {
+  height: auto;
+  width: auto;
+  min-height: 140px;
+  min-width: 130px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.175);
+}
+
 /* This is for the 'Overview' page with all the rows of boxes */
 .service-view-rectangle {
   position: relative;

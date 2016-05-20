@@ -201,7 +201,7 @@
 </script>
 <script type="text/ng-template" id="creationTimeTemplate.html">
   <div class="ngCellText" title="created at: {{row.entity.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
-    {{row.entity.$creationDate.relative()}}
+    {{row.entity.$creationDate | relativeTime}}
   </div>
 </script>
 

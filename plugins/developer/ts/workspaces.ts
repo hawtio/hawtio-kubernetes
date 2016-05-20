@@ -12,21 +12,84 @@ module Developer {
   $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL, $element) => {
 
     $scope.kubernetes = KubernetesState;
-    $scope.model = KubernetesModel;
 
-    ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
+    class Model {
+      public workspaces = [];
+      public environments = [];
+      public teams = [];
+      public updateCounter = 0;
+      private _workspacesFetched = false;
+      private _environmentsFetched = false;
+      get fetched() {
+        return this.workspacesFetched && this.environmentsFetched;
+      }
+      public get workspacesFetched():boolean {
+        return this._workspacesFetched;
+      }
+      public get environmentsFetched():boolean {
+        return this._environmentsFetched;
+      }
+      public set workspacesFetched(val:boolean) {
+        this.updateCounter = this.updateCounter + 1;
+        this._workspacesFetched = val;
+      }
+      public set environmentsFetched(val:boolean) {
+        this.updateCounter = this.updateCounter + 1;
+        this._environmentsFetched = val;
+      }
+    }
 
-    Kubernetes.watch($scope, $element, Kubernetes.getNamespaceKind(), undefined, (objects) => {
-      if (objects) {
-        $scope.model.workspaces = _.sortBy(enrichWorkspaces(objects), "$name");
-        $scope.model.fetched = true;
-        Core.$apply($scope);
+    var model = $scope.model = new Model();
+
+    $scope.$watch('model.updateCounter', () => {
+      if (model.fetched) {
+        model.teams = [];
+        _.forEach(model.environments, (environment) => {
+          var team = {
+            metadata: {
+              name: environment.metadata.namespace
+            },
+            environments: [<any>{
+              order: -1,
+              namespace: environment.metadata.namespace,
+              kind: "development",
+              name: "Development"
+            }]
+          };
+          _.forOwn(environment.data, (config, kind) => {
+            try {
+              config = jsyaml.safeLoad(config);
+              config.kind = kind;
+              log.debug("Kind: ", kind, " config: ", config);
+              team.environments.push(config);
+            } catch (err) {
+              log.debug("Failed to decode yaml: ", err);
+            }
+          });
+          _.forEach(team.environments, (config) => {
+            var workspace = _.find(model.workspaces, (workspace) => {
+               return workspace.metadata.name === config.namespace;
+            });
+            if (workspace) {
+              workspace.$inTeam = true;
+              config.workspace = workspace;
+            }
+          });
+          model.teams.push(team);
+        });
+        // Pull workspaces that are part of a team out
+        _.remove(model.workspaces, (workspace) => workspace.$inTeam);
+        if (!$scope.tableConfig) {
+          $scope.tableConfig = tableConfig;
+        }
       }
     });
 
+    ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
+
     $scope.developerPerspective = _.startsWith(Core.trimLeading($location.url(), "/"), "workspace");
 
-    $scope.tableConfig = {
+    var tableConfig = {
       data: 'model.workspaces',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
@@ -62,6 +125,22 @@ module Developer {
 
     $scope.breadcrumbConfig = createWorkspacesBreadcrumbs($scope.developerPerspective);
     $scope.subTabConfig = []; //Developer.createWorkspacesSubNavBars($scope.developerPerspective);
+
+    Kubernetes.watch($scope, $element, Kubernetes.getNamespaceKind(), undefined, (objects) => {
+      if (objects) {
+        $scope.model.workspaces = _.sortBy(enrichWorkspaces(objects), "$name");
+        $scope.model.workspacesFetched = true;
+        Core.$apply($scope);
+      }
+    });
+
+    Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.CONFIG_MAPS, undefined, (configmaps) => {
+      if (configmaps) {
+        $scope.model.environments = configmaps;
+        $scope.model.environmentsFetched = true;
+        Core.$apply($scope);
+      }
+    }, { 'kind': 'environments', 'provider': 'fabric8.io' });
 
     $scope.deletePrompt = (selected) => {
       UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{

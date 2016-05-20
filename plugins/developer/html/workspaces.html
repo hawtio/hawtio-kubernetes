@@ -1,4 +1,4 @@
-<div ng-controller="Developer.WorkspacesController">
+<div ng-controller="Developer.WorkspacesController" hawtio-card-bg>
   <div hawtio-breadcrumbs></div>
   <div hawtio-tabs></div>
 
@@ -50,41 +50,60 @@
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
-      <div ng-show="model.fetched">
+      <div class="team-list" ng-show="model.fetched">
         <div ng-hide="model.workspaces.length" class="align-center">
           <p class="alert alert-info">There are no teams currently available.</p>
         </div>
-        <div ng-show="model.workspaces.length">
-          <div ng-show="mode == 'list'">
-            <table class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
-          </div>
-
-          <div ng-hide="mode == 'list'">
-            <div class="column-box"
-                 ng-repeat="workspace in model.workspaces | filter:filterTemplates | orderBy:'metadata.name' track by $index">
-              <div class="row">
-                <div class="col-md-2">
-                  <a href="{{workspace.$serviceUrl}}"
-                     target="_blank"
-                     title="Click to open this app">
-                    <img style="width: 64px; height: 64px;" ng-src="{{workspace.$iconUrl}}">
-                  </a>
+        <div ng-show="model.teams.length">
+          <div class="team-list-entry" ng-repeat="team in model.teams">
+            <h3>Team: <b>{{team.metadata.name}}</b></h3>
+            <div class="tiles-view-pf">
+              <div class="tile" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
+                <div class="tile-content">
+                  <h5>
+                    <a ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}">Team Dashboard</a>
+                    <a ng-if="environment.kind !== 'development'" ng-href="{{environment.workspace.$runtimeLink}}">{{environment.name}}</a>
+                  </h5>
+                  <dl>
+                    <dt>
+                      Namespace
+                    </dt>
+                    <dd>
+                      {{environment.workspace.metadata.name}}
+                    </dd>
+                  </dl>
+                  <dl>
+                    <dt>
+                      Created
+                    </dt>
+                    <dd>
+                      {{environment.workspace.$creationDate | relativeTime}}
+                    </dd>
+                  </dl>
                 </div>
-                <div class="col-md-9">
-                  <a href="{{workspace.$serviceUrl}}"
-                     target="_blank"
-                     title="Click to open this app">
-                    <h3 ng-bind="workspace.metadata.name"></h3>
-                  </a>
-                </div>
-<!--
-                <div class="col-md-1">
-                  <a href="" ng-click="deleteService(service)"><i class="fa fa-remove red"></i></a>
-                </div>
--->
+                <!-- 
+                <pre>
+                    {{environment | json}}
+                  </pre>
+                -->
               </div>
             </div>
+
           </div>
+          <!--
+          <pre>
+              {{team | json}}
+            </pre>
+          -->
+        </div>
+        <!--
+        <pre>
+          {{model | json}}
+        </pre>
+        -->
+        <div class="team-no-team" ng-show="model.workspaces.length">
+          <h4>Other Namespaces</h4>
+          <table ng-if="tableConfig" class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
         </div>
       </div>
     </div>

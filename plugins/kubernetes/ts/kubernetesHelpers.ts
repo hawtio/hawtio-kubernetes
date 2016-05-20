@@ -1862,6 +1862,11 @@ module Kubernetes {
         success: function (objects) {
           fn(objects);
           Core.$apply($scope);
+        },
+        error: (err) => {
+          log.debug("Error fetching objects for kind: ", kind, " in namespace: ", ns, " : ", err);
+          fn([]);
+          Core.$apply($scope);
         }
       });
       $element.on('$destroy', () => {
