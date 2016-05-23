@@ -150,6 +150,13 @@
                           <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                          <li role="presentation" ng-if="rc.$docUrl">
+                            <a href="{{rc.$docUrl}}" target="docs" ng-show="rc.$docUrl"
+                              title="View the documentation for this version">
+                              <i class="fa fa-book"></i>
+                              Docs
+                            </a>
+                          </li>
                           <li role="presentation" ng-if="rc.$gitUrl">
                             <a href="{{rc.$gitUrl}}" target="git" title="{{rc.$gitCommit}}
                               {{rc.$gitCommitAuthor}}

@@ -26,12 +26,10 @@
                 <span class="pull-right" ng-show="rc.$serviceLink.href">
                   &nbsp;
                   &nbsp;
-                  &nbsp;
                   <a target="test-service" href="{{rc.$serviceLink.href}}" title="Open this service in a new tab">
                     <i class="fa fa-external-link"></i>
                   </a>
                 </span>
-                &nbsp;
                 &nbsp;
                 &nbsp;
                 <span class="pull-right">
@@ -52,24 +50,32 @@
                   <i class="fa fa-tasks"></i>
                   Build #{{rc.$buildId}}
                 </a>
-                &nbsp;
+                <span ng-show="rc.$docUrl" class="pull-right">
+                  &nbsp;
+                  &nbsp;
+                  <a href="{{rc.$docUrl}}" target="docs" ng-show="rc.$docUrl"
+                    title="View the documentation for this version">
+                    <i class="fa fa-book"></i>
+                    Docs
+                  </a>
+                </span>
                 &nbsp;
                 &nbsp;
                 <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="pull-right"
-                  title="{{rc.$gitCommit}}
+                  title="Commit #{{rc.$gitCommit}}
                   {{rc.$gitCommitAuthor}}
                   {{rc.$gitCommitDate}}
                   {{rc.$gitCommitMessage}}">
                   <i class="fa fa-code-fork"></i>
-                  Commit {{rc.$gitCommit | limitTo:7}}
+                  {{rc.$gitCommit | limitTo:7}}
                 </a>
                 <span ng-hide="rc.$gitUrl || !rc.$gitCommit" class="pull-right"
-                  title="{{rc.$gitCommit}}
+                  title="Commit #{{rc.$gitCommit}}
                   {{rc.$gitCommitAuthor}}
                   {{rc.$gitCommitDate}}
                   {{rc.$gitCommitMessage}}">
                   <i class="fa fa-code-fork"></i>
-                  Commit {{rc.$gitCommit | limitTo:7}}
+                  {{rc.$gitCommit | limitTo:7}}
                 </span>
               </div>
             </div>
