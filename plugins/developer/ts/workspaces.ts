@@ -15,6 +15,7 @@ module Developer {
 
     class Model {
       public workspaces = [];
+      public namespaces = [];
       public environments = [];
       public teams = [];
       public updateCounter = 0;
@@ -44,6 +45,7 @@ module Developer {
     $scope.$watch('model.updateCounter', () => {
       if (model.fetched) {
         model.teams = [];
+        model.namespaces = [];
         _.forEach(model.environments, (environment) => {
           var team = {
             metadata: {
@@ -78,7 +80,7 @@ module Developer {
           model.teams.push(team);
         });
         // Pull workspaces that are part of a team out
-        _.remove(model.workspaces, (workspace) => workspace.$inTeam);
+        model.namespaces = _.filter(model.workspaces, (workspace) => !workspace.$inTeam);
         if (!$scope.tableConfig) {
           $scope.tableConfig = tableConfig;
         }
@@ -90,7 +92,7 @@ module Developer {
     $scope.developerPerspective = _.startsWith(Core.trimLeading($location.url(), "/"), "workspace");
 
     var tableConfig = {
-      data: 'model.workspaces',
+      data: 'model.namespaces',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
@@ -129,6 +131,7 @@ module Developer {
     Kubernetes.watch($scope, $element, Kubernetes.getNamespaceKind(), undefined, (objects) => {
       if (objects) {
         $scope.model.workspaces = _.sortBy(enrichWorkspaces(objects), "$name");
+        console.log("\n\nGot workspaces: ", $scope.model.workspaces);
         $scope.model.workspacesFetched = true;
         Core.$apply($scope);
       }
