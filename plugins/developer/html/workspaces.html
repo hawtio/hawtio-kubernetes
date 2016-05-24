@@ -20,98 +20,159 @@
       </div>
     </div>
   </script>
-
-  <div class="row filter-header">
-    <div class="col-md-12" ng-show="model.workspaces.length">
-      <span ng-show="!id">
-        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
-                       css-class="input-xxlarge"
-                       placeholder="Filter teams..."></hawtio-filter>
-      </span>
-      <span class="pull-right">&nbsp;</span>
-      <button class="btn btn-danger pull-right"
-              title="Deletes the selected teams"
-              ng-disabled="!tableConfig.selectedItems.length"
-              ng-click="deletePrompt(tableConfig.selectedItems)">
-        <i class="fa fa-remove"></i> Delete
-      </button>
-      <span class="pull-right">&nbsp;</span>
-      <a class="btn btn-primary pull-right"
-         title="Create a new workspace"
-         ng-click="createNamespaceDialog.open()">
-        <i class="fa fa-plus"></i> Create Team
-      </a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div ng-hide="model.fetched">
-        <div class="align-center">
-          <i class="fa fa-spinner fa-spin"></i>
-        </div>
+  <script type="text/ng-template" id="applyNamespaceAndConfigTemplate.html">
+    <div ng-controller="Developer.ApplyNamespaceAndConfigController">
+      <div ng-hide="namespaceCreated || error">
+        <p>Please wait, creating namespace {{targetNS}}</p>
       </div>
-      <div class="team-list" ng-show="model.fetched">
-        <div ng-hide="model.workspaces.length" class="align-center">
-          <p class="alert alert-info">There are no teams currently available.</p>
-        </div>
-        <div ng-show="model.teams.length">
-          <div class="team-list-entry" ng-repeat="team in model.teams">
-            <h3>Team: <b>{{team.metadata.name}}</b></h3>
-            <div class="tiles-view-pf">
-              <div class="tile" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
-                <div class="tile-content">
-                  <h5>
-                    <a ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}">Team Dashboard</a>
-                    <a ng-if="environment.kind !== 'development'" ng-href="{{environment.workspace.$runtimeLink}}">{{environment.name}}</a>
-                  </h5>
-                  <dl>
-                    <dt>
-                      Namespace
-                    </dt>
-                    <dd>
-                      {{environment.workspace.metadata.name}}
-                    </dd>
-                  </dl>
-                  <dl>
-                    <dt>
-                      Created
-                    </dt>
-                    <dd>
-                      {{environment.workspace.$creationDate | relativeTime}}
-                    </dd>
-                  </dl>
+      <div ng-show="namespaceCreated && !configCreated && !error">
+        <p>Namespace {{targetNS}} created</p>
+      </div>
+      <div ng-hide="!namespaceCreated && configCreated || error">
+        <p>Please wait, applying configuration</p>
+      </div>
+      <div ng-show="namespaceCreated && configCreated && !error">
+        <p>Configuration created, <a class="btn btn-primary" href="" ng-click="next()">Continue...</a></p>
+      </div>
+      <div ng-show="error">
+        <p>An error occurred while applying the configuration changes:</p>
+        <pre>{{error | json}}</pre>
+        <p>You can <a href="" class="btn btn-default" ng-click="onFinish()">Return</a> to the team list or <a href="" class="btn btn-default" ng-click="back()">Go Back</a> and try a different namespace</p>
+      </div>
+    </div>
+  </script>
+  <script type="text/ng-template" id="runCDPipelineTemplate.html">
+    <div ng-controller="Developer.RunCDPipelineController">
+      <p>To build apps you need to run the CD Pipeline in this namespace.</p>
+      <p>You can <a class="btn btn-primary" ng-href="{{$runCDPipelineLink}}">Run CD Pipeline</a> now</p>
+      <p>or you can <a class="btn btn-default" href="" ng-click="onFinish()">Finish</a> this wizard and return to the list of teams</p>
+    </div>
+  </script>
+
+  <div ng-if="wizard.active">
+    <div class="row row-cards-pf">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card-pf">
+            <div class="card-pf-heading">
+              <h2>Create Team</h2>
+            </div>
+            <div class="card-pf-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <div hawtio-form-2="wizard.formConfig" entity="wizard.formEntity"></div>
+
+
                 </div>
-                <!-- 
-                <pre>
-                    {{environment | json}}
-                  </pre>
-                -->
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div ng-if="!wizard.active">
+    <div class="row filter-header">
+      <div class="col-md-12" ng-show="model.workspaces.length">
+        <span ng-show="!id">
+          <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+                         css-class="input-xxlarge"
+                         placeholder="Filter teams..."></hawtio-filter>
+        </span>
+        <a class="btn btn-primary pull-right"
+          title="Create a new team"
+          ng-click="wizard.start()">
+          <i class="fa fa-plus"></i> Create Team
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div ng-hide="model.fetched">
+          <div class="align-center">
+            <i class="fa fa-spinner fa-spin"></i>
+          </div>
+        </div>
+        <div class="team-list" ng-show="model.fetched">
+          <div ng-hide="model.workspaces.length" class="align-center">
+            <p class="alert alert-info">There are no teams currently available.</p>
+          </div>
+          <div ng-show="model.teams.length">
+            <div class="team-list-entry" ng-repeat="team in model.teams">
+              <div>
+                <h3 class="inline-block">Team: <b>{{team.metadata.name}}</b></h3>
+                <a href="" class="pull-right" ng-click="deletePrompt(team.metadata.name)" title="Delete team {{team.metadata.name}}"><i class="fa red fa-remove"></i></a>
+              </div>
+              <div class="tiles-view-pf">
+                <div class="tile" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
+                  <div class="tile-content">
+                    <h5>
+                      <a ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}">Team Dashboard</a>
+                      <a ng-if="environment.kind !== 'development'" ng-href="{{environment.workspace.$runtimeLink}}">{{environment.name}}</a>
+                    </h5>
+                    <dl>
+                      <dt>
+                        Namespace
+                      </dt>
+                      <dd>
+                        {{environment.workspace.metadata.name}}
+                      </dd>
+                    </dl>
+                    <dl>
+                      <dt>
+                        Created
+                      </dt>
+                      <dd>
+                        {{environment.workspace.$creationDate | relativeTime}}
+                      </dd>
+                    </dl>
+                  </div>
+                  <!-- 
+                  <pre>
+                      {{environment | json}}
+                    </pre>
+                  -->
+                </div>
+              </div>
+
+            </div>
+            <!--
+            <pre>
+                {{team | json}}
+              </pre>
+            -->
           </div>
           <!--
           <pre>
-              {{team | json}}
-            </pre>
+            {{model | json}}
+          </pre>
           -->
-        </div>
-        <!--
-        <pre>
-          {{model | json}}
-        </pre>
-        -->
-        <div class="team-no-team" ng-show="model.workspaces.length">
-          <h4>Other Namespaces</h4>
-          <table ng-if="tableConfig" class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
+          <div class="team-no-team" ng-show="model.workspaces.length">
+            <div class="row filter-header">
+              <h4 class="inline-block">Other Namespaces</h4>
+              <button class="btn btn-danger pull-right"
+                title="Deletes the selected teams"
+                ng-disabled="!tableConfig.selectedItems.length"
+                ng-click="deletePrompt(tableConfig.selectedItems)">
+                <i class="fa fa-remove"></i> Delete
+              </button>
+              <span class="pull-right">&nbsp;</span>
+              <a class="btn btn-primary pull-right"
+                title="Create a new namespace"
+                ng-click="createNamespaceDialog.open()">
+                <i class="fa fa-plus"></i> Create Namespace
+              </a>
+            </div>
+            <table ng-if="tableConfig" class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div modal="createNamespaceDialog.dialog.show">
+    <div modal="createNamespaceDialog.dialog.show">
       <form name="createNamespaceForm" class="" ng-submit="createNamespaceDialog.onOk()">
-        <div class="modal-header"><h4>Create Team</h4></div>
+        <div class="modal-header"><h4>Create Namespace</h4></div>
         <div class="modal-body">
 
           <div class="form-group" ng-class="{'has-error': createNamespaceForm.$invalid}">
@@ -128,10 +189,10 @@
                      ui-validate="'checkNamespaceUnique($value)'"
                      required="true"
                      title="name of the new namespace"
-                     placeholder="New team name">
+                     placeholder="New namespace name">
 
               <span class="help-block" ng-show="createNamespaceForm.newNamespaceName.$error.validator">
-                That team name already exists!
+                That namespace already exists!
               </span>
             </div>
           </div>
@@ -141,7 +202,7 @@
           <div class="form-group">
             <div class="col-sm-12">
                 <span class="help-block">
-                  Enter the name of the new team
+                  Enter the name of the new namespace
                 </span>
             </div>
           </div>
@@ -149,10 +210,11 @@
         <div class="modal-footer">
           <input class="btn btn-primary" type="submit"
                  ng-disabled="!createNamespaceDialog.newNamespaceName"
-                 value="Create Project">
+                 value="Create">
 
           <button class="btn btn-warning cancel" type="button" ng-click="createNamespaceDialog.close()">Cancel</button>
         </div>
       </form>
     </div>
+  </div>
 </div>

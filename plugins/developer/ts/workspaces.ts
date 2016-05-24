@@ -6,6 +6,78 @@
 
 module Developer {
 
+  _module.controller('Developer.RunCDPipelineController', ($scope, documentBase) => {
+    var entity:any = $scope.$eval('entity');
+    if (entity.error) {
+      $scope.onFinish();
+    }
+    $scope.$runCDPipelineLink = UrlHelpers.join(documentBase, "kubernetes/namespace", entity.targetNS ,"templates?q=cd-pipeline&returnTo=" + URI.encode(UrlHelpers.join(documentBase, "workspaces", entity.targetNS)));
+
+  });
+
+  _module.controller('Developer.ApplyNamespaceAndConfigController', ($scope) => {
+    var config:any = $scope.$eval('config');
+    var entity:any = $scope.$eval('entity');
+    if ($scope.error) {
+      delete $scope.error;
+    }
+    $scope.wizard = config.self();
+    $scope.namespaceCreated = false;
+    $scope.configCreated = false;
+    $scope.targetNS = undefined;
+    function createConfig() {
+      var configMap = {
+        kind: 'ConfigMap',
+        apiVersion: Kubernetes.defaultApiVersion,
+        metadata: {
+          namespace: $scope.targetNS,
+          name: 'fabric8-environments',
+          labels: {
+            kind: 'environments',
+            provider: 'fabric8.io'
+          }
+        }
+      };
+      KubernetesAPI.put({
+        object: configMap,
+        success: (data) => {
+          $scope.configCreated = true;
+          Core.$apply($scope);
+        },
+        error: (err) => {
+          entity.error = $scope.error = err;
+          Core.$apply($scope);
+        }
+      });
+    }
+    function createNamespace() {
+      Kubernetes.createNamespace($scope.targetNS, undefined, (data) => {
+        $scope.namespaceCreated = true;
+        Core.$apply($scope);
+        createConfig();
+      }, (err) => {
+        entity.error = $scope.error = err;
+        Core.$apply($scope);
+      });
+    }
+    switch (entity.creationMode) {
+      case 'New Namespace':
+        $scope.targetNS = entity.newNamespaceName;
+        createNamespace();
+        break;
+      case 'Existing Namespace':
+        $scope.targetNS = entity.existingNamespaceName;
+        $scope.namespaceCreated = true;
+        createConfig();
+        break;
+    }
+    // remove any possibly previously set errors
+    if (entity.error) {
+      delete entity.error;
+    }
+    entity.targetNS = $scope.targetNS;
+  });
+
   export var WorkspacesController = controller("WorkspacesController",
   ["$scope", "KubernetesModel", "KubernetesState", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "$element",
   ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState,
@@ -13,6 +85,7 @@ module Developer {
 
     $scope.kubernetes = KubernetesState;
 
+    // Model that tracks namespaces and config maps and associates them to create Teams
     class Model {
       public workspaces = [];
       public namespaces = [];
@@ -23,6 +96,9 @@ module Developer {
       private _environmentsFetched = false;
       get fetched() {
         return this.workspacesFetched && this.environmentsFetched;
+      }
+      public get namespaceNames() {
+        return _.map(this.namespaces, (workspace) => workspace.$name);
       }
       public get workspacesFetched():boolean {
         return this._workspacesFetched;
@@ -39,8 +115,135 @@ module Developer {
         this._environmentsFetched = val;
       }
     }
-
     var model = $scope.model = new Model();
+
+    // Model for tracking the create team wizard state
+    class CreateTeamWizard {
+      private _active = false;
+      public static get NEW_NS() { return 'New Namespace'; }
+      public static get EXISTING_NS() { return 'Existing Namespace'; }
+      public formConfig = {
+        self: undefined,
+        wizard: {
+          onFinish: () => {
+            this._active = false;
+            this.formEntity = {};
+          },
+          onCancel: () => {
+            this._active = false;
+            this.formEntity = {};
+          },
+          onChange: (current, index, pageIds) => {
+            return null;
+          },
+          isDisabled: (form) => {
+            var name = form.$name;
+            switch (name) {
+              case 'createOrSelectNamespace':
+                switch (this.formEntity.creationMode) {
+                  case CreateTeamWizard.NEW_NS:
+                    return Core.isBlank(this.formEntity.newNamespaceName);
+                  case CreateTeamWizard.EXISTING_NS:
+                    return Core.isBlank(this.formEntity.existingNamespaceName);
+                  default:
+                    return true;
+                }
+              default:
+                return form.$invalid;
+            }
+          },
+          isBackDisabled: (form) => {
+            var name = form.$name;
+            console.log("Name: ", name)
+            switch (name) {
+              case 'creatingNamespaceAndApplyingConfiguration':
+              case 'runCdPipeline': 
+                return true;
+              default:
+                return false;
+            }
+          },
+          pages: {
+            'Create or Select Namespace': {
+              controls: [
+                'creationMode',
+                'newNamespaceName',
+                'existingNamespaceName'
+                ]
+            },
+            'Creating Namespace and Applying Configuration': {
+              controls: [
+                'applyNamespaceAndConfig'
+              ]
+            },
+            'Run CD Pipeline': {
+              controls: [
+                'runCDPipelinePrompt'
+              ]
+            }
+          }
+        },
+        properties: {
+          "creationMode": {
+            label: "Create Using",
+            enum: [CreateTeamWizard.NEW_NS, CreateTeamWizard.EXISTING_NS],
+            type: 'string',
+            'default': 'New Namespace'
+          },
+          "newNamespaceName": {
+            label: "With Name",
+            type: 'string',
+            selectors: {
+              'el': (group) => {
+                group.attr({'ng-show': "entity.creationMode === '" + CreateTeamWizard.NEW_NS + "'"});
+              }
+            }
+          },
+          "existingNamespaceName": {
+            getNames: () => model.namespaceNames,
+            formTemplate: `
+              <div ng-show="entity.creationMode === '` + CreateTeamWizard.EXISTING_NS + `'" class="form-group">
+
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10">
+                  <select class="form-control" ng-model="entity.existingNamespaceName" ng-options="label for label in config.properties.existingNamespaceName.getNames()"></select>
+                </div>
+
+              </div>
+            `,
+            selectors: {
+              'el': (group) => {
+                group.attr({'ng-show': "entity.creationMode === 'Existing Namespace'"});
+              }
+            }
+          },
+          "applyNamespaceAndConfig": {
+            formTemplate: `
+              <div ng-include="'applyNamespaceAndConfigTemplate.html'"></div>
+
+            `
+          },
+          "runCDPipelinePrompt": {
+            formTemplate: `
+              <div ng-include="'runCDPipelineTemplate.html'"></div>
+            `
+          }
+        }
+      }
+      public formEntity:any = {
+
+      };
+      constructor() {
+        this.formConfig.self = () => this;
+      }
+      get active() {
+        return this._active;
+      }
+      public start() {
+        this._active = true;
+      }
+    }
+    var wizard = $scope.wizard = new CreateTeamWizard();
 
     $scope.$watch('model.updateCounter', () => {
       if (model.fetched) {
@@ -131,7 +334,6 @@ module Developer {
     Kubernetes.watch($scope, $element, Kubernetes.getNamespaceKind(), undefined, (objects) => {
       if (objects) {
         $scope.model.workspaces = _.sortBy(enrichWorkspaces(objects), "$name");
-        console.log("\n\nGot workspaces: ", $scope.model.workspaces);
         $scope.model.workspacesFetched = true;
         Core.$apply($scope);
       }
@@ -146,6 +348,15 @@ module Developer {
     }, { 'kind': 'environments', 'provider': 'fabric8.io' });
 
     $scope.deletePrompt = (selected) => {
+      var kind = "namespaces";
+      if (angular.isString(selected)) {
+        kind = "teams";
+        selected = [{
+          metadata: {
+            name: selected
+          }
+        }];
+      }
       UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
         collection: selected,
         index: 'metadata.name',
@@ -166,8 +377,8 @@ module Developer {
           }
           deleteSelected(selected, selected.shift());
         },
-        title: 'Delete Projects',
-        action: 'The following projects will be deleted:',
+        title: 'Delete ' + _.capitalize(kind),
+        action: 'The following ' + kind + ' will be deleted:',
         okText: 'Delete',
         okClass: 'btn-danger',
         custom: "This operation is permanent once completed!",
