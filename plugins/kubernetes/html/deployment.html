@@ -1,0 +1,44 @@
+<div ng-controller="Kubernetes.DeploymentController">
+
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
+
+  <div class="row row-header">
+    <div class="col-md-12">
+
+      <button class="btn btn-danger pull-right"
+              title="Delete this Deployment"
+              ng-click="deleteEntity()">
+        <i class="fa fa-remove"></i> Delete
+      </button>
+      <span class="pull-right">&nbsp;</span>
+
+      <a class="btn btn-default pull-right"
+        hawtio-relative-href=".."><i class="fa fa-list"></i></a>
+
+       <a class="btn btn-default pull-right" ng-show="rawMode" ng-click="readOnly = !readOnly" ng-class="!readOnly ? 'btn-primary' : ''">Edit</a>
+       <span class="pull-right">&nbsp;</span>
+
+       <a class="btn btn-success pull-right" ng-show="dirty" ng-click="save(rawModel)">Save</a>
+       <span class="pull-right">&nbsp;</span>
+
+    </div>
+  </div>
+
+  <div ng-hide="model.fetched">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-show="model.fetched && rawMode">
+    <div class="raw-json-view">
+      <div hawtio-editor="rawModel" mode="mode" read-only="readOnly"></div>
+    </div>
+  </div>
+
+</div>

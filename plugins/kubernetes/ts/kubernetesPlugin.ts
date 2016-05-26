@@ -44,6 +44,8 @@ module Kubernetes {
       .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerEdit/:id'), route('replicationControllerEdit.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/configMaps'), route('configmaps.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/configMaps/:id'), route('configmap.html', false))
+      .when(UrlHelpers.join(context, '/namespace/:namespace/deployments'), route('deployments.html', false))
+      .when(UrlHelpers.join(context, '/namespace/:namespace/deployments/:id'), route('deployment.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/secrets'), route('secrets.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/secrets/:id'), route('secret.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/secretCreate'), route('secret.html', false))

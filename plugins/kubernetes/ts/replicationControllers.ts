@@ -13,7 +13,7 @@ module Kubernetes {
     $scope.model = KubernetesModel;
 
     $scope.tableConfig = {
-      data: 'model.replicationControllers',
+      data: 'model.replicas',
       showSelectionCheckbox: true,
       enableRowClickSelection: false,
       multiSelect: true,
@@ -66,17 +66,19 @@ module Kubernetes {
         index: 'metadata.name',
         onClose: (result:boolean) => {
           if (result) {
-            function deleteSelected(selected:Array<KubePod>, next:KubePod) {
+            function deleteSelected(selected:Array<any>, next:any) {
               if (next) {
                 log.debug("deleting: ", getName(next));
-                KubernetesReplicationControllers.delete({
-                  id: getName(next)
-                }, undefined, () => {
-                  log.debug("deleted: ", getName(next));
-                  deleteSelected(selected, selected.shift());
-                }, (error) => {
-                  log.debug("Error deleting: ", error);
-                  deleteSelected(selected, selected.shift());
+                KubernetesAPI.del({
+                  object: next,
+                  success: (obj) => {
+                    log.debug("deleted: ", getName(obj));
+                    deleteSelected(selected, selected.shift());
+                  },
+                  error: (err) => {
+                    log.debug("Error deleting: ", err);
+                    deleteSelected(selected, selected.shift());
+                  }
                 });
               }
             }

@@ -267,6 +267,15 @@ module Kubernetes {
         case KubernetesAPI.WatchTypes.NODES:
           return false;
 
+        // TODO remove these if supported in openshift
+        case KubernetesAPI.WatchTypes.REPLICA_SETS:
+        case KubernetesAPI.WatchTypes.DEPLOYMENTS:
+          if (isOpenShift) {
+            return false;
+          } else {
+            return true;
+          }
+
         default:
           return true;
       }

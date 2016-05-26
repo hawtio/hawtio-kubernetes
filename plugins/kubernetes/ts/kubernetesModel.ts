@@ -56,7 +56,15 @@ module Kubernetes {
     public get namespaces():Array<string> {
       return this.kubernetes.namespaces;
     }
-    //public namespaces = [];
+    public appInfos = [];
+    public appViews = [];
+    public appFolders = [];
+    public replicasets = [];
+    public replicas = [];
+    public deployments = [];
+    public deploymentconfigs = [];
+    public allDeployments = [];
+
     public ingresses = [];
     public routes = [];
     public templates = [];
@@ -66,15 +74,18 @@ module Kubernetes {
     // various views on the data
     public podsByHost = {};
     public servicesByKey = {};
-    public replicationControllersByKey = {};
+    public get replicationControllersByKey() {
+      return this.replicasByKey;
+    }
+    public set replicationControllersByKey(val) {
+      this.replicasByKey = val;
+    }
+    public replicasByKey = {}
     public podsByKey = {};
 
     // the environments by namespace (development project)
     public namespaceEnvironments = {};
 
-    public appInfos = [];
-    public appViews = [];
-    public appFolders = [];
 
     public get fetched():boolean {
       if (!this.watcher) {
@@ -92,20 +103,6 @@ module Kubernetes {
     }
     public get showRunButton():boolean {
       return true;
-/*
-      if (isOpenShift) {
-        return true;
-      }
-      return _.any(this.services, (service) => {
-        var name = getName(service);
-        if (name === "templates") {
-          var podCounters = service.$podCounters;
-          return podCounters && (podCounters.valid || podCounters.ready);
-        } else {
-          return false;
-        }
-      });
-*/
     }
 
     public configmaps = [];
@@ -243,6 +240,9 @@ module Kubernetes {
       this.podsByKey = {};
       this.replicationControllersByKey = {};
 
+      this.replicas = this.replicationcontrollers.concat(this.replicasets);
+      this.allDeployments = this.deploymentconfigs.concat(this.deployments);
+
       this.pods.forEach((pod) => {
         if (!pod.kind) pod.kind = "Pod";
         this.podsByKey[pod._key] = pod;
@@ -357,7 +357,7 @@ module Kubernetes {
         service.$serviceUrl = serviceLinkUrl(service);
       });
 
-      this.replicationControllers.forEach((replicationController) => {
+      this.replicas.forEach((replicationController) => {
         if (!replicationController.kind) replicationController.kind = "ReplicationController";
         this.replicationControllersByKey[replicationController._key] = replicationController
           var selector = getSelector(replicationController);

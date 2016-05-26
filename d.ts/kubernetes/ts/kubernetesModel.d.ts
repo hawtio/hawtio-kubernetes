@@ -15,6 +15,14 @@ declare module Kubernetes {
         pods: any[];
         hosts: any[];
         namespaces: Array<string>;
+        appInfos: any[];
+        appViews: any[];
+        appFolders: any[];
+        replicasets: any[];
+        replicas: any[];
+        deployments: any[];
+        deploymentconfigs: any[];
+        allDeployments: any[];
         ingresses: any[];
         routes: any[];
         templates: any[];
@@ -23,11 +31,9 @@ declare module Kubernetes {
         podsByHost: {};
         servicesByKey: {};
         replicationControllersByKey: {};
+        replicasByKey: {};
         podsByKey: {};
         namespaceEnvironments: {};
-        appInfos: any[];
-        appViews: any[];
-        appFolders: any[];
         fetched: boolean;
         isFetched(kind: string): boolean;
         showRunButton: boolean;

@@ -863,6 +863,13 @@ module Kubernetes {
         }
         var id = getName(entity);
         var kind = getKind(entity);
+        // local customizations to re-use existing views
+        if (kind === "DeploymentConfig") {
+          kind = "Deployment";
+        }
+        if (kind === "ReplicaSet") {
+          kind = "ReplicationController";
+        }
         if (kind && id) {
           var path = kind.substring(0, 1).toLowerCase() + kind.substring(1) + "s";
           var namespace = getNamespace(entity);

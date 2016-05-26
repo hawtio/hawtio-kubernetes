@@ -596,6 +596,12 @@ module Developer {
         title: "View the apps for this project"
       },
       {
+        href: UrlHelpers.join(namespacesLink, ns, "deployments"),
+        label: "Deployments",
+        class: "fa fa-clone",
+        title: "View the Deployments for this project"
+      },
+      {
         href: UrlHelpers.join(namespacesLink, ns, "replicationControllers"),
         label: "Replicas",
         class: "fa fa-clone",
