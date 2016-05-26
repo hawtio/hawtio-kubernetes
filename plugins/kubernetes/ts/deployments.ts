@@ -10,9 +10,11 @@ module Kubernetes {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
+    /*
     $scope.$on('kubernetesModelUpdated', function () {
       Core.$apply($scope);
     });
+    */
 
     $scope.tableConfig = {
       data: 'model.allDeployments',

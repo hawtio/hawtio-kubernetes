@@ -13,6 +13,7 @@
 
         <button class="btn btn-danger pull-right"
           title="Deletes the selected Deployments"
+          ng-show="model.allDeployments.length"
           ng-disabled="!tableConfig.selectedItems.length"
           ng-click="deletePrompt(tableConfig.selectedItems)">
           <i class="fa fa-remove"></i> Delete
@@ -20,7 +21,7 @@
         <!--
         <span class="pull-right">&nbsp;</span>
         <a class="btn btn-primary pull-right"
-          title="Create a new Deployment" hawtio-relative-href="./newConfigMap">
+          title="Create a new Deployment" hawtio-relative-href="./newDeployment">
           <i class="fa fa-plus"></i> Create
         </a>
         -->
@@ -36,9 +37,9 @@
       </div>
       <div ng-show="model.fetched">
         <div ng-hide="model.allDeployments.length" class="align-center">
-          <p class="alert alert-info">There are no configmaps currently available.</p>
+          <p class="alert alert-info">There are no deployments currently available.</p>
         </div>
-        <div ng-show="model.configmaps.length">
+        <div ng-show="model.allDeployments.length">
           <table class="table table-bordered table-striped" ui-if="kubernetes.selectedNamespace"
             hawtio-simple-table="tableConfig"></table>
         </div>
