@@ -1712,6 +1712,9 @@ module Kubernetes {
 
       function updateEvent(entity, event) {
         if (entity) {
+          if (!entity.$events) {
+            entity.$events = [];
+          }
           entity.$events.push(event);
           if (!entity.$eventsLink) {
             entity.$eventsLink = UrlHelpers.join(HawtioCore.documentBase(), "/kubernetes/namespace/", currentKubernetesNamespace(), "events") + "?q=kind%3D" + entity.kind + "%20name%3D" + entity.metadata.name;
@@ -1732,10 +1735,12 @@ module Kubernetes {
         var ns = model.currentNamespace();
         if (name && kind && ns) {
           var entity = null;
-          if (kind === "ReplicationController") {
+          if (kind === "ReplicationController" || kind === "ReplicaSet") {
             entity = model.getReplicationController(ns, name);
           } else if (kind === "Pod") {
             entity = model.getPod(ns, name);
+          } else if (kind === "Deployment") {
+            entity = model.getDeployment(ns, name);
           }
           if (entity) {
             updateEvent(entity, event);

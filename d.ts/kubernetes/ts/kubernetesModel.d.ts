@@ -51,6 +51,7 @@ declare module Kubernetes {
         orRedraw(flag: any): void;
         getService(namespace: any, id: any): any;
         getReplicationController(namespace: any, id: any): any;
+        getDeployment(namespace: any, id: any): any;
         getPod(namespace: any, id: any): any;
         podsForNamespace(namespace?: any): any[];
         getBuildConfig(name: any): any;

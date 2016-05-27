@@ -150,6 +150,10 @@ module Kubernetes {
       return answer;
     }
 
+    public getDeployment(namespace, id) {
+      return this.deploymentsByKey[createKey(namespace, id, 'deployment')];
+    }
+
     public getPod(namespace, id) {
       return this.podsByKey[createKey(namespace, id, 'pod')];
     }
