@@ -599,13 +599,14 @@ module Kubernetes {
                 if (servicepath) {
                   service.$connectUrl = UrlHelpers.join(service.$connectUrl, servicepath);
                 }
+                var servicescheme = "http" || Kubernetes.getAnnotation(service, "api.service.kubernetes.io/scheme");
               }
 
               // TODO definitely need that annotation, temp hack for apiman link
-              if (getName(service) === 'apiman' && host && _.get(route, 'spec.tls.termination') === 'passthrough') {
-                service.$connectUrl = (<any> new URI().scheme('https').host(service.$host)
-                  .path('apimanui/')).toString();
-                service.$actionUrl = (<any> new URI().scheme('https').host(service.$host)
+              if (getName(service) === 'apiman' && host) {
+                service.$connectUrl = (<any> new URI().scheme(servicescheme).host(service.$host)
+                  .path('apimanui/api-manager/')).toString();
+                service.$actionUrl = (<any> new URI().scheme(servicescheme).host(service.$host)
                   .path('apimanui/link')).toString();
                 service.$connectTemplate = `
                   <span ng-controller="Kubernetes.PostController">
