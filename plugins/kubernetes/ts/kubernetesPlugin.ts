@@ -18,6 +18,7 @@ module Kubernetes {
       .when(UrlHelpers.join(context, 'replicationControllers'), route('replicationControllers.html', false))
       .when(UrlHelpers.join(context, 'services'), route('services.html', false))
       .when(UrlHelpers.join(context, 'events'), route('events.html', false))
+      .when(UrlHelpers.join(context, 'secrets'), route('secrets.html', false))
       .when(UrlHelpers.join(context, 'apps'), route('apps.html', false))
       .when(UrlHelpers.join(context, 'apps/:namespace'), route('apps.html', false))
       .when(UrlHelpers.join(context, 'hosts'), route('hosts.html', false))
@@ -28,10 +29,10 @@ module Kubernetes {
 
   // Put kubernetes views under all of these contexts
   angular.forEach([
-        context, 
-        "/workspaces/:workspace/projects/:project", 
+        context,
+        "/workspaces/:workspace/projects/:project",
         "/workspaces/:workspace"
-      ], 
+      ],
       (context) => {
         $routeProvider
       .when(UrlHelpers.join(context, '/namespace/:namespace/podCreate'), route('podCreate.html', false))
