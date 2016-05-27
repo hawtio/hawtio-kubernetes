@@ -22,6 +22,13 @@
     </span>
   </div>
 </script>
+<script type="text/ng-template" id="desiredReplicas.html">
+  <div class="ngCellText">
+    <a href="" class="badge badge-info"
+       ng-click="$parent.$parent.resizeDialog.open(row.entity)"
+       title="Edit the number of replicas you would like to scale to">{{row.entity.spec.replicas || 0}}</a>
+  </div>
+</script>
 <script type="text/ng-template" id="podCountsAndLinkTemplate.html">
   <div class="ngCellText" title="Number of running pods for this controller">
     <a ng-show="row.entity.$podCounters.podsLink" href="{{row.entity.$podCounters.podsLink}}" title="View pods">

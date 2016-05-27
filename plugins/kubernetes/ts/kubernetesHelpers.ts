@@ -107,6 +107,10 @@ module Kubernetes {
     return UrlHelpers.join(masterApiUrl(), kubernetesApiPrefix());
   }
 
+  export function kubernetesExperimentalApiUrl() {
+    return UrlHelpers.join(masterApiUrl(), kubernetesExperimentalApiPrefix());
+  }
+
   export function openshiftApiUrl() {
     return UrlHelpers.join(masterApiUrl(), openshiftApiPrefix());
   }
@@ -940,14 +944,18 @@ module Kubernetes {
     }
     var kindPath = resourceKindToUriPath(kind);
     var ignoreNamespace = isIgnoreNamespaceKind(kind);
+    var apiUrl = KubernetesApiURL;
+    if (kind == "Deployment" || kind == "Ingress") {
+      apiUrl = kubernetesExperimentalApiUrl();
+    }
     if (isV1beta1Or2() || ignoreNamespace) {
       var postfix = "";
       if (namespace && !ignoreNamespace) {
         postfix = "?namespace=" + namespace;
       }
-      return UrlHelpers.join(KubernetesApiURL, kindPath, pathSegment, postfix);
+      return UrlHelpers.join(apiUrl, kindPath, pathSegment, postfix);
     } else {
-      return UrlHelpers.join(KubernetesApiURL, "/namespaces/", namespace , kindPath, pathSegment);
+      return UrlHelpers.join(apiUrl, "/namespaces/", namespace , kindPath, pathSegment);
     }
   };
 
@@ -1136,7 +1144,9 @@ module Kubernetes {
   export function resizeController($http, KubernetesApiURL, replicationController, newReplicas, onCompleteFn = null) {
     var id = getName(replicationController);
     var namespace = getNamespace(replicationController) || "";
-    var url = kubernetesUrlForKind(KubernetesApiURL, "ReplicationController", namespace, id);
+    var kind = getKind(replicationController) || "ReplicationController";
+    var url = kubernetesUrlForKind(KubernetesApiURL, kind, namespace, id);
+
     $http.get(url).
       success(function (data, status, headers, config) {
         if (data) {

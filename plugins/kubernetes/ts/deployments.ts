@@ -44,11 +44,18 @@ module Kubernetes {
             return ready + valid + waiting + error;
           }
         },
-        {
-          field: '$labelsText',
+        { field: '$replicas',
+          displayName: 'Scale',
+          cellTemplate:$templateCache.get("desiredReplicas.html")
+        },
+        { field: '$labelsText',
           displayName: 'Labels',
           cellTemplate: $templateCache.get("labelTemplate.html")
         },
+        { field: '$eventCount',
+          displayName: 'Events',
+          cellTemplate: $templateCache.get("eventSummaryTemplate.html")
+        }
       ]
     };
 

@@ -7,13 +7,6 @@
       <span ng-hide="row.entity.podsLink" class="badge">{{row.entity.status.replicas}}</span>
     </div>
   </script>
-  <script type="text/ng-template" id="desiredReplicas.html">
-    <div class="ngCellText">
-      <a href="" class="badge badge-info" 
-         ng-click="$parent.$parent.resizeDialog.open(row.entity)" 
-         title="Edit the number of replicas of this controller">{{row.entity.spec.replicas || 0}}</a>
-    </div>
-  </script>
 
   <div class="row">
     <div hawtio-breadcrumbs></div>
