@@ -116,6 +116,228 @@ legend {
   background-color: darkred;
 }
 
+.environment-row a {
+  color: black;
+}
+.environment-row .panel {
+  min-width: 255px;
+  min-height: 160px;
+}
+.environment-row .panel-group {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.environment-row .panel-title > a:before {
+  display: none;
+}
+.environment-rows {
+  /*
+    background-color: rgb(238, 238, 238);
+    */
+  padding-top: 5px;
+  vertical-align: top;
+}
+.environment-name-block {
+  width: 200px;
+}
+.environment-name-block,
+.environment-deploy-block {
+  background: white;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.environment-name-block {
+  padding-top: 0px;
+}
+.environment-block {
+  vertical-align: top;
+}
+.environment-deploy-block {
+  border: 1px dashed;
+  border-color: silver;
+}
+.environment-deploy-version-and-pods {
+  padding-bottom: 5px;
+}
+.full-card-width .log-section {
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 20px;
+}
+
+.project-dashboard .page-header-row {
+  background: white;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-top: -20px;
+  border-bottom: 1px solid #d1d1d1;
+  margin-bottom: 13px;
+  padding-bottom: 7px;
+}
+.project-dashboard .card-pf-title {
+  margin-right: 1em;
+}
+.project-dashboard .no-border {
+  border: none;
+  margin-bottom: 0;
+}
+.project-dashboard .no-top-margin {
+  margin-top: 0;
+}
+.project-dashboard .full-card-width {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.project-dashboard .card-pf.pipeline .panel-group {
+  border-width: 0;
+}
+.project-dashboard .card-pf.pipeline .panel-group .panel {
+  box-shadow: none;
+}
+.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default {
+  border-width: 0;
+  border-top-width: 1px;
+}
+.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default .log-panel {
+  border: 1px solid #d4d4d4;
+}
+
+.filter-header .btn,
+.filter-header form {
+  margin-top: 1.05em;
+  margin-bottom: 1em;
+}
+
+.log-window {
+  border-top: 1px solid #d4d4d4;
+  overflow: auto;
+}
+.log-window-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
+  line-height: 13px;
+}
+.log-panel {
+  position: static;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  border: none;
+  padding: 3px;
+}
+.log-panel-inner * {
+  font-family: "DroidSansMonoRegular", monospace;
+  line-height: 13px;
+}
+
+table.deployments a,
+table.usage a {
+  color: black;
+}
+table.deployments tbody a:hover,
+.table.usage > thead > tr > th > a:hover,
+.table.deployments > thead > tr > th > a:hover,
+.table.deployments > tbody > tr > td > a:hover,
+table.usage tbody a:hover {
+  text-decoration: underline;
+}
+table.deployments th,
+table.usage th {
+  font-size: 14px;
+  padding: 10px;
+}
+table.environment td {
+  padding: 10px;
+}
+.version1 {
+  background-color: #007a87;
+}
+.version2 {
+  background-color: #3b0083;
+}
+.table.usage > thead > tr > th,
+.table.deployments > thead > tr > th,
+.table.deployments > tbody > tr > td {
+  padding: 10px 20px;
+}
+.dropdown a.dropdown-toggle:hover {
+  text-decoration: none;
+}
+.dropdown .dropdown-menu > li > a:hover {
+  text-decoration: none;
+}
+.team-dashboard .environment-rows .card-pf {
+  padding-left: 0;
+  padding-right: 0;
+}
+.team-dashboard .environment-rows .card-pf .card-pf-heading,
+.team-dashboard .environment-rows .card-pf .card-pf-body {
+  margin-left: 0;
+  margin-right: 0;
+}
+.team-dashboard .environment-rows .card-pf .card-pf-heading {
+  margin-bottom: 0;
+}
+.team-dashboard .environment-rows .card-pf .card-pf-heading .btn {
+  margin-top: 15px;
+}
+.team-dashboard .environment-rows .card-pf .card-pf-body {
+  margin-top: 0;
+}
+.team-dashboard .environment-rows .card-pf .table.usage th,
+.team-dashboard .environment-rows .card-pf .table.usage td {
+  text-align: center;
+}
+
+.project-selector {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  list-style-type: none;
+}
+.project-selector a,
+.project-selector a:hover {
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 21px;
+}
+
+.team-list .team-list-entry,
+.team-list .team-no-team {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.175);
+}
+.team-list .team-list-entry:first-child,
+.team-list .team-no-team:first-child {
+  margin-top: 0px;
+}
+.team-list .team-list-entry h3,
+.team-list .team-no-team h3 {
+  margin-top: 0;
+}
+.team-list .team-list-entry .tiles-view-pf,
+.team-list .team-no-team .tiles-view-pf {
+  padding-top: 5px;
+}
+.team-list .team-list-entry .tiles-view-pf .tile,
+.team-list .team-no-team .tiles-view-pf .tile {
+  height: auto;
+  width: auto;
+  min-height: 140px;
+  min-width: 130px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.175);
+}
+
 /* This is for the 'Overview' page with all the rows of boxes */
 .service-view-rectangle {
   position: relative;
@@ -480,226 +702,4 @@ kubernetes-container-terminal .terminal-actions {
   max-height: 16px;
   max-width: 16px;
   margin-right: 10px;
-}
-
-.environment-row a {
-  color: black;
-}
-.environment-row .panel {
-  min-width: 255px;
-  min-height: 160px;
-}
-.environment-row .panel-group {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-.environment-row .panel-title > a:before {
-  display: none;
-}
-.environment-rows {
-  /*
-    background-color: rgb(238, 238, 238);
-    */
-  padding-top: 5px;
-  vertical-align: top;
-}
-.environment-name-block {
-  width: 200px;
-}
-.environment-name-block,
-.environment-deploy-block {
-  background: white;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.environment-name-block {
-  padding-top: 0px;
-}
-.environment-block {
-  vertical-align: top;
-}
-.environment-deploy-block {
-  border: 1px dashed;
-  border-color: silver;
-}
-.environment-deploy-version-and-pods {
-  padding-bottom: 5px;
-}
-.full-card-width .log-section {
-  padding-left: 25px;
-  padding-right: 25px;
-  padding-top: 20px;
-}
-
-.project-dashboard .page-header-row {
-  background: white;
-  margin-left: -20px;
-  margin-right: -20px;
-  margin-top: -20px;
-  border-bottom: 1px solid #d1d1d1;
-  margin-bottom: 13px;
-  padding-bottom: 7px;
-}
-.project-dashboard .card-pf-title {
-  margin-right: 1em;
-}
-.project-dashboard .no-border {
-  border: none;
-  margin-bottom: 0;
-}
-.project-dashboard .no-top-margin {
-  margin-top: 0;
-}
-.project-dashboard .full-card-width {
-  margin-left: -20px;
-  margin-right: -20px;
-}
-.project-dashboard .card-pf.pipeline .panel-group {
-  border-width: 0;
-}
-.project-dashboard .card-pf.pipeline .panel-group .panel {
-  box-shadow: none;
-}
-.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default {
-  border-width: 0;
-  border-top-width: 1px;
-}
-.project-dashboard .card-pf.pipeline .panel-group .panel.panel-default .log-panel {
-  border: 1px solid #d4d4d4;
-}
-
-.filter-header .btn,
-.filter-header form {
-  margin-top: 1.05em;
-  margin-bottom: 1em;
-}
-
-.log-window {
-  border-top: 1px solid #d4d4d4;
-  overflow: auto;
-}
-.log-window-inner * {
-  font-family: "DroidSansMonoRegular", monospace;
-  line-height: 13px;
-}
-.log-panel {
-  position: static;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-  border: none;
-  padding: 3px;
-}
-.log-panel-inner * {
-  font-family: "DroidSansMonoRegular", monospace;
-  line-height: 13px;
-}
-
-table.deployments a,
-table.usage a {
-  color: black;
-}
-table.deployments tbody a:hover,
-.table.usage > thead > tr > th > a:hover,
-.table.deployments > thead > tr > th > a:hover,
-.table.deployments > tbody > tr > td > a:hover,
-table.usage tbody a:hover {
-  text-decoration: underline;
-}
-table.deployments th,
-table.usage th {
-  font-size: 14px;
-  padding: 10px;
-}
-table.environment td {
-  padding: 10px;
-}
-.version1 {
-  background-color: #007a87;
-}
-.version2 {
-  background-color: #3b0083;
-}
-.table.usage > thead > tr > th,
-.table.deployments > thead > tr > th,
-.table.deployments > tbody > tr > td {
-  padding: 10px 20px;
-}
-.dropdown a.dropdown-toggle:hover {
-  text-decoration: none;
-}
-.dropdown .dropdown-menu > li > a:hover {
-  text-decoration: none;
-}
-.team-dashboard .environment-rows .card-pf {
-  padding-left: 0;
-  padding-right: 0;
-}
-.team-dashboard .environment-rows .card-pf .card-pf-heading,
-.team-dashboard .environment-rows .card-pf .card-pf-body {
-  margin-left: 0;
-  margin-right: 0;
-}
-.team-dashboard .environment-rows .card-pf .card-pf-heading {
-  margin-bottom: 0;
-}
-.team-dashboard .environment-rows .card-pf .card-pf-heading .btn {
-  margin-top: 15px;
-}
-.team-dashboard .environment-rows .card-pf .card-pf-body {
-  margin-top: 0;
-}
-.team-dashboard .environment-rows .card-pf .table.usage th,
-.team-dashboard .environment-rows .card-pf .table.usage td {
-  text-align: center;
-}
-
-.project-selector {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  list-style-type: none;
-}
-.project-selector a,
-.project-selector a:hover {
-  color: #fff;
-  text-decoration: none;
-  font-size: 13px;
-  line-height: 21px;
-}
-
-.team-list .team-list-entry,
-.team-list .team-no-team {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  background: white;
-  padding: 20px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.175);
-}
-.team-list .team-list-entry:first-child,
-.team-list .team-no-team:first-child {
-  margin-top: 0px;
-}
-.team-list .team-list-entry h3,
-.team-list .team-no-team h3 {
-  margin-top: 0;
-}
-.team-list .team-list-entry .tiles-view-pf,
-.team-list .team-no-team .tiles-view-pf {
-  padding-top: 5px;
-}
-.team-list .team-list-entry .tiles-view-pf .tile,
-.team-list .team-no-team .tiles-view-pf .tile {
-  height: auto;
-  width: auto;
-  min-height: 140px;
-  min-width: 130px;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.175);
 }
