@@ -32,6 +32,18 @@ module Kubernetes {
           defaultSort: true,
           cellTemplate: $templateCache.get("idTemplate.html")
         },
+        { field: '$podCount',
+          displayName: 'Pods',
+          cellTemplate: $templateCache.get("podCountsAndLinkTemplate.html"),
+          customSortField: (field) => {
+            // need to concat all the pod counters
+            var ready = field.$podCounters.ready || 0;
+            var valid = field.$podCounters.valid || 0;
+            var waiting = field.$podCounters.waiting || 0;
+            var error = field.$podCounters.error || 0;
+            return ready + valid + waiting + error;
+          }
+        },
         {
           field: '$labelsText',
           displayName: 'Labels',

@@ -290,6 +290,12 @@ module Kubernetes {
   }
 
   export function getSelector(entity) {
+    if (entity.kind === "ReplicaSet" || entity.kind === "Deployment") {
+      var answer = Core.pathGet(entity, ["spec", "selector", "matchLabels"]);
+      if (answer) {
+        return answer;
+      }
+    }
     return Core.pathGet(entity, ["spec", "selector"]);
   }
 
