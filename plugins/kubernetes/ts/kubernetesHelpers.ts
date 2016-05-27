@@ -945,7 +945,7 @@ module Kubernetes {
     var kindPath = resourceKindToUriPath(kind);
     var ignoreNamespace = isIgnoreNamespaceKind(kind);
     var apiUrl = KubernetesApiURL;
-    if (kind == "Deployment" || kind == "Ingress") {
+    if (kind == "Deployment" || kind == "Ingress" || kind == "Job" || kind == "ReplicaSet") {
       apiUrl = kubernetesExperimentalApiUrl();
     }
     if (isV1beta1Or2() || ignoreNamespace) {
