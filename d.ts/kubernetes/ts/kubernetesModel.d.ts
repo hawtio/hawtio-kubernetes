@@ -28,6 +28,7 @@ declare module Kubernetes {
         templates: any[];
         redraw: boolean;
         resourceVersions: {};
+        deploymentsByKey: {};
         podsByHost: {};
         servicesByKey: {};
         replicationControllersByKey: {};

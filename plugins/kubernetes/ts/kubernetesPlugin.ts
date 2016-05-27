@@ -38,6 +38,8 @@ module Kubernetes {
       .when(UrlHelpers.join(context, '/namespace/:namespace/podEdit/:id'), route('podEdit.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/pods'), route('pods.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/pods/:id'), route('pod.html', false))
+      .when(UrlHelpers.join(context, '/namespace/:namespace/replicasetss'), route('replicationControllers.html', false))
+      .when(UrlHelpers.join(context, '/namespace/:namespace/replicasetss/:id'), route('replicationController.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers'), route('replicationControllers.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers/:id'), route('replicationController.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllerCreate'), route('replicationControllerCreate.html', false))

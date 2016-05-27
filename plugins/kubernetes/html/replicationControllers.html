@@ -24,7 +24,7 @@
   </div>
 
   <div class="row filter-header">
-    <div class="col-md-12" ng-show="model.replicationControllers.length">
+    <div class="col-md-12" ng-show="model.replicas.length">
       <span ng-show="!id">
         <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
                        css-class="input-xxlarge"
@@ -57,10 +57,10 @@
         </div>
       </div>
       <div ng-show="model.fetched">
-        <div ng-hide="model.replicationControllers.length" class="align-center">
+        <div ng-hide="model.replicas.length" class="align-center">
           <p class="alert alert-info">There are no replicas currently available.</p>
         </div>
-        <div ng-show="model.replicationControllers.length">
+        <div ng-show="model.replicas.length">
           <table class="table table-bordered table-striped"
                  hawtio-simple-table="tableConfig"></table>
         </div>

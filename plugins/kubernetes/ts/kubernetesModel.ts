@@ -16,16 +16,21 @@ module Kubernetes {
     return (namespace || "") + "-" + (kind || 'undefined').toLowerCase() + '-' + (id || 'undefined').replace(/\./g, '-');
   }
 
-  function populateKey(item) {
+  function populateKey(item, kind = "") {
     var result = item;
-    result['_key'] = createKey(getNamespace(item), getName(item), getKind(item));
+    var itemKind = getKind(item);
+    if (kind && !itemKind) {
+      item.kind = kind;
+      itemKind = kind;
+    }
+    result['_key'] = createKey(getNamespace(item), getName(item), itemKind);
     return result;
   }
 
-  function populateKeys(items:Array<any>) {
+  function populateKeys(items:Array<any>, kind = "") {
     var result = [];
     angular.forEach(items, (item) => {
-      result.push(populateKey(item));
+      result.push(populateKey(item, kind));
     });
     return result;
   }
@@ -72,6 +77,8 @@ module Kubernetes {
     public resourceVersions = {};
 
     // various views on the data
+    public deploymentsByKey = {};
+
     public podsByHost = {};
     public servicesByKey = {};
     public get replicationControllersByKey() {
@@ -80,7 +87,7 @@ module Kubernetes {
     public set replicationControllersByKey(val) {
       this.replicasByKey = val;
     }
-    public replicasByKey = {}
+    public replicasByKey = {};
     public podsByKey = {};
 
     // the environments by namespace (development project)
@@ -134,7 +141,13 @@ module Kubernetes {
     }
 
     public getReplicationController(namespace, id) {
-      return this.replicationControllersByKey[createKey(namespace, id, 'replicationController')];
+      var key1 = createKey(namespace, id, 'replicationController');
+      var key2 = createKey(namespace, id, 'replicaSet');
+      var answer = this.replicationControllersByKey[key1] || this.replicationControllersByKey[key2];
+      if (!answer) {
+        log.info("Could not find replica for either key `" + key1 + "` or `" + key2 + "`");
+      }
+      return answer;
     }
 
     public getPod(namespace, id) {
@@ -239,6 +252,14 @@ module Kubernetes {
       this.servicesByKey = {};
       this.podsByKey = {};
       this.replicationControllersByKey = {};
+
+      populateKeys(this.replicasets, "ReplicaSet");
+/*
+      this.replicasets.forEach((replicaset) => {
+        replicaset.kind = replicaset.kind || "ReplicaSet";
+        
+      });
+*/
 
       this.replicas = this.replicationcontrollers.concat(this.replicasets);
       this.allDeployments = this.deploymentconfigs.concat(this.deployments);
@@ -357,6 +378,30 @@ module Kubernetes {
         service.$serviceUrl = serviceLinkUrl(service);
       });
 
+      this.allDeployments.forEach((replicationController) => {
+        if (!replicationController.kind) replicationController.kind = "Deployment";
+        this.deploymentsByKey[replicationController._key] = replicationController;
+          var selector = getSelector(replicationController);
+        replicationController.$pods = [];
+        replicationController.$podCounters = selector ? createPodCounters(selector, this.pods, replicationController.$pods) : null;
+        replicationController.$podCount = replicationController.$pods.length;
+        replicationController.$replicas = (replicationController.spec || {}).replicas;
+
+        var selectedPods = replicationController.$pods;
+        replicationController.connectTo = selectedPods.map((pod) => {
+          return pod._key;
+        }).join(',');
+        replicationController.$labelsText = Kubernetes.labelsToString(getLabels(replicationController));
+        this.updateIconUrlAndAppInfo(replicationController, "deploymentNames");
+        var iconUrl =  replicationController.$iconUrl;
+        if (iconUrl && selectedPods) {
+          selectedPods.forEach((pod) => {
+            pod.$iconUrl = iconUrl;
+          });
+        }
+      });
+
+
       this.replicas.forEach((replicationController) => {
         if (!replicationController.kind) replicationController.kind = "ReplicationController";
         this.replicationControllersByKey[replicationController._key] = replicationController
@@ -450,7 +495,7 @@ module Kubernetes {
         // lets create the app views by trying to join controllers / services / pods that are related
         var appViews = [];
 
-        this.replicationControllers.forEach((replicationController) => {
+        this.replicas.forEach((replicationController) => {
           var name = getName(replicationController);
           var $iconUrl = replicationController.$iconUrl;
           appViews.push({
