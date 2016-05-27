@@ -12,6 +12,8 @@ module Kubernetes {
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
         $scope.id = $routeParams["id"];
+        // editing mode when creating a new secret, readonly otherwise
+        $scope.readOnly=!($scope.id == null);
 
         Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
         selectSubNavBar($scope, "Secrets", $scope.id ? "Edit Secret: " + $scope.id : "Create Secret");
@@ -166,19 +168,56 @@ module Kubernetes {
 
             kubeClient.put($scope.secret,
               (data) => {
-                var secretsLink = onSaveUrl || Developer.namespaceLink($scope, $routeParams, "secrets");
-                var params = {};
-                if (onSaveUrl) {
-                  params['secret'] = name;
-                }
-                goToPath($location, secretsLink);
-                $location.search(params);
-                log.info("navigating to URL: " + secretsLink + " with params " + angular.toJson($location.search()));
+                $scope.goToList();
               },
               (err) => {
-                Core.notification('error', "Failed to secret " + name + "\n" + err);
+                Core.notification('error', "Failed to save secret " + name + ": " + err.message);
               });
           }
+        };
+
+        $scope.deletePrompt = () => {
+          var secret = $scope.secret;
+          if(!secret || !secret.metadata || !secret.metadata.name) {
+            Core.notification('error', "Cannot delete current secret");
+            return;
+          }
+          var name = secret.metadata.name;
+
+           UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
+             collection: [$scope.secret],
+             index: 'metadata.name',
+             onClose: (result:boolean) => {
+               if (result) {
+                 Core.notification('info', "Deleting secret " + name);
+
+                 kubeClient.delete(secret,
+                   (data) => {
+                     $scope.goToList();
+                   },
+                   (err) => {
+                     Core.notification('error', "Failed to delete secret " + name + ": " + err.message);
+                   });
+                 }
+             },
+             title: 'Delete Secret',
+             action: 'The following Secret will be deleted:',
+             okText: 'Delete',
+             okClass: 'btn-danger',
+             custom: "This operation is permanent once completed!",
+             customClass: "alert alert-warning"
+           }).open();
+         };
+
+        $scope.goToList = () => {
+          var secretsLink = onSaveUrl || Developer.namespaceLink($scope, $routeParams, "secrets");
+          var params = {};
+          if (onSaveUrl) {
+            params['secret'] = name;
+          }
+          goToPath($location, secretsLink);
+          $location.search(params);
+          log.info("navigating to URL: " + secretsLink + " with params " + angular.toJson($location.search()));
         };
 
         updateData();
