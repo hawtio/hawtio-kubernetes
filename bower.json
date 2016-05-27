@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "angular-nvd3": "~1.0.2",
-    "angular-resource": "~1.4.7",
+    "angular-resource": ">= 1.1.0 <= 1.6.0",
     "angular-ui-codemirror": "~0.3.0",
     "angular-ui-validate": "~1.2.1",
     "angularjs-scroll-glue": "~0.0.1",
@@ -53,9 +53,8 @@
   },
   "resolutions": {
     "codemirror": "^5.0",
-    "angular": "~1.3.5",
-    "angular-resource": "~1.3.9",
     "urijs": "~1.17.0",
-    "lodash": "3.10.1"
+    "lodash": "3.10.1",
+    "angular": ">= 1.1.0 <= 1.6.0"
   }
 }
