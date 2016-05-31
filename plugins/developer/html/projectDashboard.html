@@ -68,6 +68,9 @@
     </div>
     <div ng-show="model.buildconfigs.length">
       <div ng-hide="environments.length">
+        <ng-include src="'plugins/developer/html/apps.html'"/>
+
+<!--
         <div class="row">
           <div class="col-md-12 align-center">
             <h2>No Environment Available</h2>
@@ -76,6 +79,7 @@
             <a class="btn btn-primary" ng-href="{{settingsLink}}"><i class="fa fa-plus"></i> New Build</a>
           </div>
         </div>
+-->
       </div>
 
 
