@@ -150,6 +150,10 @@ module Kubernetes {
       return answer;
     }
 
+    public getNamespaceOrProject(name) {
+      return getNamed(this.projects, name);
+    }
+
     public getDeployment(namespace, id) {
       return this.deploymentsByKey[createKey(namespace, id, 'deployment')];
     }

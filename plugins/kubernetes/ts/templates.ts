@@ -329,7 +329,21 @@ module Kubernetes {
 
         var namespace = currentKubernetesNamespace();
         // TODO store this in localStorage!
+        // lets try find the annotated domain
+
         var domain = "vagrant.f8";
+        var nsObject = $scope.model.getNamespaceOrProject(namespace);
+        if (!nsObject) {
+          log.warn("Could not find namespace object '" + namespace + "'");
+        } else {
+          var annotation = "fabric8.io/domain";
+          var customDomain = getAnnotation(nsObject, annotation);
+          if (customDomain) {
+            domain = customDomain;
+          } else {
+            log.warn("The default namespace is not annotated with `" + annotation + "` to denote the default domain to use for Routes: " + angular.toJson(nsObject, true));
+          }
+        }
         var defaultRouteHostSuffix = '.' + (namespace === "default" ? "" : namespace + ".") + domain;
         formConfig.properties.routeHostname = {
           type: 'string',
@@ -397,7 +411,11 @@ module Kubernetes {
           var kind = object.kind;
           var name = getName(object);
           if (name && "Service" === kind) {
-            var routeHostname = name + routeHostnameSuffix;
+            var routeHostname = "";
+            if (name && routeHostnameSuffix) {
+              routeHostname = name + routeHostnameSuffix;
+            }
+            log.info("Creating route using " + routeHostname + " as routeHostnameSuffix = " + routeHostnameSuffix)
             var route = {
               kind: "Route",
               apiVersion: defaultOSApiVersion,
