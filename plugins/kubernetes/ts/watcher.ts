@@ -43,6 +43,10 @@ module Kubernetes {
       }
     } else {
       var result = _.filter(<any>namespaceWatch.watches, {'fetched': false});
+      if (!isOpenShift) {
+        // On vanilla kubernetes, jenkinshift might not be running, let's avoid blocking the UI waiting to find out
+        _.remove(result, (watch:any) => watch.config.kind === KubernetesAPI.WatchTypes.BUILD_CONFIGS);
+      }
       if (result.length) {
         return false;
       } else {
