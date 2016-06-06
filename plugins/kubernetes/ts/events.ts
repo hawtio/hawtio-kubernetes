@@ -16,14 +16,41 @@ module Kubernetes {
 
     $scope.tableConfig = {
       data: 'model.events',
-      showSelectionCheckbox: true,
+      showSelectionCheckbox: false,
       enableRowClickSelection: false,
-      multiSelect: true,
       selectedItems: [],
       filterOptions: {
         filterText: $location.search()["q"] || ''
       },
+      sortInfo: {
+        sortBy: '$firstTimestamp',
+        ascending: false
+      },
       columnDefs: [
+        { field: 'involvedObject.kind',
+          displayName: 'Kind',
+          cellTemplate: $templateCache.get("eventKindTemplate.html")
+        },
+        { field: 'involvedObject.name',
+          displayName: 'Name',
+          cellTemplate: $templateCache.get("eventNameTemplate.html")
+        },
+        { field: 'message',
+          displayName: 'Message'
+        },
+        { field: 'reason',
+          displayName: 'Reason'
+        },
+        { field: 'count',
+          displayName: 'Count'
+        },
+        { field: 'involvedObject.fieldPath',
+          displayName: 'Subject'
+        },
+        { field: 'source',
+          displayName: 'Source',
+          cellTemplate: $templateCache.get("eventSourceTemplate.html")
+        },
         { field: '$firstTimestamp',
           displayName: 'First Seen',
           cellTemplate: $templateCache.get("firstTimestampTemplate.html")
@@ -32,30 +59,6 @@ module Kubernetes {
           displayName: 'Last Seen',
           cellTemplate: $templateCache.get("lastTimestampTemplate.html")
         },
-        { field: 'count',
-          displayName: 'Count'
-        },
-        { field: 'involvedObject.name',
-          displayName: 'Name',
-          cellTemplate: $templateCache.get("eventNameTemplate.html")
-        },
-        { field: 'involvedObject.kind',
-          displayName: 'Kind',
-          cellTemplate: $templateCache.get("eventKindTemplate.html")
-        },
-        { field: 'involvedObject.fieldPath',
-          displayName: 'Subject'
-        },
-        { field: 'reason',
-          displayName: 'Reason'
-        },
-        { field: 'source',
-          displayName: 'Source',
-          cellTemplate: $templateCache.get("eventSourceTemplate.html")
-        },
-        { field: 'message',
-          displayName: 'Message'
-        }
       ]
     };
 
