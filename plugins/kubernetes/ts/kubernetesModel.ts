@@ -46,7 +46,10 @@ module Kubernetes {
    */
   export class KubernetesModelService {
     public kubernetes = <KubernetesState> null;
-    public apps = [];
+    // public apps = [];
+    public get apps() {
+      return this.appViews;
+    };
     public services = [];
 
     public replicationcontrollers = [];
@@ -299,7 +302,7 @@ module Kubernetes {
         }
         var ready = isReady(pod);
         pod.$ready = ready;
-        pod.$statusCss = statusTextToCssClass(podStatus.phase, ready);
+        pod.$statusCss = statusTextToCssClass(pod);
 
         var maxRestartCount = 0;
         angular.forEach(Core.pathGet(pod, ["status", "containerStatuses"]), (status) => {
@@ -629,7 +632,6 @@ module Kubernetes {
         });
 
         appViews = _.sortBy(populateKeys(appViews), (appView) => appView._key);
-
         ArrayHelpers.sync(this.appViews, appViews, '$name');
 
         if (this.appInfos && this.appViews) {
@@ -664,7 +666,6 @@ module Kubernetes {
           });
           this.appFolders = _.sortBy(folders, "path");
 
-          var apps = [];
           var defaultInfo = {
             $iconUrl: defaultIconUrl
           };
@@ -695,7 +696,6 @@ module Kubernetes {
               if (!appView.$iconUrl) {
                 appView.$iconUrl = appInfo.$iconUrl;
               }
-              apps.push(appView);
               appView.$podCounters = createAppViewPodCounters(appView);
               appView.$podCount = (appView.pods || []).length;
               appView.$replicationControllersText = (appView.replicationControllers || []).map((i) => i["_key"]).join(" ");
@@ -705,10 +705,6 @@ module Kubernetes {
               log.warn("Failed to update appViews: " + e);
             }
           });
-          //this.apps = apps;
-          this.apps = this.appViews;
-
-
           this.environments = this.loadEnvironments();
         }
       } catch (e) {

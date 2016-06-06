@@ -158,7 +158,7 @@ declare module Kubernetes {
     function kibanaLogsLink(ServiceRegistry: any): string;
     function openLogsForPods(ServiceRegistry: any, $window: any, namespace: any, pods: any): void;
     function resizeController($http: any, KubernetesApiURL: any, replicationController: any, newReplicas: any, onCompleteFn?: any): void;
-    function statusTextToCssClass(text: any, ready?: boolean): string;
+    function statusTextToCssClass(pod: any): string;
     function podStatus(pod: any): any;
     function isReady(pod: any): boolean;
     function createAppViewPodCounters(appView: any): any[];

@@ -4,13 +4,6 @@
 
 module Kubernetes {
 
-  // controller for the status icon cell
-  export var PodStatus = controller("PodStatus", ["$scope", ($scope) => {
-    $scope.statusMapping = (text) => {
-      return statusTextToCssClass(text);
-    }
-  }]);
-
   // Controller that handles a service that requires an OAuth redirect
   _module.controller("Kubernetes.PostController", ($scope, userDetails, $element, $sce) => {
     var service = $scope.$eval('view.service');

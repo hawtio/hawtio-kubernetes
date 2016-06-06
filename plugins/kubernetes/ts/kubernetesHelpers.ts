@@ -308,7 +308,8 @@ module Kubernetes {
   }
 
   export function getStatus(pod) {
-    return Core.pathGet(pod, ["status", "phase"]);
+    var answer = Core.pathGet(pod, ["status", "phase"]);
+    return answer;
   }
 
   export function getPorts(service) {
@@ -1173,19 +1174,21 @@ module Kubernetes {
       });
   }
 
-  export function statusTextToCssClass(text, ready = false) {
+  export function statusTextToCssClass(pod:any) {
+    var ready = ('$ready' in pod) ? pod.$ready : isReady(pod);
+    var text = getStatus(pod);
     if (text) {
       var lower = text.toLowerCase();
-      if (lower.startsWith("run") || lower.startsWith("ok")) {
+      if (_.startsWith(lower, "run") || _.startsWith(lower, "ok")) {
         if (!ready) {
-          return "fa fa-spinner fa-spin green";
+          return "fa fa-spinner fa-spin grey";
         }
         return 'fa fa-play-circle green';
-      } else if (lower.startsWith("wait") || lower.startsWith("pend")) {
+      } else if (_.startsWith(lower, "wait") || _.startsWith(lower, "pend")) {
         return 'fa fa-download';
-      } else if (lower.startsWith("term") || lower.startsWith("error") || lower.startsWith("fail")) {
-        return 'fa fa-off orange';
-      } else if (lower.startsWith("succeeded")) {
+      } else if (_.startsWith(lower, "term") || _.startsWith(lower, "error") || _.startsWith(lower, "fail")) {
+        return 'fa fa-power-off orange';
+      } else if (_.startsWith(lower, "succeeded")) {
         return 'fa fa-check-circle-o green';
       }
     }
@@ -1264,7 +1267,7 @@ module Kubernetes {
         }
         pod.idAbbrev = abbrev;
       }
-      pod.statusClass = statusTextToCssClass(podStatus(pod), isReady(pod));
+      pod.statusClass = statusTextToCssClass(pod);
     });
 
     var services = appView.services || [];
