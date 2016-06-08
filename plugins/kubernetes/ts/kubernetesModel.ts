@@ -606,7 +606,7 @@ module Kubernetes {
                 if (servicepath) {
                   service.$connectUrl = UrlHelpers.join(service.$connectUrl, servicepath);
                 }
-                var servicescheme = "http" || Kubernetes.getAnnotation(service, "api.service.kubernetes.io/scheme");
+                var servicescheme = Kubernetes.getAnnotation(service, "api.service.kubernetes.io/scheme") || "http";
               }
 
               // TODO definitely need that annotation, temp hack for apiman link
