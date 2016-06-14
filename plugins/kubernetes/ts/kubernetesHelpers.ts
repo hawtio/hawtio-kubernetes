@@ -598,6 +598,9 @@ module Kubernetes {
         if (!portalIP) {
           portalIP = spec.portalIP;
         }
+        if (!portalIP) {
+          portalIP = Core.pathGet(service, ["status", "loadBalancer", "ingress", 0, "ip"]);
+        }
         var hasHttps = false;
         var hasHttp = false;
         angular.forEach(spec.ports, (portSpec) => {
