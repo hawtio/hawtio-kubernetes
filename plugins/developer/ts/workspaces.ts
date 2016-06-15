@@ -292,7 +292,10 @@ module Developer {
 
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'list');
 
-    $scope.developerPerspective = _.startsWith(Core.trimLeading($location.url(), "/"), "workspace");
+    // now that we show Teams separately to this table, lets just link to the runtime perspective by default
+    // for these namespaces
+    $scope.developerPerspective = false;
+    //$scope.developerPerspective = _.startsWith(Core.trimLeading($location.url(), "/"), "workspace");
 
     var tableConfig = {
       data: 'model.namespaces',

@@ -23,13 +23,15 @@ module Developer {
       project.$labelsText = Kubernetes.labelsToString(labels);
 
       var team = labels["team"] || labels["project"];
+      // lets add a query so that the back button works
+      var query = "?q=";
       if (name) {
         if (team) {
-          project.$projectsLink = UrlHelpers.join("workspaces", team, "/namespace", name);
-          project.$runtimeLink = UrlHelpers.join("workspaces", team, "/namespace", name, "/apps");
+          project.$projectsLink = UrlHelpers.join("workspaces", team, "/namespace", name) + query;
+          project.$runtimeLink = UrlHelpers.join("workspaces", team, "/namespace", name, "/apps") + query;
         } else {
-          project.$projectsLink = UrlHelpers.join("workspaces", name);
-          project.$runtimeLink = UrlHelpers.join("kubernetes/namespace/", name, "/apps");
+          project.$projectsLink = UrlHelpers.join("workspaces", name) + query;
+          project.$runtimeLink = UrlHelpers.join("kubernetes/namespace/", name, "/apps") + query;
         }
         project.$viewLink = project.$projectsLink;
       }
