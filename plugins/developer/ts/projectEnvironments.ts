@@ -86,14 +86,7 @@ module Developer {
             index: 'label',
             onClose: (result:boolean) => {
               if (result) {
-                function deleteSelected(selected, next) {
-                  if (next) {
-                    deleteEntity(next, () => {
-                      deleteSelected(selected, selected.shift());
-                    });
-                  }
-                }
-                deleteSelected(selected, selected.shift());
+                deleteEnvironments(selected);
               }
             },
             title: 'Delete Environments',
@@ -105,14 +98,20 @@ module Developer {
           }).open();
         };
 
-        function deleteEntity(entity, callback) {
-          var key = (entity || {}).key;
-          if (key) {
-            var configMap = Kubernetes.getNamed($scope.model.configmaps, Kubernetes.environemntsConfigMapName);
-            if (configMap) {
-              delete configMap.data[key];
+        function deleteEnvironments(selected, callback = null) {
+          var configMap = Kubernetes.getNamed($scope.model.configmaps, Kubernetes.environemntsConfigMapName);
+          if (configMap) {
+            var changed = false;
+            angular.forEach(selected, (entity) => {
+              var key = (entity || {}).key;
+              if (key) {
+                delete configMap.data[key];
+                changed = true;
+              }
+            });
+            if (changed) {
               kubeClient.put(configMap, (data) => {
-                log.info("Deleted environment " + key);
+                log.info("Deleted environments " + selected);
                 if (angular.isFunction(callback)) {
                   callback();
                 }
