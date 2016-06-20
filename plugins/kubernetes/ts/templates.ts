@@ -87,7 +87,7 @@ module Kubernetes {
         if (!configmaps || !configmaps.length) {
           return;
         }
-        var catalogs = _.filter(configmaps, (configmap:any) => configmap.metadata.labels.kind === 'catalog');
+        var catalogs = _.filter(configmaps, (configmap:any) => getLabels(configmap).kind === 'catalog');
         catalogs.forEach((catalog:any) => {
           _.forOwn(catalog.data, (obj, key) => {
             if (_.endsWith(key, '.json')) {
