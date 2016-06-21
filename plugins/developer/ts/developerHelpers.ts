@@ -161,6 +161,14 @@ module Developer {
           item.$gitCommit = annotations["fabric8.io/git-commit"] || item.$gitCommit;
           item.$gitUrl = annotations["fabric8.io/git-url"] || item.$gitUrl;
           item.$gitBranch = annotations["fabric8.io/git-branch"] || item.$gitBranch;
+          var metricsPath = annotations["fabric8.io/metrics-path"];
+          if (metricsPath) {
+            var metricsLink = Kubernetes.serviceLinkUrl("grafana", true);
+            if (metricsLink) {
+              item.$metricsLink = UrlHelpers.join(metricsLink, metricsPath);
+            }
+          }
+
           if (!item.$gitCommit) {
             var image = getImage(item);
             if (image) {

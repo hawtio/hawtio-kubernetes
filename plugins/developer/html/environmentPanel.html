@@ -61,6 +61,17 @@
                 </span>
                 &nbsp;
                 &nbsp;
+                <span ng-show="rc.$metricsLink" class="pull-right">
+                  &nbsp;
+                  &nbsp;
+                  <a href="{{rc.$metricsLink}}" target="metrics" ng-show="rc.$metricsLink"
+                    title="View the metrics for this version">
+                    <i class="fa fa-tachometer"></i>
+                    Metrics
+                  </a>
+                </span>
+                &nbsp;
+                &nbsp;
                 <a href="{{rc.$gitUrl}}" target="git" ng-show="rc.$gitUrl" class="pull-right"
                   title="Commit #{{rc.$gitCommit}}
                   {{rc.$gitCommitAuthor}}
