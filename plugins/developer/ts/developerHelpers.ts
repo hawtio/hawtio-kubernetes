@@ -53,6 +53,7 @@ module Developer {
 
     var status = {
       rcs: [],
+      rss: [],
       pods: [],
       routes: [],
       services: []
@@ -64,13 +65,15 @@ module Developer {
       var projectInfos = {};
       var model = $scope.model || {};
 
-      angular.forEach(status.rcs, (item) => {
+      var replicas = [].concat(status.rcs, status.rss);
+
+      angular.forEach(replicas, (item) => {
         var metadata = item.metadata || {};
         var name = metadata.name;
         var labels = metadata.labels || {};
         var annotations = metadata.annotations || {};
         var spec = item.spec || {};
-        var selector = spec.selector;
+        var selector = Kubernetes.getSelector(item);
 
         var project = labels[projectAnnotation];
         var version = labels[versionAnnotation];
@@ -289,6 +292,17 @@ module Developer {
     Kubernetes.watch($scope, $element, "replicationcontrollers", ns, (data) => {
       if (data) {
         status.rcs = data;
+        updateModel();
+      }
+    });
+    Kubernetes.watch($scope, $element, "replicasets", ns, (data) => {
+      if (data) {
+        status.rss = data;
+        angular.forEach(data, (rs) => {
+          if (!rs.kind) {
+            rs.kind = "ReplicaSet";
+          }
+        });
         updateModel();
       }
     });
