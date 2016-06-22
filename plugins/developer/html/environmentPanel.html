@@ -10,9 +10,14 @@
       </div>
 
       <div class="panel-body">
+        <!-- TODO orderBy apparently doesn't support objects
         <div class="environment-deploy-block"
           ng-repeat="(project, versions) in envVersions[env.namespace] | orderBy:'project' track by $index">
           <div ng-repeat="(version, versionInfo) in versions.versions | orderBy:'version' track by $index">
+            -->
+        <div class="environment-deploy-block"
+          ng-repeat="(project, versions) in envVersions[env.namespace] track by $index">
+          <div ng-repeat="(version, versionInfo) in versions.versions track by $index">
             <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
               <div class="environment-deploy-version-and-pods">
                 <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
