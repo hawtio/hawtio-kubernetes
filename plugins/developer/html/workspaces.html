@@ -61,8 +61,6 @@
               <div class="row">
                 <div class="col-md-12">
                   <div hawtio-form-2="wizard.formConfig" entity="wizard.formEntity"></div>
-
-
                 </div>
               </div>
             </div>
@@ -104,8 +102,8 @@
                 <h3 class="inline-block">Team: <b>{{team.metadata.name}}</b></h3>
                 <a href="" class="pull-right" ng-click="deletePrompt(team.metadata.name)" title="Delete team {{team.metadata.name}}"><i class="fa red fa-remove"></i></a>
               </div>
-              <div class="tiles-view-pf">
-                <div class="tile" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
+              <div class="card-view-pf">
+                <div class="card" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
                   <div class="tile-content" ng-show="environment.workspace.metadata.name">
                     <h5>
                       <a ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}">Team Dashboard</a>

@@ -325,12 +325,12 @@ table.environment td {
 .team-list .team-no-team h3 {
   margin-top: 0;
 }
-.team-list .team-list-entry .tiles-view-pf,
-.team-list .team-no-team .tiles-view-pf {
+.team-list .team-list-entry .card-view-pf,
+.team-list .team-no-team .card-view-pf {
   padding-top: 5px;
 }
-.team-list .team-list-entry .tiles-view-pf .tile,
-.team-list .team-no-team .tiles-view-pf .tile {
+.team-list .team-list-entry .card-view-pf .card,
+.team-list .team-no-team .card-view-pf .card {
   height: auto;
   width: auto;
   min-height: 140px;
