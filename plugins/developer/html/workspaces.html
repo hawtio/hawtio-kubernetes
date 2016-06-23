@@ -100,7 +100,7 @@
             <div class="team-list-entry" ng-repeat="team in model.teams">
               <div>
                 <h3 class="inline-block">Team: <b>{{team.metadata.name}}</b></h3>
-                <a href="" class="pull-right" ng-click="deletePrompt(team.metadata.name)" title="Delete team {{team.metadata.name}}"><i class="fa red fa-remove"></i></a>
+                <a href="" class="pull-right" ng-click="deletePrompt(team.metadata.name, 'teams')" title="Delete team {{team.metadata.name}}"><i class="fa red fa-remove"></i></a>
               </div>
               <div class="card-view-pf">
                 <div class="card" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
@@ -115,6 +115,8 @@
                       </dt>
                       <dd>
                         {{environment.workspace.metadata.name}}
+                        &nbsp;
+                        <a href="" class="clickable" ng-click="deletePrompt(environment.workspace.metadata.name, 'namespaces')" title="Delete namespace {{environment.workspace.metadata.name}}"><i class="fa red fa-remove"></i></a>
                       </dd>
                     </dl>
                     <dl>
@@ -132,16 +134,15 @@
                     </h5>
                     <dl>
                       <dt>
-                      </dt>
-                      <dd>
-                        <!-- TODO add a Create button -->
-                      </dd>
-                    </dl>
-                    <dl>
-                      <dt>
                         Not created yet
                       </dt>
-                      <dd>
+                      <dd class="align-center">
+                        <br/>
+                        <a class="btn btn-primary"
+                          title="Create a new namespace"
+                          ng-click="createEnvironmentNamespace(environment.namespace)">
+                          <i class="fa fa-plus"></i> Create
+                        </a>
                       </dd>
                     </dl>
                   </div>

@@ -350,16 +350,15 @@ module Developer {
       }
     }, { 'kind': 'environments', 'provider': 'fabric8.io' });
 
-    $scope.deletePrompt = (selected) => {
-      var kind = "namespaces";
+    $scope.deletePrompt = (selected, kind = 'namespaces') => {
       if (angular.isString(selected)) {
-        kind = "teams";
         selected = [{
           metadata: {
             name: selected
           }
         }];
       }
+      
       UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
         collection: selected,
         index: 'metadata.name',
@@ -400,6 +399,10 @@ module Developer {
       return answer;
     };
 
+    $scope.createEnvironmentNamespace = (name) => {
+      Kubernetes.createNamespace(name);
+    };
+
     $scope.createNamespaceDialog = {
       controller: null,
       newNamespaceName: "",
@@ -407,14 +410,13 @@ module Developer {
       onOk: () => {
         var createNamespaceDialog = $scope.createNamespaceDialog;
         createNamespaceDialog.dialog.close();
-
         var name = createNamespaceDialog.newNamespaceName;
         Kubernetes.createNamespace(name);
+        createNamespaceDialog.newNamespaceName = "";
       },
       open: (controller) => {
         var createNamespaceDialog = $scope.createNamespaceDialog;
         createNamespaceDialog.dialog.open();
-        createNamespaceDialog.newNamespaceName = "";
 
         $timeout(() => {
           $('#newDataName').focus();
