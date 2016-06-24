@@ -106,8 +106,8 @@
                 <div class="card" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
                   <div class="tile-content" ng-show="environment.workspace.metadata.name">
                     <h5>
-                      <a ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}">Team Dashboard</a>
-                      <a ng-if="environment.kind !== 'development'" ng-href="{{environment.workspace.$runtimeLink}}">{{environment.name}}</a>
+                      <a ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}" title="View the Dashboard for the teams development">Team Dashboard</a>
+                      <a ng-if="environment.kind !== 'development'" ng-href="{{environment.workspace.$runtimeLink}}" title="View the environment">{{environment.name}}</a>
                     </h5>
                     <dl>
                       <dt>
@@ -125,6 +125,11 @@
                       </dt>
                       <dd>
                         {{environment.workspace.$creationDate | relativeTime}}
+                      </dd>
+                    </dl>
+                    <dl ng-show="environment.kind === 'development' && environment.workspace.$runtimeLink">
+                      <dd>
+                        <a ng-href="{{environment.workspace.$runtimeLink}}" title="View the runtime environment for the development tools">Runtime</a>
                       </dd>
                     </dl>
                   </div>
