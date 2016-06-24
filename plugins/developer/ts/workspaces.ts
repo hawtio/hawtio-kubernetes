@@ -277,6 +277,7 @@ module Developer {
             });
             if (workspace) {
               workspace.$inTeam = true;
+              workspace.$runtimeLink = UrlHelpers.join("workspaces", team.metadata.name, "/namespace", workspace.metadata.name, "/apps");
               config.workspace = workspace;
             }
           });
