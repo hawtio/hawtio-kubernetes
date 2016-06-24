@@ -265,12 +265,18 @@ module Kubernetes {
   }
 
   export function getAnnotations(entity) {
-    var answer = Core.pathGet(entity, ["metadata", "annotations"]);
-    return answer ? answer : {};
+    var answer = Core.pathGet(entity, ["metadata", "annotations"]) || {};
+    var templateAnnotations = Core.pathGet(entity, ["spec", "template", "metadata", "annotations"]);
+    if (templateAnnotations) {
+      var result = {};
+      _.assign(result, templateAnnotations, answer);
+      return result;
+    }
+    return answer;
   }
 
   export function getAnnotation(entity, annotation) {
-    return Core.pathGet(entity, ["metadata", "annotations", annotation]);
+    return getAnnotations(entity)[annotation];
   }
 
   export function getName(entity) {

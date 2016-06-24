@@ -261,8 +261,8 @@ module Kubernetes {
       $scope.selectedTemplate = _.clone(template);
       log.debug("Template parameters: ", template.parameters);
       log.debug("Template objects: ", template.objects);
-      log.debug("Template annotations: ", template.metadata.annotations);
-      var templateAnnotations = template.metadata.annotations;
+      var templateAnnotations = getAnnotations(template);
+      log.debug("Template annotations: ", templateAnnotations);
       if (templateAnnotations) {
         _.forEach(template.objects, (object:any) => {
           var annotations = object.metadata.annotations || {};

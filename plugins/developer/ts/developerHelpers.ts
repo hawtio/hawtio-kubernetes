@@ -71,7 +71,7 @@ module Developer {
         var metadata = item.metadata || {};
         var name = metadata.name;
         var labels = metadata.labels || {};
-        var annotations = metadata.annotations || {};
+        var annotations = Kubernetes.getAnnotations(item);
         var spec = item.spec || {};
         var selector = Kubernetes.getSelector(item);
 
