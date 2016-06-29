@@ -268,7 +268,7 @@ module Kubernetes {
 /*
       this.replicasets.forEach((replicaset) => {
         replicaset.kind = replicaset.kind || "ReplicaSet";
-        
+
       });
 */
 
@@ -592,25 +592,22 @@ module Kubernetes {
             if (service) {
               service.$host = host;
 
-              // TODO we could use some annotations / metadata to deduce what URL we should use to open this
-              // service in the console. For now just assume its http:
+              var servicescheme = Kubernetes.getAnnotation(service, "api.service.kubernetes.io/scheme") ||
+                                  spec.tls ? "https" : "http";
 
-              if (host) {
-                var hostUrl = host;
-                if (hostUrl.indexOf("://") < 0) {
-                  hostUrl = "http://" + host;
-                }
-                service.$connectUrl = UrlHelpers.join(hostUrl, "/");
+              var hostUrl = host;
+              if (hostUrl.indexOf("://") < 0) {
+                hostUrl = servicescheme + "://" + host;
+              }
+              service.$connectUrl = UrlHelpers.join(hostUrl, "/");
 
-                var servicepath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
-                if (servicepath) {
-                  service.$connectUrl = UrlHelpers.join(service.$connectUrl, servicepath);
-                }
-                var servicescheme = Kubernetes.getAnnotation(service, "api.service.kubernetes.io/scheme") || "http";
+              var servicepath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
+              if (servicepath) {
+                service.$connectUrl = UrlHelpers.join(service.$connectUrl, servicepath);
               }
 
               // TODO definitely need that annotation, temp hack for apiman link
-              if (getName(service) === 'apiman' && host) {
+              if (getName(service) === 'apiman') {
                 service.$connectUrl = (<any> new URI().scheme(servicescheme).host(service.$host)
                   .path('apimanui/api-manager/')).toString();
                 service.$actionUrl = (<any> new URI().scheme(servicescheme).host(service.$host)
