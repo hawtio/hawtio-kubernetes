@@ -118,7 +118,7 @@
                     </td>
                     <td ng-repeat="env in environments | orderBy: 'order' | filter:filterTemplates track by $index">
                       <div
-                        ng-repeat="(version, versionInfo) in envVersions[env.namespace][app.metadata.name].versions | orderBy:'version' track by $index">
+                        ng-repeat="(version, versionInfo) in envVersions[env.namespace][app.metadata.name].versions track by $index">
                         <div ng-repeat="(rcname, rc) in versionInfo.replicationControllers">
                           <div>
                             <a href="{{rc.$viewLink}}" ng-show="rc.$viewLink"
