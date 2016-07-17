@@ -601,7 +601,7 @@ module Kubernetes {
       var nodePort = 0;
       if (spec) {
         var answer = "";
-        if (!portalIP) {
+        if (!portalIP && !isOpenShift) {
           portalIP = spec.portalIP;
         }
         if (!portalIP) {

@@ -338,28 +338,6 @@ table.environment td {
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.175);
 }
 
-.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical {
-  margin-left: 170px;
-}
-.nav-pf-vertical {
-  width: auto;
-  min-width: 170px;
-}
-.nav-pf-vertical .list-group > .list-group-item > a {
-  width: auto;
-}
-.nav-pf-vertical > .list-group > .list-group-item > a .fa,
-.nav-pf-vertical > .list-group > .list-group-item > a .glyphicon,
-.nav-pf-vertical > .list-group > .list-group-item > a .pficon {
-  line-height: 25px;
-  margin-right: 3px;
-}
-.nav-pf-vertical > .list-group > .list-group-item > a img {
-  max-height: 16px;
-  max-width: 16px;
-  margin-right: 10px;
-}
-
 /* This is for the 'Overview' page with all the rows of boxes */
 .service-view-rectangle {
   position: relative;
@@ -702,4 +680,26 @@ kubernetes-container-terminal .terminal-actions {
 .pod-log-window .terminal-body {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.layout-pf.layout-pf-fixed .container-pf-nav-pf-vertical {
+  margin-left: 170px;
+}
+.nav-pf-vertical {
+  width: auto;
+  min-width: 170px;
+}
+.nav-pf-vertical .list-group > .list-group-item > a {
+  width: auto;
+}
+.nav-pf-vertical > .list-group > .list-group-item > a .fa,
+.nav-pf-vertical > .list-group > .list-group-item > a .glyphicon,
+.nav-pf-vertical > .list-group > .list-group-item > a .pficon {
+  line-height: 25px;
+  margin-right: 3px;
+}
+.nav-pf-vertical > .list-group > .list-group-item > a img {
+  max-height: 16px;
+  max-width: 16px;
+  margin-right: 10px;
 }
