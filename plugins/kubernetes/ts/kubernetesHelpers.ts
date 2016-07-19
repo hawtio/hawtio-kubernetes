@@ -504,7 +504,7 @@ module Kubernetes {
       open: (controller) => {
         var resizeDialog = $scope.resizeDialog;
         resizeDialog.controller = controller;
-        resizeDialog.newReplicas = Core.pathGet(controller, ["status", "replicas"]);
+        resizeDialog.newReplicas = Core.pathGet(controller, ["status", "replicas"]) || Core.pathGet(controller, ["spec", "replicas"]);
         resizeDialog.dialog.open();
 
         $timeout(() => {
@@ -957,6 +957,9 @@ module Kubernetes {
     var apiUrl = KubernetesApiURL;
     if (kind == "Deployment" || kind == "Ingress" || kind == "Job" || kind == "ReplicaSet") {
       apiUrl = kubernetesExperimentalApiUrl();
+    }
+    if (kind == "DeploymentConfig" || kind == "Route") {
+      apiUrl = openshiftApiUrl();
     }
     if (isV1beta1Or2() || ignoreNamespace) {
       var postfix = "";
