@@ -304,6 +304,7 @@ module Developer {
       enableRowClickSelection: false,
       multiSelect: true,
       selectedItems: [],
+      primaryKeyFn: () => '$name',
       filterOptions: {
         filterText: $location.search()["q"] || ''
       },
