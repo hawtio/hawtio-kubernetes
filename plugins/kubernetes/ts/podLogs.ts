@@ -47,9 +47,13 @@ module Kubernetes {
 
   _module.controller("Kubernetes.PodLogLinkController", ($scope, TerminalService, $templateCache) => {
 
-    $scope.openLogs = (entity) => {
+    $scope.openLogs = (entity, container) => {
+      var name = entity.metadata.name;
+      if (container) {
+        name = name + ":" + container.name;
+      }
       log.debug("Open logs: ", entity);
-      TerminalService.newTerminal(entity.metadata.selfLink, entity.metadata.name, $templateCache.get(UrlHelpers.join(templatePath, 'logShell.html')));
+      TerminalService.newTerminal(entity.metadata.selfLink, name, $templateCache.get(UrlHelpers.join(templatePath, 'logShell.html')));
     }
 
   });
