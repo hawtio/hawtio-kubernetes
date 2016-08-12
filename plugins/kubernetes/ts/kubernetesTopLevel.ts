@@ -110,13 +110,17 @@ module Kubernetes {
       $scope.dirty = dirty;
     });
 
-    $scope.save = (rawModel) => {
+    $scope.save = (rawModel, isYaml = true) => {
       var obj:any = null;
-      var str = rawModel.replace(/\t/g, "    ");
-      try {
-        obj = jsyaml.load(str);
-      } catch (err) {
-        Core.notification("warning", "Failed to save object, error: \"" + err + "\"");
+      if (isYaml) {
+        var str = rawModel.replace(/\t/g, "    ");
+        try {
+          obj = jsyaml.load(str);
+        } catch (err) {
+          Core.notification("warning", "Failed to save object, error: \"" + err + "\"");
+        }
+      } else {
+        obj = rawModel;
       }
       if (!obj) {
         return;
@@ -127,9 +131,7 @@ module Kubernetes {
         success: (data) => {
           $scope.dirty = false;
           Core.notification("success", "Saved object " + getName(obj));
-          if ($routeParams['id'] !== obj.metadata.name) {
-            $scope.$broadcast('kubernetesObjectSaved', obj);
-          }
+          $scope.$broadcast('kubernetesObjectSaved', obj);
           Core.$apply($scope);
         },
         error: (err) => {

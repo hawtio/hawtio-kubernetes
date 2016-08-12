@@ -3,25 +3,39 @@
   <div hawtio-breadcrumbs></div>
   <div hawtio-tabs></div>
 
-  <div class="row row-header">
+  <div class="row">
     <div class="col-md-12">
+      <h2 ng-if="name">{{name}}</h2>
+      <h6 ng-if="description">{{description}}</h6>
+    </div>
+  </div>
 
+  <div class="row row-header" ng-show="model.fetched && !rawMode">
+    <div class="col-md-12">
+      <button class="btn btn-success pull-right" title="Save changes" ng-disabled="!form.$dirty" ng-click="saveForm()">Save Changes</button>
+      <span class="pull-right">&nbsp;</span>
+      <button class="btn btn-default pull-right" title="edit this config map's yaml" ng-click="flipRaw()">Edit YAML</button>
+    </div>
+  </div>
+
+  <div class="row row-header" ng-show="model.fetched && rawMode">
+    <div class="col-md-12">
+      <!--
       <button class="btn btn-danger pull-right"
-              title="Delete this Pod"
+              title="Delete this config map"
               ng-click="deleteEntity()">
         <i class="fa fa-remove"></i> Delete
       </button>
       <span class="pull-right">&nbsp;</span>
-
+      -->
       <a class="btn btn-default pull-right"
         hawtio-relative-href=".."><i class="fa fa-list"></i></a>
-
-       <a class="btn btn-default pull-right" ng-show="rawMode" ng-click="readOnly = !readOnly" ng-class="!readOnly ? 'btn-primary' : ''">Edit</a>
-       <span class="pull-right">&nbsp;</span>
-
-       <a class="btn btn-success pull-right" ng-show="dirty" ng-click="save(rawModel)">Save</a>
-       <span class="pull-right">&nbsp;</span>
-
+      <span class="pull-right">&nbsp;</span>
+      <button class="btn btn-default pull-right" ng-click="flipReadOnly()" ng-class="!readOnly ? 'btn-primary' : ''">Edit</button>
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-success pull-right" ng-click="save(rawModel)">Save YAML</a>
+      <span class="pull-right">&nbsp;</span>
+      <button class="btn btn-default pull-right" ng-click="flipRaw()" ng-if="formConfig">Form</button>
     </div>
   </div>
 
@@ -35,9 +49,16 @@
     </div>
   </div>
 
-  <div ng-show="model.fetched && rawMode">
-    <div class="raw-json-view">
-      <div hawtio-editor="rawModel" mode="mode" read-only="readOnly"></div>
+  <div ng-show="model.fetched">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="raw-json-view" ng-show="rawMode || !formConfig">
+          <div hawtio-editor="rawModel" mode="mode" read-only="readOnly"></div>
+        </div>
+        <div ng-show="!rawMode && formConfig">
+          <div hawtio-form-2="formConfig" name="configMapConfig" entity="entity"></div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -12,26 +12,16 @@ module Kubernetes {
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
     $scope.rawModel = null;
+    $scope.formConfig = null;
+    $scope.newSettings = null;
+    $scope.form = null;
+    $scope.entity = null;
 
-    $scope.itemConfig = {
-      properties: {
-        'containers/image$': {
-          template: $templateCache.get('imageTemplate.html')
-        },
-        'status/phase': {
-          template: $templateCache.get('statusTemplate.html')
-        },
-        '\\/Env\\/': {
-          template: $templateCache.get('envItemTemplate.html')
-        },
-        '^\\/labels$': {
-          template: $templateCache.get('labelTemplate.html')
-        },
-        '\\/env\\/key$': {
-          hidden: true
-        }
+    $scope.$on('hawtio-form2-form', (event, data) => {
+      if (data.name === "configMapConfig") {
+        $scope.form = data.form;
       }
-    };
+    });
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
 
@@ -59,17 +49,45 @@ module Kubernetes {
       $scope.rawMode = !$scope.rawMode;
       Core.$apply($scope);
     };
+    
+    $scope.flipReadOnly = () => {
+      $scope.readOnly = !$scope.readOnly;
+      Core.$apply($scope);
+    };
 
-    $scope.onSave = (obj) => {
-      console.log("Saved object: ", obj);
+    $scope.saveForm = () => {
+      if (!$scope.formConfig) {
+        return;
+      }
+      var item = $scope.item;
+      var entity = $scope.entity;
+      _.forOwn($scope.formConfig.properties, (value, key) => {
+        var dataProp = key.toLowerCase().replace(/_/g, '-');
+        item.data[dataProp] = entity[key];
+      });
+      $scope.save(item, false);
     }
+
+    $scope.$on('kubernetesObjectSaved', (event, obj) => {
+      console.log("Form: ", $scope.form);
+      if ($scope.form) {
+        $scope.form.$setPristine();
+      }
+      console.log("Saved object: ", obj);
+    });
 
     updateData();
 
     function updateData() {
       $scope.id = $routeParams["id"];
+      var item:any = null;
+      var rawModel:any = null;
+      var formConfig:any = null;
+      var description:string = null;
+      var name:string = null;
+      var entity:any = null;
       if ($scope.id === 'newConfigMap') {
-        $scope.item = {
+        item = {
           kind: 'ConfigMap',
           apiVersion: 'v1',
           metadata: {
@@ -81,11 +99,40 @@ module Kubernetes {
         }
         $scope.readOnly = false;
       } else {
-        $scope.item = _.find($scope.model.configmaps, (configmap) => $scope.id === KubernetesAPI.getName(configmap));
+        item = _.find($scope.model.configmaps, (configmap) => $scope.id === KubernetesAPI.getName(configmap));
       }
-      if ($scope.item) {
-        $scope.rawModel = toRawYaml($scope.item);
+      if (item) {
+        name = <string>_.get(item, 'metadata.name');
+        // yaml
+        rawModel = toRawYaml($scope.item);
+        //check for form configuration
+        var annotations = _.get(item, 'metadata.annotations');
+        if (annotations) {
+          description = annotations['description'];
+          formConfig = annotations['fabric8.io/json-schema'];
+          if (formConfig) {
+            try {
+              formConfig = angular.fromJson(formConfig);
+              $scope.rawMode = false;
+              entity = {};
+              _.forOwn(formConfig.properties, (value, key) => {
+                var dataProp = key.toLowerCase().replace(/_/g, '-');
+                entity[key] = item.data[dataProp];
+                // log.debug('entity[' + key + '] = item.data[' + dataProp + '] = ' + entity[key]);
+              });
+            } catch (err) {
+              log.warn("Failed to decode form config: ", err);
+              formConfig = null;
+            }
+          }
+        }
       }
+      $scope.item = item;
+      $scope.rawModel = rawModel;
+      $scope.formConfig = formConfig;
+      $scope.description = description;
+      $scope.name = name;
+      $scope.entity = entity;
       Core.$apply($scope);
     }
   }]);
