@@ -23,7 +23,7 @@ module Kubernetes {
         filterText: $location.search()["q"] || ''
       },
       sortInfo: {
-        sortBy: '$firstTimestamp',
+        sortBy: '$lastTimestamp',
         ascending: false
       },
       columnDefs: [
