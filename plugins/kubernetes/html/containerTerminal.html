@@ -1,0 +1,15 @@
+<div ng-controller="Kubernetes.PodController" ng-init="view = 'terminal'">
+  <h1>Terminal for {{item.metadata.name}} / {{containerId}}</h1>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
+  <div class="row row-header">
+    <div class="col-md-12">
+      <span ng-include="'podDetailsNavigation.html'"></span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <kubernetes-container-terminal pod="item.metadata.selfLink" container="containerId" command="bash"></kubernetes-container-terminal>
+    </div>
+  </div>
+</div>

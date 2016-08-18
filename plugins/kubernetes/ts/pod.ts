@@ -61,6 +61,7 @@ module Kubernetes {
 
     function updateData() {
       $scope.id = $routeParams["id"];
+      $scope.containerId = $routeParams['containerId'];
       $scope.item = $scope.model.getPod(KubernetesState.selectedNamespace, $scope.id);
       if ($scope.item) {
         $scope.rawModel = toRawYaml($scope.item);

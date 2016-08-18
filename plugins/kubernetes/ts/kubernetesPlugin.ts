@@ -15,6 +15,9 @@ module Kubernetes {
 
     $routeProvider
       .when(UrlHelpers.join(context, '/pods'), route('pods.html', false))
+      .when(UrlHelpers.join(context, '/pods/:id'), route('pod.html', false))
+      .when(UrlHelpers.join(context, '/pods/:id/log/:containerId'), route('containerLog.html', false))
+      .when(UrlHelpers.join(context, '/pods/:id/term/:containerId'), route('containerTerminal.html', false))
       .when(UrlHelpers.join(context, 'replicationControllers'), route('replicationControllers.html', false))
       .when(UrlHelpers.join(context, 'services'), route('services.html', false))
       .when(UrlHelpers.join(context, 'events'), route('events.html', false))
@@ -39,6 +42,8 @@ module Kubernetes {
       .when(UrlHelpers.join(context, '/namespace/:namespace/podEdit/:id'), route('podEdit.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/pods'), route('pods.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/pods/:id'), route('pod.html', false))
+      .when(UrlHelpers.join(context, '/namespace/:namespace/pods/:id/log/:containerId'), route('containerLog.html', false))
+      .when(UrlHelpers.join(context, '/namespace/:namespace/pods/:id/term/:containerId'), route('containerTerminal.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/replicasetss'), route('replicationControllers.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/replicasetss/:id'), route('replicationController.html', false))
       .when(UrlHelpers.join(context, '/namespace/:namespace/replicationControllers'), route('replicationControllers.html', false))

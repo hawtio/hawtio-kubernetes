@@ -1,0 +1,22 @@
+<div ng-controller="Kubernetes.PodController" ng-init="view = 'log'">
+  <h1>Log for {{item.metadata.name}} / {{containerId}}</h1>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
+  <div class="row row-header">
+    <div class="col-md-12">
+      <span ng-include="'podDetailsNavigation.html'"></span>
+    </div>
+  </div>
+  <div class="row">
+    <div ng-if="item.metadata.selfLink" class="col-md-12">
+      <div ng-if="item.metadata.selfLink" class="pod-log-window" pod-log-window viewport-height>
+        <div class="centered scroll-indicator" ng-hide="atBottom" ng-click="atBottom = true">
+          <span class="fa fa-caret-down"></span>
+        </div>
+        <div style="overflow-y: auto" class="terminal-body" viewport-height scroll-glue ng-model="atBottom">
+          <pod-log-display></pod-log-display>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

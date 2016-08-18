@@ -1,13 +1,7 @@
 <div ng-controller="Kubernetes.PodController">
-
-  <div class="row">
-    <div hawtio-breadcrumbs></div>
-  </div>
-
-  <div class="row">
-    <div hawtio-tabs></div>
-  </div>
-
+  <h1>Pod {{item.metadata.name}}</h1>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
   <div class="row row-header">
     <div class="col-md-12">
       <span ng-show="model.fetched && !rawMode" class="icon-heading">
@@ -22,9 +16,7 @@
         <i class="fa fa-remove"></i> Delete
       </button>
       <span class="pull-right">&nbsp;</span>
-
-      <a class="btn btn-default pull-right"
-              href="{{baseUri}}/kubernetes/pods?namespace={{item.metadata.namespace}}"><i class="fa fa-list"></i></a>
+      <span ng-include="'podDetailsNavigation.html'"></span>
       <span ng-show="hasServiceKibana()" class="pull-right">&nbsp;</span>
       <button ng-show="hasServiceKibana()"
               class="btn btn-default pull-right"

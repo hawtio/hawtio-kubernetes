@@ -130,14 +130,18 @@
 <script type="text/ng-template" id="termTemplate.html">
     <span ng-show="entity.status.phase === 'Running'" ng-controller="Kubernetes.TermController">
       <span ng-repeat="container in entity.spec.containers" ng-show="canConnectTo(container)">
-        <i class="fa fa-television clickable" title="Open up a terminal to {{container.name}}" ng-click="openTerminal(entity.metadata.selfLink, container.name)"></i>
+        <a hawtio-relative-href="{{entity.metadata.name}}/term/{{container.name}}">
+          <i class="fa fa-television clickable" title="Open up a terminal to {{entity.metadata.name}}:{{container.name}}"></i>
+        </a>
       </span>
     </span>
 </script>
 <script type="text/ng-template" id="logIconTemplate.html">
   <span ng-repeat="container in entity.spec.containers">
     <span ng-show="entity.status.phase === 'Running'" ng-controller="Kubernetes.PodLogLinkController">
-      <i class="fa fa-file-text" title="Open up the logs for {{entity.metadata.name}}:{{container.name}}" ng-click="openLogs(entity, container)"></i>
+      <a hawtio-relative-href="{{entity.metadata.name}}/log/{{container.name}}">
+        <i class="fa fa-file-text clickable" title="Open up the log for {{entity.metadata.name}}:{{container.name}}"></i>
+      </a>
     </span>
   </span>
 </script>
@@ -212,6 +216,17 @@
   <div class="ngCellText" title="created at: {{row.entity.$creationDate | date : 'h:mm:ss a, EEE MMM yyyy'}}">
     {{row.entity.$creationDate | relativeTime}}
   </div>
+</script>
+
+<script type="text/ng-template" id="podDetailsNavigation.html">
+  <a ng-show="view" class="btn btn-default pull-right" hawtio-relative-href="../../../" title="Back to pod list"><i class="fa fa-list"></i></a>
+  <a ng-hide="view" class="btn btn-default pull-right" hawtio-relative-href="../" title="Back to pod list"><i class="fa fa-list"></i></a>
+  <span class="pull-right">&nbsp;</span>
+  <a ng-show="view === 'log' || view === 'terminal'" class="btn btn-default pull-right" hawtio-relative-href="../../" title="View the details for this pod">Details</a>
+  <span class="pull-right">&nbsp;</span>
+  <a ng-show="view === 'log'" class="btn btn-default pull-right" hawtio-relative-href="../../term/{{containerId}}" title="Go to the terminal for this container">Terminal</a>
+  <span class="pull-right">&nbsp;</span>
+  <a ng-show="view === 'terminal'" class="btn btn-default pull-right" hawtio-relative-href="../../log/{{containerId}}" title="Go to the log for this container">Log</a>
 </script>
 
 <div ng-controller="Kubernetes.TopLevel">

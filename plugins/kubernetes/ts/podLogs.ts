@@ -69,8 +69,10 @@ module Kubernetes {
         </div>
       `,
       link: (scope:any, element, attr) => {
-        var link = scope.$eval('podLink');
-        var name = scope.$eval('containerName');
+        var link = scope.$eval('podLink || item.metadata.selfLink');
+        var name = scope.$eval('containerName || containerId');
+        
+        console.log("link: ", link, " name: ", name);
 
         if (!link) {
           return;
@@ -83,6 +85,7 @@ module Kubernetes {
         link = UrlHelpers.join(masterApiUrl(), link, 'log');
         link = KubernetesAPI.wsUrl(link);
         link.search({
+          container: name,
           follow: true,
           tailLines: 1000,
           access_token: userDetails.token
@@ -156,11 +159,13 @@ module Kubernetes {
       restrict: 'A',
       scope: false,
       link: (scope:any, element, attr) => {
-        addWindowActions(scope, element, TerminalService);
+        //addWindowActions(scope, element, TerminalService);
         scope.atBottom = true;
+        /*
         scope.$watch('atBottom', (val) => {
           console.log("atBottom: ", val);
         });
+        */
       }
     };
   });
