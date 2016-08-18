@@ -158,7 +158,7 @@ module Kubernetes {
     }
 
     public getDeployment(namespace, id) {
-      return this.deploymentsByKey[createKey(namespace, id, 'deployment')];
+      return this.deploymentsByKey[createKey(namespace, id, 'deployment')] || this.deploymentsByKey[createKey(namespace, id, 'deploymentconfig')] ;
     }
 
     public getPod(namespace, id) {
