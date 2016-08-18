@@ -115,7 +115,7 @@
   </div>
   <div class="row" ng-show="currentState === states.SUBSTITUTED">
     <div class="col-md-12">
-      <h3>The Following items will be deployed</h3>
+      <h3>The following items will be deployed</h3>
       <div ng-repeat="obj in objects | hawtioGroupBy:'kind'" ng-class="obj.endGroup ? '' : 'inline-block'">
         <h2 ng-show="obj.newGroup && obj.kind"><b>Kind: </b>{{obj.kind | humanize}}</h2>
         <div class="column-box">

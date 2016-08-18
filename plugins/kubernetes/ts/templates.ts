@@ -90,7 +90,40 @@ module Kubernetes {
         var catalogs = _.filter(configmaps, (configmap:any) => getLabels(configmap).kind === 'catalog');
         catalogs.forEach((catalog:any) => {
           _.forOwn(catalog.data, (obj, key) => {
-            if (_.endsWith(key, '.json')) {
+            if (_.endsWith(key, '.yml')) {
+              var template = null;
+              try {
+                template = jsyaml.load(obj);
+              } catch (e) {
+                log.warn("Failed to load YAML from template " + key + " error: " + e);
+              }
+              if (template) {
+                if (!template.kind || template.kind !== "Template") {
+                  var name = Core.trimTrailing(key, ".yml");
+                  if (_.startsWith(name, "catalog-")) {
+                    name = Core.trimLeading(name, "catalog-");
+                  }
+                  var annotations = getAnnotations(catalog) || {};
+                  var annotationsToCopy = ["description", "fabric8.io/iconUrl"];
+
+                  // lets add any annotations from the first item just in case
+                  angular.forEach(template.items, (item) => {
+                    angular.forEach(annotationsToCopy, (annotationName) => {
+                        var itemIcon = getAnnotation(item, annotationName);
+                        if (itemIcon && !annotations[annotationName]) {
+                          annotations[annotationName] = itemIcon;
+                        }
+                      });
+                  });
+                  template.metadata = {
+                    name: name,
+                    labels: getLabels(catalog),
+                    annotations: annotations
+                  }
+                }
+                templates.push(template);
+              }
+            } else if (_.endsWith(key, '.json')) {
               templates.push(angular.fromJson(obj));
             }
           });
@@ -260,11 +293,11 @@ module Kubernetes {
     $scope.selectTemplate = (template) => {
       $scope.selectedTemplate = _.clone(template);
       log.debug("Template parameters: ", template.parameters);
-      log.debug("Template objects: ", template.objects);
+      log.debug("Template objects: ", template.objects || template.items);
       var templateAnnotations = getAnnotations(template);
       log.debug("Template annotations: ", templateAnnotations);
       if (templateAnnotations) {
-        _.forEach(template.objects, (object:any) => {
+        _.forEach(template.objects || template.items, (object:any) => {
           var annotations = object.metadata.annotations || {};
           var name = getName(object);
           var matches = _.filter(_.keys(templateAnnotations), (key) => key.match('.' + name + '/'));
@@ -277,7 +310,7 @@ module Kubernetes {
         });
       }
       var routeServiceName = <string> undefined;
-      var service = _.find(template.objects, (obj) => {
+      var service = _.find(template.objects || template.items, (obj) => {
         if (getKind(obj) === "Service") {
           var ports = getPorts(obj);
           if (ports && ports.length === 1) {
@@ -356,7 +389,7 @@ module Kubernetes {
       }
       // filter out any kinds that don't make sense for vanilla k8s
       if (!isOpenShift) {
-        template.objects = _.filter(template.objects, (object:any) => {
+        template.objects = _.filter(template.objects || template.items, (object:any) => {
           var kind = KubernetesAPI.toCollectionName(object.kind);
           switch (kind) {
             // We won't attempt to create these types
@@ -369,7 +402,7 @@ module Kubernetes {
       }
       $scope.entity = <any> {};
       $scope.formConfig = formConfig;
-      $scope.objects = template.objects;
+      $scope.objects = template.objects || template.items;
       $scope.currentState = states.SELECTED;
       log.debug("Form config: ", formConfig);
       // If we've no form to show, transition to the next
