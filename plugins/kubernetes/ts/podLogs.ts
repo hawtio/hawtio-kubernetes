@@ -84,12 +84,15 @@ module Kubernetes {
 
         link = UrlHelpers.join(masterApiUrl(), link, 'log');
         link = KubernetesAPI.wsUrl(link);
-        link.search({
+        var search = {
           container: name,
           follow: true,
-          tailLines: 1000,
-          access_token: userDetails.token
-        });
+          tailLines: 1000
+        };
+        if (userDetails.token) {
+          search['access_token'] = userDetails.token;
+        }
+        link.search(search);
 
         var messages = [];
 
