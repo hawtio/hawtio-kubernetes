@@ -59,6 +59,7 @@
     "angular": ">= 1.1.0 <= 1.6.0",
     "font-awesome": "^4.6.1",
     "patternfly": "~3.5.1",
-    "angular-patternfly": "^3.5.1"
+    "angular-patternfly": "^3.5.1",
+    "patternfly-bootstrap-treeview": "~2.0.0"
   }
 }
