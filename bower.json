@@ -30,7 +30,7 @@
     "hawtio-template-cache": "*",
     "hawtio-ui": "~2.0.67",
     "hawtio-utilities": "~2.0.21",
-    "kubernetes-container-terminal": "~0.0.3",
+    "kubernetes-container-terminal": "~0.0.17",
     "term.js": "~0.0.3",
     "hawtio-kubernetes-api": "~2.0.30",
     "js-yaml": "^3.5.4",
