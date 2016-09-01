@@ -243,8 +243,6 @@ module Kubernetes {
           KeycloakConfig = config.keycloak;
 
           if (OSOAuthConfig && !master) {
-            // TODO auth.master_uri no longer used right?
-            // master = OSOAuthConfig.master_uri;
             if (!master) {
               var oauth_authorize_uri = OSOAuthConfig.oauth_authorize_uri;
               if (oauth_authorize_uri) {
@@ -260,20 +258,23 @@ module Kubernetes {
               }
             }
           }
-          if ((!Kubernetes.masterUrl || Kubernetes.masterUrl === "/") && (!master || master === "/")) {
+          if (!master || master === "/") {
             // lets default the master to the current protocol and host/port
             // in case the master url is "/" and we are
             // serving up static content from inside /api/v1/namespaces/default/services/fabric8 or something like that
+            log.info("master_url unset or set to '/', assuming API server is at /");
             var href = location.href;
             if (href) {
               master = new URI(href).query("").path("").toString();
             }
           }
-          if (master) {
-            Kubernetes.masterUrl = master;
-            next();
-            return;
+          if (master === "k8s") {
+            log.info("master_url set to 'k8s', assuming proxy is being used");
+            var href = location.href;
+            master = new URI(href).path(master).toString();
           }
+          log.info("Using kubernetes API URL: ", master);
+          Kubernetes.masterUrl = master;
         })
         .fail((response) => {
           log.debug("Error fetching OAUTH config: ", response);
