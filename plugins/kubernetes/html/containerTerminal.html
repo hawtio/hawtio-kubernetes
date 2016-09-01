@@ -8,8 +8,8 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12">
-      <kubernetes-container-terminal pod="item.metadata.selfLink" container="containerId" command="bash"></kubernetes-container-terminal>
+    <div class="col-md-12" ng-if="item">
+      <kubernetes-container-terminal pod="item" container="containerId" command="bash" status="status"></kubernetes-container-terminal>
     </div>
   </div>
 </div>
