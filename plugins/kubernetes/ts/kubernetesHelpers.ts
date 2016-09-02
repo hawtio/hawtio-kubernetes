@@ -585,12 +585,9 @@ module Kubernetes {
    */
   export function serviceLinkUrl(service, httpOnly = false) {
     if (angular.isObject(service)) {
-      var annotations = _.get(service, 'metadata.annotations');
-      if (annotations) {
-        var exposeUrl = annotations['fabric8.io/exposeUrl'];
-        if (exposeUrl) {
-          return exposeUrl;
-        }
+      var exposeUrl = getAnnotation(service, 'fabric8.io/exposeUrl');
+      if (exposeUrl) {
+        return exposeUrl;
       }
       var portalIP = service.$host;
       // lets assume no custom port for now for external routes
