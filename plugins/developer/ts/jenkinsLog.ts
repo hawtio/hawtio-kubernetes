@@ -95,6 +95,8 @@ module Developer {
       }
     }
 
+    var lastJson = '';
+
     var querySize = 50000;
 
     $scope.approve = (url, operation) => {
@@ -178,8 +180,14 @@ module Developer {
           url += "&first=" + $scope.log.firstIdx;
         }
         if (url && (!$scope.log.fetched || Kubernetes.keepPollingModel)) {
-          $http.get(url).
+          $http.post(url).
             success(function (data, status, headers, config) {
+              var json = angular.toJson(data);
+              if (json === lastJson) {
+                log.info("Data returned from jenkins is the same!");
+              } else {
+                lastJson = json;
+              }
               if (data) {
                 var replaceClusterIPsInHtml = replaceClusterIpFunction();
 
