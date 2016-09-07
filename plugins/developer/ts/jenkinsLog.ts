@@ -59,10 +59,13 @@ module Developer {
       $scope.selectedBuild = build;
     });
 
+    var polling = false;
 
     $scope.$watch('selectedBuild', (selectedBuild) => {
       log.info("Selected build updated: ", selectedBuild);
-      $scope.fetch();
+      if (!polling) {
+        startPolling();
+      }
     });
 
     Kubernetes.initShared($scope, $location, $http, $timeout, $routeParams, KubernetesModel, KubernetesState, KubernetesApiURL);
@@ -144,7 +147,8 @@ module Developer {
     }
 
     // Log fetching loop
-    $scope.fetch = PollHelpers.setupPolling($scope, (doNext:() => void) => {
+    var startPolling = PollHelpers.setupPolling($scope, (doNext:() => void) => {
+      polling = true; 
       if ($scope.$eval('hideLogs && !build.building')) {
         log.debug("Log hidden, not fetching logs");
         return;
@@ -153,6 +157,10 @@ module Developer {
       }
       var lastCount = getLogLength();
       var next = () => {
+        if (!$scope || $scope.$destroyed) {
+          console.log("Log scope destroyed, stopping log polling");
+          return;
+        }
         if (lastCount !== getLogLength()) {
           // Notify parent scopes that logs have changed so they can react
           log.debug("Notifying parent");
@@ -176,6 +184,7 @@ module Developer {
         $scope.jobId = jobId;
 
         var url = Kubernetes.kubernetesProxyUrlForServiceCurrentNamespace(jenkinsServiceNameAndPort, UrlHelpers.join("job", jobId, buildId, "fabric8/logHtml?tail=1&start=" + $scope.log.start + "&size=" + querySize));
+        //var url = UrlHelpers.join(Developer.jenkinsLink(), "job", jobId, buildId, "fabric8/logHtml?tail=1&start=" + $scope.log.start + "&size=" + querySize);
         if ($scope.log.firstIdx !== null) {
           url += "&first=" + $scope.log.firstIdx;
         }
@@ -274,11 +283,6 @@ module Developer {
         next();
       }
     });
-
-    if (angular.isFunction($scope.fetch)) {
-      $scope.fetch();
-    }
-
 
     function replaceClusterIpFunction() {
       function createReplaceFunction(from, to) {
