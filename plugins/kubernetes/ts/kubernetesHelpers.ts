@@ -676,12 +676,6 @@ module Kubernetes {
       if (serviceId) {
         var ServiceRegistry = getServiceRegistry();
         if (ServiceRegistry) {
-/*
-          var serviceObject = ServiceRegistry.findService(serviceId);
-          if (serviceObject) {
-            return serviceLinkUrl(serviceObject, httpOnly);
-          }
-*/
           return ServiceRegistry.serviceLink(serviceId) || "";
         }
       }
@@ -1902,36 +1896,51 @@ module Kubernetes {
    * close the watch when the view closes
    */
   export function watch($scope: any, $element: any, kind, ns, fn, labelSelector = null) {
-     var connection = KubernetesAPI.watch({
-        kind: kind,
-        namespace: ns,
-        labelSelector: labelSelector,
-        success: function (objects) {
-          fn(objects);
-          Core.$apply($scope);
-        },
-        error: (err) => {
-          log.debug("Error fetching objects for kind: ", kind, " in namespace: ", ns, " : ", err);
-          fn([]);
-          Core.$apply($scope);
-        }
-      });
-      $element.on('$destroy', () => {
-        log.debug("Static controller[" + kind + ", " + ns + "] element destroyed");
-        $scope.$destroy();
-      });
-      $scope.$on('$destroy', () => {
-        log.debug("Static controller[" + kind + ", " + ns + "] scope destroyed");
-        connection.disconnect();
-      });
-      var oldDeleteScopeFn = $scope.deleteScope;
-      $scope.deleteScope = function () {
-        $element.remove();
-        if (angular.isFunction(oldDeleteScopeFn)) {
-          oldDeleteScopeFn();
-        }
+    var connectionName = ns + '-' + kind;
+    var connections:any = $scope.connections || {};
+    if (connections) {
+      var connection = connections[connectionName];
+      if (connection) {
+        log.info("Existing connection open on this scope, not creating watch for ", connectionName);
+        return;
       }
-      return connection;
+    }
+    var connection:any = KubernetesAPI.watch({
+    kind: kind,
+    namespace: ns,
+    labelSelector: labelSelector,
+    success: function (objects) {
+      fn(objects);
+      Core.$apply($scope);
+    },
+    error: (err) => {
+      log.debug("Error fetching objects for kind: ", kind, " in namespace: ", ns, " : ", err);
+      fn([]);
+      Core.$apply($scope);
+    }
+    });
+    // cache the connection in the scope
+    connections[connectionName] = connection;
+    $scope.connections = connections;
+    $element.on('$destroy', () => {
+      log.debug("Static controller[" + kind + ", " + ns + "] element destroyed");
+      var scope = $element.scope();
+      angular.forEach(scope.connections, (connection:any, key) => {
+        if (connection && connection.disconnect) {
+          connection.disconnect();
+          delete $scope.connections[key];
+          log.debug("connection[" + key + "] destroyed");
+        }
+      });
+    });
+    var oldDeleteScopeFn = $scope.deleteScope;
+    $scope.deleteScope = function () {
+      $element.remove();
+      if (angular.isFunction(oldDeleteScopeFn)) {
+        oldDeleteScopeFn();
+      }
+    }
+    return connection;
   }
 
   /**

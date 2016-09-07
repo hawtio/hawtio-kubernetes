@@ -156,7 +156,7 @@ module Developer {
             jenkinsBuildUrl = UrlHelpers.join(jenkinsLink, jenkinsBuildPath);
           }
 */
-          item.$buildUrl = annotations["fabric8.io/build-url"] ||item.$buildUrl;
+          item.$buildUrl = annotations["fabric8.io/build-url"] || item.$buildUrl;
           item.$docUrl = annotations["fabric8.io/docs-url"] || item.$docUrl;
           item.$gitCommit = annotations["fabric8.io/git-commit"] || item.$gitCommit;
           item.$gitUrl = annotations["fabric8.io/git-url"] || item.$gitUrl;

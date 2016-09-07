@@ -207,11 +207,7 @@ declare module Kubernetes {
      * Helper function to set up a KubernetesAPI watch and automatically
      * close the watch when the view closes
      */
-    function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): {
-        client: KubernetesAPI.Collection;
-        handle: (data: any[]) => void;
-        disconnect: () => void;
-    };
+    function watch($scope: any, $element: any, kind: any, ns: any, fn: any, labelSelector?: any): any;
     /**
      * Helper wrapper to create a KubernetesAPI client instance, for
      * simple puts/deletes though use KubernetesAPI.put() or
