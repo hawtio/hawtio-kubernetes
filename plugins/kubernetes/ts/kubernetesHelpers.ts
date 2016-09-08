@@ -1185,17 +1185,38 @@ module Kubernetes {
   }
 
   export function statusTextToCssClass(pod:any) {
-    var ready = ('$ready' in pod) ? pod.$ready : isReady(pod);
     var text = getStatus(pod);
     if (text) {
       var lower = text.toLowerCase();
       if (_.startsWith(lower, "run") || _.startsWith(lower, "ok")) {
+        if (pod.metadata.deletionTimestamp) {
+          // Terminating ...
+          return 'fa fa-times text-danger';
+        }
+        let ready = ('$ready' in pod) ? pod.$ready : isReady(pod);
         if (!ready) {
-          return "fa fa-spinner fa-spin grey";
+          return "fa fa-spinner fa-spin text-muted";
         }
         return 'fa fa-play-circle green';
       } else if (_.startsWith(lower, "wait") || _.startsWith(lower, "pend")) {
-        return 'fa fa-download';
+        if (!pod.$events) {
+          // Scheduling...
+          return 'fa fa-clock-o';
+        }
+        let containers = _.groupBy(pod.$events, (event:any) => event.fieldPath);
+        if (_.every(containers, events => _.some(events, {reason: 'Started'}))) {
+          // Started ...
+          return 'fa fa-spinner fa-spin text-muted';
+        } else if (_.every(containers, events => _.some(events, {reason: 'Created'}))) {
+          // Starting ...
+          return 'fa fa-cog fa-spin';
+        } else if (_.every(containers, events => _.some(events, {reason: 'Pulled'}))) {
+          // Creating ...
+          return 'fa fa-cog';
+        } else if (_.every(containers, events => _.some(events, {reason: 'Scheduled'}))) {
+          // Pulling ...
+          return 'fa fa-download';
+        }
       } else if (_.startsWith(lower, "term") || _.startsWith(lower, "error") || _.startsWith(lower, "fail")) {
         return 'fa fa-power-off orange';
       } else if (_.startsWith(lower, "succeeded")) {
