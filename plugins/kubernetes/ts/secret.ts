@@ -5,9 +5,9 @@
 module Kubernetes {
 
   export var SecretController = controller("SecretController",
-    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "K8SClientFactory",
+    ["$scope", "KubernetesModel", "KubernetesState", "KubernetesSchema", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "KubernetesApiURL", "K8SClientFactory", "$element",
       ($scope, KubernetesModel:Kubernetes.KubernetesModelService, KubernetesState, KubernetesSchema,
-       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL, K8SClientFactory) => {
+       $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, KubernetesApiURL, K8SClientFactory, $element) => {
 
         $scope.kubernetes = KubernetesState;
         $scope.model = KubernetesModel;
@@ -19,6 +19,9 @@ module Kubernetes {
         selectSubNavBar($scope, "Secrets", $scope.id ? "Edit Secret: " + $scope.id : "Create Secret");
 
         var kubeClient = createKubernetesClient("secrets");
+        $element.on('$destroy', () => {
+          destroyKubernetesClient(kubeClient);
+        });
 
         var onSaveUrl = $location.search()["savedUrl"];
         var createKind = $location.search()["kind"];

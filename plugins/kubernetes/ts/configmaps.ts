@@ -5,8 +5,8 @@
 
 module Kubernetes {
 
-  export var ConfigMapsController = controller("ConfigMapsController", ["$scope", "KubernetesModel", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL",
-    ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, KubernetesApiURL) => {
+  export var ConfigMapsController = controller("ConfigMapsController", ["$scope", "KubernetesModel", "KubernetesState", "ServiceRegistry", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "KubernetesApiURL", "$element",
+    ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesState, ServiceRegistry, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, KubernetesApiURL, $element) => {
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
@@ -17,6 +17,9 @@ module Kubernetes {
     $scope.$createSecretLink = Developer.namespaceLink($scope, $routeParams, "secretCreate");
 
     var kubeClient = createKubernetesClient("configmaps");
+    $element.on('$destroy', () => {
+      destroyKubernetesClient(kubeClient);
+    });
 
     $scope.tableConfig = {
       data: 'model.configmaps',

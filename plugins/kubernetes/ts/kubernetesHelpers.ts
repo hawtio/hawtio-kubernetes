@@ -1962,6 +1962,15 @@ module Kubernetes {
     return K8SClientFactory.create(kind, ns);
   }
 
+  export function destroyKubernetesClient(client) {
+    var K8SClientFactory = inject<any>("K8SClientFactory");
+    if (!K8SClientFactory) {
+      log.warn("Could not find injected K8SClientFactory!");
+      return null;
+    }
+    return K8SClientFactory.destroy(client);
+  }
+
 
   export function currentUserName() {
     var userDetails = HawtioOAuth.getUserProfile();

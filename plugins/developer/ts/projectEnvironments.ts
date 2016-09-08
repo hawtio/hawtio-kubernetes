@@ -56,6 +56,9 @@ module Developer {
         };
 
         var kubeClient = Kubernetes.createKubernetesClient("configmaps");
+        $element.on('$destroy', () => {
+          Kubernetes.destroyKubernetesClient(kubeClient);
+        });
 
         $scope.editEntityLink = (entity) => {
           if (entity) {

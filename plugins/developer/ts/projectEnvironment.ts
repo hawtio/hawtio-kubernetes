@@ -49,6 +49,9 @@ module Developer {
         var loadedEntity = false;
 
         var kubeClient = Kubernetes.createKubernetesClient("configmaps");
+        $element.on('$destroy', () => {
+          Kubernetes.destroyKubernetesClient(kubeClient);
+        });
 
         $scope.schema = {
           type: "object",

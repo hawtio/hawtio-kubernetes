@@ -214,6 +214,7 @@ declare module Kubernetes {
      * KubernetesAPI.del()
      */
     function createKubernetesClient(kind: any, ns?: any): any;
+    function destroyKubernetesClient(client: any): any;
     function currentUserName(): any;
     function getNamespaceKind(): string;
     function newNamespaceObject(namespace: string): any;
