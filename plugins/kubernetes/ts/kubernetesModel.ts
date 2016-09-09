@@ -173,6 +173,14 @@ module Kubernetes {
       return _.find(this.buildconfigs, { $name: name });
     }
 
+    public findObject(kind, name) {
+      var collection = this[kind];
+      if (!collection) {
+        return null;
+      }
+      return _.find(this[kind], (obj) => getName(obj) === name);
+    }
+
     public getProject(name, ns = this.currentNamespace()) {
       var buildConfig = this.project;
       if (!buildConfig) {

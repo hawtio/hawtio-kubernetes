@@ -16,6 +16,15 @@ module Kubernetes {
     });
     */
 
+    $scope.hasConfigMap = (deployment) => {
+      var name = getName(deployment);
+      if (!name) {
+        return false;
+      }
+      var configmap = $scope.model.findObject('configmaps', name);
+      return configmap ? true : false;
+    }
+
     $scope.tableConfig = {
       data: 'model.allDeployments',
       showSelectionCheckbox: true,

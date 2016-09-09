@@ -13,6 +13,7 @@
        ng-href="{{row.entity | kubernetesPageLink}}">
       <img class="app-icon-small" ng-src="{{row.entity.$iconUrl}}" ng-show="row.entity.$iconUrl">
       {{row.entity.metadata.name || row.entity.name}}</a>
+    <a ng-show="$parent.$parent.hasConfigMap(row.entity)" class="pull-right clickable" hawtio-relative-href="../configMaps/{{row.entity.metadata.name}}"><i class="fa fa-cog"></i></a>
   </div>
 </script>
 <script type="text/ng-template" id="selectorTemplate.html">
