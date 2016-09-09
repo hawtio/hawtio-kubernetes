@@ -500,6 +500,7 @@ module Kubernetes {
 
     $scope.deployTemplate = () => {
       var objects = $scope.objects;
+      /*
       if ($scope.targetNamespace !== model.currentNamespace()) {
         $scope.$on('WatcherNamespaceChanged', () => {
           log.debug("Namespace changed");
@@ -511,10 +512,14 @@ module Kubernetes {
         Core.notification('info', "Switching to namespace " + $scope.targetNamespace + " and deploying template");
         model.kubernetes.selectedNamespace = $scope.targetNamespace;
       } else {
-        setTimeout(() => {
-          applyObjects(objects);
-        }, 10);
+      */
+      Core.notification('info', "Deploying template to namespace: " + $scope.targetNamespace);
+      setTimeout(() => {
+        applyObjects(objects);
+      }, 10);
+        /*
       }
+      */
     }
 
     function applyObjects(objects) {
@@ -522,7 +527,7 @@ module Kubernetes {
       function createId(object) {
         var kind = getKind(object);
         var name = getName(object);
-        var ns = getNamespace(object);
+        var ns = $scope.targetNamespace;
         var id = UrlHelpers.join(ns, kind, name);
         return id;
       }
@@ -552,74 +557,47 @@ module Kubernetes {
         log.debug("Deploying object { kind:" + object.kind + ", name:" + object.metadata.name + " } remaining: ", objects.length);
         var kind = getKind(object);
         var name = getName(object);
-        var ns = getNamespace(object);
+        var ns = $scope.targetNamespace;
         var id = UrlHelpers.join(ns, kind, name);
         var result:any = getOutstanding(id);
-
         // put the next object if available
         function next() {
-          var object = objects.shift();
-          if (object) {
-            deployObject(object, objects);
-          }
-        }
-
-        // deploy the current object
-        function putObject() {
-          KubernetesAPI.applyNamespace(object, ns);
-          KubernetesAPI.put({
-            object: object,
-            success: (data) => {
-              log.info("updated " + kind + " name: " + name + (ns ? " ns: " + ns: ""));
-              result.applying = false;
-              result.succeeded = true;
-              Core.$apply($scope);
-              next();
-            },
-            error: (err) => {
-              log.warn("Failed to update " + kind + " name: " + name + (ns ? " ns: " + ns: "") + " error: " + angular.toJson(err));
-              // this object's possibly already been deployed, let's just log it.
-              if (!result.succeeded) {
-                result.applying = false;
-                result.succeeded = false;
-                result.error = jsyaml.dump(err);
-              }
-              Core.$apply($scope);
-              next();
+          while (objects.length > 0) {
+            var object = objects.shift();
+            if (object) {
+              deployObject(object, objects);
+            } else {
+              log.debug("invalid object: ", object, " skipping");
             }
-          });
-        }
-
-        if (kind && name) {
-          if (ns && ns !== currentKubernetesNamespace()) {
-            // create the target namespace and ensure it's created
-            // before creating the target object
-            KubernetesAPI.put({
-              object: {
-                apiVersion: Kubernetes.defaultApiVersion,
-                kind: KubernetesAPI.toKindName(getNamespaceKind()),
-                metadata: {
-                  name: ns,
-                  labels: {}
-                }
-              },
-              success: (data) => {
-                log.info("Created namespace: " + ns)
-                putObject();
-              },
-              error: (err) => {
-                log.warn("Failed to create namespace: " + ns + ": " + angular.toJson(err));
-                // maybe it's already created?  Let's try...
-                putObject();
-              }
-            });
-          } else {
-            putObject();
           }
-        } else {
+        }
+        if (!kind || !name) {
           log.debug("invalid object: ", object, " skipping");
           next();
+          return;
         }
+        KubernetesAPI.applyNamespace(object, ns);
+        KubernetesAPI.put({
+          object: object,
+          success: (data) => {
+            log.info("updated " + kind + " name: " + name + (ns ? " ns: " + ns: ""));
+            result.applying = false;
+            result.succeeded = true;
+            Core.$apply($scope);
+            next();
+          },
+          error: (err) => {
+            log.warn("Failed to update " + kind + " name: " + name + (ns ? " ns: " + ns: "") + " error: " + angular.toJson(err));
+            // this object's possibly already been deployed, let's just log it.
+            if (!result.succeeded) {
+              result.applying = false;
+              result.succeeded = false;
+              result.error = jsyaml.dump(err);
+            }
+            Core.$apply($scope);
+            next();
+          }
+        });
       }
       deployObject(objects.shift(), objects);
     }
