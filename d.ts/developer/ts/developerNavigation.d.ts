@@ -60,4 +60,5 @@ declare module Developer {
     function environmentInstanceLink(env: any, projectName?: any): string;
     function namespaceLink($scope: any, $routeParams: any, path?: any): string;
     function normalizeHref(href: string): string;
+    function activateCurrent(navBarItems: any): any;
 }

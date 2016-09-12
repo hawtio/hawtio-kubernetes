@@ -718,7 +718,7 @@ module Developer {
     return href.replace(regex, '/');
   }
 
-  function activateCurrent(navBarItems) {
+  export function activateCurrent(navBarItems) {
     navBarItems = _.compact(navBarItems);
     var injector = HawtioCore.injector;
     var $location = injector ? injector.get<ng.ILocationService>("$location") : null;
