@@ -57,6 +57,7 @@ declare module Kubernetes {
         podsForNamespace(namespace?: any): any[];
         getBuildConfig(name: any): any;
         findObject(kind: any, name: any): {};
+        objectsWithLabels(desiredLabels: any): any[];
         getProject(name: any, ns?: any): any;
         setProject(buildConfig: any): void;
         /**

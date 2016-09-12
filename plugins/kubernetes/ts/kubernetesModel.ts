@@ -173,12 +173,34 @@ module Kubernetes {
       return _.find(this.buildconfigs, { $name: name });
     }
 
+    // find an object by it's name of a given kind
     public findObject(kind, name) {
       var collection = this[kind];
       if (!collection) {
         return null;
       }
       return _.find(this[kind], (obj) => getName(obj) === name);
+    }
+
+    // search across all objects and return the ones with the given set of labels
+    public objectsWithLabels(desiredLabels:any) {
+      var matchFunc = _.matches(desiredLabels);
+      var keys = this.watcher.getTypes();
+      var answer = [];
+      _.forEach(keys, (key) => {
+        var objects = this[key];
+        if (!objects || !objects.length) {
+          return;
+        }
+        var matches = _.filter(objects, (obj) => {
+          var labels = getLabels(obj);
+          return matchFunc(labels);
+        });
+        if (matches.length) {
+          answer = answer.concat(matches);
+        }
+      });
+      return answer;
     }
 
     public getProject(name, ns = this.currentNamespace()) {

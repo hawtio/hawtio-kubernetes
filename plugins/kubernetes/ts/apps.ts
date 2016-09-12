@@ -90,76 +90,63 @@ module Kubernetes {
     });
 
     function deleteApp(app, onCompleteFn) {
-      function deleteServices(services, service, onCompletedFn) {
-        if (!service || !services) {
-          return onCompletedFn();
+      var name = app.$info.name;
+      // TODO be good if we had a consistent label to use across all object types, for now we'll look for 'app' and 'project' labels
+      var objects = KubernetesModel.objectsWithLabels({ 'app': name });
+      objects = objects.concat(KubernetesModel.objectsWithLabels({ 'project': name }));
+      objects = _.uniq(objects);
+      if (!objects.length) {
+        Core.notification("warning", "No objects found for app named " + name);
+        if (onCompleteFn) {
+          onCompleteFn();
         }
-        var id = getName(service);
-        if (!id) {
-          log.warn("No ID for service " + angular.toJson(service));
-        } else {
-          KubernetesServices.delete({
-            id: id
-          }, undefined, () => {
-            log.debug("Deleted service: ", id);
-            deleteServices(services, services.shift(), onCompletedFn);
-          }, (error) => {
-            log.debug("Error deleting service: ", error);
-            deleteServices(services, services.shift(), onCompletedFn);
-          });
-        }
+        return;
       }
-
-      function deleteReplicationControllers(replicationControllers, replicationController, onCompletedFn) {
-        if (!replicationController || !replicationControllers) {
-          return onCompletedFn();
+      // Deployments should be deleted first, then replica-y stuff
+      objects = _.sortBy(objects, (obj) => {
+        switch (obj.kind) {
+          case 'Deployment':
+            return 0;
+          case 'ReplicaSet':
+          case 'ReplicationController':
+            return 1;
+          default:
+            return 2;
         }
-        var id = getName(replicationController);
-        if (!id) {
-          log.warn("No ID for replicationController " + angular.toJson(replicationController));
-        } else {
-          KubernetesReplicationControllers.delete({
-            id: id
-          }, undefined, () => {
-            log.debug("Deleted replicationController: ", id);
-            deleteReplicationControllers(replicationControllers, replicationControllers.shift(), onCompletedFn);
-          }, (error) => {
-            log.debug("Error deleting replicationController: ", error);
-            deleteReplicationControllers(replicationControllers, replicationControllers.shift(), onCompletedFn);
-          });
-        }
-      }
-
-      function deletePods(pods, pod, onCompletedFn) {
-        if (!pod || !pods) {
-          return onCompletedFn();
-        }
-        var id = getName(pod);
-        if (!id) {
-          log.warn("No ID for pod " + angular.toJson(pod));
-        } else {
-          KubernetesPods.delete({
-            id: id
-          }, undefined, () => {
-            log.debug("Deleted pod: ", id);
-            deletePods(pods, pods.shift(), onCompletedFn);
-          }, (error) => {
-            log.debug("Error deleting pod: ", error);
-            deletePods(pods, pods.shift(), onCompletedFn);
-          });
-        }
-      }
-
-      var services = [].concat(app.services);
-      deleteServices(services, services.shift(), () => {
-
-        var replicationControllers = [].concat(app.replicationControllers);
-        deleteReplicationControllers(replicationControllers, replicationControllers.shift(), () => {
-
-          var pods = [].concat(app.pods);
-          deletePods(pods, pods.shift(), onCompleteFn);
-        });
       });
+      function deleteObject(object, objects) {
+        function next() {
+          var object = objects.shift();
+          deleteObject(object, objects);
+        }
+        if (!object && objects.length) {
+          log.debug("Invalid object, skipping");
+          next();
+          return;
+        } if (object && !objects.length) {
+          // it's just the last element, continue 
+        } if (object) {
+          // continue
+        } else {
+          // all done
+          Core.notification("success", "Deleted app " + name);
+          if (onCompleteFn) {
+            onCompleteFn();
+          }
+          return;
+        }
+        KubernetesAPI.del({
+          object: object,
+          success: (data) => {
+            log.info("Deleted object: ", object);
+            next();
+          }, error: (err) => {
+            log.warn("Failed to delete object: ", object, " due to error: ", err);
+            next();
+          }
+        });
+      }
+      deleteObject(objects.shift(), objects);
     }
 
     $scope.deleteSingleApp = (app) => {
@@ -187,7 +174,6 @@ module Kubernetes {
                 });
               }
             }
-
             deleteSelected(selected, selected.shift());
           }
         },
