@@ -106,6 +106,7 @@ module Kubernetes {
       objects = _.sortBy(objects, (obj) => {
         switch (obj.kind) {
           case 'Deployment':
+          case 'DeploymentConfig':
             return 0;
           case 'ReplicaSet':
           case 'ReplicationController':
@@ -117,6 +118,7 @@ module Kubernetes {
       function deleteObject(object, objects) {
         function next() {
           var object = objects.shift();
+
           deleteObject(object, objects);
         }
         if (!object && objects.length) {
@@ -135,16 +137,33 @@ module Kubernetes {
           }
           return;
         }
-        KubernetesAPI.del({
-          object: object,
-          success: (data) => {
-            log.info("Deleted object: ", object);
-            next();
-          }, error: (err) => {
-            log.warn("Failed to delete object: ", object, " due to error: ", err);
-            next();
-          }
-        });
+        function doDelete() {
+          KubernetesAPI.del({
+            object: object,
+            success: (data) => {
+              log.info("Deleted object: ", object);
+              next();
+            }, error: (err) => {
+              log.warn("Failed to delete object: ", object, " due to error: ", err);
+              next();
+            }
+          });
+        }
+        switch (object.kind) {
+          case 'Deployment':
+          case 'DeploymentConfig':
+          case 'ReplicaSet':
+          case 'ReplicationController':
+            resizeController($http, KubernetesApiURL, object, 0, () => {
+              // give a little time for the api server to deal with resize
+              setTimeout(() => {
+                doDelete();
+              }, 500);
+            });
+            break;
+          default:
+            doDelete();
+        }
       }
       deleteObject(objects.shift(), objects);
     }
