@@ -4,10 +4,12 @@
 
 module Kubernetes {
 
-  export var PodController = controller("ConfigMapController",
+  export var ConfigMapController = controller("ConfigMapController",
     ["$scope", "KubernetesModel", "KubernetesState", "ServiceRegistry", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "$window", "KubernetesApiURL",
       ($scope, KubernetesModel: Kubernetes.KubernetesModelService, KubernetesState, ServiceRegistry,
        $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, $window, KubernetesApiURL) => {
+
+    var log = Logger.get('Kubernetes.ConfigMapController');
 
     $scope.kubernetes = KubernetesState;
     $scope.model = KubernetesModel;
@@ -32,6 +34,7 @@ module Kubernetes {
     $scope.$on('$routeUpdate', ($event) => {
       updateData();
     });
+
 
     $scope.$watch('model.configmaps', (newValue, oldValue) => {
       updateData();
@@ -76,9 +79,7 @@ module Kubernetes {
       console.log("Saved object: ", obj);
     });
 
-    updateData();
-
-    function updateData() {
+    var updateData = _.debounce(function () {
       $scope.id = $routeParams["id"];
       var item:any = null;
       var rawModel:any = null;
@@ -102,29 +103,33 @@ module Kubernetes {
         item = _.find($scope.model.configmaps, (configmap) => $scope.id === KubernetesAPI.getName(configmap));
       }
       if (item) {
+        description = getAnnotation(item, 'description');
         name = <string>_.get(item, 'metadata.name');
         // yaml
-        rawModel = toRawYaml($scope.item);
+        rawModel = toRawYaml(item);
         //check for form configuration
-        var annotations = _.get(item, 'metadata.annotations');
-        if (annotations) {
-          description = annotations['description'];
-          formConfig = annotations['fabric8.io/json-schema'];
-          if (formConfig) {
-            try {
-              formConfig = angular.fromJson(formConfig);
-              $scope.rawMode = false;
-              entity = {};
-              _.forOwn(formConfig.properties, (value, key) => {
-                var dataProp = key.toLowerCase().replace(/_/g, '-');
-                entity[key] = item.data[dataProp];
-                // log.debug('entity[' + key + '] = item.data[' + dataProp + '] = ' + entity[key]);
-              });
-            } catch (err) {
-              log.warn("Failed to decode form config: ", err);
-              formConfig = null;
+        try {
+          var config = getAnnotation(item, 'fabric8.io/yaml-schema');
+          if (config) {
+            formConfig = jsyaml.load(config);
+          } else {
+            config = getAnnotation(item, 'fabric8.io/json-schema');
+            if (config) {
+              formConfig = angular.fromJson(config);
             }
           }
+        } catch (err) {
+          log.info("Failed to decode embedded schema: ", err);
+        }
+        if (formConfig) {
+          $scope.rawMode = false;
+          entity = {};
+          _.forOwn(formConfig.properties, (value, key) => {
+            var dataProp = key.toLowerCase().replace(/_/g, '-');
+            entity[key] = item.data[dataProp];
+            // log.debug('entity[' + key + '] = item.data[' + dataProp + '] = ' + entity[key]);
+          });
+          log.debug("Entity: ", entity, " data: ", item.data);
         }
       }
       $scope.item = item;
@@ -134,6 +139,6 @@ module Kubernetes {
       $scope.name = name;
       $scope.entity = entity;
       Core.$apply($scope);
-    }
+    }, 500, { trailing: true });
   }]);
 }

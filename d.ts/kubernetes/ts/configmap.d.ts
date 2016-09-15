@@ -2,5 +2,5 @@
 /// <reference path="kubernetesHelpers.d.ts" />
 /// <reference path="kubernetesPlugin.d.ts" />
 declare module Kubernetes {
-    var PodController: ng.IModule;
+    var ConfigMapController: ng.IModule;
 }
