@@ -9,13 +9,13 @@ declare module Kubernetes {
     class KubernetesModelService {
         kubernetes: KubernetesState;
         apps: any[];
-        services: any[];
-        replicationcontrollers: any[];
         replicationControllers: Array<any>;
+        services: any[];
         pods: any[];
         hosts: any[];
         namespaces: Array<string>;
         appViews: any[];
+        replicationcontrollers: any[];
         replicasets: any[];
         replicas: any[];
         deployments: any[];

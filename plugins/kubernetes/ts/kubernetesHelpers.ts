@@ -286,15 +286,12 @@ module Kubernetes {
     return Core.pathGet(entity, ["metadata", "name"]) || Core.pathGet(entity, "name") || Core.pathGet(entity, "id");
   }
 
-  export function getNamed(array, name: string) {
-    var answer = null;
-    angular.forEach(array, (entity) => {
-      if (!answer && name === getName(entity)) {
-        answer = entity;
-      }
+  export function getNamed(array, name: string):any {
+    return _.find(array, (val) => {
+      return getName(val) === name;
     });
-    return answer;
   }
+
   export function getKind(entity) {
     return Core.pathGet(entity, ["metadata", "kind"]) || Core.pathGet(entity, "kind");
   }

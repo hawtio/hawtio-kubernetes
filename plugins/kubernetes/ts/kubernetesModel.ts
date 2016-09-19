@@ -46,13 +46,9 @@ module Kubernetes {
    */
   export class KubernetesModelService {
     public kubernetes = <KubernetesState> null;
-    // public apps = [];
     public get apps() {
       return this.appViews;
     };
-    public services = [];
-
-    public replicationcontrollers = [];
     public get replicationControllers():Array<any> {
       return this.replicas;
     }
@@ -60,12 +56,14 @@ module Kubernetes {
       // this.replicationcontrollers = replicationControllers;
       // ignore updates to this attribute
     }
+    public services = [];
     public pods = [];
     public hosts = [];
     public get namespaces():Array<string> {
       return this.kubernetes.namespaces;
     }
     public appViews = [];
+    public replicationcontrollers = [];
     public replicasets = [];
     public replicas = [];
     public deployments = [];
@@ -80,7 +78,6 @@ module Kubernetes {
 
     // various views on the data
     public deploymentsByKey = {};
-
     public podsByHost = {};
     public servicesByKey = {};
     public get replicationControllersByKey() {
@@ -627,6 +624,10 @@ module Kubernetes {
           }
           var appView = createAppView(name, $iconUrl);
           _.forEach(objects, (object) => {
+            if (object.kind === KubernetesAPI.KindTypes.CONFIG_MAPS) {
+              // we will deal with these later
+              return;
+            }
             var collectionName = KubernetesAPI.toCollectionName(object.kind);
             var objects = appView[collectionName] || [];
             objects.push(object);
@@ -634,12 +635,10 @@ module Kubernetes {
           });
           appViews.push(appView);
         }
-
         // build apps from deployments
         _.forEach(this.allDeployments, (deployment) => {
           buildAppViewUsing(this, deployment);
         });
-
         // now create apps from RCs and ReplicaSets that don't have deployments
         _.forEach(this.replicas, (replica) => {
           var name = getName(replica);
@@ -651,20 +650,46 @@ module Kubernetes {
             buildAppViewUsing(this, replica);
           }
         });
-        appViews = _.sortBy(populateKeys(appViews), (appView) => appView._key);
-        log.debug("Apps: ", appViews);
-        ArrayHelpers.sync(this.appViews, appViews, '$name');
-        angular.forEach(this.appViews, (appView:any) => {
+        // now decorate apps and find any associated configmaps
+        _.forEach(appViews, (appView:any) => {
           try {
             appView.$podCounters = createAppViewPodCounters(appView);
             appView.$podCount = (appView.pods || []).length;
             appView.$replicationControllersText = (appView.replicationControllers || []).map((i) => i["_key"]).join(" ");
             appView.$servicesText= (appView.services || []).map((i) => i["_key"]).join(" ");
             appView.$serviceViews = createAppViewServiceViews(appView);
+            var configMapNames = [];
+            // search container templates for references to configmaps
+            _.forEach(appView.replicationControllers, (replica) => {
+              var containers = replica.spec.template.spec.containers;
+              _.forEach(containers, (container) => {
+                var env = container.env;
+                if (env && env.length) {
+                  _.forEach(env, (envVar) => {
+                    var configMapName = _.get(envVar, 'valueFrom.configMapKeyRef.name');
+                    if (configMapName) {
+                      configMapNames.push(configMapName);
+                    }
+                  });
+                }
+              });
+            });
+            configMapNames = _.uniq(configMapNames);
+            _.forEach(configMapNames, (name) => {
+              var configmaps = appView['configmaps'] || [];
+              var configmap = getNamed(this.configmaps, name);
+              if (configmap) {
+                configmaps.push(configmap);
+              }
+              appView['configmaps'] = configmaps;
+            });
           } catch (e) {
-            log.warn("Failed to update appViews: " + e);
+            log.warn("Failed to update appView", getName(appView), " : " + e);
           }
         });
+        appViews = _.sortBy(populateKeys(appViews), (appView) => appView._key);
+        ArrayHelpers.sync(this.appViews, appViews, '$name');
+        log.debug("Apps: ", this.appViews);
       } catch (e) {
         log.warn("Caught error: " + e);
       }
