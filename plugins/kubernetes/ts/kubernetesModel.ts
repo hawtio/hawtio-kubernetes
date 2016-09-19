@@ -54,10 +54,11 @@ module Kubernetes {
 
     public replicationcontrollers = [];
     public get replicationControllers():Array<any> {
-      return this.replicationcontrollers;
+      return this.replicas;
     }
     public set replicationControllers(replicationControllers:Array<any>) {
-      this.replicationcontrollers = replicationControllers;
+      // this.replicationcontrollers = replicationControllers;
+      // ignore updates to this attribute
     }
     public pods = [];
     public hosts = [];
@@ -65,7 +66,6 @@ module Kubernetes {
       return this.kubernetes.namespaces;
     }
     public appViews = [];
-    public appFolders = [];
     public replicasets = [];
     public replicas = [];
     public deployments = [];
@@ -336,8 +336,20 @@ module Kubernetes {
       return tmpHosts;
     }
 
-    // Handle routes, openshift specific, on vanilla k8s this is a noop
     protected handleRoutes() {
+      // when not on OpenShift we don't have a Rroute
+      this.services.forEach((service) => {
+        var $serviceUrl = serviceLinkUrl(service);
+        service.$serviceUrl = $serviceUrl;
+        service.$connectUrl = $serviceUrl;
+        if ($serviceUrl) {
+          var idx = $serviceUrl.indexOf("://");
+          if (idx > 0) {
+            service.$connectHost = Core.trimTrailing($serviceUrl.substring(idx + 3), "/");
+          }
+        }
+      });
+
       angular.forEach(this.routes, (route) => {
         var metadata = route.metadata || {};
         var spec = route.spec || {};
@@ -639,29 +651,9 @@ module Kubernetes {
             buildAppViewUsing(this, replica);
           }
         });
-
-        log.debug("Apps: ", appViews);
-
-        // when not on OpenShift we don't have a Rroute
-        this.services.forEach((service) => {
-          var $serviceUrl = serviceLinkUrl(service);
-          service.$serviceUrl = $serviceUrl;
-          service.$connectUrl = $serviceUrl;
-          if ($serviceUrl) {
-            var idx = $serviceUrl.indexOf("://");
-            if (idx > 0) {
-              service.$connectHost = Core.trimTrailing($serviceUrl.substring(idx + 3), "/");
-            }
-          }
-        });
-
         appViews = _.sortBy(populateKeys(appViews), (appView) => appView._key);
+        log.debug("Apps: ", appViews);
         ArrayHelpers.sync(this.appViews, appViews, '$name');
-
-        var folderMap = {};
-        var folders = [];
-        var appMap = {};
-        this.appFolders = _.sortBy(folders, "path");
         angular.forEach(this.appViews, (appView:any) => {
           try {
             appView.$podCounters = createAppViewPodCounters(appView);

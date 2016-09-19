@@ -16,7 +16,6 @@ declare module Kubernetes {
         hosts: any[];
         namespaces: Array<string>;
         appViews: any[];
-        appFolders: any[];
         replicasets: any[];
         replicas: any[];
         deployments: any[];
