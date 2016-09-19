@@ -15,7 +15,6 @@ declare module Kubernetes {
         pods: any[];
         hosts: any[];
         namespaces: Array<string>;
-        appInfos: any[];
         appViews: any[];
         appFolders: any[];
         replicasets: any[];
@@ -66,6 +65,12 @@ declare module Kubernetes {
         currentNamespace(): any;
         protected updateIconUrlAndAppInfo(entity: any, nameField: string): void;
         maybeInit(): void;
+        protected buildHosts(): any[];
+        protected handleRoutes(): void;
+        protected enrichDeployments(): void;
+        protected enrichReplicas(): void;
+        protected enrichServices(): void;
+        protected enrichPods(): void;
         protected updateApps(): void;
         /**
          * Returns the name of the environment for the given project namespace and environment namespace

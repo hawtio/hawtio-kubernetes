@@ -1,14 +1,8 @@
 <div ng-controller="Kubernetes.Apps">
 
-  <div class="row">
-    <div hawtio-breadcrumbs></div>
-  </div>
+  <div hawtio-breadcrumbs></div>
+  <div hawtio-tabs></div>
 
-  <div class="row">
-    <div hawtio-tabs></div>
-  </div>
-
-  <div ng-hide="appSelectorShow">
     <div class="row filter-header">
       <div class="col-md-12">
         <span ng-show="model.apps.length && !id">
@@ -78,98 +72,5 @@
       </div>
     </div>
 
-  </div>
-  <div ng-show="appSelectorShow">
-    <div class="col-md-7">
-      <div class="row">
-        <hawtio-filter ng-model="appSelector.filterText"
-                       css-class="input-xxlarge"
-                       placeholder="Filter apps..."></hawtio-filter>
-      </div>
-      <div class="row">
-        <ul>
-          <li class="no-list profile-selector-folder" ng-repeat="folder in model.appFolders"
-              ng-show="appSelector.showFolder(folder)">
-            <div class="expandable" ng-class="appSelector.isOpen(folder)">
-              <div title="{{folder.path}}" class="title">
-                <i class="expandable-indicator folder"></i> <span class="folder-title" ng-show="folder.path">{{folder.path.capitalize(true)}}</span><span
-                      class="folder-title" ng-hide="folder.path">Uncategorized</span>
-              </div>
-              <div class="expandable-body">
-                <ul>
-                  <li class="no-list profile" ng-repeat="profile in folder.apps" ng-show="appSelector.showApp(profile)">
-                    <div class="profile-selector-item">
-                      <div class="inline-block profile-selector-checkbox">
-                        <input type="checkbox" ng-model="profile.selected"
-                               ng-change="appSelector.updateSelected()">
-                      </div>
-                      <div class="inline-block profile-selector-name" ng-class="appSelector.getSelectedClass(profile)">
-                        <span class="contained c-max">
-                          <a href="" ng-click="appSelector.select(profile, !profile.selected)"
-                             title="Details for {{profile.id}}">
-                            <img ng-show="profile.$iconUrl" class="icon-small-app" ng-src="{{profile.$iconUrl}}">
-                            <span class="app-name">{{profile.name}}</span>
-                          </a>
-                        </span>
-                      </div>
-                    </div>
-
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="col-md-5">
-      <div class="row">
-        <button class="btn btn-primary pull-right"
-                ng-click="appSelectorShow = undefined"><i class="fa fa-circle-arrow-left"></i> Back
-        </button>
-        <span class="pull-right">&nbsp;</span>
-        <button class="btn pull-right"
-                ng-disabled="!appSelector.selectedApps.length"
-                title="Clears the selected Apps"
-                ng-click="appSelector.clearSelected()"><i class="fa fa-check-empty"></i> Clear
-        </button>
-        <span class="pull-right">&nbsp;</span>
-        <button class="btn btn-success pull-right"
-                ng-disabled="!appSelector.selectedApps.length"
-                ng-click="appSelector.runSelectedApps()"
-                title="Run the selected apps">
-          <i class="fa fa-play-circle"></i>
-          <ng-pluralize count="appSelector.selectedApps.length"
-                        when="{'0': 'No App Selected',
-                                       '1': 'Run App',
-                                       'other': 'Run {} Apps'}"></ng-pluralize>
-
-        </button>
-      </div>
-      <div class="row">
-        <!--
-                <div ng-hide="appSelector.selectedApps.length">
-                  <p class="alert pull-right">
-                    Please select an App
-                  </p>
-                </div>
-        -->
-
-        <div ng-show="appSelector.selectedApps.length">
-
-          <ul class="zebra-list pull-right">
-            <li ng-repeat="app in appSelector.selectedApps">
-              <img ng-show="app.$iconUrl" class="icon-selected-app" ng-src="{{app.$iconUrl}}">
-              <strong class="green selected-app-name">{{app.name}}</strong>
-              &nbsp;
-              <i class="red clickable fa fa-remove"
-                 title="Remove appp"
-                 ng-click="appSelector.select(app, false)"></i>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
   <ng-include src="'resizeDialog.html'"/>
 </div>

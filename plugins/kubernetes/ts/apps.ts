@@ -16,7 +16,6 @@ module Kubernetes {
     $scope.fetched = false;
     $scope.json = '';
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'id', '_id', undefined);
-    ControllerHelpers.bindModelToSearchParam($scope, $location, 'appSelectorShow', 'openApp', undefined);
     ControllerHelpers.bindModelToSearchParam($scope, $location, 'mode', 'mode', 'detail');
 
     var branch = $scope.branch || "master";
@@ -204,100 +203,5 @@ module Kubernetes {
         customClass: "alert alert-warning"
       }).open();
     };
-
-    $scope.appSelector = {
-      filterText: "",
-      folders: [],
-      selectedApps: [],
-
-      isOpen: (folder) => {
-        if ($scope.appSelector.filterText !== '' || folder.expanded) {
-          return "opened";
-        }
-        return "closed";
-      },
-
-      getSelectedClass: (app) => {
-        if (app.abstract) {
-          return "abstract";
-        }
-        if (app.selected) {
-          return "selected";
-        }
-        return "";
-      },
-
-      showApp: (app) => {
-        return appMatches(app) && !appRunning(app);
-      },
-
-      showFolder: (folder) => {
-        return !$scope.appSelector.filterText || folder.apps.some((app) => appMatches(app) && !appRunning(app));
-      },
-
-      clearSelected: () => {
-        angular.forEach($scope.model.appFolders, (folder) => {
-          angular.forEach(folder.apps, (app) => {
-            app.selected = false;
-          });
-        });
-        $scope.appSelector.selectedApps = [];
-        Core.$apply($scope);
-      },
-
-      updateSelected: () => {
-        // lets update the selected apps
-        var selectedApps = [];
-        angular.forEach($scope.model.appFolders, (folder) => {
-          var apps = folder.apps.filter((app) => app.selected);
-          if (apps) {
-            selectedApps = selectedApps.concat(apps);
-          }
-        });
-        $scope.appSelector.selectedApps = _.sortBy(selectedApps, "name");
-      },
-
-      select: (app, flag) => {
-        app.selected = flag;
-        $scope.appSelector.updateSelected();
-      },
-
-      hasSelection: () => {
-        return $scope.model.appFolders.any((folder) => folder.apps.any((app) => app.selected));
-      },
-
-
-      runSelectedApps: () => {
-        // lets run all the selected apps
-        angular.forEach($scope.appSelector.selectedApps, (app) => {
-          var name = app.name;
-          var metadataPath = app.metadataPath;
-          if (metadataPath) {
-            // lets load the json/yaml
-            //var url = gitPathToUrl(Wiki.gitRelativeURL(branch, metadataPath));
-            var url = gitPathToUrl(metadataPath, branch);
-            if (url) {
-              $http.get(url).
-                success(function (data, status, headers, config) {
-                  if (data) {
-                    // lets convert the json object structure into a string
-                    var json = angular.toJson(data);
-                    var fn = () => {};
-                    Kubernetes.runApp($location, $scope, $http, KubernetesApiURL, json, name, fn, namespace);
-                  }
-                }).
-                error(function (data, status, headers, config) {
-                  $scope.summaryHtml = null;
-                  log.warn("Failed to load " + url + " " + data + " " + status);
-                });
-            }
-          }
-        });
-        // lets go back to the apps view
-        $scope.appSelector.clearSelected();
-        $scope.appSelectorShow = false;
-      }
-    };
-
   }]);
 }

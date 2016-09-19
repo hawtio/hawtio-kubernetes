@@ -1,6 +1,6 @@
 <div class="service-view-rectangle" ng-repeat="view in item.$serviceViews" ng-hide="view.appName === 'kubernetes'">
   <div class="service-view-header row">
-    <div class="col-md-4">
+    <div class="col-md-6">
       <span class="service-view-icon">
         <a ng-href="{{view.service | kubernetesPageLink}}" title="View the service detail page">
           <img ng-show="item.$iconUrl" ng-src="{{item.$iconUrl}}">
@@ -12,7 +12,7 @@
         </a>
       </span>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <span class="service-view-address" title="The service address">
         <a ng-show="view.service.$connectUrl && !view.service.$connectTemplate" target="_blank" href="{{view.service.$connectUrl}}" title="Connect to the service">
           {{view.service.$host}}
