@@ -661,7 +661,16 @@ module Kubernetes {
             var configMapNames = [];
             // search container templates for references to configmaps
             _.forEach(appView.replicationControllers, (replica) => {
-              var containers = replica.spec.template.spec.containers;
+              // look for volumes that are configmaps
+              var volumes = _.get(replica, "spec.template.spec.volumes");
+              _.forEach(volumes, (volume) => {
+                var configMapName = _.get(volume, "configMap.name");
+                if (configMapName) {
+                  configMapNames.push(configMapName);
+                }
+              });
+              // look for references to configmaps in the container environment
+              var containers = _.get(replica, "spec.template.spec.containers");
               _.forEach(containers, (container) => {
                 var env = container.env;
                 if (env && env.length) {
