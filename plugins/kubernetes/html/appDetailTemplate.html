@@ -39,7 +39,7 @@
           not deployed
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <div class="service-view-detail-pod-template" ng-show="view.controllerId">
           pod template:
           <span class="value" title="Go to the controller detail page"><a
@@ -49,7 +49,23 @@
           no pod template
         </div>
       </div>
-      <div class="col-md-3 service-view-detail-pod-counts align-right">
+      <div class="col-md-3">
+        <span ng-show="view.configmaps.length === 1">
+          <a hawtio-relative-href="../configMaps/{{view.configmaps[0].metadata.name}}" title="Configure this app"><i class="fa fa-gear"></i> Configure</a>
+        </span>
+        <span ng-show="view.configmaps.length > 1">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <span title="Configure this app"><i class="fa fa-gear"></i> Configure</span>
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="configmap in view.configmaps">
+              <a hawtio-relative-href="../configMaps/{{configmap.metadata.name}}">{{configmap.metadata.name}}</a>
+            </li>
+          </ul>
+        </span>
+      </div>
+      <div class="col-md-2 service-view-detail-pod-counts align-right">
         <span>
           pods:
           <a href="" ng-show="view.replicationController" class="badge badge-success"

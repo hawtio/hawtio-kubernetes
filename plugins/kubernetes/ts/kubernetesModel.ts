@@ -653,11 +653,6 @@ module Kubernetes {
         // now decorate apps and find any associated configmaps
         _.forEach(appViews, (appView:any) => {
           try {
-            appView.$podCounters = createAppViewPodCounters(appView);
-            appView.$podCount = (appView.pods || []).length;
-            appView.$replicationControllersText = (appView.replicationControllers || []).map((i) => i["_key"]).join(" ");
-            appView.$servicesText= (appView.services || []).map((i) => i["_key"]).join(" ");
-            appView.$serviceViews = createAppViewServiceViews(appView);
             var configMapNames = [];
             // search container templates for references to configmaps
             _.forEach(appView.replicationControllers, (replica) => {
@@ -692,6 +687,11 @@ module Kubernetes {
               }
               appView['configmaps'] = configmaps;
             });
+            appView.$podCounters = createAppViewPodCounters(appView);
+            appView.$podCount = (appView.pods || []).length;
+            appView.$replicationControllersText = (appView.replicationControllers || []).map((i) => i["_key"]).join(" ");
+            appView.$servicesText= (appView.services || []).map((i) => i["_key"]).join(" ");
+            appView.$serviceViews = createAppViewServiceViews(appView);
           } catch (e) {
             log.warn("Failed to update appView", getName(appView), " : " + e);
           }

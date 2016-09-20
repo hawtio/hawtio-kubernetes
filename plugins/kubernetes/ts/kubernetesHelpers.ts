@@ -1333,7 +1333,8 @@ module Kubernetes {
         controllerId: controllerId,
         service: service,
         replicationController: replicationController,
-        pods: pods
+        pods: pods,
+        configmaps: appView.configmaps || []
       };
       array.push(view);
     }
