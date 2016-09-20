@@ -1299,7 +1299,8 @@ module Kubernetes {
     });
 
     var services = appView.services || [];
-    var replicationControllers = appView.replicationControllers || [];
+    // Prefer the deployment but fall back to the RC/ReplicaSet
+    var replicationControllers = appView.deployments || appView.replicationControllers || [];
     var size = Math.max(services.length, replicationControllers.length, 1);
     var appName = appView.$info.name;
     for (var i = 0; i < size; i++) {
