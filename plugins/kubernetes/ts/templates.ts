@@ -500,26 +500,10 @@ module Kubernetes {
 
     $scope.deployTemplate = () => {
       var objects = $scope.objects;
-      /*
-      if ($scope.targetNamespace !== model.currentNamespace()) {
-        $scope.$on('WatcherNamespaceChanged', () => {
-          log.debug("Namespace changed");
-          setTimeout(() => {
-            applyObjects(objects);
-            Core.$apply($scope);
-          }, 500);
-        });
-        Core.notification('info', "Switching to namespace " + $scope.targetNamespace + " and deploying template");
-        model.kubernetes.selectedNamespace = $scope.targetNamespace;
-      } else {
-      */
       Core.notification('info', "Deploying template to namespace: " + $scope.targetNamespace);
       setTimeout(() => {
         applyObjects(objects);
       }, 10);
-        /*
-      }
-      */
     }
 
     function applyObjects(objects) {
@@ -554,6 +538,19 @@ module Kubernetes {
 
       // iterate through the objects to deploy and apply 'em in serial
       function deployObject(object, objects) {
+        function next() {
+          // ensure we still process objects after skipping an invalid object
+          while (objects.length > 0) {
+            var object = objects.shift();
+            if (angular.isDefined(object)) {
+              deployObject(object, objects);
+              // break out
+              return;
+            } else {
+              log.debug("invalid object: ", object, " skipping");
+            }
+          }
+        }
         log.debug("Deploying object { kind:" + object.kind + ", name:" + object.metadata.name + " } remaining: ", objects.length);
         var kind = getKind(object);
         var name = getName(object);
@@ -561,16 +558,6 @@ module Kubernetes {
         var id = UrlHelpers.join(ns, kind, name);
         var result:any = getOutstanding(id);
         // put the next object if available
-        function next() {
-          while (objects.length > 0) {
-            var object = objects.shift();
-            if (object) {
-              deployObject(object, objects);
-            } else {
-              log.debug("invalid object: ", object, " skipping");
-            }
-          }
-        }
         if (!kind || !name) {
           log.debug("invalid object: ", object, " skipping");
           next();

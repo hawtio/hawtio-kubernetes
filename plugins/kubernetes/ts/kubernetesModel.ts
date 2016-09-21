@@ -657,26 +657,34 @@ module Kubernetes {
             // search container templates for references to configmaps
             _.forEach(appView.replicationControllers, (replica) => {
               // look for volumes that are configmaps
-              var volumes = _.get(replica, "spec.template.spec.volumes");
-              _.forEach(volumes, (volume) => {
-                var configMapName = _.get(volume, "configMap.name");
-                if (configMapName) {
-                  configMapNames.push(configMapName);
-                }
-              });
+              try {
+                var volumes = _.get(replica, "spec.template.spec.volumes");
+                _.forEach(volumes, (volume) => {
+                  var configMapName = _.get(volume, "configMap.name");
+                  if (configMapName) {
+                    configMapNames.push(configMapName);
+                  }
+                });
+              } catch (err) {
+                // ignore
+              }
               // look for references to configmaps in the container environment
-              var containers = _.get(replica, "spec.template.spec.containers");
-              _.forEach(containers, (container) => {
-                var env = container.env;
-                if (env && env.length) {
-                  _.forEach(env, (envVar) => {
-                    var configMapName = _.get(envVar, 'valueFrom.configMapKeyRef.name');
-                    if (configMapName) {
-                      configMapNames.push(configMapName);
-                    }
-                  });
-                }
-              });
+              try {
+                var containers = _.get(replica, "spec.template.spec.containers");
+                _.forEach(containers, (container) => {
+                  var env = container.env;
+                  if (env && env.length) {
+                    _.forEach(env, (envVar) => {
+                      var configMapName = _.get(envVar, 'valueFrom.configMapKeyRef.name');
+                      if (configMapName) {
+                        configMapNames.push(configMapName);
+                      }
+                    });
+                  }
+                });
+              } catch (err) {
+                // ignore
+              }
             });
             configMapNames = _.uniq(configMapNames);
             _.forEach(configMapNames, (name) => {
@@ -693,7 +701,7 @@ module Kubernetes {
             appView.$servicesText= (appView.services || []).map((i) => i["_key"]).join(" ");
             appView.$serviceViews = createAppViewServiceViews(appView);
           } catch (e) {
-            log.warn("Failed to update appView", getName(appView), " : " + e);
+            log.warn("Failed to update appView", getName(appView), " : ", e);
           }
         });
         appViews = _.sortBy(populateKeys(appViews), (appView) => appView._key);
