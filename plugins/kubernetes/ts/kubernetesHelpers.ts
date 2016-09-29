@@ -582,10 +582,17 @@ module Kubernetes {
    */
   export function serviceLinkUrl(service, httpOnly = false) {
     if (angular.isObject(service)) {
+      // let's look up the service path first
+      var servicePath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
+      // let's now check if exposeUrl is set and use that
       var exposeUrl = getAnnotation(service, 'fabric8.io/exposeUrl');
+      if (exposeUrl && servicePath) {
+        return UrlHelpers.join(exposeUrl, servicePath);
+      }
       if (exposeUrl) {
         return exposeUrl;
       }
+      // Uck, now we have to figure it out from the model
       var portalIP = service.$host;
       // lets assume no custom port for now for external routes
       var port = null;
@@ -642,11 +649,7 @@ module Kubernetes {
           }
         }
       }
-      if (answer) {
-        return answer;
-      }
-
-      if (portalIP) {
+      if (!answer && portalIP) {
         if (hasHttps) {
           answer = "https://" + portalIP;
         } else if (hasHttp) {
@@ -661,13 +664,13 @@ module Kubernetes {
       } else if (nodeIP && nodePort) {
         answer = protocol + nodeIP + ":" + nodePort + "/";
       }
+      if (answer && servicePath) {
+        return UrlHelpers.join(answer, servicePath);
+      }
       if (answer) {
-        var servicepath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
-        if (servicepath) {
-          return UrlHelpers.join(answer, servicepath);
-        }
         return answer;
       }
+      // end if (angular.isObject(service))
     } else if (service) {
       var serviceId = service.toString();
       if (serviceId) {
