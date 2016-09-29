@@ -91,21 +91,13 @@ module Kubernetes {
   // figure out if we're running against openshift or vanilla k8s
   hawtioPluginLoader.registerPreBootstrapTask({
     name: 'KubernetesApiDiscovery',
-    depends: ['hawtio-oauth'],
+    depends: ['KubernetesAPIProviderInit'],
     task: (next) => {
-      isOpenShift = false;
-
+      isOpenShift = KubernetesAPI.isOpenShift;
       var userProfile = HawtioOAuth.getUserProfile();
-      var provider = "";
-      if (userProfile) {
-        provider = userProfile.provider;
-      }
+      var provider = _.get(userProfile, 'provider');
       log.debug("User profile: ", userProfile + " provider: " + provider);
-
-      if (provider === "hawtio-os-oauth") {
-        isOpenShift = true;
-        next();
-      } else if (provider === "hawtio-google-oauth") {
+      if (provider === "hawtio-google-oauth") {
         log.debug("Possibly running on GCE");
         // api master is on GCE
         $.ajax({
@@ -130,41 +122,6 @@ module Kubernetes {
       } else {
         next();
       }
-/*
-      } else {
-        log.debug("Not running on GCE");
-        // double-check if we're on vanilla k8s or openshift
-        var rootUri = new URI(masterApiUrl()).path("/oapi/v1/projects").query("").toString();
-        log.debug("Checking for an openshift backend");
-        HawtioOAuth.authenticatedHttpRequest({
-          url: rootUri,
-          accepts: {
-              projectlist: 'application/json'
-            },
-          dataType: 'projectlist',
-          success: (data) => {
-            isOpenShift = false;
-            if (data && data.items) {
-              var openshiftConfig = window["OPENSHIFT_CONFIG"] || {}
-              if (openshiftConfig["openshift"]) {
-                isOpenShift = true;
-              }
-            }
-            next();
-          },
-          error: (jqXHR, textStatus, errorThrown) => {
-            var error = KubernetesAPI.getErrorObject(jqXHR);
-            if (!error) {
-              log.debug("Failed to find root paths: ", textStatus, ": ", errorThrown);
-            } else {
-              log.debug("Failed to find root paths: ", error);
-            }
-            isOpenShift = false;
-            next();
-          }
-        });
-      }
-*/
     }
   });
 
