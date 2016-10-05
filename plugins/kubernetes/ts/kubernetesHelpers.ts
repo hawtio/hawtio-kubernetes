@@ -586,7 +586,7 @@ module Kubernetes {
       var servicePath = getAnnotation(service, "servicepath") || getAnnotation(service, "api.service.kubernetes.io/path");
       // let's now check if exposeUrl is set and use that
       var exposeUrl = getAnnotation(service, 'fabric8.io/exposeUrl');
-      if (exposeUrl && servicePath) {
+      if (exposeUrl && servicePath && !_.endsWith(exposeUrl, servicePath)) {
         return UrlHelpers.join(exposeUrl, servicePath);
       }
       if (exposeUrl) {
