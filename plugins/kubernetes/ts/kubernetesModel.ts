@@ -243,8 +243,14 @@ module Kubernetes {
     protected updateIconUrlAndAppInfo(entity, nameField: string) {
       var answer = null;
       var id = getName(entity);
-      entity.$iconUrl = Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.' + id + '/iconUrl']) || Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.io/iconUrl']);
-      entity.$info = Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.' + id + '/summary']);
+
+      entity.$iconUrl = Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.' + id + '/iconUrl']) ||
+        Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.io/iconUrl']) ||
+        Core.pathGet(entity, ['spec', 'template', 'metadata', 'annotations', 'fabric8.io/iconUrl']);
+
+      entity.$info = Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.' + id + '/summary']) ||
+        Core.pathGet(entity, ['metadata', 'annotations', 'fabric8.io/summary']);
+
       if (entity.$iconUrl === "data:image/svg+xml;charset=UTF-8;base64,") {
         entity.$iconUrl = defaultIconUrl;
       }
