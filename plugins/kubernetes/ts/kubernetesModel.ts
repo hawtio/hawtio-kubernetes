@@ -838,23 +838,25 @@ module Kubernetes {
     }
   }
 
-  function getServiceForName(model, serviceName) {
-    var key = createKey('default', serviceName, 'service');
+  function getServiceForName(model, serviceName, namespace = "default") {
+    var key = createKey(namespace, serviceName, 'service');
     var answer = model.servicesByKey[key];
     log.debug("found template service: ", answer);
     return answer;
   }
 
   export function getJenkinshiftBuildConfigURL($scope) {
-    return getJenkinshiftProxyUrlFor($scope, jenkinshiftServiceName, '/oapi/v1/namespaces/default/buildconfigs');
+    var ns  = currentKubernetesNamespace() || "default";
+    var path = UrlHelpers.join('/oapi/v1/namespaces/', ns, '/buildconfigs');
+    return getJenkinshiftProxyUrlFor($scope, jenkinshiftServiceName, path, ns);
   }
 
-  function getJenkinshiftProxyUrlFor($scope, serviceName, path) {
+  function getJenkinshiftProxyUrlFor($scope, serviceName, path, ns) {
     if (!$scope) {
       $scope = getKubernetesModel();
     }
     if ($scope) {
-      var proxyService = getServiceForName($scope, serviceName);
+      var proxyService = getServiceForName($scope, serviceName, ns);
       if (proxyService) {
         var proxyUrl = proxyService.proxyUrl;
         if (proxyUrl) {
@@ -893,9 +895,12 @@ module Kubernetes {
       // TOOD replace with jenkinshift once the catalog can work from ConfigMap
       //var templatesServiceName = "jenkinshiftServiceName";
       var templatesServiceName = "templates";
+      var ns  = currentKubernetesNamespace() || "default";
+      var path = UrlHelpers.join('/oapi/v1/namespaces/', ns, '/templates');
+
       watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.TEMPLATES,
           (options:KubernetesAPI.K8SOptions) =>
-              getJenkinshiftProxyUrlFor($scope, templatesServiceName, '/oapi/v1/namespaces/default/templates'));
+              getJenkinshiftProxyUrlFor($scope, templatesServiceName, path, ns);
     }
 
     watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.INGRESSES,
