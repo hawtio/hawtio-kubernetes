@@ -100,14 +100,17 @@
             <div class="team-list-entry" ng-repeat="team in model.teams">
               <div>
                 <h3 class="inline-block">Team: <b>{{team.metadata.name}}</b></h3>
-                <a href="" class="pull-right" ng-click="deletePrompt(team.metadata.name, 'teams')" title="Delete team {{team.metadata.name}}"><i class="fa red fa-remove"></i></a>
+                <a href="" class="pull-right" ng-click="deletePrompt(team.metadata.name, 'teams')"
+                   title="Delete team {{team.metadata.name}}"><i class="fa red fa-remove"></i></a>
               </div>
               <div class="card-view-pf">
                 <div class="card" class="inline-block" ng-repeat="environment in team.environments | orderBy:'order'">
                   <div class="tile-content" ng-show="environment.workspace.metadata.name">
                     <h5>
-                      <a ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}" title="View the Dashboard for the teams development">Team Dashboard</a>
-                      <a ng-if="environment.kind !== 'development'" ng-href="{{environment.workspace.$runtimeLink}}" title="View the environment">{{environment.name}}</a>
+                      <a class="btn btn-default" ng-if="environment.kind === 'development'" ng-href="{{environment.workspace.$projectsLink}}"
+                         title="View the Dashboard for the teams development">Team Dashboard</a>
+                      <a class="btn btn-default" ng-if="environment.kind !== 'development'" ng-href="{{environment.workspace.$runtimeLink}}"
+                         title="View the environment">{{environment.name}}</a>
                     </h5>
                     <dl>
                       <dt>
@@ -116,7 +119,10 @@
                       <dd>
                         {{environment.workspace.metadata.name}}
                         &nbsp;
-                        <a href="" class="clickable" ng-click="deletePrompt(environment.workspace.metadata.name, 'namespaces')" title="Delete namespace {{environment.workspace.metadata.name}}"><i class="fa red fa-remove"></i></a>
+                        <a href="" class="clickable"
+                           ng-click="deletePrompt(environment.workspace.metadata.name, 'namespaces')"
+                           title="Delete namespace {{environment.workspace.metadata.name}}"><i
+                          class="fa red fa-remove"></i></a>
                       </dd>
                     </dl>
                     <dl>
@@ -129,7 +135,8 @@
                     </dl>
                     <dl ng-show="environment.kind === 'development' && environment.workspace.$runtimeLink">
                       <dd>
-                        <a ng-href="{{environment.workspace.$runtimeLink}}" title="View the runtime environment for the development tools">Runtime</a>
+                        <a class="btn btn-default" ng-href="{{environment.workspace.$runtimeLink}}"
+                           title="View the runtime environment for the development tools">Runtime</a>
                       </dd>
                     </dl>
                   </div>
@@ -144,8 +151,8 @@
                       <dd class="align-center">
                         <br/>
                         <a class="btn btn-primary"
-                          title="Create a new namespace"
-                          ng-click="createEnvironmentNamespace(environment.namespace)">
+                           title="Create a new namespace"
+                           ng-click="createEnvironmentNamespace(environment.namespace)">
                           <i class="fa fa-plus"></i> Create
                         </a>
                       </dd>
@@ -175,19 +182,58 @@
             <div class="row filter-header">
               <h4 class="inline-block">Other Namespaces</h4>
               <button class="btn btn-danger pull-right"
-                title="Deletes the selected teams"
-                ng-disabled="!tableConfig.selectedItems.length"
-                ng-click="deletePrompt(tableConfig.selectedItems)">
+                      title="Deletes the selected teams"
+                      ng-disabled="!tableConfig.selectedItems.length"
+                      ng-click="deletePrompt(tableConfig.selectedItems)">
                 <i class="fa fa-remove"></i> Delete
               </button>
               <span class="pull-right">&nbsp;</span>
               <a class="btn btn-primary pull-right"
-                title="Create a new namespace"
-                ng-click="createNamespaceDialog.open()">
+                 title="Create a new namespace"
+                 ng-click="createNamespaceDialog.open()">
                 <i class="fa fa-plus"></i> Create Namespace
               </a>
             </div>
-            <table ng-if="tableConfig" class="table table-bordered table-striped" hawtio-simple-table="tableConfig"></table>
+
+
+            <div class="team-list">
+              <div class="team-list-entry">
+                <div class="card-view-pf">
+                  <div class="card" class="inline-block" ng-repeat="environment in model.namespaces | filter: '!$inTeam' | orderBy:'order'">
+                    <div class="tile-content">
+                      <h5>
+                        <a class="btn btn-default" ng-href="{{environment.$runtimeLink}}"
+                           title="View the namespace">{{environment.metadata.name}}</a>
+                      </h5>
+                      <dl>
+                        <dd>
+                          <a href="" class="clickable"
+                             ng-click="deletePrompt(environment.metadata.name, 'namespaces')"
+                             title="Delete namespace {{environment.metadata.name}}"><i
+                            class="fa red fa-remove"></i></a>
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt>
+                          Created
+                        </dt>
+                        <dd>
+                          {{environment.$creationDate | relativeTime}}
+                        </dd>
+                      </dl>
+                      <dl class="ngCellText" ng-init="entity=environment" ng-controller="Kubernetes.Labels">
+                        <dt ng-repeat="label in labels track by $index">
+                          <div class="pod-label badge" ng-class="labelClass(label.key)"
+                               ng-click="handleClick(entity, label.key, label)" title="{{label.key}}">
+                            {{label.title}}
+                          </div>
+                        </dt>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
