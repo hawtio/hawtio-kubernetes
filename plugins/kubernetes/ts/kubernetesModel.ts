@@ -122,7 +122,8 @@ module Kubernetes {
 
     public get serviceApps():Array<any> {
       var answer = _.filter(this.services, (s) => {
-        return s.$serviceUrl && s.$podCount
+        //return s.$serviceUrl && s.$podCount && getAnnotation(s, "fabric8.io/app-menu")
+        return s.$serviceUrl && s.$podCount && getAnnotation(s, "fabric8.io/app-menu")
       });
       return answer;
     }
