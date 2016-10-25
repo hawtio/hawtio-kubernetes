@@ -900,7 +900,7 @@ module Kubernetes {
 
       watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.TEMPLATES,
           (options:KubernetesAPI.K8SOptions) =>
-              getJenkinshiftProxyUrlFor($scope, templatesServiceName, path, ns);
+              getJenkinshiftProxyUrlFor($scope, templatesServiceName, path, ns));
     }
 
     watcher.registerCustomUrlFunction(KubernetesAPI.WatchTypes.INGRESSES,

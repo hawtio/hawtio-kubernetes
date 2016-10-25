@@ -26,6 +26,7 @@ module Kubernetes {
 
     $scope.subTabConfig = [];
 
+    var createRoutes = false;
     var workspace = $routeParams['workspace'];
     var project = $routeParams['project'];
     var namespace = $routeParams['namespace'];
@@ -339,7 +340,11 @@ module Kubernetes {
         property.type = 'string';
         formConfig.properties[param.name] = property;
       });
-      if (routeServiceName && isOpenShift) {
+      // lets no longer create routes as we use exposecontroller now!
+      if (!createRoutes) {
+        routeServiceName = "";
+      }
+      if (routeServiceName && isOpenShift && createRoutes) {
         formConfig.properties.createRoute = {
           type: 'boolean',
           default: true,
@@ -428,7 +433,7 @@ module Kubernetes {
       var objects = $scope.objects;
       var objectsText = angular.toJson(objects, true);
       // pull these out of the entity object so they're not used in substitutions
-      var createRoute = $scope.entity.createRoute;
+      var createRoute = createRoutes && $scope.entity.createRoute;
       var routeHostnameSuffix = $scope.entity.routeHostname || "";
       var routeName = $scope.entity.routeName;
       var routeServiceName = $scope.entity.routeServiceName;
