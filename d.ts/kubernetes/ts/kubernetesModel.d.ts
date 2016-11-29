@@ -48,6 +48,7 @@ declare module Kubernetes {
         $keepPolling(): boolean;
         orRedraw(flag: any): void;
         getService(namespace: any, id: any): any;
+        getConfigMap(name: any): any;
         getReplicationController(namespace: any, id: any): any;
         getNamespaceOrProject(name: any): any;
         getDeployment(namespace: any, id: any): any;

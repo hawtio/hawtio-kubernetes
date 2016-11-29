@@ -6,6 +6,7 @@
 
 module Developer {
 
+  import getKubernetesModel = Kubernetes.getKubernetesModel;
   _module.controller('Developer.RunCDPipelineController', ($scope, documentBase) => {
     var entity:any = $scope.$eval('entity');
     if (entity.error) {
@@ -245,10 +246,25 @@ module Developer {
     }
     var wizard = $scope.wizard = new CreateTeamWizard();
 
+    $scope.$on("kubernetesModelUpdated", () => {
+      log.info("kubernetesModel updated");
+
+      var environments = [];
+      var configMapName = "fabric8-environments";
+      var envConfigMap = Kubernetes.getKubernetesModel().getConfigMap(configMapName);
+      if (angular.isObject(envConfigMap)) {
+        environments.push(envConfigMap);
+      }
+      model.environments = environments;
+      model.environmentsFetched = true;
+      Core.$apply($scope);
+    });
+
     $scope.$watch('model.updateCounter', () => {
       if (model.fetched) {
         model.teams = [];
         model.namespaces = [];
+
         _.forEach(model.environments, (environment) => {
           var team = {
             metadata: {
@@ -344,11 +360,24 @@ module Developer {
       }
     });
 
+
+    var ns = Kubernetes.currentKubernetesNamespace();
+    log.info("watching ConfigMaps in namespace: " + ns);
+
     Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.CONFIG_MAPS, undefined, (configmaps) => {
-      if (configmaps) {
-        $scope.model.environments = configmaps;
-        $scope.model.environmentsFetched = true;
-        Core.$apply($scope);
+      if (configmaps && configmaps.length) {
+        var environments = [];
+        angular.forEach(configmaps, (configmap) => {
+          var name = Kubernetes.getName(configmap);
+          if (name === "fabric8-environments") {
+            environments.push(configmap);
+          }
+        });
+        if (environments.length) {
+          $scope.model.environments = environments;
+          $scope.model.environmentsFetched = true;
+          Core.$apply($scope);
+        }
       }
     }, { 'kind': 'environments', 'provider': 'fabric8.io' });
 

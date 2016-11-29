@@ -140,6 +140,17 @@ module Kubernetes {
       return this.servicesByKey[createKey(namespace, id, 'service')];
     }
 
+    public getConfigMap(name) {
+      var answer = null;
+      angular.forEach(this.configmaps, (configmap) => {
+        var aName = Kubernetes.getName(configmap);
+        if (name === aName && !answer) {
+          answer = configmap;
+        }
+      });
+      return answer;
+    }
+
     public getReplicationController(namespace, id) {
       var key1 = createKey(namespace, id, 'replicationController');
       var key2 = createKey(namespace, id, 'replicaSet');
