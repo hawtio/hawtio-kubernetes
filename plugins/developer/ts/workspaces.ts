@@ -246,9 +246,7 @@ module Developer {
     }
     var wizard = $scope.wizard = new CreateTeamWizard();
 
-    $scope.$on("kubernetesModelUpdated", () => {
-      log.info("kubernetesModel updated");
-
+    function updateEnvironmentsFromModel() {
       var environments = [];
       var configMapName = "fabric8-environments";
       var envConfigMap = Kubernetes.getKubernetesModel().getConfigMap(configMapName);
@@ -258,7 +256,9 @@ module Developer {
       model.environments = environments;
       model.environmentsFetched = true;
       Core.$apply($scope);
-    });
+    }
+
+    $scope.$on("kubernetesModelUpdated", updateEnvironmentsFromModel);
 
     $scope.$watch('model.updateCounter', () => {
       if (model.fetched) {
@@ -365,6 +365,7 @@ module Developer {
     log.info("watching ConfigMaps in namespace: " + ns);
 
     Kubernetes.watch($scope, $element, KubernetesAPI.WatchTypes.CONFIG_MAPS, undefined, (configmaps) => {
+      var updated = false;
       if (configmaps && configmaps.length) {
         var environments = [];
         angular.forEach(configmaps, (configmap) => {
@@ -376,8 +377,12 @@ module Developer {
         if (environments.length) {
           $scope.model.environments = environments;
           $scope.model.environmentsFetched = true;
+          updated = true;
           Core.$apply($scope);
         }
+      }
+      if (!updated) {
+        updateEnvironmentsFromModel();
       }
     }, { 'kind': 'environments', 'provider': 'fabric8.io' });
 
